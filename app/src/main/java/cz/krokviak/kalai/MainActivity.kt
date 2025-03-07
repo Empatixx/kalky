@@ -68,7 +68,8 @@ class MainActivity : ComponentActivity() {
             MaterialTheme {
                 MainScreen(
                     onCaptureClick = {
-                        // Handle capture button click
+                        val intent = Intent(this, CameraActivity::class.java)
+                        startActivity(intent)
                     }
                 )
             }
