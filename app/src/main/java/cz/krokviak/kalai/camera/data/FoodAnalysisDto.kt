@@ -1,7 +1,7 @@
-package cz.krokviak.kalai
+package cz.krokviak.kalai.camera.data
 
 data class FoodAnalysisDto(
-    val type: String,
+    val foodType: String,
     val title: String,
     val calories: Int,
     val protein: Int,

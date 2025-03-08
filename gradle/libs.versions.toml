@@ -8,12 +8,15 @@ cameraVideo = "1.4.1"
 cameraView = "1.4.1"
 coilCompose = "3.1.0"
 converterJackson = "2.9.0"
+jacksonModuleKotlin = "2.13.0"
 kotlin = "2.1.10"
 coreKtx = "1.15.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 appcompat = "1.7.0"
+kotlinxCoroutinesAndroid = "1.10.1"
+kotlinxCoroutinesCore = "1.10.1"
 langchain4jOpenAiVersion = "1.0.0-beta1"
 lifecycleViewmodelCompose = "2.9.0-alpha11"
 material = "1.12.0"
@@ -44,10 +47,13 @@ androidx-ui-viewbinding = { module = "androidx.compose.ui:ui-viewbinding", versi
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
 converter-jackson = { module = "com.squareup.retrofit2:converter-jackson", version.ref = "converterJackson" }
 dev-langchain4j-open-ai = { module = "dev.langchain4j:langchain4j-open-ai", version.ref = "langchain4jOpenAiVersion" }
+jackson-module-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jacksonModuleKotlin" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }

@@ -61,6 +61,7 @@ import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
+import cz.krokviak.kalai.camera.CameraActivity
 
 class MainActivity : ComponentActivity() {
 
