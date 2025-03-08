@@ -9,8 +9,10 @@
     <color name="white">#FFFFFFFF</color>
 
     <color name="proteinColor">#FF595E</color>
-    <color name="carbsColor">#FFCA3A</color>
+    <color name="carbsColor">#E7AE0E</color>
     <color name="fatColor">#8AC926</color>
     <color name="waterColor">#1982C4</color>
     <color name="fiberColor">#6A4C93</color>
+    <color name="sugarColor">#FF5996</color>
+    <color name="darkGreen">#158533</color>
 </resources>

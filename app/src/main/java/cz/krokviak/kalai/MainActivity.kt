@@ -6,6 +6,7 @@ import android.content.Intent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -52,6 +53,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -68,7 +70,8 @@ class MainActivity : ComponentActivity() {
             MaterialTheme {
                 MainScreen(
                     onCaptureClick = {
-                        val intent = Intent(this, CameraActivity::class.java)
+                        val intent = Intent(this,
+                            CameraActivity::class.java)
                         startActivity(intent)
                     }
                 )
@@ -194,6 +197,8 @@ fun MyScreenContent(modifier: Modifier = Modifier) {
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold
         )
+
+
     }
 }
 
@@ -324,29 +329,42 @@ fun DonutChart(
     inactiveColor: Color = Color(0xFFBDBDBD),
     holeRadius: Float = 80f,
     centerIcon: ImageVector? = null,
-    centerIconSize: androidx.compose.ui.unit.Dp = 32.dp
+    centerIconSize: Dp = 32.dp
 ) {
-    AndroidView(
-        factory = { context ->
-            createPieChart(
-                context = context,
-                percentage = percentage,
-                activeColor = activeColor,
-                inactiveColor = inactiveColor,
-                holeRadius = holeRadius
-            )
-        },
-        modifier = modifier
-    )
-
-    if (centerIcon != null) {
-        Icon(
-            imageVector = centerIcon,
-            contentDescription = null,
-            modifier = Modifier.size(centerIconSize)
+    Box(modifier = modifier, contentAlignment = Alignment.Center) {
+        // Donut Chart AndroidView
+        AndroidView(
+            factory = { context ->
+                createPieChart(
+                    context = context,
+                    percentage = percentage,
+                    activeColor = activeColor,
+                    inactiveColor = inactiveColor,
+                    holeRadius = holeRadius
+                )
+            },
+            modifier = Modifier.matchParentSize()
         )
+
+        // Gray circle exactly around the icon, behind the icon but in front of donut
+        if (centerIcon != null) {
+            Box(
+                modifier = Modifier
+                    .size(centerIconSize + 16.dp)
+                    .background(Color.LightGray.copy(alpha = 0.3f), shape = CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = centerIcon,
+                    tint = activeColor,
+                    contentDescription = null,
+                    modifier = Modifier.size(centerIconSize)
+                )
+            }
+        }
     }
 }
+
 
 /**
  * Creates and configures the underlying PieChart.
