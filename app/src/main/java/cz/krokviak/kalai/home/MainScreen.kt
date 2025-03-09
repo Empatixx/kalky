@@ -1,0 +1,159 @@
+package cz.krokviak.kalai.screen
+
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.outlined.LocalFireDepartment
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import cz.krokviak.kalai.R
+import cz.krokviak.kalai.home.MainUiState
+import cz.krokviak.kalai.home.MainViewModel
+import cz.krokviak.kalai.home.components.BottomNavBar
+import cz.krokviak.kalai.home.components.DonutChart
+import cz.krokviak.kalai.home.components.NutrientCard
+
+@Composable
+fun MainScreen(
+    onCaptureClick: () -> Unit,
+    mainViewModel: MainViewModel
+) {
+    val uiState by mainViewModel.uiState.collectAsState()
+
+    Scaffold(
+        bottomBar = {
+            BottomNavBar(
+                selectedItem = uiState.selectedBottomNavItem,
+                onItemSelected = mainViewModel::onBottomNavItemSelected
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = onCaptureClick,
+                containerColor = Color.Black,
+                shape = CircleShape,
+                modifier = Modifier
+                    .offset(y = 48.dp)
+                    .size(64.dp),
+                contentColor = Color.White
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = "Add",
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+        },
+        floatingActionButtonPosition = FabPosition.End
+    ) { innerPadding ->
+        MyScreenContent(
+            modifier = Modifier.padding(innerPadding),
+            uiState = uiState
+        )
+    }
+}
+
+@Composable
+fun MyScreenContent(
+    modifier: Modifier = Modifier,
+    uiState: MainUiState
+) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        // Card: "Calories left" + Donut chart
+        OutlinedCard(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(32.dp),
+            border = BorderStroke(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
+            )
+        ) {
+            Row(
+                modifier = Modifier.padding(32.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Left side: Text content
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = "${uiState.caloriesLeft}",
+                        fontSize = 48.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(text = "Calories left")
+                }
+
+                // Right side: Donut chart
+                Box(
+                    modifier = Modifier.size(120.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    DonutChart(
+                        modifier = Modifier.fillMaxSize(),
+                        percentage = 0.6f, // Example percentage
+                        activeColor = Color.Black,
+                        centerIcon = Icons.Outlined.LocalFireDepartment,
+                        centerIconSize = 32.dp,
+                        holeRadius = 80f
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Row with three cards: Protein, Carbs, Fat
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            NutrientCard(
+                amount = "${uiState.proteinG}g",
+                description = "Protein",
+                iconResId = R.drawable.meat_svgrepo_com,
+                donutColor = colorResource(id = R.color.proteinColor)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            NutrientCard(
+                amount = "${uiState.carbsG}g",
+                description = "Carbs",
+                iconResId = R.drawable.wheat,
+                donutColor = colorResource(id = R.color.carbsColor)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            NutrientCard(
+                amount = "${uiState.fatG}g",
+                description = "Fat",
+                iconResId = R.drawable.avocado,
+                donutColor = colorResource(id = R.color.fatColor)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        Text(
+            text = "Nedávno přidané",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold
+        )
+        // Additional content can go here...
+    }
+}
