@@ -1,7 +1,8 @@
-package cz.krokviak.kalai.camera.clients
+package cz.krokviak.kalai.common
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import cz.krokviak.kalai.camera.clients.FoodAnalysisService
 import retrofit2.Retrofit
 import retrofit2.converter.jackson.JacksonConverterFactory
 

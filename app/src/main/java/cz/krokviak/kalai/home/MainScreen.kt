@@ -1,19 +1,36 @@
 package cz.krokviak.kalai.screen
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.LocalFireDepartment
-import androidx.compose.material3.*
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -25,6 +42,7 @@ import cz.krokviak.kalai.home.MainViewModel
 import cz.krokviak.kalai.home.components.BottomNavBar
 import cz.krokviak.kalai.home.components.DonutChart
 import cz.krokviak.kalai.home.components.NutrientCard
+import cz.krokviak.kalai.home.components.RecentlyAddedList
 
 @Composable
 fun MainScreen(
@@ -47,13 +65,16 @@ fun MainScreen(
                 shape = CircleShape,
                 modifier = Modifier
                     .offset(y = 48.dp)
-                    .size(64.dp),
+                    .size(72.dp),
+                elevation = FloatingActionButtonDefaults.elevation(
+                    defaultElevation = 0.dp,
+                ),
                 contentColor = Color.White
             ) {
                 Icon(
                     imageVector = Icons.Filled.Add,
                     contentDescription = "Add",
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(32.dp)
                 )
             }
         },
@@ -74,7 +95,7 @@ fun MyScreenContent(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(24.dp)
     ) {
         // Card: "Calories left" + Donut chart
         OutlinedCard(
@@ -94,11 +115,11 @@ fun MyScreenContent(
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(
-                        text = "${uiState.caloriesLeft}",
+                        text = "${uiState.caloriesLeft()}",
                         fontSize = 48.sp,
                         fontWeight = FontWeight.Bold
                     )
-                    Text(text = "Calories left")
+                    Text(text = "kcal zbývá")
                 }
 
                 // Right side: Donut chart
@@ -126,22 +147,22 @@ fun MyScreenContent(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             NutrientCard(
-                amount = "${uiState.proteinG}g",
-                description = "Protein",
+                amount = "${uiState.proteinLeft()}g",
+                description = "Bilkoviny",
                 iconResId = R.drawable.meat_svgrepo_com,
                 donutColor = colorResource(id = R.color.proteinColor)
             )
             Spacer(modifier = Modifier.width(8.dp))
             NutrientCard(
-                amount = "${uiState.carbsG}g",
-                description = "Carbs",
+                amount = "${uiState.carbsLeft()}g",
+                description = "Sacharidy",
                 iconResId = R.drawable.wheat,
                 donutColor = colorResource(id = R.color.carbsColor)
             )
             Spacer(modifier = Modifier.width(8.dp))
             NutrientCard(
-                amount = "${uiState.fatG}g",
-                description = "Fat",
+                amount = "${uiState.fatsLeft()}g",
+                description = "Tuky",
                 iconResId = R.drawable.avocado,
                 donutColor = colorResource(id = R.color.fatColor)
             )
@@ -154,6 +175,14 @@ fun MyScreenContent(
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold
         )
-        // Additional content can go here...
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        RecentlyAddedList(
+            items = uiState.recentlyAddedItems,
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+        )
     }
 }

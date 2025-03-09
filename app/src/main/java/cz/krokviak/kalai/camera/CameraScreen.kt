@@ -1,3 +1,4 @@
+// CameraScreen.kt
 package cz.krokviak.kalai.camera
 
 import android.graphics.Bitmap
@@ -9,10 +10,6 @@ import cz.krokviak.kalai.camera.components.CapturedContentUI
 import cz.krokviak.kalai.camera.components.CameraPreviewUI
 import java.io.ByteArrayOutputStream
 
-/**
- * Main composable that decides whether to show the camera preview
- * or the captured content based on the [uiState].
- */
 @Composable
 fun CameraScreen(
     cameraViewModel: CameraViewModel,
@@ -27,7 +24,6 @@ fun CameraScreen(
                 CameraPreviewUI(
                     previewUseCase = uiState.previewUseCase,
                     onSurfaceProviderCreated = { previewView ->
-                        // Connect the preview use case to the surface provider
                         uiState.previewUseCase?.setSurfaceProvider(previewView.surfaceProvider)
                     },
                     onCaptureClick = { cameraViewModel.takePicture() }
@@ -39,11 +35,11 @@ fun CameraScreen(
                         bitmap = bmp,
                         analysisData = uiState.foodAnalysisData,
                         portion = uiState.portion,
+                        analyzeIsLoading = uiState.analyzing,  // <-- Pass it down
                         onIncreasePortion = { cameraViewModel.increasePortion() },
                         onDecreasePortion = { cameraViewModel.decreasePortion() },
                         onFixResults = { cameraViewModel.analyzeImage() },
                         onConfirm = {
-                            // Return it to the Activity
                             val stream = ByteArrayOutputStream()
                             bmp.compress(Bitmap.CompressFormat.JPEG, 100, stream)
                             val bytes = stream.toByteArray()

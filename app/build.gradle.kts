@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.compose.compiler)
+    id("org.jetbrains.kotlin.kapt")
+    id("kotlin-kapt") // <-- Must be added
 }
 
 android {
@@ -70,6 +72,10 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.jackson.module.kotlin)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.threetenabp)
+    kapt(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

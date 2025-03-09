@@ -9,7 +9,8 @@ data class CameraUiState(
     val previewUseCase: Preview? = null,
     val capturedBitmap: Bitmap? = null,
     val portion: Int = 1,
-    val foodAnalysisData: FoodAnalysisDto? = null
+    val foodAnalysisData: FoodAnalysisDto? = null,
+    val analyzing: Boolean = false
 )
 
 enum class CameraScreenState {

@@ -44,33 +44,3 @@ fun CaptureButton(
         )
     }
 }
-
-@Composable
-fun TitleAndAmountRow(
-    title: String,
-    amount: Int,
-    onIncrease: () -> Unit,
-    onDecrease: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = title,
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier
-                .weight(0.65f)
-                .padding(start = 8.dp, end = 8.dp)
-        )
-        AmountSelector(
-            amount = amount,
-            onIncrease = onIncrease,
-            onDecrease = onDecrease,
-            modifier = Modifier.weight(0.35f)
-        )
-    }
-}
-
