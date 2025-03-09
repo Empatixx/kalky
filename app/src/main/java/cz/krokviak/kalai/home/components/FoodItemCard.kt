@@ -40,8 +40,8 @@ fun FoodItemCard(foodItem: FoodItemEntity) {
                 contentDescription = "Food image",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .width(150.dp)
-                    .height(150.dp)
+                    .width(125.dp)
+                    .height(125.dp)
                     .clip(RoundedCornerShape(topStart = 16.dp, bottomStart = 16.dp))
             )
 
@@ -79,7 +79,7 @@ fun FoodItemCard(foodItem: FoodItemEntity) {
                     // Protein
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
-                            imageVector = ImageVector.vectorResource(R.drawable.meat_svgrepo_com),
+                            imageVector = ImageVector.vectorResource(R.drawable.chicken_leg),
                             contentDescription = "Protein",
                             modifier = Modifier.size(24.dp),
                             tint = colorResource(id = R.color.proteinColor)

@@ -43,6 +43,7 @@ import cz.krokviak.kalai.home.components.BottomNavBar
 import cz.krokviak.kalai.home.components.DonutChart
 import cz.krokviak.kalai.home.components.NutrientCard
 import cz.krokviak.kalai.home.components.RecentlyAddedList
+import kotlin.math.absoluteValue
 
 @Composable
 fun MainScreen(
@@ -87,6 +88,18 @@ fun MainScreen(
     }
 }
 
+fun calorieLabel(calDifference: Int): String {
+    val label = if (calDifference > 0) "kcal zbývá" else "kcal přesaženo"
+    return label;
+}
+fun micronutrientLabel(microDiff: Int, microMax: Int): String {
+    if (microDiff > 0) {
+        return "Zbývá do cíle"
+    } else {
+        return "Přesah od cíle"
+    }
+}
+
 @Composable
 fun MyScreenContent(
     modifier: Modifier = Modifier,
@@ -95,7 +108,7 @@ fun MyScreenContent(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(24.dp)
+            .padding(top = 24.dp, start = 24.dp, end = 24.dp, bottom = 0.dp)
     ) {
         // Card: "Calories left" + Donut chart
         OutlinedCard(
@@ -110,16 +123,15 @@ fun MyScreenContent(
                 modifier = Modifier.padding(32.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Left side: Text content
                 Column(
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(
-                        text = "${uiState.caloriesLeft()}",
+                        text = "${uiState.calorieDifference().absoluteValue}",
                         fontSize = 48.sp,
                         fontWeight = FontWeight.Bold
                     )
-                    Text(text = "kcal zbývá")
+                    Text(text = calorieLabel(uiState.calorieDifference()))
                 }
 
                 // Right side: Donut chart
@@ -129,7 +141,7 @@ fun MyScreenContent(
                 ) {
                     DonutChart(
                         modifier = Modifier.fillMaxSize(),
-                        percentage = 0.6f, // Example percentage
+                        percentage = uiState.calorieRatio(),
                         activeColor = Color.Black,
                         centerIcon = Icons.Outlined.LocalFireDepartment,
                         centerIconSize = 32.dp,
@@ -147,24 +159,30 @@ fun MyScreenContent(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             NutrientCard(
-                amount = "${uiState.proteinLeft()}g",
-                description = "Bilkoviny",
-                iconResId = R.drawable.meat_svgrepo_com,
-                donutColor = colorResource(id = R.color.proteinColor)
+                amount = "${uiState.proteinDifference().absoluteValue}g",
+                aboveDescription = "Bilkoviny",
+                belowDescription = micronutrientLabel(uiState.proteinDifference(), uiState.maxProtein),
+                iconResId = R.drawable.chicken_leg,
+                donutColor = colorResource(id = R.color.proteinColor),
+                percentage = uiState.proteinRatio()
             )
             Spacer(modifier = Modifier.width(8.dp))
             NutrientCard(
-                amount = "${uiState.carbsLeft()}g",
-                description = "Sacharidy",
+                amount = "${uiState.carbsDifference().absoluteValue}g",
+                aboveDescription = "Sacharidy",
+                belowDescription = micronutrientLabel(uiState.carbsDifference(), uiState.maxCarbs),
                 iconResId = R.drawable.wheat,
-                donutColor = colorResource(id = R.color.carbsColor)
+                donutColor = colorResource(id = R.color.carbsColor),
+                percentage = uiState.carbsRatio()
             )
             Spacer(modifier = Modifier.width(8.dp))
             NutrientCard(
-                amount = "${uiState.fatsLeft()}g",
-                description = "Tuky",
+                amount = "${uiState.fatsDifference().absoluteValue}g",
+                aboveDescription = "Tuky",
+                belowDescription = micronutrientLabel(uiState.fatsDifference(), uiState.maxFats),
                 iconResId = R.drawable.avocado,
-                donutColor = colorResource(id = R.color.fatColor)
+                donutColor = colorResource(id = R.color.fatColor),
+                percentage = uiState.fatsRatio()
             )
         }
 

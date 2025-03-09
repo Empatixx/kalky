@@ -29,7 +29,7 @@ fun DonutChart(
     inactiveColor: Color = Color(0xFFBDBDBD),
     holeRadius: Float = 80f,
     centerIcon: ImageVector? = null,
-    centerIconSize: Dp = 32.dp
+    centerIconSize: Dp = 32.dp,
 ) {
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
         // AndroidView for MPAndroidChart
@@ -108,6 +108,6 @@ fun buildPieEntries(percentage: Float): List<PieEntry> {
     val remainder = 100f - active
     return listOf(
         PieEntry(active, ""),
-        PieEntry(remainder, "")
+                PieEntry(remainder, "")
     )
 }

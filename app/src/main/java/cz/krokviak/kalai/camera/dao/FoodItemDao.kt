@@ -28,8 +28,12 @@ interface FoodItemDao {
     @Query("SELECT SUM(carbs) FROM food_items WHERE date(createdAt) = :date")
     fun getTotalCarbsForDate(date: String): Int?
 
+    // Get total protein for a specific date
+    @Query("SELECT SUM(protein) FROM food_items WHERE date(createdAt) = :date")
+    fun getTotalProteinForDate(date: String): Int?
+
     @Insert
-    suspend fun insertFoodItem(foodItem: FoodItemEntity): Long
+    fun insertFoodItem(foodItem: FoodItemEntity): Long
 
     @Delete
     fun deleteFoodItem(foodItem: FoodItemEntity)

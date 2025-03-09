@@ -1,7 +1,6 @@
 package cz.krokviak.kalai.common
 
 import androidx.room.TypeConverter
-import org.threeten.bp.LocalDateTime
 import org.threeten.bp.OffsetDateTime
 import org.threeten.bp.format.DateTimeFormatter
 

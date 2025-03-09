@@ -76,13 +76,23 @@ class CameraActivity : AppCompatActivity() {
                     cameraViewModel = cameraViewModel,
                     uiState = uiState,
                     onConfirm = { portion, bytes ->
-
+                        lifecycleScope.launch {
+                            val imageFile = storeImage(bytes)
+                            val foodItem = withContext(Dispatchers.IO) {
+                                createEntity(uiState, imageFile.absolutePath, portion)
+                            }
+                            val intent = Intent().apply {
+                                putExtra("foodEntity", foodItem)
+                            }
+                            setResult(RESULT_OK, intent)
+                            finish()
+                        }
                     }
                 )
             }
         }
     }
-    private suspend fun createEntity(uiState: CameraUiState, path: String, portion: Int): FoodItemEntity{
+    private fun createEntity(uiState: CameraUiState, path: String, portion: Int): FoodItemEntity{
         val foodItem = FoodItemEntity(
             name = uiState.foodAnalysisData?.title ?: "Unknown",
             calories = uiState.foodAnalysisData?.calories ?: 0,
@@ -102,7 +112,7 @@ class CameraActivity : AppCompatActivity() {
         val photoUuid = UUID.randomUUID().toString()
         val photosDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
         val imageFile = File(photosDir, "photo_${photoUuid}.jpg")
-        imageFile.writeBytes(bytes);
+        imageFile.writeBytes(bytes)
         return imageFile
     }
 

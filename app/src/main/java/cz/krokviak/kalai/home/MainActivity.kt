@@ -10,10 +10,12 @@ import androidx.compose.material3.MaterialTheme
 import cz.krokviak.kalai.camera.CameraActivity
 import cz.krokviak.kalai.camera.entities.FoodItemEntity
 import cz.krokviak.kalai.screen.MainScreen
+import org.threeten.bp.LocalDate
 
 class MainActivity : ComponentActivity() {
 
     private val mainViewModel: MainViewModel by viewModels()
+    private var currentDate: LocalDate = LocalDate.now()
 
     // 1) Create a launcher for CameraActivity
     private val cameraResultLauncher =
@@ -33,6 +35,9 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        mainViewModel.loadFoodItemsForDate(currentDate)
+
         setContent {
             MaterialTheme {
                 MainScreen(

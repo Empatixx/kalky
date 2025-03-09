@@ -17,7 +17,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -26,7 +25,9 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun RowScope.NutrientCard(
     amount: String,
-    description: String,
+    aboveDescription: String,
+    belowDescription: String,
+    percentage: Float,
     iconResId: Int,
     donutColor: Color
 ) {
@@ -40,16 +41,20 @@ fun RowScope.NutrientCard(
                 start = 16.dp,
                 top = 16.dp,
                 end = 16.dp,
-                bottom = 16.dp
+                bottom = 0.dp
             ),
             verticalArrangement = Arrangement.spacedBy(1.dp)
         ) {
+            Text(
+                text = aboveDescription,
+                fontSize = 12.sp
+            )
             Text(
                 text = amount,
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = description,
+                text = belowDescription,
                 fontSize = 12.sp
             )
             Box(
@@ -58,7 +63,7 @@ fun RowScope.NutrientCard(
             ) {
                 DonutChart(
                     modifier = Modifier.fillMaxSize(),
-                    percentage = 0.6f,
+                    percentage = percentage,
                     activeColor = donutColor,
                     centerIcon = ImageVector.vectorResource(iconResId),
                     centerIconSize = 24.dp,

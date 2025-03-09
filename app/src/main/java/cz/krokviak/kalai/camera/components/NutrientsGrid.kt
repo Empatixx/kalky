@@ -58,7 +58,7 @@ fun NutrientsGrid(
             PhotoNutrientCard(
                 "Protein",
                 proteinValue,
-                icon = ImageVector.vectorResource(R.drawable.meat_svgrepo_com),
+                icon = ImageVector.vectorResource(R.drawable.chicken_leg),
                 iconTintColor = colorResource(id = R.color.proteinColor),
                 modifier = Modifier.weight(1f)
             )
