@@ -1,10 +1,12 @@
 package cz.krokviak.kalai.home
 
 import cz.krokviak.kalai.camera.entities.FoodItemEntity
-import kotlin.math.abs
 
 
 data class MainUiState(
+    val currentScene: Scene = Scene.HOME,
+    val analyticsRange: AnalyticsRange = AnalyticsRange.WEEK,
+    val dailyStats: List<DailyStats> = emptyList(), // hypothetical data source
     val selectedBottomNavItem: Int = 0,
     val maxCalories: Int = 2250,     // Maximum calorie goal
     val currentCalories: Int = 0,    // Current calories consumed
@@ -30,4 +32,13 @@ data class MainUiState(
         if (max <= 0) return 0f
         return (current.toFloat() / max.toFloat()).coerceIn(0f, 1f)
     }
+}
+// A simple data class for each day's macros
+data class DailyStats(
+    val dayLabel: String, // e.g. "M", "T", "W" or a date string
+    val protein: Int,
+    val carbs: Int,
+    val fat: Int
+) {
+    val totalCalories: Int get() = protein * 4 + carbs * 4 + fat * 9
 }

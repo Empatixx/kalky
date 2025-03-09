@@ -14,9 +14,17 @@ import org.threeten.bp.format.DateTimeFormatter
 
 class MainViewModel : ViewModel() {
 
-    private val _uiState = MutableStateFlow(MainUiState())
+    private val _uiState = MutableStateFlow(MainUiState(
+        dailyStats = generateFakeDailyStats(7) // e.g. start with a week by default
+
+    ))
     val uiState: StateFlow<MainUiState> = _uiState
 
+    fun onSceneSelected(scene: Scene) {
+        _uiState.update {
+            it.copy(currentScene = scene)
+        }
+    }
     fun onBottomNavItemSelected(index: Int) {
         _uiState.update { it.copy(selectedBottomNavItem = index) }
     }
@@ -67,6 +75,36 @@ class MainViewModel : ViewModel() {
                     currentProtein = totalProtein
                 )
             }
+        }
+    }
+
+    fun onAnalyticsRangeChange(range: AnalyticsRange) {
+        _uiState.update { current ->
+            // For demonstration, just generate new data
+            val days = when (range) {
+                AnalyticsRange.WEEK -> 7
+                AnalyticsRange.TWO_WEEKS -> 14
+                AnalyticsRange.THREE_WEEKS -> 21
+                AnalyticsRange.MONTH -> 30
+            }
+            current.copy(
+                analyticsRange = range,
+                dailyStats = generateFakeDailyStats(days)
+            )
+        }
+    }
+
+    // For demonstration only, returns random stats
+    private fun generateFakeDailyStats(days: Int): List<DailyStats> {
+        val labels = listOf("M", "T", "W", "T", "F", "S", "S")
+        return (0 until days).map { i ->
+            val label = if (days == 7) labels[i % 7] else "Day ${i+1}"
+            DailyStats(
+                dayLabel = label,
+                protein = (20..100).random(),
+                carbs = (50..200).random(),
+                fat = (10..80).random()
+            )
         }
     }
 }

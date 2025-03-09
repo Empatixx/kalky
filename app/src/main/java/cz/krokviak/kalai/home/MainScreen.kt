@@ -37,8 +37,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cz.krokviak.kalai.R
+import cz.krokviak.kalai.home.AnalyticsScene
 import cz.krokviak.kalai.home.MainUiState
 import cz.krokviak.kalai.home.MainViewModel
+import cz.krokviak.kalai.home.Scene
 import cz.krokviak.kalai.home.components.BottomNavBar
 import cz.krokviak.kalai.home.components.DonutChart
 import cz.krokviak.kalai.home.components.NutrientCard
@@ -55,8 +57,8 @@ fun MainScreen(
     Scaffold(
         bottomBar = {
             BottomNavBar(
-                selectedItem = uiState.selectedBottomNavItem,
-                onItemSelected = mainViewModel::onBottomNavItemSelected
+                currentScene = uiState.currentScene,
+                onSceneSelected = mainViewModel::onSceneSelected
             )
         },
         floatingActionButton = {
@@ -81,10 +83,14 @@ fun MainScreen(
         },
         floatingActionButtonPosition = FabPosition.End
     ) { innerPadding ->
-        MyScreenContent(
-            modifier = Modifier.padding(innerPadding),
-            uiState = uiState
-        )
+        when (uiState.currentScene) {
+            Scene.HOME -> MyScreenContent(
+                modifier = Modifier.padding(innerPadding),
+                uiState = uiState
+            )
+            Scene.SETTINGS -> Text("Settings")
+            Scene.ANALYTICS -> AnalyticsScene(mainViewModel)
+        }
     }
 }
 

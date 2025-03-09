@@ -43,6 +43,19 @@ fun DonutChart(
                     holeRadius = holeRadius
                 )
             },
+            update = { chart ->
+                // Update the chart whenever percentage changes
+                val entries = buildPieEntries(percentage)
+                val dataSet = PieDataSet(entries, "").apply {
+                    colors = listOf(
+                        activeColor.toArgb(),
+                        inactiveColor.toArgb()
+                    )
+                    setDrawValues(false)
+                }
+                chart.data = PieData(dataSet)
+                chart.invalidate()  // force redraw
+            },
             modifier = Modifier.matchParentSize()
         )
 

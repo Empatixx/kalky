@@ -17,30 +17,36 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import cz.krokviak.kalai.home.Scene
 
 @Composable
 fun BottomNavBar(
-    selectedItem: Int,
-    onItemSelected: (Int) -> Unit
+    currentScene: Scene,
+    onSceneSelected: (Scene) -> Unit
 ) {
-    val items = listOf(
-        Icons.Outlined.Home to "Výchozí",
-        Icons.Outlined.Analytics to "Analýza",
-        Icons.Outlined.Settings to "Nastavení"
+    // A list pairing each Scene with its associated icon and label
+    val sceneItems = listOf(
+        Scene.HOME to (Icons.Outlined.Home to "Výchozí"),
+        Scene.ANALYTICS to (Icons.Outlined.Analytics to "Analýza"),
+        Scene.SETTINGS to (Icons.Outlined.Settings to "Nastavení")
     )
 
-    NavigationBar(modifier = Modifier) {
-        Spacer(modifier = Modifier.width(8.dp)) // push items to the right
+    NavigationBar {
+        // Spacer to push items slightly to the right, if desired
+        Spacer(modifier = Modifier.width(8.dp))
 
-        items.forEachIndexed { index, (icon, label) ->
-            val alphaValue = if (selectedItem == index) 1f else 0.5f
+        sceneItems.forEach { (scene, iconLabelPair) ->
+            val (icon, label) = iconLabelPair
+            val isSelected = (scene == currentScene)
+            val alphaValue = if (isSelected) 1f else 0.5f
+
             NavigationBarItem(
-                selected = (selectedItem == index),
-                onClick = { onItemSelected(index) },
+                selected = isSelected,
+                onClick = { onSceneSelected(scene) },
                 icon = {
                     Icon(
                         imageVector = icon,
-                        contentDescription = null,
+                        contentDescription = label,
                         modifier = Modifier
                             .size(24.dp)
                             .alpha(alphaValue)
