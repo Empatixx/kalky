@@ -73,6 +73,7 @@ dependencies {
     implementation(libs.jackson.module.kotlin)
     implementation(libs.androidx.room.runtime)
     implementation(libs.threetenabp)
+    implementation(libs.github.cupertino)
     kapt(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
     testImplementation(libs.junit)

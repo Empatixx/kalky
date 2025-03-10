@@ -129,4 +129,10 @@ class MainViewModel : ViewModel() {
         return data
     }
 
+    fun setAnalyticsRange(range: AnalyticsRange) {
+        _uiState.update { currentState ->
+            currentState.copy(analyticsRange = range)
+        }
+    }
+
 }

@@ -22,7 +22,7 @@ import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 
 @Composable
-fun DonutChart(
+fun MacroNutrientDonutChart(
     modifier: Modifier = Modifier,
     percentage: Float,
     activeColor: Color,

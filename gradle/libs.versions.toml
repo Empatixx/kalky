@@ -8,6 +8,7 @@ cameraVideo = "1.4.1"
 cameraView = "1.4.1"
 coilCompose = "3.1.0"
 converterJackson = "2.9.0"
+githubCupertino = "0.1.0-alpha04"
 jacksonModuleKotlin = "2.13.0"
 kotlin = "2.1.10"
 coreKtx = "1.15.0"
@@ -54,6 +55,7 @@ androidx-ui-viewbinding = { module = "androidx.compose.ui:ui-viewbinding", versi
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
 converter-jackson = { module = "com.squareup.retrofit2:converter-jackson", version.ref = "converterJackson" }
 dev-langchain4j-open-ai = { module = "dev.langchain4j:langchain4j-open-ai", version.ref = "langchain4jOpenAiVersion" }
+github-cupertino = { module = "io.github.alexzhirkevich:cupertino", version.ref = "githubCupertino" }
 jackson-module-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jacksonModuleKotlin" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }

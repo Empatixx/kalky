@@ -42,8 +42,8 @@ import cz.krokviak.kalai.home.MainUiState
 import cz.krokviak.kalai.home.MainViewModel
 import cz.krokviak.kalai.home.Scene
 import cz.krokviak.kalai.home.components.BottomNavBar
-import cz.krokviak.kalai.home.components.DonutChart
-import cz.krokviak.kalai.home.components.NutrientCard
+import cz.krokviak.kalai.home.components.MacroNutrientDonutChart
+import cz.krokviak.kalai.home.components.MacroNutrientCard
 import cz.krokviak.kalai.home.components.RecentlyAddedList
 import kotlin.math.absoluteValue
 
@@ -145,7 +145,7 @@ fun MyScreenContent(
                     modifier = Modifier.size(120.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    DonutChart(
+                    MacroNutrientDonutChart(
                         modifier = Modifier.fillMaxSize(),
                         percentage = uiState.calorieRatio(),
                         activeColor = Color.Black,
@@ -164,7 +164,7 @@ fun MyScreenContent(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            NutrientCard(
+            MacroNutrientCard(
                 amount = "${uiState.proteinDifference().absoluteValue}g",
                 aboveDescription = "Bilkoviny",
                 belowDescription = micronutrientLabel(uiState.proteinDifference(), uiState.maxProtein),
@@ -173,7 +173,7 @@ fun MyScreenContent(
                 percentage = uiState.proteinRatio()
             )
             Spacer(modifier = Modifier.width(8.dp))
-            NutrientCard(
+            MacroNutrientCard(
                 amount = "${uiState.carbsDifference().absoluteValue}g",
                 aboveDescription = "Sacharidy",
                 belowDescription = micronutrientLabel(uiState.carbsDifference(), uiState.maxCarbs),
@@ -182,7 +182,7 @@ fun MyScreenContent(
                 percentage = uiState.carbsRatio()
             )
             Spacer(modifier = Modifier.width(8.dp))
-            NutrientCard(
+            MacroNutrientCard(
                 amount = "${uiState.fatsDifference().absoluteValue}g",
                 aboveDescription = "Tuky",
                 belowDescription = micronutrientLabel(uiState.fatsDifference(), uiState.maxFats),

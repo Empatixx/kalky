@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun RowScope.NutrientCard(
+fun RowScope.MacroNutrientCard(
     amount: String,
     aboveDescription: String,
     belowDescription: String,
@@ -61,7 +61,7 @@ fun RowScope.NutrientCard(
                 modifier = Modifier.size(100.dp),
                 contentAlignment = Alignment.Center
             ) {
-                DonutChart(
+                MacroNutrientDonutChart(
                     modifier = Modifier.fillMaxSize(),
                     percentage = percentage,
                     activeColor = donutColor,

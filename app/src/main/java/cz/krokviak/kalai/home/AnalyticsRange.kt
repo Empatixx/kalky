@@ -4,5 +4,5 @@ enum class AnalyticsRange {
     WEEK,
     TWO_WEEKS,
     THREE_WEEKS,
-    MONTH
+    MONTH;
 }
