@@ -96,9 +96,9 @@ class MainViewModel : ViewModel() {
 
     // For demonstration only, returns random stats
     private fun generateFakeDailyStats(days: Int): List<DailyStats> {
-        val labels = listOf("M", "T", "W", "T", "F", "S", "S")
+        val labels = listOf("Po", "Út", "St", "Čt", "Pá", "So", "Ne")
         return (0 until days).map { i ->
-            val label = if (days == 7) labels[i % 7] else "Day ${i+1}"
+            val label = if (days == 7) labels[i % 7] else "Den ${i+1}"
             DailyStats(
                 dayLabel = label,
                 protein = (20..100).random(),

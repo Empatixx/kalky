@@ -1,24 +1,32 @@
 package cz.krokviak.kalai.home
 
 import android.view.ViewGroup
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.ContextCompat
+import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.data.BarData
+import com.github.mikephil.charting.data.BarDataSet
+import com.github.mikephil.charting.data.BarEntry
+import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.formatter.ValueFormatter
+import com.github.mikephil.charting.highlight.Highlight
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import cz.krokviak.kalai.R
+import java.security.KeyStore
 
 @Composable
 fun AnalyticsScene(
@@ -29,87 +37,73 @@ fun AnalyticsScene(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(24.dp)
     ) {
-        // 1) Range selector row (non-rounded toggles)
-        RangeSelectorRow(
-            selectedRange = uiState.analyticsRange,
-            onRangeSelected = mainViewModel::onAnalyticsRangeChange
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // 2) Outlined card that holds daily average + chart (400dp tall)
         OutlinedCard(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(400.dp),
-            shape = RoundedCornerShape(16.dp),
+                .height(300.dp),
             border = CardDefaults.outlinedCardBorder()
         ) {
-            // Inside the card, a Column for the daily average + the chart
+
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        // 1. Card holding the chart
+        OutlinedCard(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(300.dp),
+            border = CardDefaults.outlinedCardBorder()
+        ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(16.dp)
             ) {
-                // Show only Denní průměr kalorií
-                if (uiState.dailyStats.isNotEmpty()) {
-                    val totalCals = uiState.dailyStats.sumOf { it.totalCalories }
-                    val avgCals = totalCals / uiState.dailyStats.size
+                // 2. Row above the chart with two columns
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    // Left Column
+                    Column(
+                        horizontalAlignment = Alignment.Start
+                    ) {
+                        Text(
+                            text = "1000",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "Celkem kalorií",
+                            fontSize = 16.sp,
+                        )
+                    }
 
-                    Text(
-                        text = "Denní průměr kalorií: $avgCals",
-                        style = MaterialTheme.typography.titleMedium
-                    )
+                    // Right Column
+                    Column(
+                        horizontalAlignment = Alignment.End
+                    ) {
+                        Text(
+                            text = "2000",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "Průměr kalorií",
+                            fontSize = 16.sp,
+                        )
+                    }
                 }
 
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // 3) MPAndroidChart-based stacked bar chart
+                // 3. The actual chart Composable
                 MPACStackedBarChart(
                     stats = uiState.dailyStats,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .weight(1f) // allow chart to expand
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun RangeSelectorRow(
-    selectedRange: AnalyticsRange,
-    onRangeSelected: (AnalyticsRange) -> Unit
-) {
-    val items = listOf(
-        AnalyticsRange.WEEK to "WEEK",
-        AnalyticsRange.TWO_WEEKS to "2 WEEKS",
-        AnalyticsRange.THREE_WEEKS to "3 WEEKS",
-        AnalyticsRange.MONTH to "1 MONTH"
-    )
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 8.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ) {
-        items.forEach { (range, label) ->
-            val isSelected = (selectedRange == range)
-            Box(
-                modifier = Modifier
-                    .padding(4.dp)
-                    .clip(RoundedCornerShape(0.dp))  // No corner rounding
-                    .background(if (isSelected) Color.Black else Color.LightGray)
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-                    .clickable { onRangeSelected(range) },
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = label,
-                    color = Color.White
+                        .weight(1f)
                 )
             }
         }
@@ -122,99 +116,112 @@ fun MPACStackedBarChart(
     modifier: Modifier = Modifier
 ) {
     AndroidView(
+        modifier = modifier,
         factory = { context ->
-            com.github.mikephil.charting.charts.BarChart(context).apply {
+
+            // 1. Create and configure the BarChart
+            val chart = BarChart(context).apply {
                 layoutParams = ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT
                 )
 
-                // Remove chart description
-                description.isEnabled = false
-
-                // Disable pinch zoom and all touches
-                setPinchZoom(false)
-                setTouchEnabled(false)
-
-                // Remove grid background
-                setDrawGridBackground(false)
-
-                // Remove legend
+                // Chart appearance and interaction
                 legend.isEnabled = false
-
-                // X Axis
-                xAxis.position = XAxis.XAxisPosition.BOTTOM
-                xAxis.setDrawGridLines(false)
-                xAxis.setDrawAxisLine(false)  // remove bottom axis line
-                xAxis.textSize = 14f // bigger text
-
-                // Y Axis
+                description.isEnabled = false
+                setDrawGridBackground(false)
                 axisRight.isEnabled = false
-                axisLeft.setDrawGridLines(false)
-                axisLeft.setDrawAxisLine(false)  // remove left axis line
-                axisLeft.axisMinimum = 0f
-                axisLeft.axisMaximum = 2000f     // you can adjust if needed
-                axisLeft.granularity = 500f
-                axisLeft.labelCount = 4  // We want 4 “ticks” ideally: 0, 500, 1000, 2000
-                axisLeft.textSize = 14f  // bigger text
 
-                // We'll provide a custom ValueFormatter for axisLeft
-                axisLeft.valueFormatter = object : ValueFormatter() {
-                    override fun getFormattedValue(value: Float): String {
-                        return when (value) {
-                            0f -> "0"
-                            500f -> "500"
-                            1000f -> "1000"
-                            2000f -> "2000"
-                            else -> ""
+                setTouchEnabled(true)
+                isHighlightPerTapEnabled = true
+                setPinchZoom(false)
+                setDoubleTapToZoomEnabled(false)
+                setDragEnabled(false)
+                setScaleEnabled(false)
+
+                // Marker (tooltip) for total calories
+                marker = DailyMarkerView(context, stats)
+                setDrawMarkers(true)
+
+                // Highlight entire bar instead of single stacked segment
+                setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
+                    override fun onValueSelected(e: Entry?, h: Highlight?) {
+                        if (h != null) {
+                            val entireBarHighlight = Highlight(h.x, h.dataSetIndex, -1)
+                            highlightValue(entireBarHighlight, false)
+                        }
+                    }
+                    override fun onNothingSelected() {}
+                })
+
+                // 2. Configure the X-axis
+                xAxis.apply {
+                    position = XAxis.XAxisPosition.BOTTOM
+                    setDrawGridLines(false)
+                    setDrawAxisLine(false)
+                    granularity = 1f
+                    labelCount = stats.size
+                    textSize = 14f  // Bigger X-axis label text size
+
+                    valueFormatter = object : ValueFormatter() {
+                        override fun getFormattedValue(value: Float): String {
+                            val index = value.toInt()
+                            return stats.getOrNull(index)?.dayLabel ?: ""
                         }
                     }
                 }
-            }
-        },
-        update = { chart ->
-            // Build stacked bars in order: Carbs, Fat, Protein
-            val entries = stats.mapIndexed { index, dailyStats ->
-                val carbsCals = dailyStats.carbs * 4f
-                val fatCals   = dailyStats.fat * 9f
-                val proteinCals = dailyStats.protein * 4f
-                com.github.mikephil.charting.data.BarEntry(
-                    index.toFloat(),
-                    floatArrayOf(carbsCals, fatCals, proteinCals)
-                )
-            }
 
-            // Single DataSet for the stacked bars
-            val dataSet = com.github.mikephil.charting.data.BarDataSet(entries, "").apply {
-                setDrawValues(false) // hide value labels on top of bars
-                setColors(
-                    intArrayOf(
-                        R.color.carbsColor,  // Carbs
-                        R.color.fatColor,    // Fat
-                        R.color.proteinColor // Protein
-                    ),
-                    chart.context
-                )
-                // We removed legend, so no stack labels needed:
-                // stackLabels = arrayOf("Carbs", "Fat", "Protein")
-            }
+                // 3. Configure the Left Axis
+                axisLeft.apply {
+                    setDrawGridLines(false)
+                    setDrawAxisLine(false)
+                    axisMinimum = 0f
+                    textSize = 14f  // Bigger Left-axis label text size
 
-            val barData = com.github.mikephil.charting.data.BarData(dataSet).apply {
-                barWidth = 0.6f
-            }
+                    // Automatically determine maximum Y
+                    val maxCalories = stats.maxOfOrNull { it.totalCalories } ?: 0
+                    val roundedMax = ((maxCalories + 499) / 500) * 500
+                    axisMaximum = roundedMax.toFloat().coerceAtLeast(2000f)
 
-            chart.data = barData
-
-            // Provide custom labels for X axis (day labels)
-            chart.xAxis.valueFormatter = object : ValueFormatter() {
-                override fun getFormattedValue(value: Float): String {
-                    val idx = value.toInt().coerceIn(stats.indices)
-                    return stats[idx].dayLabel
+                    granularity = 500f
+                    setLabelCount((axisMaximum / 500f).toInt() + 1, true)
                 }
             }
 
-            chart.invalidate() // Refresh the chart
-        },
-        modifier = modifier
+            // 4. Build the data entries for stacked bars
+            val barEntries = stats.mapIndexed { index, dayStat ->
+                val proteinValue = dayStat.protein * 4f  // Bílkoviny
+                val fatValue = dayStat.fat * 9f          // Tuky
+                val carbsValue = dayStat.carbs * 4f      // Sacharidy
+
+                BarEntry(
+                    index.toFloat(),
+                    floatArrayOf(proteinValue, carbsValue, fatValue)
+                )
+            }
+
+            // 5. Create the BarDataSet
+            val dataSet = BarDataSet(barEntries, "Macros").apply {
+                setDrawValues(false)
+                colors = listOf(
+                    ContextCompat.getColor(context, R.color.proteinColor),
+                    ContextCompat.getColor(context, R.color.carbsColor),
+                    ContextCompat.getColor(context, R.color.fatColor)
+                )
+                stackLabels = arrayOf("Bílkoviny", "Sacharidy", "Tuky")
+            }
+
+            // 6. Prepare the BarData
+            val barData = BarData(dataSet).apply {
+                barWidth = 0.5f
+            }
+
+            // 7. Finalize and refresh the chart
+            chart.data = barData
+            chart.invalidate()
+            chart
+        }
     )
 }
+
+

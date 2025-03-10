@@ -13,7 +13,7 @@ interface FoodItemDao {
     fun getAllFoodItems(): List<FoodItemEntity>
 
     // Select all food items for a specific date (comparing only the date portion of createdAt)
-    @Query("SELECT * FROM food_items WHERE date(createdAt) = :date")
+    @Query("SELECT * FROM food_items WHERE date(createdAt) = :date ORDER BY createdAt DESC")
     fun getFoodItemsForDate(date: String): List<FoodItemEntity>
 
     // Get total calories for a specific date
