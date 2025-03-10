@@ -107,4 +107,26 @@ class MainViewModel : ViewModel() {
             )
         }
     }
+
+    data class WeightPoint(
+        val dayIndex: Int, // 0..N
+        val weightKg: Float
+    )
+
+    // Generate fake daily weights in a given range
+    fun generateFakeWeightData(days: Int): List<WeightPoint> {
+        val startWeight = (60..80).random().toFloat()
+        val data = mutableListOf<WeightPoint>()
+
+        // We'll let weight fluctuate randomly +/- 0.5 kg each day
+        var currentWeight = startWeight
+
+        for (i in 0 until days) {
+            val fluctuation = listOf(-0.5f, 0f, 0.5f).random()
+            currentWeight = (currentWeight + fluctuation).coerceIn(50f, 120f) // clamp
+            data.add(WeightPoint(dayIndex = i, weightKg = currentWeight))
+        }
+        return data
+    }
+
 }

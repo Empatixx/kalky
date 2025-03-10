@@ -17,11 +17,17 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import com.github.mikephil.charting.charts.BarChart
+import com.github.mikephil.charting.charts.PieChart
+import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.PieData
+import com.github.mikephil.charting.data.PieDataSet
+import com.github.mikephil.charting.data.PieEntry
+import com.github.mikephil.charting.formatter.PercentFormatter
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
@@ -39,16 +45,25 @@ fun AnalyticsScene(
             .fillMaxSize()
             .padding(24.dp)
     ) {
+        // Donut Chart card
         OutlinedCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(300.dp),
             border = CardDefaults.outlinedCardBorder()
         ) {
-
+            // Donut Chart Composable
+            MPACDonutChart(
+                stats = uiState.dailyStats,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+            )
         }
+
         Spacer(modifier = Modifier.height(16.dp))
-        // 1. Card holding the chart
+
+        // Stacked Bar Chart card
         OutlinedCard(
             modifier = Modifier
                 .fillMaxWidth()
@@ -60,7 +75,6 @@ fun AnalyticsScene(
                     .fillMaxSize()
                     .padding(16.dp)
             ) {
-                // 2. Row above the chart with two columns
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -68,9 +82,7 @@ fun AnalyticsScene(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     // Left Column
-                    Column(
-                        horizontalAlignment = Alignment.Start
-                    ) {
+                    Column(horizontalAlignment = Alignment.Start) {
                         Text(
                             text = "1000",
                             fontSize = 24.sp,
@@ -78,14 +90,11 @@ fun AnalyticsScene(
                         )
                         Text(
                             text = "Celkem kalorií",
-                            fontSize = 16.sp,
+                            fontSize = 16.sp
                         )
                     }
-
                     // Right Column
-                    Column(
-                        horizontalAlignment = Alignment.End
-                    ) {
+                    Column(horizontalAlignment = Alignment.End) {
                         Text(
                             text = "2000",
                             fontSize = 24.sp,
@@ -93,12 +102,12 @@ fun AnalyticsScene(
                         )
                         Text(
                             text = "Průměr kalorií",
-                            fontSize = 16.sp,
+                            fontSize = 16.sp
                         )
                     }
                 }
 
-                // 3. The actual chart Composable
+                // Stacked Bar Chart
                 MPACStackedBarChart(
                     stats = uiState.dailyStats,
                     modifier = Modifier
@@ -109,6 +118,7 @@ fun AnalyticsScene(
         }
     }
 }
+
 
 @Composable
 fun MPACStackedBarChart(
@@ -224,4 +234,94 @@ fun MPACStackedBarChart(
     )
 }
 
+
+
+@Composable
+fun MPACDonutChart(
+    stats: List<DailyStats>,
+    modifier: Modifier = Modifier
+) {
+    AndroidView(
+        modifier = modifier,
+        factory = { context ->
+
+            // 1. Create and configure the PieChart
+            val pieChart = PieChart(context).apply {
+                layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+                )
+
+                // Disable description label
+                description.isEnabled = false
+
+                // Donut style
+                isDrawHoleEnabled = true
+                holeRadius = 50f
+                setUsePercentValues(true)
+
+                // Enable/disable labels on slices
+                setDrawEntryLabels(true)
+
+                // Disable legend (optional)
+                legend.isEnabled = false
+
+                // ---- Disable interactions ----
+                setTouchEnabled(false)
+                isHighlightPerTapEnabled = false
+                setClickable(false)
+
+                // Ensure entry labels (the slice "titles") are black
+                setEntryLabelColor(android.graphics.Color.BLACK)
+                setEntryLabelTextSize(14f)
+            }
+
+            // 2. Calculate total calories for each macro across all days
+            val totalProteinCals = stats.sumOf { it.protein * 4 }
+            val totalFatCals = stats.sumOf { it.fat * 9 }
+            val totalCarbsCals = stats.sumOf { it.carbs * 4 }
+
+            // 3. Create PieEntries for each macro (only if > 0)
+            val entries = ArrayList<PieEntry>()
+            if (totalProteinCals > 0) {
+                entries.add(PieEntry(totalProteinCals.toFloat(), "Bílkoviny"))
+            }
+            if (totalCarbsCals > 0) {
+                entries.add(PieEntry(totalCarbsCals.toFloat(), "Sacharidy"))
+            }
+            if (totalFatCals > 0) {
+                entries.add(PieEntry(totalFatCals.toFloat(), "Tuky"))
+            }
+
+            // 4. Create a PieDataSet with your three colors
+            val dataSet = PieDataSet(entries, "Makra").apply {
+                // Reuse colors from your barchart
+                colors = listOf(
+                    ContextCompat.getColor(context, R.color.proteinColor), // Bílkoviny
+                    ContextCompat.getColor(context, R.color.carbsColor),   // Sacharidy
+                    ContextCompat.getColor(context, R.color.fatColor)      // Tuky
+                )
+                sliceSpace = 2f
+
+                // Show values on slices
+                setDrawValues(true)
+                // Format them as percentages
+                setValueFormatter(PercentFormatter(pieChart))
+                // Set text size/color for slice values
+                valueTextSize = 14f
+                valueTextColor = android.graphics.Color.BLACK
+            }
+
+            // 5. Create PieData and set it to pieChart
+            val pieData = PieData(dataSet).apply {
+                setValueTextSize(24f)
+                setValueTextColor(android.graphics.Color.BLACK)
+            }
+
+            pieChart.data = pieData
+            pieChart.invalidate() // Refresh the chart
+            pieChart
+        }
+    )
+}
 
