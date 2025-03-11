@@ -21,9 +21,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -116,6 +119,7 @@ fun micronutrientLabel(microDiff: Int, microMax: Int): String {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyScreenContent(
     modifier: Modifier = Modifier,
@@ -131,6 +135,8 @@ fun MyScreenContent(
     ) {
 
         item {
+            cz.krokviak.kalai.home.components.DatePicker()
+
             CalorieCard(uiState)
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -177,7 +183,7 @@ fun MyScreenContent(
             }
             Spacer(modifier = Modifier.height(12.dp))
             CupertinoText(
-                text = "Nedávno přidané",
+                text = "Přidáno dnes",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
             )

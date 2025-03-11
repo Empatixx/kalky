@@ -2,8 +2,12 @@ package cz.krokviak.kalai.home.components
 
 import android.content.Context
 import android.content.Intent
+import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -41,6 +45,7 @@ import io.github.alexzhirkevich.cupertino.CupertinoIcon
 import io.github.alexzhirkevich.cupertino.CupertinoText
 import io.github.alexzhirkevich.cupertino.ExperimentalCupertinoApi
 import io.github.alexzhirkevich.cupertino.section.CupertinoSection
+import org.threeten.bp.format.DateTimeFormatter
 
 @Composable
 fun FoodItemCard(foodItem: FoodItemEntity,
@@ -71,7 +76,7 @@ fun FoodItemLoadedCard(foodItem: FoodItemEntity) {
         Row(
             modifier = Modifier.fillMaxWidth()
         ) {
-            // IMAGE
+            // IMAGE with Badge
             Box(
                 modifier = Modifier
                     .width(125.dp)
@@ -84,7 +89,23 @@ fun FoodItemLoadedCard(foodItem: FoodItemEntity) {
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.matchParentSize()
                 )
-
+                // Badge overlay
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(4.dp)
+                        .background(
+                            color = Color.Black.copy(alpha = 0.7f),
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                ) {
+                    CupertinoText(
+                        text = DateTimeFormatter.ofPattern("HH:mm").format(foodItem.createdAt),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.White
+                    )
+                }
             }
 
             // TEXT
@@ -161,6 +182,7 @@ fun FoodItemLoadedCard(foodItem: FoodItemEntity) {
         }
     }
 }
+
 @OptIn(ExperimentalCupertinoApi::class)
 @Composable
 fun FoodItemLoadingCard(foodItem: FoodItemEntity,
@@ -264,12 +286,23 @@ fun FoodItemLoadingCard(foodItem: FoodItemEntity,
 
 @Composable
 fun SkeletonPlaceholder(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
+    val infiniteTransition = rememberInfiniteTransition()
+
+    val animatedColor by infiniteTransition.animateColor(
+        initialValue = Color.Gray.copy(alpha = 0.3f),
+        targetValue = Color.Gray.copy(alpha = 0.7f),
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 1200, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        )
+    )
+
     Box(
         modifier = modifier
             .background(
-                Color.Gray.copy(alpha = 0.3f),
+                animatedColor,
                 shape = RoundedCornerShape(4.dp)
             )
     )
