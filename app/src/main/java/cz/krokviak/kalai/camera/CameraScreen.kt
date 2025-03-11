@@ -14,40 +14,19 @@ import java.io.ByteArrayOutputStream
 fun CameraScreen(
     cameraViewModel: CameraViewModel,
     uiState: CameraUiState,
-    onConfirm: (portion: Int, imageBytes: ByteArray) -> Unit
+    onPictureBytesReady: (ByteArray) -> Unit
 ) {
-    val screenState = uiState.cameraScreenState
-
     Box(modifier = Modifier.fillMaxSize()) {
-        when (screenState) {
-            CameraScreenState.PREVIEW -> {
-                CameraPreviewUI(
-                    previewUseCase = uiState.previewUseCase,
-                    onSurfaceProviderCreated = { previewView ->
-                        uiState.previewUseCase?.setSurfaceProvider(previewView.surfaceProvider)
-                    },
-                    onCaptureClick = { cameraViewModel.takePicture() }
-                )
-            }
-            CameraScreenState.CAPTURED -> {
-                uiState.capturedBitmap?.let { bmp ->
-                    CapturedContentUI(
-                        bitmap = bmp,
-                        analysisData = uiState.foodAnalysisData,
-                        portion = uiState.portion,
-                        analyzeIsLoading = uiState.analyzing,  // <-- Pass it down
-                        onIncreasePortion = { cameraViewModel.increasePortion() },
-                        onDecreasePortion = { cameraViewModel.decreasePortion() },
-                        onFixResults = { cameraViewModel.analyzeImage() },
-                        onConfirm = {
-                            val stream = ByteArrayOutputStream()
-                            bmp.compress(Bitmap.CompressFormat.JPEG, 100, stream)
-                            val bytes = stream.toByteArray()
-                            onConfirm(uiState.portion, bytes)
-                        }
-                    )
+        CameraPreviewUI(
+            previewUseCase = uiState.previewUseCase,
+            onSurfaceProviderCreated = { previewView ->
+                uiState.previewUseCase?.setSurfaceProvider(previewView.surfaceProvider)
+            },
+            onCaptureClick = {
+                cameraViewModel.takePicture { bytes ->
+                    onPictureBytesReady(bytes)
                 }
             }
-        }
+        )
     }
 }

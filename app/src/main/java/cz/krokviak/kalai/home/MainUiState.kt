@@ -1,6 +1,8 @@
 package cz.krokviak.kalai.home
 
 import cz.krokviak.kalai.camera.entities.FoodItemEntity
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 
 data class MainUiState(
@@ -16,13 +18,15 @@ data class MainUiState(
     val currentCarbs: Int = 0,       // Current carbohydrates consumed in grams
     val maxFats: Int = 100,           // Maximum fats in grams
     val currentFats: Int = 0,        // Current fats consumed in grams
-    val recentlyAddedItems: List<FoodItemEntity> = emptyList()
+    val recentlyAddedItems: List<FoodItemEntity> = emptyList(),
+
+    val loadingProgressForItems: Map<Long, Int> = emptyMap()
+
 ) {
     fun calorieDifference(): Int = maxCalories - currentCalories
     fun proteinDifference(): Int = maxProtein - currentProtein
     fun carbsDifference(): Int = maxCarbs - currentCarbs
     fun fatsDifference(): Int = maxFats - currentFats
-
 
     fun calorieRatio(): Float = amountRatio(currentCalories, maxCalories)
     fun proteinRatio(): Float = amountRatio(currentProtein, maxProtein)

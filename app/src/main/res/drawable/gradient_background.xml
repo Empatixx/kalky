@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Item 1: Vertical gradient from top (light gray) to bottom (~30% fade) -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="90"
+            android:startColor="#F5F5F5"
+            android:centerColor="#F5F5F5"
+            android:endColor="#E4F0E8"
+            android:centerY="0.6"
+            android:useLevel="false" />
+        </shape>
+    </item>
+
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:type="radial"
+                android:startColor="#E6FFE6"
+            android:endColor="@android:color/transparent"
+            android:centerX="0.9"
+            android:centerY="0"
+            android:gradientRadius="200dp"
+            />
+        </shape>
+    </item>
+
+</layer-list>

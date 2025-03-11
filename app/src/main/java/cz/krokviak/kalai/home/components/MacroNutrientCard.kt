@@ -1,9 +1,11 @@
 package cz.krokviak.kalai.home.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -21,6 +23,8 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import io.github.alexzhirkevich.cupertino.CupertinoText
+import io.github.alexzhirkevich.cupertino.section.CupertinoSection
 
 @Composable
 fun RowScope.MacroNutrientCard(
@@ -31,32 +35,21 @@ fun RowScope.MacroNutrientCard(
     iconResId: Int,
     donutColor: Color
 ) {
-    OutlinedCard(
-        modifier = Modifier.weight(1f),
+    CupertinoSection (
+        modifier = Modifier.border(width = 1.dp, color = Color.LightGray, shape = RoundedCornerShape(16.dp)).weight(1f),
+        // add border
         shape = RoundedCornerShape(16.dp),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)),
+        contentPadding = PaddingValues(0.dp),
     ) {
         Column(
             modifier = Modifier.padding(
                 start = 16.dp,
-                top = 16.dp,
+                top = 0.dp,
                 end = 16.dp,
-                bottom = 0.dp
+                bottom = 16.dp
             ),
             verticalArrangement = Arrangement.spacedBy(1.dp)
         ) {
-            Text(
-                text = aboveDescription,
-                fontSize = 12.sp
-            )
-            Text(
-                text = amount,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                text = belowDescription,
-                fontSize = 12.sp
-            )
             Box(
                 modifier = Modifier.size(100.dp),
                 contentAlignment = Alignment.Center
@@ -66,10 +59,22 @@ fun RowScope.MacroNutrientCard(
                     percentage = percentage,
                     activeColor = donutColor,
                     centerIcon = ImageVector.vectorResource(iconResId),
-                    centerIconSize = 24.dp,
+                    centerIconSize = 20.dp,
                     holeRadius = 80f
                 )
             }
+            CupertinoText(
+                text = aboveDescription,
+                fontSize = 12.sp
+            )
+            CupertinoText(
+                text = amount,
+                fontWeight = FontWeight.Bold
+            )
+            CupertinoText(
+                text = belowDescription,
+                fontSize = 12.sp
+            )
         }
     }
 }

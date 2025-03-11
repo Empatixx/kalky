@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,24 +34,27 @@ import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import cz.krokviak.kalai.R
 import cz.krokviak.kalai.home.DailyStats
+import io.github.alexzhirkevich.cupertino.ExperimentalCupertinoApi
+import io.github.alexzhirkevich.cupertino.section.CupertinoSection
 
+@OptIn(ExperimentalCupertinoApi::class)
 @Composable
 fun MacroNutrientRatioDonutChart(
     stats: List<DailyStats>,
     modifier: Modifier = Modifier
 ){
-    OutlinedCard(
+    CupertinoSection(
         modifier = modifier
-            .fillMaxWidth(),
-                border = CardDefaults.outlinedCardBorder()
-    ) {
-        // Donut Chart Composable
-        MPACDonutChart(
-            stats = stats,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
-        )
+            .fillMaxWidth()
+            .padding(0.dp),
+        contentPadding = PaddingValues(0.dp),
+        dividerPadding = PaddingValues(0.dp),
+    ){
+        Column(
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            MPACDonutChart(stats = stats)
+        }
     }
 }
 

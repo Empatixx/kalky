@@ -23,12 +23,10 @@ class MainActivity : ComponentActivity() {
             // 2) Check if the result was OK
             if (result.resultCode == RESULT_OK) {
                 val data = result.data
-                data?.let { intent ->
-                    val foodEntity = intent.getSerializableExtra("foodEntity") as? FoodItemEntity
-                    foodEntity?.let {
-                        // 3) Add the food item to the view model
-                        mainViewModel.addFoodItem(it)
-                    }
+                val imageBytes = data?.getByteArrayExtra("imageBytes")
+                if (imageBytes != null) {
+                    // Pass them to the ViewModel to handle
+                    mainViewModel.addFoodItemFromBytes(context = this.application, imageBytes = imageBytes)
                 }
             }
         }

@@ -13,6 +13,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -20,13 +21,16 @@ import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
+import cz.krokviak.kalai.R
+import io.github.alexzhirkevich.cupertino.CupertinoIcon
+import io.github.alexzhirkevich.cupertino.CupertinoText
 
 @Composable
 fun MacroNutrientDonutChart(
     modifier: Modifier = Modifier,
     percentage: Float,
     activeColor: Color,
-    inactiveColor: Color = Color(0xFFBDBDBD),
+    inactiveColor: Color = colorResource(id = R.color.lightBlueGray),
     holeRadius: Float = 80f,
     centerIcon: ImageVector? = null,
     centerIconSize: Dp = 32.dp,
@@ -65,10 +69,10 @@ fun MacroNutrientDonutChart(
                 modifier = Modifier
                     .size(centerIconSize + 16.dp)
                     .clip(CircleShape)
-                    .background(Color.LightGray.copy(alpha = 0.3f)),
+                    .background(colorResource(id = R.color.lightBlueGray)),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(
+                CupertinoIcon(
                     imageVector = centerIcon,
                     tint = activeColor,
                     contentDescription = null,

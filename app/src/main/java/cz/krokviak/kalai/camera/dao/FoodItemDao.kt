@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Delete
 import androidx.room.Query
+import androidx.room.Update
 import cz.krokviak.kalai.camera.entities.FoodItemEntity
 
 @Dao
@@ -34,6 +35,9 @@ interface FoodItemDao {
 
     @Insert
     fun insertFoodItem(foodItem: FoodItemEntity): Long
+
+    @Update
+    fun updateFoodItem(foodItem: FoodItemEntity)
 
     @Delete
     fun deleteFoodItem(foodItem: FoodItemEntity)

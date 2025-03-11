@@ -3,6 +3,7 @@ package cz.krokviak.kalai.home.components
 import android.view.ViewGroup
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,15 +32,22 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import cz.krokviak.kalai.R
 import cz.krokviak.kalai.home.DailyMarkerView
 import cz.krokviak.kalai.home.DailyStats
+import io.github.alexzhirkevich.cupertino.CupertinoText
+import io.github.alexzhirkevich.cupertino.ExperimentalCupertinoApi
+import io.github.alexzhirkevich.cupertino.section.CupertinoSection
 
+@OptIn(ExperimentalCupertinoApi::class)
 @Composable
 fun CalorieBarChart(
     stats: List<DailyStats>,
     modifier: Modifier = Modifier
 ) {
-    OutlinedCard(
-        modifier = modifier.fillMaxWidth(),
-        border = CardDefaults.outlinedCardBorder()
+    CupertinoSection(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(0.dp),
+        contentPadding = PaddingValues(0.dp),
+        dividerPadding = PaddingValues(0.dp)
     ) {
         Column(
             modifier = Modifier
@@ -54,24 +62,24 @@ fun CalorieBarChart(
             ) {
                 // Left Column
                 Column(horizontalAlignment = Alignment.Start) {
-                    Text(
+                    CupertinoText(
                         text = "1000",
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold
                     )
-                    Text(
+                    CupertinoText(
                         text = "Celkem kalorií",
                         fontSize = 16.sp
                     )
                 }
                 // Right Column
                 Column(horizontalAlignment = Alignment.End) {
-                    Text(
+                    CupertinoText(
                         text = "2000",
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold
                     )
-                    Text(
+                    CupertinoText(
                         text = "Průměr kalorií",
                         fontSize = 16.sp
                     )

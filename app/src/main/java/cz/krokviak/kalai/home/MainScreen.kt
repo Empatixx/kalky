@@ -42,6 +42,7 @@ import cz.krokviak.kalai.home.MainUiState
 import cz.krokviak.kalai.home.MainViewModel
 import cz.krokviak.kalai.home.Scene
 import cz.krokviak.kalai.home.components.BottomNavBar
+import cz.krokviak.kalai.home.components.CalorieCard
 import cz.krokviak.kalai.home.components.MacroNutrientDonutChart
 import cz.krokviak.kalai.home.components.MacroNutrientCard
 import cz.krokviak.kalai.home.components.RecentlyAddedList
@@ -55,6 +56,8 @@ fun MainScreen(
     val uiState by mainViewModel.uiState.collectAsState()
 
     Scaffold(
+        containerColor = Color.Transparent,  // <— Make the scaffold background transparent
+
         bottomBar = {
             BottomNavBar(
                 currentScene = uiState.currentScene,
@@ -94,15 +97,11 @@ fun MainScreen(
     }
 }
 
-fun calorieLabel(calDifference: Int): String {
-    val label = if (calDifference > 0) "kcal zbývá" else "kcal přesaženo"
-    return label;
-}
 fun micronutrientLabel(microDiff: Int, microMax: Int): String {
     if (microDiff > 0) {
-        return "Zbývá do cíle"
+        return "zbývá do cíle"
     } else {
-        return "Přesah od cíle"
+        return "přesah od cíle"
     }
 }
 
@@ -116,50 +115,10 @@ fun MyScreenContent(
             .fillMaxSize()
             .padding(top = 24.dp, start = 24.dp, end = 24.dp, bottom = 0.dp)
     ) {
-        // Card: "Calories left" + Donut chart
-        OutlinedCard(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(32.dp),
-            border = BorderStroke(
-                width = 1.dp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
-            )
-        ) {
-            Row(
-                modifier = Modifier.padding(32.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(
-                        text = "${uiState.calorieDifference().absoluteValue}",
-                        fontSize = 48.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(text = calorieLabel(uiState.calorieDifference()))
-                }
-
-                // Right side: Donut chart
-                Box(
-                    modifier = Modifier.size(120.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    MacroNutrientDonutChart(
-                        modifier = Modifier.fillMaxSize(),
-                        percentage = uiState.calorieRatio(),
-                        activeColor = Color.Black,
-                        centerIcon = Icons.Outlined.LocalFireDepartment,
-                        centerIconSize = 32.dp,
-                        holeRadius = 80f
-                    )
-                }
-            }
-        }
+        CalorieCard(uiState)
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Row with three cards: Protein, Carbs, Fat
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
@@ -194,16 +153,9 @@ fun MyScreenContent(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        Text(
-            text = "Nedávno přidané",
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
         RecentlyAddedList(
             items = uiState.recentlyAddedItems,
+            progreeses = uiState.loadingProgressForItems,
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
