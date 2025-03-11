@@ -75,6 +75,8 @@ dependencies {
     implementation(libs.threetenabp)
     implementation(libs.github.cupertino)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.haze)
+    implementation(libs.haze.materials)
     kapt(libs.androidx.room.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -31,9 +32,11 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import coil3.compose.rememberAsyncImagePainter
 import cz.krokviak.kalai.R
 import cz.krokviak.kalai.camera.entities.FoodItemEntity
+import cz.krokviak.kalai.detail.DetailActivity
 import io.github.alexzhirkevich.cupertino.CupertinoIcon
 import io.github.alexzhirkevich.cupertino.CupertinoText
 import io.github.alexzhirkevich.cupertino.ExperimentalCupertinoApi
@@ -50,28 +53,16 @@ fun FoodItemCard(foodItem: FoodItemEntity,
         // Show the normal "loaded" version
         FoodItemLoadedCard(
             foodItem,
-            onClick = { openFoodDetails(context, foodItem) }
         )
     }
 }
 
-fun openFoodDetails(
-    context: Context,
-    foodItem: FoodItemEntity
-) {
-    context.startActivity(Intent(context, DetailActivity::class.java))
-}
-
-
 @OptIn(ExperimentalCupertinoApi::class)
 @Composable
-fun FoodItemLoadedCard(foodItem: FoodItemEntity,
-                       onClick: () -> Unit
-) {
+fun FoodItemLoadedCard(foodItem: FoodItemEntity) {
     CupertinoSection(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() }
             .clip(RoundedCornerShape(16.dp)),
         shape = RoundedCornerShape(16.dp),
         contentPadding = PaddingValues(0.dp),
@@ -87,13 +78,13 @@ fun FoodItemLoadedCard(foodItem: FoodItemEntity,
                     .height(125.dp)
                     .clip(RoundedCornerShape(topStart = 16.dp, bottomStart = 16.dp))
             ) {
-                Image(
-                    painter = rememberAsyncImagePainter(model = foodItem.localImagePath),
+                AsyncImage(
+                    model = foodItem.localImagePath,
                     contentDescription = "Food image",
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .matchParentSize()
+                    modifier = Modifier.matchParentSize()
                 )
+
             }
 
             // TEXT
@@ -190,11 +181,12 @@ fun FoodItemLoadingCard(foodItem: FoodItemEntity,
                     .height(125.dp)
                     .clip(RoundedCornerShape(topStart = 16.dp, bottomStart = 16.dp))
             ) {
-                Image(
-                    painter = rememberAsyncImagePainter(model = foodItem.localImagePath),
+                AsyncImage(
+                    model = foodItem.localImagePath,
                     contentDescription = "Food image",
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.matchParentSize()
+                    modifier = Modifier.matchParentSize(),
+                    filterQuality = FilterQuality.Low
                 )
 
                 // Dark overlay
