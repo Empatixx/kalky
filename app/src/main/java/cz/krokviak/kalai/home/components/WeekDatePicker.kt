@@ -94,7 +94,7 @@ fun WeekDatePicker(
             state = listState,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp),
+                .padding(vertical = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(spacing),
             contentPadding = PaddingValues(horizontal = 0.dp)
         ) {

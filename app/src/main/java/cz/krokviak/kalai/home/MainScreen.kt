@@ -52,9 +52,11 @@ import cz.krokviak.kalai.home.components.FoodItemCard
 import cz.krokviak.kalai.home.components.MacroNutrientCard
 import cz.krokviak.kalai.home.components.WeekDatePicker
 import io.github.alexzhirkevich.cupertino.CupertinoText
+import io.github.alexzhirkevich.cupertino.ExperimentalCupertinoApi
 import io.github.alexzhirkevich.cupertino.section.CupertinoSection
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
+import kotlin.math.max
 
 @Composable
 fun MainScreen(
@@ -167,7 +169,7 @@ fun MyScreenContent(
     LazyColumn(
         modifier = modifier
             .fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
         contentPadding = PaddingValues(16.dp)
     ) {
 
@@ -186,36 +188,27 @@ fun MyScreenContent(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 MacroNutrientCard(
-                    amount = "${uiState.proteinDifference().absoluteValue}g",
-                    aboveDescription = "Bilkoviny",
-                    belowDescription = micronutrientLabel(
-                        uiState.proteinDifference(),
-                        uiState.maxProtein
-                    ),
+                    amount = "${uiState.currentProtein}g",
+                    maxAmount = "${uiState.maxProtein}g",
+                    title = "Bilkoviny",
                     iconResId = R.drawable.chicken_leg,
                     donutColor = colorResource(id = R.color.proteinColor),
                     percentage = uiState.proteinRatio()
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 MacroNutrientCard(
-                    amount = "${uiState.carbsDifference().absoluteValue}g",
-                    aboveDescription = "Sacharidy",
-                    belowDescription = micronutrientLabel(
-                        uiState.carbsDifference(),
-                        uiState.maxCarbs
-                    ),
+                    amount = "${uiState.currentCarbs}g",
+                    maxAmount = "${uiState.maxCarbs}g",
+                    title = "Sacharidy",
                     iconResId = R.drawable.wheat,
                     donutColor = colorResource(id = R.color.carbsColor),
                     percentage = uiState.carbsRatio()
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 MacroNutrientCard(
-                    amount = "${uiState.fatsDifference().absoluteValue}g",
-                    aboveDescription = "Tuky",
-                    belowDescription = micronutrientLabel(
-                        uiState.fatsDifference(),
-                        uiState.maxFats
-                    ),
+                    amount = "${uiState.currentFats}g",
+                    maxAmount = "${uiState.maxFats}g",
+                    title = "Tuky",
                     iconResId = R.drawable.avocado,
                     donutColor = colorResource(id = R.color.fatColor),
                     percentage = uiState.fatsRatio()
@@ -228,6 +221,7 @@ fun MyScreenContent(
                 fontWeight = FontWeight.Bold,
             )
             if (uiState.recentlyAddedItems.isEmpty()) {
+                Spacer(modifier = Modifier.height(12.dp))
                 EmptyRecentlyAddedList()
             }
         }
@@ -241,6 +235,7 @@ fun MyScreenContent(
 
 }
 
+@OptIn(ExperimentalCupertinoApi::class)
 @Composable
 fun EmptyRecentlyAddedList() {
     CupertinoSection(
