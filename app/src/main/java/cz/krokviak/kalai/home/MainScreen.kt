@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -33,8 +35,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,6 +46,9 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import cz.krokviak.kalai.R
 import cz.krokviak.kalai.home.AnalyticsScene
 import cz.krokviak.kalai.home.MainUiState
@@ -59,6 +66,7 @@ import dev.chrisbanes.haze.materials.HazeMaterials
 import io.github.alexzhirkevich.cupertino.CupertinoText
 import io.github.alexzhirkevich.cupertino.haze
 import io.github.alexzhirkevich.cupertino.section.CupertinoSection
+import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 
 @Composable
@@ -66,15 +74,38 @@ fun MainScreen(
     onCaptureClick: () -> Unit,
     mainViewModel: MainViewModel
 ) {
+    // Scenes in a list, so we can map indices <-> Scene
+    val scenes = remember { listOf(Scene.HOME, Scene.ANALYTICS, Scene.SETTINGS) }
+
+    // Pager state + coroutine scope for animating
+    val pagerState = rememberPagerState(
+        initialPage = 0,
+        pageCount = { scenes.size }
+    )
+    val scope = rememberCoroutineScope()
+
+    // Optionally collect UI state from your ViewModel if needed
     val uiState by mainViewModel.uiState.collectAsState()
 
-    Scaffold(
-        containerColor = Color.Transparent,  // <— Make the scaffold background transparent
+    // Keep track of the "current scene" based on the pager’s current page
+    val currentScene by remember {
+        derivedStateOf {
+            scenes[pagerState.currentPage]
+        }
+    }
 
+    Scaffold(
+        containerColor = Color.Transparent,  // Make the scaffold background transparent
         bottomBar = {
             BottomNavBar(
-                currentScene = uiState.currentScene,
-                onSceneSelected = mainViewModel::onSceneSelected
+                currentScene = currentScene,
+                onSceneSelected = { scene ->
+                    // Animate pager to the correct scene
+                    val pageIndex = scenes.indexOf(scene)
+                    scope.launch {
+                        pagerState.animateScrollToPage(pageIndex)
+                    }
+                }
             )
         },
         floatingActionButton = {
@@ -98,15 +129,34 @@ fun MainScreen(
             }
         },
         floatingActionButtonPosition = FabPosition.End
-    ) { innerPadding -> //todo; navhost
-        when (uiState.currentScene) {
-            Scene.HOME -> MyScreenContent(
-                modifier = Modifier.padding(innerPadding),
-                uiState = uiState
-            )
+    ) { innerPadding ->
 
-            Scene.SETTINGS -> Text("Settings")
-            Scene.ANALYTICS -> AnalyticsScene(mainViewModel)
+        // HorizontalPager from foundation.pager
+        HorizontalPager(
+            beyondViewportPageCount = 3,
+            state = pagerState,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) { page ->
+            // Each page will render a composable corresponding to the scene
+            when (val scene = scenes[page]) {
+                Scene.HOME -> {
+                    MyScreenContent(
+                        uiState = uiState,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+                Scene.SETTINGS -> {
+                    Text(
+                        text = "Settings",
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+                Scene.ANALYTICS -> {
+                    AnalyticsScene(mainViewModel)
+                }
+            }
         }
     }
 }

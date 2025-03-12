@@ -77,6 +77,8 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     implementation(libs.haze)
     implementation(libs.haze.materials)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.foundation)
     kapt(libs.androidx.room.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

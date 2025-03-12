@@ -1,7 +1,6 @@
 package cz.krokviak.kalai.home
 
 import android.app.Application
-import android.os.Environment
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,6 +8,7 @@ import cz.krokviak.kalai.camera.data.FoodAnalysisDto
 import cz.krokviak.kalai.camera.entities.FoodItemEntity
 import cz.krokviak.kalai.common.DatabaseProvider
 import cz.krokviak.kalai.common.RetrofitClient
+import cz.krokviak.kalai.home.repo.FoodRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,8 +22,6 @@ import okhttp3.RequestBody
 import org.threeten.bp.LocalDate
 import org.threeten.bp.OffsetDateTime
 import org.threeten.bp.format.DateTimeFormatter
-import java.io.File
-import java.util.UUID
 
 class MainViewModel : ViewModel() {
 
