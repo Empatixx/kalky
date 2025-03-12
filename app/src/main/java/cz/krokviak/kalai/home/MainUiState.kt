@@ -3,6 +3,7 @@ package cz.krokviak.kalai.home
 import cz.krokviak.kalai.camera.entities.FoodItemEntity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import org.threeten.bp.LocalDate
 
 
 data class MainUiState(
@@ -18,9 +19,11 @@ data class MainUiState(
     val currentCarbs: Int = 0,       // Current carbohydrates consumed in grams
     val maxFats: Int = 100,           // Maximum fats in grams
     val currentFats: Int = 0,        // Current fats consumed in grams
-    val recentlyAddedItems: List<FoodItemEntity> = emptyList(),
 
-    val loadingProgressForItems: Map<Long, Int> = emptyMap()
+    val recentlyAddedItems: List<FoodItemEntity> = emptyList(),
+    val loadingProgressForItems: Map<Long, Int> = emptyMap(),
+
+    val currentDate: LocalDate = LocalDate.now()
 
 ) {
     fun calorieDifference(): Int = maxCalories - currentCalories

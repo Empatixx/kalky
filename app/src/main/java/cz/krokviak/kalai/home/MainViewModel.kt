@@ -30,14 +30,6 @@ class MainViewModel : ViewModel() {
     ))
     val uiState: StateFlow<MainUiState> = _uiState
 
-    fun onSceneSelected(scene: Scene) {
-        _uiState.update {
-            it.copy(currentScene = scene)
-        }
-    }
-    fun onBottomNavItemSelected(index: Int) {
-        _uiState.update { it.copy(selectedBottomNavItem = index) }
-    }
     fun addFoodItemFromBytes(context: Application, imageBytes: ByteArray) {
         viewModelScope.launch {
             val foodRepository = FoodRepository(context)
@@ -221,4 +213,11 @@ class MainViewModel : ViewModel() {
         }
     }
 
+    fun onDateSelected(date: LocalDate) {
+        // Update the UI state with the newly selected date
+        _uiState.update { current ->
+            current.copy(currentDate = date)
+        }
+        loadFoodItemsForDate(date)
+    }
 }

@@ -1,9 +1,6 @@
 package cz.krokviak.kalai.screen
 
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -23,12 +20,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.DatePicker
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -46,9 +41,6 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import cz.krokviak.kalai.R
 import cz.krokviak.kalai.home.AnalyticsScene
 import cz.krokviak.kalai.home.MainUiState
@@ -58,13 +50,8 @@ import cz.krokviak.kalai.home.components.BottomNavBar
 import cz.krokviak.kalai.home.components.CalorieCard
 import cz.krokviak.kalai.home.components.FoodItemCard
 import cz.krokviak.kalai.home.components.MacroNutrientCard
-import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.hazeEffect
-import dev.chrisbanes.haze.hazeSource
-import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
-import dev.chrisbanes.haze.materials.HazeMaterials
+import cz.krokviak.kalai.home.components.WeekDatePicker
 import io.github.alexzhirkevich.cupertino.CupertinoText
-import io.github.alexzhirkevich.cupertino.haze
 import io.github.alexzhirkevich.cupertino.section.CupertinoSection
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
@@ -144,6 +131,7 @@ fun MainScreen(
                 Scene.HOME -> {
                     MyScreenContent(
                         uiState = uiState,
+                        model = mainViewModel,
                         modifier = Modifier.fillMaxSize()
                     )
                 }
@@ -173,10 +161,9 @@ fun micronutrientLabel(microDiff: Int, microMax: Int): String {
 @Composable
 fun MyScreenContent(
     modifier: Modifier = Modifier,
-    uiState: MainUiState
+    uiState: MainUiState,
+    model: MainViewModel
 ) {
-    val hazeState = remember { HazeState() }
-
     LazyColumn(
         modifier = modifier
             .fillMaxWidth(),
@@ -185,7 +172,10 @@ fun MyScreenContent(
     ) {
 
         item {
-            cz.krokviak.kalai.home.components.DatePicker()
+            WeekDatePicker(
+                currentDate = uiState.currentDate,
+                onDateChange = model::onDateSelected
+            )
 
             CalorieCard(uiState)
 
@@ -250,7 +240,6 @@ fun MyScreenContent(
     }
 
 }
-
 
 @Composable
 fun EmptyRecentlyAddedList() {
