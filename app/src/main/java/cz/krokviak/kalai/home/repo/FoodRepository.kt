@@ -27,6 +27,11 @@ class FoodRepository(
         file.absolutePath
     }
 
+    suspend fun getImageBytes(imagePath: String): ByteArray = withContext(Dispatchers.IO) {
+        val file = File(imagePath)
+        file.readBytes()
+    }
+
     /**
      * Insert the [FoodItemEntity] into the DB. Returns the new row ID.
      */
@@ -46,6 +51,10 @@ class FoodRepository(
      */
     suspend fun getFoodItemsForDate(dateStr: String): List<FoodItemEntity> = withContext(Dispatchers.IO) {
         dao.getFoodItemsForDate(dateStr)
+    }
+
+    fun getFoodItem(foodId: Long): FoodItemEntity? {
+        return dao.getFoodItem(foodId)
     }
 
     /**

@@ -1,29 +1,22 @@
-package cz.krokviak.kalai.camera.components
+package cz.krokviak.kalai.detail.components
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.HeartBroken
-import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.LocalFireDepartment
-import androidx.compose.material.icons.outlined.Remove
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.*
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
 import cz.krokviak.kalai.R
+import io.github.alexzhirkevich.cupertino.ExperimentalCupertinoApi
+import io.github.alexzhirkevich.cupertino.section.CupertinoSection
 
+@OptIn(ExperimentalCupertinoApi::class)
 @Composable
 fun PhotoNutrientCard(
     label: String,
@@ -32,9 +25,11 @@ fun PhotoNutrientCard(
     iconTintColor: Color = Color.Black,
     modifier: Modifier = Modifier
 ) {
-    OutlinedCard(
+    CupertinoSection(
         shape = RoundedCornerShape(16.dp),
+        contentPadding = PaddingValues(0.dp),
         modifier = modifier
+            .border(width = 1.dp, color = Color.LightGray, shape = RoundedCornerShape(16.dp)).fillMaxWidth(),
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -42,7 +37,7 @@ fun PhotoNutrientCard(
         ) {
             Box(
                 modifier = Modifier
-                    .background(Color.LightGray.copy(alpha = 0.3f), RoundedCornerShape(16.dp))
+                    .background(colorResource(R.color.lightBlueGray), RoundedCornerShape(16.dp))
                     .padding(8.dp)
             ) {
                 Icon(

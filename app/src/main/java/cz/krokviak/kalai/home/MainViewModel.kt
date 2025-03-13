@@ -4,6 +4,7 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import cz.krokviak.kalai.analytics.AnalyticsRange
 import cz.krokviak.kalai.camera.data.FoodAnalysisDto
 import cz.krokviak.kalai.camera.entities.FoodItemEntity
 import cz.krokviak.kalai.common.DatabaseProvider
@@ -219,5 +220,9 @@ class MainViewModel : ViewModel() {
             current.copy(currentDate = date)
         }
         loadFoodItemsForDate(date)
+    }
+
+    fun updateTargetNutrients(nutrientEditState: Any?) {
+
     }
 }

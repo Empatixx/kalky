@@ -1,4 +1,4 @@
-package cz.krokviak.kalai.home
+package cz.krokviak.kalai.analytics
 
 import android.content.Context
 import android.widget.TextView
@@ -8,6 +8,7 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.utils.MPPointF
 import cz.krokviak.kalai.R
+import cz.krokviak.kalai.home.DailyStats
 
 class DailyMarkerView(
     context: Context,

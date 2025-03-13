@@ -15,7 +15,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Analytics
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
@@ -29,15 +28,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import cz.krokviak.kalai.home.Scene
 import io.github.alexzhirkevich.LocalContentColor
 import io.github.alexzhirkevich.cupertino.CupertinoBottomSheetContent
 import io.github.alexzhirkevich.cupertino.CupertinoBottomSheetScaffold
 import io.github.alexzhirkevich.cupertino.CupertinoDivider
 import io.github.alexzhirkevich.cupertino.CupertinoIcon
-import io.github.alexzhirkevich.cupertino.CupertinoIconDefaults
 import io.github.alexzhirkevich.cupertino.CupertinoNavigationBar
-import io.github.alexzhirkevich.cupertino.CupertinoNavigationBarItem
 import io.github.alexzhirkevich.cupertino.CupertinoScaffold
 import io.github.alexzhirkevich.cupertino.CupertinoText
 import io.github.alexzhirkevich.cupertino.ExperimentalCupertinoApi
@@ -48,13 +44,13 @@ import io.github.alexzhirkevich.cupertino.theme.CupertinoTheme
 @OptIn(ExperimentalCupertinoApi::class)
 @Composable
 fun BottomNavBar(
-    currentScene: Scene,
-    onSceneSelected: (Scene) -> Unit
+    currentPage: Int,
+    onSceneSelected: (Int) -> Unit
 ) {
     val sceneItems = listOf(
-        Scene.HOME to (Icons.Outlined.Home to "Domov"),
-        Scene.ANALYTICS to (Icons.Outlined.Analytics to "Analýza"),
-        Scene.SETTINGS to (Icons.Outlined.Settings to "Nastavení")
+        0 to (Icons.Outlined.Home to "Domov"),
+        1 to (Icons.Outlined.Analytics to "Analýza"),
+        2 to (Icons.Outlined.Settings to "Nastavení")
     )
 
     CupertinoNavigationBar(
@@ -65,7 +61,7 @@ fun BottomNavBar(
     ) {
         sceneItems.forEach { (scene, iconLabelPair) ->
             val (icon, label) = iconLabelPair
-            val isSelected = (scene == currentScene)
+            val isSelected = (scene == currentPage)
 
             CupertinoNavigationBarItem(
                 selected = isSelected,

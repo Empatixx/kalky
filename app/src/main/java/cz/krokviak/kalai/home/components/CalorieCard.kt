@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -21,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cz.krokviak.kalai.home.MainUiState
+import io.github.alexzhirkevich.cupertino.CupertinoText
 import io.github.alexzhirkevich.cupertino.section.CupertinoSection
 import kotlin.math.absoluteValue
 
@@ -37,17 +39,6 @@ fun CalorieCard(
             modifier = Modifier.padding(32.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = "${uiState.calorieDifference().absoluteValue}",
-                    fontSize = 48.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(text = calorieLabel(uiState.calorieDifference()))
-            }
-
             // Right side: Donut chart
             Box(
                 modifier = Modifier.size(125.dp),
@@ -62,6 +53,21 @@ fun CalorieCard(
                     holeRadius = 80f
                 )
             }
+            Spacer(modifier = Modifier.size(16.dp))
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                CupertinoText(
+                    text = "${uiState.currentCalories} kcal",
+                    fontSize = 32.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                CupertinoText(
+                    text = "${uiState.maxCalories} kcal",
+                    fontSize = 16.sp,
+                )
+            }
+
         }
     }
 }

@@ -41,4 +41,7 @@ interface FoodItemDao {
 
     @Delete
     fun deleteFoodItem(foodItem: FoodItemEntity)
+
+    @Query("SELECT * FROM food_items WHERE id = :foodId")
+    fun getFoodItem(foodId: Long): FoodItemEntity?
 }

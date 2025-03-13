@@ -1,4 +1,4 @@
-package cz.krokviak.kalai.home.components
+package cz.krokviak.kalai.analytics.components
 
 import android.view.ViewGroup
 import androidx.compose.foundation.layout.Arrangement
@@ -7,11 +7,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,7 +26,7 @@ import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import cz.krokviak.kalai.R
-import cz.krokviak.kalai.home.DailyMarkerView
+import cz.krokviak.kalai.analytics.DailyMarkerView
 import cz.krokviak.kalai.home.DailyStats
 import io.github.alexzhirkevich.cupertino.CupertinoText
 import io.github.alexzhirkevich.cupertino.ExperimentalCupertinoApi

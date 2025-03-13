@@ -1,6 +1,7 @@
 package cz.krokviak.kalai.camera.data
 
 data class FoodAnalysisDto(
+    val weight: Int,
     val foodType: String,
     val title: String,
     val protein: Int,

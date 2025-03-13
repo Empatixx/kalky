@@ -1,4 +1,4 @@
-package cz.krokviak.kalai.home
+package cz.krokviak.kalai.analytics
 
 enum class AnalyticsRange {
     WEEK,

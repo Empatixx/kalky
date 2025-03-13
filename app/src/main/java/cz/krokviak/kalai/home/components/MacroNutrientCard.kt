@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.alexzhirkevich.cupertino.CupertinoText
@@ -60,9 +61,9 @@ fun RowScope.MacroNutrientCard(
                     .padding(top = 16.dp),
                 contentAlignment = Alignment.Center
             ) {
-                CupertinoText(
+                CupertinoAutoscaleText(
                     text = title,
-                    fontSize = 20.sp
+                    fontSize = 16.sp,
                 )
             }
             Box(
@@ -94,7 +95,7 @@ fun RowScope.MacroNutrientCard(
                 contentAlignment = Alignment.Center
             ) {
                 CupertinoText(
-                    text = amount,
+                    text = maxAmount,
                     fontSize = 12.sp
                 )
             }

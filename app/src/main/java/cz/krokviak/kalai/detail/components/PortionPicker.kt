@@ -1,6 +1,7 @@
-package cz.krokviak.kalai.camera.components
+package cz.krokviak.kalai.detail.components
 
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -9,18 +10,27 @@ import androidx.compose.material.icons.outlined.Remove
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.*
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.*
+import io.github.alexzhirkevich.cupertino.section.CupertinoSection
 
 @Composable
-fun AmountSelector(
+fun PortionPicker(
     amount: Int,
     onIncrease: () -> Unit,
     onDecrease: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    OutlinedCard(
-        shape = RoundedCornerShape(16.dp),
+    CupertinoSection(
+        shape = RoundedCornerShape(32.dp),
+        contentPadding = PaddingValues(0.dp),
         modifier = modifier
+            .border(
+                width = 1.dp,
+                color = Color.LightGray,
+                shape = RoundedCornerShape(32.dp)
+            )
+            .fillMaxWidth(),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),

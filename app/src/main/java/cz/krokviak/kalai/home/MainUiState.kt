@@ -1,13 +1,11 @@
 package cz.krokviak.kalai.home
 
+import cz.krokviak.kalai.analytics.AnalyticsRange
 import cz.krokviak.kalai.camera.entities.FoodItemEntity
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import org.threeten.bp.LocalDate
 
 
 data class MainUiState(
-    val currentScene: Scene = Scene.HOME,
     val analyticsRange: AnalyticsRange = AnalyticsRange.WEEK,
     val dailyStats: List<DailyStats> = emptyList(), // hypothetical data source
     val selectedBottomNavItem: Int = 0,

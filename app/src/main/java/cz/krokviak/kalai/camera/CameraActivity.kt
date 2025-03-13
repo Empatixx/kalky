@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.compose.runtime.collectAsState
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -22,6 +23,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.threeten.bp.OffsetDateTime
 import java.io.File
+import java.io.FileOutputStream
 import java.util.UUID
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -73,8 +75,12 @@ class CameraActivity : AppCompatActivity() {
                 cameraViewModel = cameraViewModel,
                 uiState = uiState.value,
                 onPictureBytesReady = { bytes ->
+                    val tempImageFile = File.createTempFile("cameraResult", ".png", cacheDir)
+                    FileOutputStream(tempImageFile).use { fos ->
+                        fos.write(bytes)
+                    }
                     val intent = Intent().apply {
-                        putExtra("imageBytes", bytes)
+                        putExtra("imageUrl", tempImageFile.absolutePath)
                     }
                     setResult(RESULT_OK, intent)
                     finish()
