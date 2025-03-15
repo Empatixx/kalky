@@ -28,10 +28,13 @@ import kotlin.math.absoluteValue
 
 @Composable
 fun CalorieCard(
-    uiState: MainUiState
+    currentCalories: Int,
+    maxCalories: Int,
+    calorieRatio: Float,
+    modifier: Modifier = Modifier
 ) {
     CupertinoSection(
-        modifier = Modifier.border(width = 1.dp, color = Color.LightGray, shape = RoundedCornerShape(32.dp)).fillMaxWidth(),
+        modifier = modifier.border(width = 1.dp, color = Color.LightGray, shape = RoundedCornerShape(32.dp)).fillMaxWidth(),
         shape = RoundedCornerShape(32.dp),
         contentPadding = PaddingValues(0.dp),
     ) {
@@ -46,7 +49,7 @@ fun CalorieCard(
             ) {
                 MacroNutrientDonutChart(
                     modifier = Modifier.fillMaxSize(),
-                    percentage = uiState.calorieRatio(),
+                    percentage = calorieRatio,
                     activeColor = Color.Black,
                     centerIcon = Icons.Outlined.LocalFireDepartment,
                     centerIconSize = 32.dp,
@@ -58,12 +61,12 @@ fun CalorieCard(
                 modifier = Modifier.weight(1f)
             ) {
                 CupertinoText(
-                    text = "${uiState.currentCalories} kcal",
+                    text = "${currentCalories} kcal",
                     fontSize = 32.sp,
                     fontWeight = FontWeight.Bold
                 )
                 CupertinoText(
-                    text = "${uiState.maxCalories} kcal",
+                    text = "${maxCalories} kcal",
                     fontSize = 16.sp,
                 )
             }

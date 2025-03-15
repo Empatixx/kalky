@@ -32,10 +32,11 @@ fun RowScope.MacroNutrientCard(
     title: String,
     percentage: Float,
     iconResId: Int,
-    donutColor: Color
+    donutColor: Color,
+    modifier: Modifier = Modifier
 ) {
     CupertinoSection(
-        modifier = Modifier
+        modifier = modifier
             .border(
                 width = 1.dp,
                 color = Color.LightGray,

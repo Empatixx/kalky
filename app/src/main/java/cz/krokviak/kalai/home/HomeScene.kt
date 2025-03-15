@@ -1,6 +1,9 @@
 package cz.krokviak.kalai.home
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -15,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -24,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import cz.krokviak.kalai.R
 import cz.krokviak.kalai.common.FoodDetailRoute
+import cz.krokviak.kalai.common.NutrientEditRoute
 import cz.krokviak.kalai.home.components.CalorieCard
 import cz.krokviak.kalai.home.components.FoodItemCard
 import cz.krokviak.kalai.home.components.MacroNutrientCard
@@ -51,41 +56,52 @@ fun HomeScene(
                 currentDate = uiState.currentDate,
                 onDateChange = model::onDateSelected
             )
-
-            CalorieCard(uiState)
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                MacroNutrientCard(
-                    amount = "${uiState.currentProtein}g",
-                    maxAmount = "${uiState.maxProtein}g",
-                    title = "Bilkoviny",
-                    iconResId = R.drawable.chicken_leg,
-                    donutColor = colorResource(id = R.color.proteinColor),
-                    percentage = uiState.proteinRatio()
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(){
+                        navController.navigate(NutrientEditRoute)
+                    }
+            ){
+                CalorieCard(
+                    uiState.currentCalories,
+                    uiState.maxCalories,
+                    uiState.calorieRatio(),
                 )
-                Spacer(modifier = Modifier.width(8.dp))
-                MacroNutrientCard(
-                    amount = "${uiState.currentCarbs}g",
-                    maxAmount = "${uiState.maxCarbs}g",
-                    title = "Sacharidy",
-                    iconResId = R.drawable.wheat,
-                    donutColor = colorResource(id = R.color.carbsColor),
-                    percentage = uiState.carbsRatio()
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                MacroNutrientCard(
-                    amount = "${uiState.currentFats}g",
-                    maxAmount = "${uiState.maxFats}g",
-                    title = "Tuky",
-                    iconResId = R.drawable.avocado,
-                    donutColor = colorResource(id = R.color.fatColor),
-                    percentage = uiState.fatsRatio()
-                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    MacroNutrientCard(
+                        amount = "${uiState.currentProtein}g",
+                        maxAmount = "${uiState.maxProtein}g",
+                        title = "Bilkoviny",
+                        iconResId = R.drawable.chicken_leg,
+                        donutColor = colorResource(id = R.color.proteinColor),
+                        percentage = uiState.proteinRatio(),
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    MacroNutrientCard(
+                        amount = "${uiState.currentCarbs}g",
+                        maxAmount = "${uiState.maxCarbs}g",
+                        title = "Sacharidy",
+                        iconResId = R.drawable.wheat,
+                        donutColor = colorResource(id = R.color.carbsColor),
+                        percentage = uiState.carbsRatio(),
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    MacroNutrientCard(
+                        amount = "${uiState.currentFats}g",
+                        maxAmount = "${uiState.maxFats}g",
+                        title = "Tuky",
+                        iconResId = R.drawable.avocado,
+                        donutColor = colorResource(id = R.color.fatColor),
+                        percentage = uiState.fatsRatio(),
+                    )
+                }
             }
             Spacer(modifier = Modifier.height(12.dp))
             CupertinoText(
