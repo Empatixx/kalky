@@ -7,27 +7,27 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
 class NutrientEditViewModel : ViewModel() {
-    fun onProteinChange(it: Float) {
+    fun onProteinChange(newValue: Int) {
         _uiState.update {
-            it.copy(protein = it.protein)
+            it.copy(protein = newValue)
         }
     }
 
-    fun onCarbsChange(it: Float) {
+    fun onCarbsChange(newValue: Int) {
         _uiState.update {
-            it.copy(carbs = it.carbs)
+            it.copy(carbs = newValue)
         }
     }
 
-    fun onFatChange(it: Float) {
+    fun onFatChange(newValue: Int) {
         _uiState.update {
-            it.copy(fat = it.fat)
+            it.copy(fat = newValue)
         }
     }
 
-    fun onCalorieChange(it: Float) {
+    fun onCalorieChange(newValue: Int) {
         _uiState.update {
-            it.copy(calories = it.calories)
+            it.copy(calories = newValue)
         }
     }
 

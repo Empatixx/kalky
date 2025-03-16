@@ -67,7 +67,7 @@ fun MacroNutrientDonutChart(
         if (centerIcon != null) {
             Box(
                 modifier = Modifier
-                    .size(centerIconSize + 16.dp)
+                    .size(centerIconSize * 2)
                     .clip(CircleShape)
                     .background(colorResource(id = R.color.lightBlueGray)),
                 contentAlignment = Alignment.Center

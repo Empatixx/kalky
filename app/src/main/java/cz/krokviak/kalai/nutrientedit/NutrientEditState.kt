@@ -1,8 +1,8 @@
 package cz.krokviak.kalai.nutrientedit
 
 data class NutrientEditState(
-    val protein: Float = 0f,
-    val carbs: Float = 0f,
-    val fat: Float = 0f,
-    val calories: Float = 0f
+    val protein: Int = 0,
+    val carbs: Int = 0,
+    val fat: Int = 0,
+    val calories: Int = 0
 )

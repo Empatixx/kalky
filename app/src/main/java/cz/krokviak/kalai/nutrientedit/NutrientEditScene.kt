@@ -5,10 +5,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -25,6 +26,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import cz.krokviak.kalai.R
+import cz.krokviak.kalai.nutrientedit.components.MacroNutrientRatioDonutChart
 import cz.krokviak.kalai.nutrientedit.components.NutrientEditRow
 import io.github.alexzhirkevich.cupertino.CupertinoText
 
@@ -37,13 +39,25 @@ fun NutrientEditScene(
     uiState: NutrientEditState
 ) {
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
-    ){
+    ) {
         NutrientEditTopBar(
             onBackClick = onBackClick
         )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ){
+            MacroNutrientRatioDonutChart(
+                protein = uiState.protein,
+                carbs = uiState.carbs,
+                fat = uiState.fat,
+                modifier = Modifier
+                    .size(350.dp))
+        }
         NutrientEditRow(
             value = uiState.calories,
             modifier = Modifier.fillMaxWidth(),
@@ -79,6 +93,7 @@ fun NutrientEditScene(
 
     }
 }
+
 @Composable
 fun NutrientEditTopBar(
     modifier: Modifier = Modifier,
@@ -107,7 +122,7 @@ fun NutrientEditTopBar(
         }
         Box(
             contentAlignment = Alignment.Center
-        ){
+        ) {
             CupertinoText(
                 text = title,
                 style = MaterialTheme.typography.titleLarge,
