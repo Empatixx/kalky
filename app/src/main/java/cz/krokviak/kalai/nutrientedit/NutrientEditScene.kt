@@ -24,7 +24,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import cz.krokviak.kalai.R
 import cz.krokviak.kalai.nutrientedit.components.MacroNutrientRatioDonutChart
 import cz.krokviak.kalai.nutrientedit.components.NutrientEditRow
@@ -42,7 +44,7 @@ fun NutrientEditScene(
         modifier = Modifier
             .fillMaxWidth()
             .padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         NutrientEditTopBar(
             onBackClick = onBackClick
@@ -55,37 +57,66 @@ fun NutrientEditScene(
                 protein = uiState.protein,
                 carbs = uiState.carbs,
                 fat = uiState.fat,
-                modifier = Modifier
-                    .size(350.dp))
+                modifier = Modifier.fillMaxWidth()
+                    .height(250.dp))
         }
+
+        CupertinoText(
+            text = "Kalorie",
+            color = Color.Black,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.fillMaxWidth()
+        )
         NutrientEditRow(
             value = uiState.calories,
+            valueUnit = "kcal",
             modifier = Modifier.fillMaxWidth(),
-            title = "Kalorie",
             onValueChange = { nutrientEditViewModel.onCalorieChange(it) },
             icon = Icons.Filled.LocalFireDepartment,
-            activeColor = colorResource(id = R.color.black)
+            activeColor = colorResource(id = R.color.black),
+        )
+        CupertinoText(
+            text = "Bilkoviny",
+            color = Color.Black,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.fillMaxWidth()
         )
         NutrientEditRow(
             value = uiState.protein,
+            valueUnit = "g",
             modifier = Modifier.fillMaxWidth(),
-            title = "Bílkoviny",
             onValueChange = { nutrientEditViewModel.onProteinChange(it) },
             icon = ImageVector.vectorResource(R.drawable.chicken_leg),
             activeColor = colorResource(id = R.color.proteinColor)
         )
+        CupertinoText(
+            text = "Sacharidy",
+            color = Color.Black,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.fillMaxWidth()
+        )
         NutrientEditRow(
             value = uiState.carbs,
+            valueUnit = "g",
             modifier = Modifier.fillMaxWidth(),
-            title = "Sacharidy",
             onValueChange = { nutrientEditViewModel.onCarbsChange(it) },
             icon = ImageVector.vectorResource(R.drawable.wheat),
             activeColor = colorResource(id = R.color.carbsColor)
         )
+        CupertinoText(
+            text = "Tuky",
+            color = Color.Black,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.fillMaxWidth()
+        )
         NutrientEditRow(
             value = uiState.fat,
+            valueUnit = "g",
             modifier = Modifier.fillMaxWidth(),
-            title = "Tuky",
             onValueChange = { nutrientEditViewModel.onFatChange(it) },
             icon = ImageVector.vectorResource(R.drawable.avocado),
             activeColor = colorResource(id = R.color.fatColor)
@@ -100,14 +131,13 @@ fun NutrientEditTopBar(
     onBackClick: () -> Unit,
     title: String = "Úprava makroživin"
 ) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Start,
-        verticalAlignment = Alignment.CenterVertically
+    Box(
+        modifier = modifier.fillMaxWidth()
     ) {
         IconButton(
             onClick = onBackClick,
             modifier = Modifier
+                .align(Alignment.CenterStart)
                 .background(
                     color = Color.Gray.copy(alpha = 0.5f),
                     shape = CircleShape
@@ -120,16 +150,13 @@ fun NutrientEditTopBar(
                 tint = Color.White
             )
         }
-        Box(
-            contentAlignment = Alignment.Center
-        ) {
-            CupertinoText(
-                text = title,
-                style = MaterialTheme.typography.titleLarge,
-                color = Color.Black,
-                modifier = Modifier.padding(start = 16.dp)
-            )
-        }
+        CupertinoText(
+            text = title,
+            style = MaterialTheme.typography.titleLarge,
+            color = Color.Black,
+            modifier = Modifier.align(Alignment.Center)
+        )
     }
 }
+
 

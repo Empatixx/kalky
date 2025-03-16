@@ -1,6 +1,5 @@
 package cz.krokviak.kalai.nutrientedit.components
 
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -8,11 +7,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
@@ -27,96 +28,96 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import cz.krokviak.kalai.R
-import cz.krokviak.kalai.home.components.MacroNutrientDonutChart
+import io.github.alexzhirkevich.LocalTextStyle
+import io.github.alexzhirkevich.cupertino.CupertinoIcon
 import io.github.alexzhirkevich.cupertino.CupertinoText
 import io.github.alexzhirkevich.cupertino.CupertinoTextField
 import io.github.alexzhirkevich.cupertino.section.CupertinoSection
 
+import androidx.compose.ui.text.style.TextAlign
+
 @Composable
 fun NutrientEditRow(
     value: Int,
+    valueUnit: String,
     icon: ImageVector,
     activeColor: Color,
     onValueChange: (Int) -> Unit,
-    title: String,
     modifier: Modifier = Modifier,
 ) {
+    var v by remember { mutableStateOf(value) }
+
     CupertinoSection(
         modifier = modifier
             .fillMaxWidth()
+            .height(50.dp)
             .clip(RoundedCornerShape(16.dp))
             .border(1.dp, Color.LightGray, RoundedCornerShape(16.dp)),
         contentPadding = PaddingValues(0.dp),
+        dividerPadding = PaddingValues(0.dp),
     ) {
         Row(
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier.fillMaxHeight(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
+            // Icon Column with fixed size
             Column(
                 modifier = Modifier
-                    .size(100.dp)
-                    .padding(16.dp),
+                    .size(50.dp)
+                    .background(activeColor),
                 verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.Start
             ) {
-                MacroNutrientDonutChart(
-                    modifier = Modifier.fillMaxSize(),
-                    percentage = 0.5f,
-                    activeColor = activeColor,
-                    centerIcon = icon,
-                    centerIconSize = 16.dp,
-                    holeRadius = 80f
+                CupertinoIcon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier.size(32.dp).align(Alignment.CenterHorizontally)
                 )
             }
+            // TextField Column
             Column(
                 modifier = Modifier
-                    .weight(1f)
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                    .fillMaxWidth()
+                    .fillMaxHeight(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.End
             ) {
-                CupertinoText(
-                    title,
-                    fontSize = 16.sp
-                )
-                var v by remember { mutableStateOf(value) }
-                // Wrap the text field in a Box to overlay the pen icon and apply the background color.
-                Box(
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(
-                            color = colorResource(id = R.color.lightBlueGray),
-                            shape = RoundedCornerShape(8.dp)
-                        )
+                        .padding(end = 16.dp), // optional padding on the row
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.End
                 ) {
-                    CupertinoTextField(
-                        singleLine = true,
+                    // 1) Text field, weighted to fill remaining space
+                    BasicTextField(
                         value = v.toString(),
+                        singleLine = true,
                         keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                         onValueChange = { newText ->
                             v = parseValue(newText, onValueChange)
                         },
-                        placeholder = {
-                            CupertinoText(
-                                text = "0",
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                        },
+                        textStyle = LocalTextStyle.current.copy(
+                            fontSize = 16.sp,
+                            lineHeight = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.End
+                        ),
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(end = 40.dp) // Extra padding to avoid overlap with the pen icon
-                    )
-                    Icon(
-                        imageVector = Icons.Filled.Edit,
-                        contentDescription = "Edit",
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
+                            .weight(1f)
                             .padding(end = 8.dp)
+                    )
+
+                    CupertinoText(
+                        text = valueUnit,
+                        color = Color.Black,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold
                     )
                 }
             }
@@ -124,11 +125,8 @@ fun NutrientEditRow(
     }
 }
 
-// Extracted helper function that trims the input, safely parses it to an Int,
-// and calls onValueChange with the parsed value.
 private fun parseValue(input: String, onValueChange: (Int) -> Unit): Int {
     val value = input.trim().toIntOrNull() ?: 0
     onValueChange(value)
     return value
 }
-

@@ -7,6 +7,7 @@ cameraLifecycle = "1.4.1"
 cameraVideo = "1.4.1"
 cameraView = "1.4.1"
 coilCompose = "3.1.0"
+composeCharts = "0.1.2"
 converterJackson = "2.9.0"
 foundation = "1.7.8"
 githubCupertino = "0.1.0-alpha04"
@@ -60,6 +61,7 @@ androidx-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4" }
 androidx-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
 androidx-ui-viewbinding = { module = "androidx.compose.ui:ui-viewbinding", version.ref = "uiViewbinding" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
+compose-charts = { module = "io.github.ehsannarmani:compose-charts", version.ref = "composeCharts" }
 converter-jackson = { module = "com.squareup.retrofit2:converter-jackson", version.ref = "converterJackson" }
 dev-langchain4j-open-ai = { module = "dev.langchain4j:langchain4j-open-ai", version.ref = "langchain4jOpenAiVersion" }
 github-cupertino = { module = "io.github.alexzhirkevich:cupertino", version.ref = "githubCupertino" }

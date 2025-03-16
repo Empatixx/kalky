@@ -76,8 +76,6 @@ fun RowScope.MacroNutrientCard(
                     percentage = percentage,
                     activeColor = donutColor,
                     centerIcon = ImageVector.vectorResource(iconResId),
-                    centerIconSize = 20.dp,
-                    holeRadius = 80f
                 )
             }
             Box(

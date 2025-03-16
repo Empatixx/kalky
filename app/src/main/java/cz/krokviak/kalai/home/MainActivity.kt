@@ -48,6 +48,7 @@ import cz.krokviak.kalai.detail.FoodDetailViewModel
 import cz.krokviak.kalai.home.components.BottomNavBar
 import cz.krokviak.kalai.nutrientedit.NutrientEditScene
 import cz.krokviak.kalai.nutrientedit.NutrientEditViewModel
+import io.github.alexzhirkevich.cupertino.theme.CupertinoTheme
 import kotlinx.coroutines.launch
 import java.io.File
 
@@ -75,7 +76,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MaterialTheme {
+            CupertinoTheme {
                 val navController = rememberNavController()
                 val context = LocalContext.current
 

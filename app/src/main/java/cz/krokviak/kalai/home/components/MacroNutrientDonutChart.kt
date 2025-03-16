@@ -1,29 +1,21 @@
 package cz.krokviak.kalai.home.components
 
-import android.content.Context
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Icon
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
-import com.github.mikephil.charting.charts.PieChart
-import com.github.mikephil.charting.data.PieData
-import com.github.mikephil.charting.data.PieDataSet
-import com.github.mikephil.charting.data.PieEntry
+import androidx.compose.ui.unit.min
 import cz.krokviak.kalai.R
 import io.github.alexzhirkevich.cupertino.CupertinoIcon
-import io.github.alexzhirkevich.cupertino.CupertinoText
+import ir.ehsannarmani.compose_charts.PieChart
+import ir.ehsannarmani.compose_charts.models.Pie
 
 @Composable
 fun MacroNutrientDonutChart(
@@ -31,100 +23,81 @@ fun MacroNutrientDonutChart(
     percentage: Float,
     activeColor: Color,
     inactiveColor: Color = colorResource(id = R.color.lightBlueGray),
-    holeRadius: Float = 80f,
+    strokeWidthFraction: Float = 0.10f,
+    centerIconBackgroundFraction: Float = 0.4f,
     centerIcon: ImageVector? = null,
-    centerIconSize: Dp = 32.dp,
+    iconColor: Color = activeColor,
+    iconFraction: Float = 0.2f,
+    centerIconBackgroundColor: Color = colorResource(id = R.color.lightBlueGray),
 ) {
-    Box(modifier = modifier, contentAlignment = Alignment.Center) {
-        // AndroidView for MPAndroidChart
-        AndroidView(
-            factory = { context ->
-                createPieChart(
-                    context = context,
-                    percentage = percentage,
-                    activeColor = activeColor,
-                    inactiveColor = inactiveColor,
-                    holeRadius = holeRadius
-                )
-            },
-            update = { chart ->
-                // Update the chart whenever percentage changes
-                val entries = buildPieEntries(percentage)
-                val dataSet = PieDataSet(entries, "").apply {
-                    colors = listOf(
-                        activeColor.toArgb(),
-                        inactiveColor.toArgb()
-                    )
-                    setDrawValues(false)
-                }
-                chart.data = PieData(dataSet)
-                chart.invalidate()  // force redraw
-            },
-            modifier = Modifier.matchParentSize()
-        )
+    // BoxWithConstraints gives us maxWidth & maxHeight of the parent
+    BoxWithConstraints(
+        modifier = modifier,
+        contentAlignment = Alignment.Center
+    ) {
+        // The limiting dimension of this Box (e.g. if width < height, use width)
+        val chartSize = min(maxWidth, maxHeight)
 
-        // Overlay icon if provided
-        if (centerIcon != null) {
-            Box(
-                modifier = Modifier
-                    .size(centerIconSize * 2)
-                    .clip(CircleShape)
-                    .background(colorResource(id = R.color.lightBlueGray)),
-                contentAlignment = Alignment.Center
-            ) {
-                CupertinoIcon(
-                    imageVector = centerIcon,
-                    tint = activeColor,
-                    contentDescription = null,
-                    modifier = Modifier.size(centerIconSize)
+        // Convert that to a Dp to measure actual size
+        val strokeWidth = chartSize * strokeWidthFraction
+
+        // Use the computed chartSize for the entire PieChart
+        // (You could also just do .fillMaxSize(), but for a donut typically you'd keep it a square.)
+        Box(
+            modifier = Modifier
+                .size(chartSize),
+            contentAlignment = Alignment.Center
+        ) {
+            // Prepare data
+            val data by remember(percentage) {
+                mutableStateOf(
+                    listOf(
+                        Pie(
+                            label = "Filled",
+                            data = percentage.toDouble() * 100,
+                            color = activeColor
+                        ),
+                        Pie(
+                            label = "Unfilled",
+                            data = 100 - (percentage.toDouble() * 100),
+                            color = inactiveColor
+                        ),
+                    )
                 )
+            }
+
+            // Draw the PieChart
+            PieChart(
+                data = data,
+                modifier = Modifier.fillMaxSize()
+                    .rotate(degrees = 270f),
+                selectedScale = 1.0f,
+                style = Pie.Style.Stroke(
+                    width = strokeWidth  // use dynamic stroke width
+                )
+            )
+
+            // Center icon
+            if (centerIcon != null) {
+                // Option 1: Scale the background circle & icon relative to the chart size
+                val iconBackgroundSize = chartSize * centerIconBackgroundFraction
+                val iconSize = chartSize * iconFraction
+
+                Box(
+                    modifier = Modifier
+                        .size(iconBackgroundSize)
+                        .clip(CircleShape)
+                        .background(centerIconBackgroundColor),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CupertinoIcon(
+                        imageVector = centerIcon,
+                        tint = iconColor,
+                        contentDescription = null,
+                        modifier = Modifier.size(iconSize)
+                    )
+                }
             }
         }
     }
-}
-
-// Helper: Create the underlying PieChart
-fun createPieChart(
-    context: Context,
-    percentage: Float,
-    activeColor: Color,
-    inactiveColor: Color,
-    holeRadius: Float
-): PieChart {
-    return PieChart(context).apply {
-        description.isEnabled = false
-        setUsePercentValues(false)
-        isDrawHoleEnabled = true
-        setHoleColor(android.graphics.Color.TRANSPARENT)
-        setHoleRadius(holeRadius)
-        transparentCircleRadius = 0f
-        isClickable = false
-        isHighlightPerTapEnabled = false
-        setTouchEnabled(false)
-        setDrawEntryLabels(false)
-
-        legend.isEnabled = false
-
-        val entries = buildPieEntries(percentage)
-        val dataSet = PieDataSet(entries, "").apply {
-            colors = listOf(
-                activeColor.toArgb(),
-                inactiveColor.toArgb()
-            )
-            setDrawValues(false)
-        }
-
-        data = PieData(dataSet)
-        invalidate()
-    }
-}
-
-// Helper: Create two entries: active portion & remainder.
-fun buildPieEntries(percentage: Float): List<PieEntry> {
-    val active = (percentage.coerceIn(0f, 1f) * 100)
-    val remainder = 100f - active
-    return listOf(
-        PieEntry(active, ""),
-                PieEntry(remainder, "")
-    )
 }

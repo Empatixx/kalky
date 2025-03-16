@@ -18,9 +18,14 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -35,6 +40,8 @@ import com.github.mikephil.charting.data.PieEntry
 import cz.krokviak.kalai.R
 import io.github.alexzhirkevich.cupertino.ExperimentalCupertinoApi
 import io.github.alexzhirkevich.cupertino.section.CupertinoSection
+import ir.ehsannarmani.compose_charts.PieChart
+import ir.ehsannarmani.compose_charts.models.Pie
 
 @OptIn(ExperimentalCupertinoApi::class)
 @Composable
@@ -63,35 +70,50 @@ fun MacroNutrientDonutSection(
     fat: Int,
     modifier: Modifier = Modifier
 ) {
-    // 1. Calculate total calories for each macro
-    val totalProteinCals = protein * 4
-    val totalFatCals = fat * 9
-    val totalCarbsCals = carbs * 4
-    val totalCals = totalProteinCals + totalFatCals + totalCarbsCals
+    val total = (protein + carbs + fat).toFloat().takeIf { it > 0f } ?: 1f // avoid divide by zero
+    val proteinPercent = remember(protein, carbs, fat) { protein / total * 100 }
+    val carbsPercent = remember(protein, carbs, fat) { carbs / total * 100 }
+    val fatPercent = remember(protein, carbs, fat) { fat / total * 100 }
 
-    // 2. Compute percentages (handle zero totals gracefully)
-    val proteinPercent = if (totalCals > 0) (totalProteinCals * 100f / totalCals) else 0f
-    val carbsPercent = if (totalCals > 0) (totalCarbsCals * 100f / totalCals) else 0f
-    val fatPercent = if (totalCals > 0) (totalFatCals * 100f / totalCals) else 0f
 
-    Column(modifier = modifier.padding(16.dp)) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
         // Legend row
         MacroNutrientLegendRow(
             proteinPercent = proteinPercent,
             carbsPercent = carbsPercent,
             fatPercent = fatPercent
         )
-
-        // Donut chart
-        MacroNutrientDonutChart(
-            totalProteinCals = totalProteinCals,
-            totalCarbsCals = totalCarbsCals,
-            totalFatCals = totalFatCals,
+        val proteinColor = colorResource(id = R.color.proteinColor)
+        val carbsColor = colorResource(id = R.color.carbsColor)
+        val fatColor = colorResource(id = R.color.fatColor)
+        val data by remember(proteinPercent, carbsPercent, fatPercent) {
+            mutableStateOf(
+                listOf(
+                    Pie(label = "Bílkoviny", data = proteinPercent.toDouble(), color = proteinColor),
+                    Pie(label = "Sacharidy", data = carbsPercent.toDouble(), color = carbsColor),
+                    Pie(label = "Tuky", data = fatPercent.toDouble(), color =   fatColor)
+                )
+            )
+        }
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
-                .weight(1f) // Let the chart expand to fill remaining space
-        )
+                .weight(1f), // Occupies remaining space
+            contentAlignment = Alignment.Center
+        ) {
+            PieChart(
+                modifier = Modifier.fillMaxSize()
+                    .rotate(270f),
+                data = data,
+                selectedScale = 1.0f,
+                style = Pie.Style.Stroke(width = 30.dp)
+            )
+        }
     }
 }
 
@@ -103,9 +125,7 @@ private fun MacroNutrientLegendRow(
     modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(bottom = 8.dp),
+        modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         LegendItem(
@@ -148,71 +168,12 @@ private fun LegendItem(
             Text(
                 text = String.format("%.0f%%", percent),
                 fontWeight = FontWeight.Bold,
-                fontSize = 24.sp
+                fontSize = 16.sp
             )
         }
         Text(
             text = label,
-            fontSize = 16.sp
+            fontSize = 12.sp
         )
     }
-}
-
-@Composable
-private fun MacroNutrientDonutChart(
-    totalProteinCals: Int,
-    totalCarbsCals: Int,
-    totalFatCals: Int,
-    modifier: Modifier = Modifier
-) {
-    AndroidView(
-        modifier = modifier,
-        factory = { context ->
-            PieChart(context).apply {
-                layoutParams = ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT
-                )
-                // Donut style
-                isDrawHoleEnabled = true
-                holeRadius = 50f
-
-                // Disable unneeded labels
-                description.isEnabled = false
-                legend.isEnabled = false
-                setDrawEntryLabels(false)
-
-                // Disable user interaction
-                setTouchEnabled(false)
-                isHighlightPerTapEnabled = false
-            }.also { pieChart ->
-                // Build the PieEntries (only if macro > 0)
-                val entries = mutableListOf<PieEntry>()
-                if (totalProteinCals > 0) {
-                    entries.add(PieEntry(totalProteinCals.toFloat(), "Bílkoviny"))
-                }
-                if (totalCarbsCals > 0) {
-                    entries.add(PieEntry(totalCarbsCals.toFloat(), "Sacharidy"))
-                }
-                if (totalFatCals > 0) {
-                    entries.add(PieEntry(totalFatCals.toFloat(), "Tuky"))
-                }
-
-                // Create a PieDataSet
-                val dataSet = PieDataSet(entries, "Makra").apply {
-                    colors = listOf(
-                        ContextCompat.getColor(context, R.color.proteinColor),
-                        ContextCompat.getColor(context, R.color.carbsColor),
-                        ContextCompat.getColor(context, R.color.fatColor)
-                    )
-                    sliceSpace = 2f
-                    // Hide value labels on slices
-                    setDrawValues(false)
-                }
-
-                pieChart.data = PieData(dataSet)
-                pieChart.invalidate() // Refresh the chart
-            }
-        }
-    )
 }

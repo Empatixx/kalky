@@ -52,8 +52,6 @@ fun CalorieCard(
                     percentage = calorieRatio,
                     activeColor = Color.Black,
                     centerIcon = Icons.Outlined.LocalFireDepartment,
-                    centerIconSize = 32.dp,
-                    holeRadius = 80f
                 )
             }
             Spacer(modifier = Modifier.size(16.dp))

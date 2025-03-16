@@ -81,6 +81,8 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.foundation)
     implementation(libs.kotlinx.serialization.json)
+    implementation (libs.compose.charts)
+
     kapt(libs.androidx.room.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
