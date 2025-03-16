@@ -28,8 +28,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cz.krokviak.kalai.R
-import cz.krokviak.kalai.nutrientedit.components.MacroNutrientRatioDonutChart
 import cz.krokviak.kalai.nutrientedit.components.NutrientEditRow
+import cz.krokviak.kalai.nutrientedit.components.VerticalCalorieCard
 import io.github.alexzhirkevich.cupertino.CupertinoText
 
 
@@ -48,33 +48,11 @@ fun NutrientEditScene(
         NutrientEditTopBar(
             onBackClick = onBackClick
         )
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
-        ){
-            MacroNutrientRatioDonutChart(
-                protein = uiState.protein,
-                carbs = uiState.carbs,
-                fat = uiState.fat,
-                modifier = Modifier.fillMaxWidth()
-                    .height(250.dp))
-        }
+        VerticalCalorieCard(
+            currentCalories = uiState.calories,
+            calorieRatio = 0.5f
+        )
 
-        CupertinoText(
-            text = "Kalorie",
-            color = Color.Black,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.fillMaxWidth()
-        )
-        NutrientEditRow(
-            value = uiState.calories,
-            valueUnit = "kcal",
-            modifier = Modifier.fillMaxWidth(),
-            onValueChange = { nutrientEditViewModel.onCalorieChange(it) },
-            icon = Icons.Filled.LocalFireDepartment,
-            activeColor = colorResource(id = R.color.black),
-        )
         CupertinoText(
             text = "Bilkoviny",
             color = Color.Black,

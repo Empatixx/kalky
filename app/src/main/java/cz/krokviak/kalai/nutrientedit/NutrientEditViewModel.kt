@@ -36,7 +36,7 @@ class NutrientEditViewModel(
 
      fun onProteinChange(newValue: Int) {
          _uiState.update {
-             it.copy(protein = newValue)
+             it.copy(protein = newValue, calories = caloriesFromNutrients(newValue, uiState.value.carbs, uiState.value.fat))
          }
          viewModelScope.launch {
 
@@ -46,7 +46,7 @@ class NutrientEditViewModel(
                          targetProtein = newValue,
                          targetCarbs = uiState.value.carbs,
                          targetFat = uiState.value.fat,
-                         targetCalories = uiState.value.calories
+                         targetCalories = caloriesFromNutrients(newValue, uiState.value.carbs, uiState.value.fat)
                      )
                  )
              }
@@ -55,7 +55,7 @@ class NutrientEditViewModel(
 
     fun onCarbsChange(newValue: Int) {
         _uiState.update {
-            it.copy(carbs = newValue)
+            it.copy(carbs = newValue, calories = caloriesFromNutrients(uiState.value.protein, newValue, uiState.value.fat))
         }
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
@@ -64,7 +64,7 @@ class NutrientEditViewModel(
                         targetProtein = uiState.value.protein,
                         targetCarbs = newValue,
                         targetFat = uiState.value.fat,
-                        targetCalories = uiState.value.calories
+                        targetCalories = caloriesFromNutrients(uiState.value.protein, newValue, uiState.value.fat)
                     )
                 )
             }
@@ -73,7 +73,7 @@ class NutrientEditViewModel(
 
     fun onFatChange(newValue: Int) {
         _uiState.update {
-            it.copy(fat = newValue)
+            it.copy(fat = newValue, calories = caloriesFromNutrients(uiState.value.protein, uiState.value.carbs, newValue))
         }
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
@@ -82,29 +82,15 @@ class NutrientEditViewModel(
                         targetProtein = uiState.value.protein,
                         targetCarbs = uiState.value.carbs,
                         targetFat = newValue,
-                        targetCalories = uiState.value.calories
+                        targetCalories = caloriesFromNutrients(uiState.value.protein, uiState.value.carbs, newValue)
                     )
                 )
             }
         }
     }
 
-    fun onCalorieChange(newValue: Int) {
-        _uiState.update {
-            it.copy(calories = newValue)
-        }
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                nutrientSettingRepo.insertNutrientSettings(
-                    NutrientSettingEntity(
-                        targetProtein = uiState.value.protein,
-                        targetCarbs = uiState.value.carbs,
-                        targetFat = uiState.value.fat,
-                        targetCalories = newValue
-                    )
-                )
-            }
-        }
+    private fun caloriesFromNutrients(protein: Int, carbs: Int, fat: Int): Int {
+        return (protein * 4) + (carbs * 4) + (fat * 9)
     }
 
 }

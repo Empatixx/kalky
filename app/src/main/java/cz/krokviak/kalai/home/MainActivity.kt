@@ -4,6 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
@@ -56,93 +58,129 @@ class MainActivity : ComponentActivity() {
     private val foodDetailViewModel: FoodDetailViewModel by viewModel()
     private val nutrientEditViewModel: NutrientEditViewModel by viewModel()
 
-    private val cameraResultLauncher =
+    /**
+     * Launcher for the camera Activity, handles the result of taking a picture.
+     */
+    private val cameraResultLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            // 2) Check if the result was OK
-            if (result.resultCode == RESULT_OK) {
-                val data = result.data
-                val imageUrl = data?.getStringExtra("imageUrl")
-                val file = imageUrl?.let { File(it) }
-                val imageBytes = file?.readBytes()
-                if (imageBytes != null) {
-                    // Pass them to the ViewModel to handle
-                    mainViewModel.addFoodItemFromBytes(
-                        context = this.application,
-                        imageBytes = imageBytes
-                    )
-                }
-            }
+            handleCameraResult(result)
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             CupertinoTheme {
-                val navController = rememberNavController()
-                val context = LocalContext.current
+                AppContent(
+                    mainViewModel = mainViewModel,
+                    foodDetailViewModel = foodDetailViewModel,
+                    nutrientEditViewModel = nutrientEditViewModel,
+                    cameraResultLauncher = cameraResultLauncher
+                )
+            }
+        }
+    }
 
-                NavHost(
-                    navController = navController,
-                    startDestination = DefaultRoute
-                ) {
-                    composable<DefaultRoute> {
-                        // Your original scaffold and pager
-                        Content(
-                            onCaptureClick = {
-                                // 1) Start the camera activity
-                                cameraResultLauncher.launch(
-                                    Intent(
-                                        context,
-                                        CameraActivity::class.java
-                                    )
-                                )
-                            },
-                            mainViewModel = mainViewModel,
-                            navController
-                        )
-                    }
-                    composable<FoodDetailRoute> { backStackEntry ->
-                        val food: FoodDetailRoute = backStackEntry.toRoute()
-                        val uiState by foodDetailViewModel.uiState.collectAsState()
-                        val context = LocalContext.current
-                        LaunchedEffect(food.id) {
-                            foodDetailViewModel.loadFood(context, food.id)
-                        }
-                        FoodDetailScene(
-                            foodDetailViewModel = foodDetailViewModel,
-                            uiState = uiState,
-                            foodId = food.id,
-                            onExitClick = { navController.popBackStack() },
-                            onShareClick = { /* TODO */ }
-                        )
-                    }
-                    composable<NutrientEditRoute> { backStackEntry ->
-                        val uiState by nutrientEditViewModel.uiState.collectAsState()
-                        NutrientEditScene(
-                            nutrientEditViewModel = nutrientEditViewModel,
-                            uiState = uiState,
-                            onBackClick = {
-                                navController.popBackStack()
-                                mainViewModel.updateNutrientSettings(
-                                    uiState.protein,
-                                    uiState.carbs,
-                                    uiState.fat,
-                                    uiState.calories
-                                )
-                            }
-                        )
-                    }
-                }
+    /**
+     * Handle the result from the camera activity.
+     */
+    private fun handleCameraResult(result: ActivityResult) {
+        if (result.resultCode == RESULT_OK) {
+            val data = result.data
+            val imageUrl = data?.getStringExtra("imageUrl")
+            val file = imageUrl?.let { File(it) }
+            val imageBytes = file?.readBytes()
+            if (imageBytes != null) {
+                mainViewModel.addFoodItemFromBytes(
+                    context = application,
+                    imageBytes = imageBytes
+                )
             }
         }
     }
 }
 
-
+/**
+ * Top-level content of the app which sets up the NavController and the NavHost.
+ */
 @Composable
-fun Content(
-    onCaptureClick: () -> Unit,
+fun AppContent(
     mainViewModel: MainViewModel,
+    foodDetailViewModel: FoodDetailViewModel,
+    nutrientEditViewModel: NutrientEditViewModel,
+    cameraResultLauncher: ActivityResultLauncher<Intent>
+) {
+    val navController = rememberNavController()
+    val context = LocalContext.current
+    NavHost(
+        navController = navController,
+        startDestination = DefaultRoute
+    ) {
+        /**
+         * The default (home) composable which uses our main scaffold layout.
+         */
+        composable<DefaultRoute> {
+            MainScaffold(
+                mainViewModel = mainViewModel,
+                onCaptureClick = {
+                    // Launch the camera Activity.
+                    cameraResultLauncher.launch(
+                        Intent(
+                            context,
+                            CameraActivity::class.java
+                        )
+                    )
+                },
+                navController = navController
+            )
+        }
+
+        /**
+         * Food Detail route.
+         */
+        composable<FoodDetailRoute> { backStackEntry ->
+            val food: FoodDetailRoute = backStackEntry.toRoute()
+            val uiState by foodDetailViewModel.uiState.collectAsState()
+            LaunchedEffect(food.id) {
+                foodDetailViewModel.loadFood(context, food.id)
+            }
+            FoodDetailScene(
+                foodDetailViewModel = foodDetailViewModel,
+                uiState = uiState,
+                foodId = food.id,
+                onExitClick = { navController.popBackStack() },
+                onShareClick = { /* TODO */ }
+            )
+        }
+
+        /**
+         * Nutrient Edit route.
+         */
+        composable<NutrientEditRoute> { backStackEntry ->
+            val uiState by nutrientEditViewModel.uiState.collectAsState()
+            NutrientEditScene(
+                nutrientEditViewModel = nutrientEditViewModel,
+                uiState = uiState,
+                onBackClick = {
+                    navController.popBackStack()
+                    mainViewModel.updateNutrientSettings(
+                        uiState.protein,
+                        uiState.carbs,
+                        uiState.fat,
+                        uiState.calories
+                    )
+                }
+            )
+        }
+    }
+}
+
+/**
+ * This Composable sets up the Scaffold that contains a pager and bottom navigation.
+ */
+@Composable
+fun MainScaffold(
+    mainViewModel: MainViewModel,
+    onCaptureClick: () -> Unit,
     navController: NavController
 ) {
     val pagerState = rememberPagerState(
@@ -157,7 +195,6 @@ fun Content(
         mainViewModel.loadFoodItemsForDate(uiState.currentDate)
     }
 
-
     Scaffold(
         containerColor = Color.Transparent,
         bottomBar = {
@@ -171,14 +208,12 @@ fun Content(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onCaptureClick,
-                containerColor = Color . Black,
+                containerColor = Color.Black,
                 shape = CircleShape,
                 modifier = Modifier
                     .offset(y = 48.dp)
                     .size(72.dp),
-                elevation = FloatingActionButtonDefaults.elevation(
-                    defaultElevation = 0.dp,
-                ),
+                elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 0.dp),
                 contentColor = Color.White
             ) {
                 Icon(
@@ -204,13 +239,11 @@ fun Content(
                     navController = navController,
                     modifier = Modifier.fillMaxSize()
                 )
-
                 1 -> AnalyticsPage(
                     uiState = uiState,
                     mainViewModel = mainViewModel,
                     modifier = Modifier.fillMaxSize()
                 )
-
                 2 -> Text(
                     text = "Settings",
                     modifier = Modifier.fillMaxSize()
