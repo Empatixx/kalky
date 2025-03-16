@@ -9,13 +9,13 @@ data class MainUiState(
     val analyticsRange: AnalyticsRange = AnalyticsRange.WEEK,
     val dailyStats: List<DailyStats> = emptyList(), // hypothetical data source
     val selectedBottomNavItem: Int = 0,
-    val maxCalories: Int = 2250,     // Maximum calorie goal
+    val maxCalories: Int = 0,     // Maximum calorie goal
     val currentCalories: Int = 0,    // Current calories consumed
-    val maxProtein: Int = 100,        // Maximum protein in grams
+    val maxProtein: Int = 0,        // Maximum protein in grams
     val currentProtein: Int = 0,     // Current protein consumed in grams
-    val maxCarbs: Int = 100,          // Maximum carbohydrates in grams
+    val maxCarbs: Int = 0,          // Maximum carbohydrates in grams
     val currentCarbs: Int = 0,       // Current carbohydrates consumed in grams
-    val maxFats: Int = 100,           // Maximum fats in grams
+    val maxFats: Int = 0,           // Maximum fats in grams
     val currentFats: Int = 0,        // Current fats consumed in grams
 
     val recentlyAddedItems: List<FoodItemEntity> = emptyList(),
@@ -24,11 +24,6 @@ data class MainUiState(
     val currentDate: LocalDate = LocalDate.now()
 
 ) {
-    fun calorieDifference(): Int = maxCalories - currentCalories
-    fun proteinDifference(): Int = maxProtein - currentProtein
-    fun carbsDifference(): Int = maxCarbs - currentCarbs
-    fun fatsDifference(): Int = maxFats - currentFats
-
     fun calorieRatio(): Float = amountRatio(currentCalories, maxCalories)
     fun proteinRatio(): Float = amountRatio(currentProtein, maxProtein)
     fun carbsRatio(): Float = amountRatio(currentCarbs, maxCarbs)

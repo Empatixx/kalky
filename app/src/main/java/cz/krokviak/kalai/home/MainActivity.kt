@@ -5,7 +5,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -19,7 +18,6 @@ import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -50,13 +48,13 @@ import cz.krokviak.kalai.nutrientedit.NutrientEditScene
 import cz.krokviak.kalai.nutrientedit.NutrientEditViewModel
 import io.github.alexzhirkevich.cupertino.theme.CupertinoTheme
 import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
 
 class MainActivity : ComponentActivity() {
-
-    private val mainViewModel: MainViewModel by viewModels()
-    private val foodDetailViewModel: FoodDetailViewModel by viewModels()
-    private val nutrientEditViewModel: NutrientEditViewModel by viewModels()
+    private val mainViewModel: MainViewModel by viewModel()
+    private val foodDetailViewModel: FoodDetailViewModel by viewModel()
+    private val nutrientEditViewModel: NutrientEditViewModel by viewModel()
 
     private val cameraResultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -68,7 +66,10 @@ class MainActivity : ComponentActivity() {
                 val imageBytes = file?.readBytes()
                 if (imageBytes != null) {
                     // Pass them to the ViewModel to handle
-                    mainViewModel.addFoodItemFromBytes(context = this.application, imageBytes = imageBytes)
+                    mainViewModel.addFoodItemFromBytes(
+                        context = this.application,
+                        imageBytes = imageBytes
+                    )
                 }
             }
         }
@@ -89,7 +90,12 @@ class MainActivity : ComponentActivity() {
                         Content(
                             onCaptureClick = {
                                 // 1) Start the camera activity
-                                cameraResultLauncher.launch(Intent(context, CameraActivity::class.java))
+                                cameraResultLauncher.launch(
+                                    Intent(
+                                        context,
+                                        CameraActivity::class.java
+                                    )
+                                )
                             },
                             mainViewModel = mainViewModel,
                             navController
@@ -110,14 +116,19 @@ class MainActivity : ComponentActivity() {
                             onShareClick = { /* TODO */ }
                         )
                     }
-                    composable< NutrientEditRoute> { backStackEntry ->
+                    composable<NutrientEditRoute> { backStackEntry ->
                         val uiState by nutrientEditViewModel.uiState.collectAsState()
-                        NutrientEditScene (
+                        NutrientEditScene(
                             nutrientEditViewModel = nutrientEditViewModel,
                             uiState = uiState,
-                            onBackClick = { navController.popBackStack() },
-                            onNutrientEdit = { nutrientEditState ->
-                                mainViewModel.updateTargetNutrients(nutrientEditState)
+                            onBackClick = {
+                                navController.popBackStack()
+                                mainViewModel.updateNutrientSettings(
+                                    uiState.protein,
+                                    uiState.carbs,
+                                    uiState.fat,
+                                    uiState.calories
+                                )
                             }
                         )
                     }
@@ -160,7 +171,7 @@ fun Content(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onCaptureClick,
-                containerColor = Color.Black,
+                containerColor = Color . Black,
                 shape = CircleShape,
                 modifier = Modifier
                     .offset(y = 48.dp)
@@ -193,11 +204,13 @@ fun Content(
                     navController = navController,
                     modifier = Modifier.fillMaxSize()
                 )
+
                 1 -> AnalyticsPage(
                     uiState = uiState,
                     mainViewModel = mainViewModel,
                     modifier = Modifier.fillMaxSize()
                 )
+
                 2 -> Text(
                     text = "Settings",
                     modifier = Modifier.fillMaxSize()

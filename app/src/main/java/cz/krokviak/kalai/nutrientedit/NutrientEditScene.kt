@@ -36,7 +36,6 @@ import io.github.alexzhirkevich.cupertino.CupertinoText
 @Composable
 fun NutrientEditScene(
     onBackClick: () -> Unit,
-    onNutrientEdit: (Any?) -> Unit,
     nutrientEditViewModel: NutrientEditViewModel,
     uiState: NutrientEditState
 ) {

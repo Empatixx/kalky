@@ -50,7 +50,6 @@ fun MacroNutrientRatioDonutChart(
         Column(
             modifier = Modifier.fillMaxSize(),
         ) {
-            MPACDonutChart(stats = stats)
         }
     }
 }

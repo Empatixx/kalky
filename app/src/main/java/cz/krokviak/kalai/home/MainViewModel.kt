@@ -10,6 +10,7 @@ import cz.krokviak.kalai.camera.entities.FoodItemEntity
 import cz.krokviak.kalai.common.DatabaseProvider
 import cz.krokviak.kalai.common.RetrofitClient
 import cz.krokviak.kalai.home.repo.FoodRepository
+import cz.krokviak.kalai.home.repo.NutrientSettingRepo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,16 +25,34 @@ import org.threeten.bp.LocalDate
 import org.threeten.bp.OffsetDateTime
 import org.threeten.bp.format.DateTimeFormatter
 
-class MainViewModel : ViewModel() {
+class MainViewModel(
+    private val foodRepository: FoodRepository,
+    private val nutrientSettingRepo: NutrientSettingRepo
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MainUiState(
         dailyStats = generateFakeDailyStats(7) // e.g. start with a week by default
     ))
     val uiState: StateFlow<MainUiState> = _uiState
 
+    init {
+        viewModelScope.launch {
+            val latestSettings = withContext(Dispatchers.IO) {
+                nutrientSettingRepo.getLatestNutrientSettings() // Now runs on a background thread
+            }
+            _uiState.update {
+                it.copy(
+                    maxProtein = latestSettings?.targetProtein ?: 0,
+                    maxCarbs = latestSettings?.targetCarbs ?: 0,
+                    maxFats = latestSettings?.targetFat ?: 0,
+                    maxCalories = latestSettings?.targetCalories ?: 0
+                )
+            }
+        }
+    }
+
     fun addFoodItemFromBytes(context: Application, imageBytes: ByteArray) {
         viewModelScope.launch {
-            val foodRepository = FoodRepository(context)
             val imagePath = foodRepository.storeImageFile(imageBytes)
 
             val now = OffsetDateTime.now()
@@ -222,7 +241,14 @@ class MainViewModel : ViewModel() {
         loadFoodItemsForDate(date)
     }
 
-    fun updateTargetNutrients(nutrientEditState: Any?) {
-
+    fun updateNutrientSettings(protein: Int, carbs: Int, fat: Int, calories: Int) {
+        _uiState.update { current ->
+            current.copy(
+                maxProtein = protein,
+                maxCarbs = carbs,
+                maxFats = fat,
+                maxCalories = calories
+            )
+        }
     }
 }

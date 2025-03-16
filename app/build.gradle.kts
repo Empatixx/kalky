@@ -82,7 +82,8 @@ dependencies {
     implementation(libs.androidx.foundation)
     implementation(libs.kotlinx.serialization.json)
     implementation (libs.compose.charts)
-
+    implementation(libs.insert.koin.koin.core)
+    implementation(libs.koin.android)
     kapt(libs.androidx.room.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

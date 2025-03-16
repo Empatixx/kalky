@@ -49,7 +49,7 @@ fun NutrientEditRow(
     onValueChange: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var v by remember { mutableStateOf(value) }
+    var v by remember(value) { mutableStateOf(value) }
 
     CupertinoSection(
         modifier = modifier
