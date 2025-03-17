@@ -1,5 +1,6 @@
 package cz.krokviak.kalai.di
 
+import cz.krokviak.kalai.analytics.AnalyticsViewModel
 import cz.krokviak.kalai.detail.FoodDetailViewModel
 import cz.krokviak.kalai.home.MainViewModel
 import cz.krokviak.kalai.home.repo.FoodRepository
@@ -15,4 +16,6 @@ val appModule = module {
     viewModel { MainViewModel(get(), get()) }
     viewModel { FoodDetailViewModel() }
     viewModel { NutrientEditViewModel(get()) }
+    viewModel { AnalyticsViewModel() }
+
 }

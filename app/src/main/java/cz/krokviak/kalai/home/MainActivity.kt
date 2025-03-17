@@ -39,6 +39,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import cz.krokviak.kalai.analytics.AnalyticsPage
+import cz.krokviak.kalai.analytics.AnalyticsViewModel
 import cz.krokviak.kalai.camera.CameraActivity
 import cz.krokviak.kalai.common.DefaultRoute
 import cz.krokviak.kalai.common.FoodDetailRoute
@@ -57,6 +58,7 @@ class MainActivity : ComponentActivity() {
     private val mainViewModel: MainViewModel by viewModel()
     private val foodDetailViewModel: FoodDetailViewModel by viewModel()
     private val nutrientEditViewModel: NutrientEditViewModel by viewModel()
+    private val analyticsViewModel: AnalyticsViewModel by viewModel()
 
     /**
      * Launcher for the camera Activity, handles the result of taking a picture.
@@ -74,6 +76,7 @@ class MainActivity : ComponentActivity() {
                     mainViewModel = mainViewModel,
                     foodDetailViewModel = foodDetailViewModel,
                     nutrientEditViewModel = nutrientEditViewModel,
+                    analyticsViewModel = analyticsViewModel,
                     cameraResultLauncher = cameraResultLauncher
                 )
             }
@@ -107,6 +110,7 @@ fun AppContent(
     mainViewModel: MainViewModel,
     foodDetailViewModel: FoodDetailViewModel,
     nutrientEditViewModel: NutrientEditViewModel,
+    analyticsViewModel: AnalyticsViewModel,
     cameraResultLauncher: ActivityResultLauncher<Intent>
 ) {
     val navController = rememberNavController()
@@ -121,6 +125,7 @@ fun AppContent(
         composable<DefaultRoute> {
             MainScaffold(
                 mainViewModel = mainViewModel,
+                analyticsViewModel = analyticsViewModel,
                 onCaptureClick = {
                     // Launch the camera Activity.
                     cameraResultLauncher.launch(
@@ -180,6 +185,7 @@ fun AppContent(
 @Composable
 fun MainScaffold(
     mainViewModel: MainViewModel,
+    analyticsViewModel: AnalyticsViewModel,
     onCaptureClick: () -> Unit,
     navController: NavController
 ) {
@@ -189,6 +195,8 @@ fun MainScaffold(
     )
     val scope = rememberCoroutineScope()
     val uiState by mainViewModel.uiState.collectAsState()
+    val analyticsUiState by analyticsViewModel.uiState.collectAsState()
+
     val currentPage by remember { derivedStateOf { pagerState.currentPage } }
 
     LaunchedEffect(Unit) {
@@ -240,8 +248,8 @@ fun MainScaffold(
                     modifier = Modifier.fillMaxSize()
                 )
                 1 -> AnalyticsPage(
-                    uiState = uiState,
-                    mainViewModel = mainViewModel,
+                    uiState = analyticsUiState,
+                    analyticsViewModel = analyticsViewModel,
                     modifier = Modifier.fillMaxSize()
                 )
                 2 -> Text(
