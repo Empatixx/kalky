@@ -14,6 +14,7 @@
     <color name="waterColor">#1982C4</color>
     <color name="fiberColor">#6A4C93</color>
     <color name="sugarColor">#D34A7C</color>
-    <color name="darkGreen">#158533</color>
+    <color name="lightGreen">#6CD772</color>
+    <color name="darkGreen">#0FB33A</color>
     <color name="lightBlueGray">#ebedF0</color>
 </resources>
