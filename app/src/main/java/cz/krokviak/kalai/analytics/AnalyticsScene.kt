@@ -158,6 +158,7 @@ fun NutrientCalorieCard(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(16.dp)
                     .height(300.dp)
             ) {
                 // Retrieve nutrient colors (as defined in your resources)
@@ -278,6 +279,7 @@ fun WeightCard(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(16.dp)
                     .height(300.dp)
             ) {
                 LineChart(
