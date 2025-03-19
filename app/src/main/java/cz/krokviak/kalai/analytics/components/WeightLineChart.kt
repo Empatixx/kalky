@@ -4,6 +4,7 @@ import androidx.compose.animation.core.EaseInOutCubic
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -19,7 +20,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import io.github.alexzhirkevich.cupertino.CupertinoText
 import io.github.alexzhirkevich.cupertino.section.CupertinoSection
 import ir.ehsannarmani.compose_charts.LineChart
@@ -36,7 +39,7 @@ import ir.ehsannarmani.compose_charts.models.Line
 @Composable
 fun WeightLineChart(
     weights: List<Double>,
-    currentWeight: Double = weights.last(),
+    currentWeight: Double = weights.lastOrNull() ?: 0.0,
     modifier: Modifier = Modifier
 ) {
     CupertinoSection(
@@ -52,65 +55,102 @@ fun WeightLineChart(
     ) {
         Column(
             modifier = Modifier.fillMaxWidth()
+                .height(300.dp)
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                CupertinoText(
-                    text = "Váha",
-                    color = Color.Black
-                )
-                CupertinoText(
-                    text = "99.9 kg",
-                    color = Color.Black
-                )
-            }
-
-            // Graph row below the header
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .height(300.dp)
-            ) {
-                LineChart(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    gridProperties = GridProperties(false),
-                    dividerProperties = DividerProperties(false),
-                    data = remember {
-                        listOf(
-                            Line(
-                                values = listOf(28.0, 41.0, 5.0, 10.0, 35.0),
-                                color = SolidColor(Color.Black),
-                                firstGradientFillColor = Color.Black.copy(alpha = .5f),
-                                secondGradientFillColor = Color.Transparent,
-                                strokeAnimationSpec = tween(2000, easing = EaseInOutCubic),
-                                gradientAnimationDelay = 1000,
-                                drawStyle = DrawStyle.Stroke(width = 2.dp),
-                                label = "Váha"
-                            )
-                        )
-                    },
-                    labelHelperProperties = LabelHelperProperties(false),
-                    labelProperties = LabelProperties(false),
-                    animationMode = AnimationMode.Together(delayBuilder = {
-                        it * 500L
-                    }),
-                    indicatorProperties = HorizontalIndicatorProperties(
-                        textStyle = TextStyle.Default,
-                        padding = 16.dp,
-                        contentBuilder = { value ->
-                            value.format(1) + " kg"
-                        }
-                    ),
+            if (weights.isEmpty()) {
+                EmptyWeightLineChart()
+            } else {
+                WeightLineChartInternal(
+                    weights = weights,
+                    currentWeight = currentWeight
                 )
             }
         }
+    }
+}
+
+@Composable
+fun EmptyWeightLineChart() {
+    Column(
+        modifier = Modifier.fillMaxWidth()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ){
+        CupertinoText(
+            text = "Chybí informace o vaší váze",
+            color = Color.Black,
+            fontWeight = FontWeight.Bold,
+            fontSize = 24.sp
+        )
+        CupertinoText(
+            text = "Přidejte svou váhu v nastavení",
+            color = Color.Black,
+            fontSize = 16.sp
+        )
+    }
+}
+
+@Composable()
+fun WeightLineChartInternal(
+    weights: List<Double>,
+    currentWeight: Double = weights.lastOrNull() ?: 0.0
+){
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        CupertinoText(
+            text = "Váha",
+            color = Color.Black
+        )
+        CupertinoText(
+            text = currentWeight.format(1) + " kg",
+            color = Color.Black
+        )
+    }
+
+    // Graph row below the header
+    Row(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+            LineChart(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                gridProperties = GridProperties(false),
+                dividerProperties = DividerProperties(false),
+                data = remember {
+                    listOf(
+                        Line(
+                            values = weights,
+                            color = SolidColor(Color.Black),
+                            firstGradientFillColor = Color.Black.copy(alpha = .5f),
+                            secondGradientFillColor = Color.Transparent,
+                            strokeAnimationSpec = tween(2000, easing = EaseInOutCubic),
+                            gradientAnimationDelay = 1000,
+                            drawStyle = DrawStyle.Stroke(width = 2.dp),
+                            label = "Váha"
+                        )
+                    )
+                },
+                labelHelperProperties = LabelHelperProperties(false),
+                labelProperties = LabelProperties(false),
+                animationMode = AnimationMode.Together(delayBuilder = {
+                    it * 500L
+                }),
+                indicatorProperties = HorizontalIndicatorProperties(
+                    textStyle = TextStyle.Default,
+                    padding = 16.dp,
+                    contentBuilder = { value ->
+                        value.format(1) + " kg"
+                    }
+                ),
+            )
+
     }
 }

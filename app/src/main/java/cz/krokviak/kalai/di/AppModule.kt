@@ -16,6 +16,6 @@ val appModule = module {
     viewModel { MainViewModel(get(), get()) }
     viewModel { FoodDetailViewModel() }
     viewModel { NutrientEditViewModel(get()) }
-    viewModel { AnalyticsViewModel() }
+    viewModel { AnalyticsViewModel(get()) }
 
 }

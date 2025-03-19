@@ -6,7 +6,7 @@ data class AnalyticsUiState(
 ) {
 }
 
-data class CaloriesBar(
+public data class CaloriesBar(
     val label: String,
     val protein: Int,
     val carbs: Int,

@@ -6,11 +6,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import cz.krokviak.kalai.analytics.components.AnalyticsGoalRow
+import cz.krokviak.kalai.analytics.components.MacroNutrientLegendRowOnly
 import cz.krokviak.kalai.analytics.components.NutrientCalorieCard
 import cz.krokviak.kalai.analytics.components.WeightLineChart
 import io.github.alexzhirkevich.cupertino.ExperimentalCupertinoApi
-
 @OptIn(ExperimentalCupertinoApi::class)
+
 @Composable
 fun AnalyticsPage(
     analyticsViewModel: AnalyticsViewModel,
