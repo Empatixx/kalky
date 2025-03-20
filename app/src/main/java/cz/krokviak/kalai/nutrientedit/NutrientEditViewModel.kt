@@ -2,9 +2,9 @@ package cz.krokviak.kalai.nutrientedit
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import cz.krokviak.kalai.camera.entities.NutrientSettingEntity
+import cz.krokviak.kalai.common.entities.NutrientSettingEntity
 import cz.krokviak.kalai.detail.FoodDetailState
-import cz.krokviak.kalai.home.repo.NutrientSettingRepo
+import cz.krokviak.kalai.common.repo.NutrientSettingRepo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

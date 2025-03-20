@@ -1,7 +1,7 @@
 package cz.krokviak.kalai.home
 
 import cz.krokviak.kalai.analytics.AnalyticsRange
-import cz.krokviak.kalai.camera.entities.FoodItemEntity
+import cz.krokviak.kalai.common.entities.FoodItemEntity
 import org.threeten.bp.LocalDate
 
 

@@ -1,11 +1,12 @@
-package cz.krokviak.kalai.camera.dao
+package cz.krokviak.kalai.common.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Update
-import cz.krokviak.kalai.camera.entities.FoodItemEntity
+import cz.krokviak.kalai.analytics.data.DailyMacroTotals
+import cz.krokviak.kalai.common.entities.FoodItemEntity
 
 @Dao
 interface FoodItemDao {
@@ -33,6 +34,7 @@ interface FoodItemDao {
     @Query("SELECT SUM(protein) FROM food_items WHERE date(createdAt) = :date")
     fun getTotalProteinForDate(date: String): Int?
 
+
     @Insert
     fun insertFoodItem(foodItem: FoodItemEntity): Long
 
@@ -44,4 +46,22 @@ interface FoodItemDao {
 
     @Query("SELECT * FROM food_items WHERE id = :foodId")
     fun getFoodItem(foodId: Long): FoodItemEntity?
+
+    // Group by the date portion of createdAt
+    @Query("""
+        SELECT 
+            date(createdAt) as day,
+            SUM(protein) as totalProtein,
+            SUM(carbs)   as totalCarbs,
+            SUM(fat)     as totalFat
+        FROM food_items
+        WHERE date(createdAt) BETWEEN :startDate AND :endDate
+        GROUP BY date(createdAt)
+        ORDER BY day ASC
+    """)
+    fun getDailyMacroTotalsInRange(
+        startDate: String,
+        endDate: String
+    ): List<DailyMacroTotals>
+
 }

@@ -1,6 +1,6 @@
-package cz.krokviak.kalai.home.repo
+package cz.krokviak.kalai.common.repo
 
-import cz.krokviak.kalai.camera.entities.NutrientSettingEntity
+import cz.krokviak.kalai.common.entities.NutrientSettingEntity
 import cz.krokviak.kalai.common.DatabaseProvider
 
 class NutrientSettingRepo {

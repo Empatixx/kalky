@@ -1,4 +1,4 @@
-package cz.krokviak.kalai.camera.entities
+package cz.krokviak.kalai.common.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

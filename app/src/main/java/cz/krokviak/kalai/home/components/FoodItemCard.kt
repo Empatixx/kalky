@@ -44,7 +44,7 @@ import coil3.compose.AsyncImage
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import cz.krokviak.kalai.R
-import cz.krokviak.kalai.camera.entities.FoodItemEntity
+import cz.krokviak.kalai.common.entities.FoodItemEntity
 import io.github.alexzhirkevich.cupertino.CupertinoIcon
 import io.github.alexzhirkevich.cupertino.CupertinoText
 import io.github.alexzhirkevich.cupertino.ExperimentalCupertinoApi

@@ -1,6 +1,8 @@
 package cz.krokviak.kalai.common
 
 import androidx.room.TypeConverter
+import org.threeten.bp.LocalDate
+import org.threeten.bp.LocalDateTime
 import org.threeten.bp.OffsetDateTime
 import org.threeten.bp.format.DateTimeFormatter
 
@@ -13,5 +15,15 @@ class Converters {
     @TypeConverter
     fun toOffsetDateTime(dateString: String?): OffsetDateTime? {
         return dateString?.let { OffsetDateTime.parse(it, DateTimeFormatter.ISO_OFFSET_DATE_TIME) }
+    }
+
+    @TypeConverter
+    fun FromLocalDate(date: LocalDate?): String? {
+        return date?.format(DateTimeFormatter.ISO_LOCAL_DATE)
+    }
+
+    @TypeConverter
+    fun toLocalDate(dateString: String?): LocalDate? {
+        return dateString?.let { LocalDate.parse(it, DateTimeFormatter.ISO_LOCAL_DATE) }
     }
 }

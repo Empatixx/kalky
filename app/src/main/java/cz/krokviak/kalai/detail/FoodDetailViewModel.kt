@@ -6,10 +6,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cz.krokviak.kalai.camera.data.FoodAnalysisDto
-import cz.krokviak.kalai.camera.entities.FoodItemEntity
+import cz.krokviak.kalai.common.entities.FoodItemEntity
 import cz.krokviak.kalai.common.RetrofitClient
 import cz.krokviak.kalai.home.MainUiState
-import cz.krokviak.kalai.home.repo.FoodRepository
+import cz.krokviak.kalai.common.repo.FoodRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -117,7 +117,8 @@ class FoodDetailViewModel : ViewModel() {
             val updated = _uiState.value.copy(
                 updatedAt = OffsetDateTime.now()
             )
-            repository.updateFoodItem(FoodItemEntity(
+            repository.updateFoodItem(
+                FoodItemEntity(
                 id = _uiState.value.id,
                 name = updated.name,
                 calories = updated.calories,
@@ -130,7 +131,8 @@ class FoodDetailViewModel : ViewModel() {
                 updatedAt = updated.updatedAt,
                 localImagePath = updated.localImagePath?: "",
                 loading = false
-            ))
+            )
+            )
         }
     }
 

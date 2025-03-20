@@ -140,7 +140,10 @@ fun EmptyNutrientCalorieCard(){
 fun NutrientCalorieCardInternal(
     modifier: Modifier,
     bars: List<CaloriesBar>
-){
+) {
+    val avgCalories = remember(bars) {
+        bars.sumBy { it.totalCalories } / bars.size
+    }
     // Header with title and calorie summary
     Row(
         modifier = Modifier
@@ -154,7 +157,7 @@ fun NutrientCalorieCardInternal(
             color = Color.Black
         )
         CupertinoText(
-            text = "2000 kcal",
+            text = avgCalories.toString() + " kcal",
             color = Color.Black
         )
     }
@@ -168,27 +171,30 @@ fun NutrientCalorieCardInternal(
         val proteinColor = colorResource(id = R.color.proteinColor)
         val carbColor = colorResource(id = R.color.carbsColor)
         val fatColor = colorResource(id = R.color.fatColor)
-        val days = listOf("Po", "Út", "St", "Čt", "Pá", "So", "Ne")
-
-        // Create a custom value formatter that maps numeric values to day names.
-        val dayFormatter = CartesianValueFormatter { context, value, _ ->
-            // Convert the value (typically a Double) to an integer index.
+        // Generate day labels directly from the bars data.
+        val days = bars.map { it.label }
+        // Create a custom value formatter that maps numeric indices to day names.
+        val dayFormatter = CartesianValueFormatter { _, value, _ ->
             val index = value.toInt()
-            // Return the corresponding day name, or an empty string if out of bounds.
             days.getOrNull(index) ?: ""
         }
-        // Create and populate the Vico chart’s model
-        val modelProducer = remember { CartesianChartModelProducer() }
-        LaunchedEffect(Unit) {
+        // Create and populate the Vico chart’s model.
+        val modelProducer = remember(bars) { CartesianChartModelProducer() }
+        LaunchedEffect(bars) {
+            // Generate nutrient series from the bars list.
+            val carbsSeries = bars.map { it.carbs.toDouble() * 4 }
+            val fatSeries = bars.map { it.fat.toDouble() * 9 }
+            val proteinSeries = bars.map { it.protein.toDouble() * 4 }
             modelProducer.runTransaction {
                 columnSeries {
-                    series(days.indices.toList(), listOf(30.0, 40.0, 20.0, 50.0, 40.0, 30.0, 20.0))
-                    series(days.indices.toList(), listOf(50.0, 30.0, 40.0, 20.0, 30.0, 40.0, 50.0))
-                    series(days.indices.toList(), listOf(20.0, 30.0, 40.0, 30.0, 30.0, 30.0, 30.0))
+                    // Note: The order here must match your column provider.
+                    series(days.indices.toList(), carbsSeries)
+                    series(days.indices.toList(), fatSeries)
+                    series(days.indices.toList(), proteinSeries)
                 }
             }
         }
-
+        // Create the column components with the appropriate shapes and colors.
         val topColumn =
             rememberLineComponent(
                 fill = fill(proteinColor),
@@ -207,12 +213,11 @@ fun NutrientCalorieCardInternal(
                 thickness = 8.dp,
                 shape = Shape.Rectangle,
             )
-
+        // Set up the Cartesian chart using the provided model and layer.
         CartesianChartHost(
             chart = rememberCartesianChart(
                 rememberColumnCartesianLayer(
-                    columnProvider =
-                    remember(topColumn, middleColumn, middleColumn) {
+                    columnProvider = remember(topColumn, middleColumn, middleColumn) {
                         getColumnProvider(topColumn, middleColumn, bottomColumn)
                     },
                     columnCollectionSpacing = 16.dp,
@@ -237,68 +242,6 @@ fun NutrientCalorieCardInternal(
             modelProducer = modelProducer,
             modifier = Modifier.fillMaxSize(),
             zoomState = rememberVicoZoomState(zoomEnabled = false),
-        )
-    }
-}
-
-@Composable
-fun NutrientRatioLegend(
-    proteinPercent: Float,
-    carbsPercent: Float,
-    fatPercent: Float,
-    modifier: Modifier = Modifier
-) {
-        Row(
-            modifier = modifier.fillMaxWidth()
-                .padding(bottom = 8.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            LegendItem(
-                label = "Bílkoviny",
-                percent = proteinPercent,
-                colorId = R.color.proteinColor
-            )
-            LegendItem(
-                label = "Sacharidy",
-                percent = carbsPercent,
-                colorId = R.color.carbsColor
-            )
-            LegendItem(
-                label = "Tuky",
-                percent = fatPercent,
-                colorId = R.color.fatColor
-            )
-        }
-}
-
-@Composable
-private fun LegendItem(
-    label: String,
-    percent: Float,
-    colorId: Int,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier.padding(horizontal = 8.dp),
-        horizontalAlignment = Alignment.Start
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Box(
-                modifier = Modifier
-                    .size(16.dp)
-                    .clip(CircleShape)
-                    .background(colorResource(id = colorId))
-            )
-            Spacer(modifier = Modifier.width(6.dp))
-            CupertinoText(
-                text = String.format("%.0f%%", percent),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold
-            )
-        }
-        CupertinoText(
-            text = label,
-            fontSize = 12.sp
         )
     }
 }

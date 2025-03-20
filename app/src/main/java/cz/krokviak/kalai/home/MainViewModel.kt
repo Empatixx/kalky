@@ -6,11 +6,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cz.krokviak.kalai.analytics.AnalyticsRange
 import cz.krokviak.kalai.camera.data.FoodAnalysisDto
-import cz.krokviak.kalai.camera.entities.FoodItemEntity
+import cz.krokviak.kalai.common.entities.FoodItemEntity
 import cz.krokviak.kalai.common.DatabaseProvider
 import cz.krokviak.kalai.common.RetrofitClient
-import cz.krokviak.kalai.home.repo.FoodRepository
-import cz.krokviak.kalai.home.repo.NutrientSettingRepo
+import cz.krokviak.kalai.common.repo.FoodRepository
+import cz.krokviak.kalai.common.repo.NutrientSettingRepo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow

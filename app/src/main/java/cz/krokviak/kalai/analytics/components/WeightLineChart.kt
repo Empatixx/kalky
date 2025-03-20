@@ -77,13 +77,13 @@ fun EmptyWeightLineChart() {
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ){
         CupertinoText(
-            text = "Chybí informace o vaší váze",
+            text = "Zatím nemáme údaje o vaší váze",
             color = Color.Black,
             fontWeight = FontWeight.Bold,
             fontSize = 24.sp
         )
         CupertinoText(
-            text = "Přidejte svou váhu v nastavení",
+            text = "Zatím nemáme údaje o vaší váze. Přidejte je v nastavení.",
             color = Color.Black,
             fontSize = 16.sp
         )

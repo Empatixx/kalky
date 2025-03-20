@@ -16,7 +16,7 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import cz.krokviak.kalai.camera.entities.FoodItemEntity
+import cz.krokviak.kalai.common.entities.FoodItemEntity
 import cz.krokviak.kalai.common.DatabaseProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
