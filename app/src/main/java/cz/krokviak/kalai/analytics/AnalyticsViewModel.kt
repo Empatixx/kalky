@@ -16,6 +16,11 @@ class AnalyticsViewModel(
     private val foodRepository: FoodRepository,
     private val personalInfoRepo: PersonalInfoRepo
 ) : ViewModel() {
+    fun updateRange(analyticsRange: AnalyticsRange) {
+        _uiState.update {
+            it.copy(selectedRange = analyticsRange)
+        }
+    }
 
     private val _uiState = MutableStateFlow(AnalyticsUiState())
     val uiState: StateFlow<AnalyticsUiState> = _uiState

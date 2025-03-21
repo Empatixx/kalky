@@ -3,6 +3,7 @@ package cz.krokviak.kalai.analytics
 data class AnalyticsUiState(
     val weights: List<Double> = emptyList(),
     val caloriesBars: List<CaloriesBar> = emptyList(),
+    val selectedRange: AnalyticsRange = AnalyticsRange.WEEK
 ) {
 }
 
