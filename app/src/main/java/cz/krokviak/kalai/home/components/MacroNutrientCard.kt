@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import cz.krokviak.kalai.theme.AppTheme
 import io.github.alexzhirkevich.cupertino.CupertinoText
 import io.github.alexzhirkevich.cupertino.section.CupertinoSection
 
@@ -39,7 +40,7 @@ fun RowScope.MacroNutrientCard(
         modifier = modifier
             .border(
                 width = 1.dp,
-                color = Color.LightGray,
+                color = AppTheme.colors.border,
                 shape = RoundedCornerShape(16.dp)
             )
             .weight(1f),
@@ -64,7 +65,9 @@ fun RowScope.MacroNutrientCard(
             ) {
                 CupertinoAutoscaleText(
                     text = title,
-                    fontSize = 16.sp,
+                    fontSize = 18.sp,
+                    color = AppTheme.colors.onBackground,
+                    fontWeight = FontWeight.SemiBold,
                 )
             }
             Box(
@@ -84,9 +87,10 @@ fun RowScope.MacroNutrientCard(
             ) {
                 CupertinoText(
                     text = amount,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.ExtraBold,
                     textAlign = TextAlign.Center,
-                    fontSize = 20.sp
+                    fontSize = 24.sp,
+                    color = AppTheme.colors.onBackground
                 )
             }
             Box(
@@ -95,7 +99,9 @@ fun RowScope.MacroNutrientCard(
             ) {
                 CupertinoText(
                     text = maxAmount,
-                    fontSize = 12.sp
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = AppTheme.colors.onBackgroundSecondary
                 )
             }
         }

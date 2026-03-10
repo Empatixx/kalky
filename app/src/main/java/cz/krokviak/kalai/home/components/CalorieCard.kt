@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cz.krokviak.kalai.home.MainUiState
+import cz.krokviak.kalai.theme.AppTheme
 import io.github.alexzhirkevich.cupertino.CupertinoText
 import io.github.alexzhirkevich.cupertino.section.CupertinoSection
 import kotlin.math.absoluteValue
@@ -34,7 +35,7 @@ fun CalorieCard(
     modifier: Modifier = Modifier
 ) {
     CupertinoSection(
-        modifier = modifier.border(width = 1.dp, color = Color.LightGray, shape = RoundedCornerShape(32.dp)).fillMaxWidth(),
+        modifier = modifier.border(width = 1.dp, color = AppTheme.colors.border, shape = RoundedCornerShape(32.dp)).fillMaxWidth(),
         shape = RoundedCornerShape(32.dp),
         contentPadding = PaddingValues(0.dp),
     ) {
@@ -50,7 +51,7 @@ fun CalorieCard(
                 MacroNutrientDonutChart(
                     modifier = Modifier.fillMaxSize(),
                     percentage = calorieRatio,
-                    activeColor = Color.Black,
+                    activeColor = AppTheme.colors.primary,
                     centerIcon = Icons.Outlined.LocalFireDepartment,
                 )
             }
@@ -60,12 +61,15 @@ fun CalorieCard(
             ) {
                 CupertinoText(
                     text = "${currentCalories} kcal",
-                    fontSize = 32.sp,
-                    fontWeight = FontWeight.Bold
+                    fontSize = 36.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = AppTheme.colors.onBackground
                 )
                 CupertinoText(
                     text = "${maxCalories} kcal",
-                    fontSize = 16.sp,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = AppTheme.colors.onBackgroundSecondary
                 )
             }
 

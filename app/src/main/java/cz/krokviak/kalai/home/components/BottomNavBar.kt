@@ -5,16 +5,26 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.outlined.Analytics
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
@@ -26,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
+import cz.krokviak.kalai.theme.AppTheme
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import io.github.alexzhirkevich.LocalContentColor
@@ -45,67 +56,108 @@ import io.github.alexzhirkevich.cupertino.theme.CupertinoTheme
 @Composable
 fun BottomNavBar(
     currentPage: Int,
-    onSceneSelected: (Int) -> Unit
+    onSceneSelected: (Int) -> Unit,
+    onCaptureClick: () -> Unit,
+    onBarcodeScanClick: () -> Unit
 ) {
-    val sceneItems = listOf(
-        0 to (Icons.Outlined.Home to "Domov"),
-        1 to (Icons.Outlined.Analytics to "Analýza"),
-        2 to (Icons.Outlined.Settings to "Nastavení")
+    val navColors = CupertinoNavigationBarDefaults.itemColors(
+        selectedIconColor = AppTheme.colors.onBackground,
+        selectedTextColor = AppTheme.colors.onBackground,
+        unselectedIconColor = AppTheme.colors.onBackgroundSecondary,
+        unselectedTextColor = AppTheme.colors.onBackgroundSecondary,
+        disabledIconColor = AppTheme.colors.onBackgroundSecondary,
+        disabledTextColor = AppTheme.colors.onBackgroundSecondary
     )
 
-    CupertinoNavigationBar(
-        isTranslucent = true,            // turn off translucency if you want solid black
-        isTransparent = true,
+    Box(
         modifier = Modifier
-            .height(75.dp)
+            .fillMaxWidth()
+            .height(85.dp)
     ) {
-        sceneItems.forEach { (scene, iconLabelPair) ->
-            val (icon, label) = iconLabelPair
-            val isSelected = (scene == currentPage)
+        CupertinoNavigationBar(
+            isTranslucent = true,
+            isTransparent = true,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(85.dp)
+                .align(Alignment.BottomCenter)
+        ) {
+            // Left side: Domov, Analyza
+            NavItem(0, Icons.Outlined.Home, "Domov", currentPage, onSceneSelected, navColors)
+            NavItem(1, Icons.Outlined.Analytics, "Anal\u00FDza", currentPage, onSceneSelected, navColors)
 
-            CupertinoNavigationBarItem(
-                selected = isSelected,
-                onClick = { onSceneSelected(scene) },
-                icon = {
-                    CupertinoIcon(
-                        imageVector = icon,
-                        contentDescription = label,
-                        modifier = Modifier.size(24.dp) // optionally match size or omit
-                    )
-                },
-                label = {
-                    CupertinoText(
-                        text = label,
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                // Show label always or only if selected
-                alwaysShowLabel = true,
-                // Override default “blue” colors with your own
-                colors = CupertinoNavigationBarDefaults.itemColors(
-                    selectedIconColor = Color.Black,
-                    selectedTextColor = Color.Black,
-                    unselectedIconColor = Color.Gray,
-                    unselectedTextColor = Color.Gray,
-                    // Optional overrides for disabled state if needed
-                    disabledIconColor = Color.DarkGray,
-                    disabledTextColor = Color.DarkGray
-                )
-            )
+            // Center spacer for the FABs
+            Box(modifier = Modifier.weight(1.2f))
+
+            // Right side: Profil, Nastaveni
+            NavItem(2, Icons.Outlined.Person, "Profil", currentPage, onSceneSelected, navColors)
+            NavItem(3, Icons.Outlined.Settings, "Nastaven\u00ED", currentPage, onSceneSelected, navColors)
         }
-        CupertinoNavigationBarItem(
-            selected = false,
-            onClick = { /* No-op */ },
-            icon = {},
-            label = {},
-            alwaysShowLabel = false,
-            colors = CupertinoNavigationBarDefaults.itemColors(
-                selectedIconColor = Color.Transparent,
-                unselectedIconColor = Color.Transparent
-            )
-        )
 
+        // Centered FABs overlapping the nav bar
+        Row(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .offset(y = (-8).dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.Bottom
+        ) {
+            FloatingActionButton(
+                onClick = onBarcodeScanClick,
+                containerColor = AppTheme.colors.primaryVariant,
+                shape = CircleShape,
+                modifier = Modifier.size(48.dp),
+                elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 4.dp),
+                contentColor = AppTheme.colors.onPrimaryVariant
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.QrCodeScanner,
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+            FloatingActionButton(
+                onClick = onCaptureClick,
+                containerColor = AppTheme.colors.primary,
+                shape = CircleShape,
+                modifier = Modifier.size(64.dp),
+                elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 4.dp),
+                contentColor = AppTheme.colors.onPrimary
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = null,
+                    modifier = Modifier.size(32.dp)
+                )
+            }
+        }
     }
+}
+
+@OptIn(ExperimentalCupertinoApi::class)
+@Composable
+private fun RowScope.NavItem(
+    page: Int,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    label: String,
+    currentPage: Int,
+    onSceneSelected: (Int) -> Unit,
+    colors: CupertinoNavigationBarItemColors
+) {
+    CupertinoNavigationBarItem(
+        selected = page == currentPage,
+        onClick = { onSceneSelected(page) },
+        icon = {
+            CupertinoIcon(
+                imageVector = icon,
+                contentDescription = label,
+                modifier = Modifier.size(24.dp)
+            )
+        },
+        label = { CupertinoText(text = label, fontWeight = FontWeight.Bold) },
+        alwaysShowLabel = true,
+        colors = colors
+    )
 }
 
 @Composable
@@ -301,15 +353,14 @@ internal object CupertinoNavigationBarTokens {
                 },
                 // Show label always or only if selected
                 alwaysShowLabel = true,
-                // Override default “blue” colors with your own
+                // Override default "blue" colors with your own
                 colors = CupertinoNavigationBarDefaults.itemColors(
-                    selectedIconColor = Color.Black,
-                    selectedTextColor = Color.Black,
-                    unselectedIconColor = Color.Gray,
-                    unselectedTextColor = Color.Gray,
-                    // Optional overrides for disabled state if needed
-                    disabledIconColor = Color.DarkGray,
-                    disabledTextColor = Color.DarkGray
+                    selectedIconColor = AppTheme.colors.onBackground,
+                    selectedTextColor = AppTheme.colors.onBackground,
+                    unselectedIconColor = AppTheme.colors.onBackgroundSecondary,
+                    unselectedTextColor = AppTheme.colors.onBackgroundSecondary,
+                    disabledIconColor = AppTheme.colors.onBackgroundSecondary,
+                    disabledTextColor = AppTheme.colors.onBackgroundSecondary
                 )
             )
         }

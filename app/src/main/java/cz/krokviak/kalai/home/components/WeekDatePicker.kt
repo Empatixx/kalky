@@ -22,24 +22,27 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import cz.krokviak.kalai.common.toCzechShortName
+import cz.krokviak.kalai.common.withDayOfWeek
+import cz.krokviak.kalai.theme.AppTheme
 import io.github.alexzhirkevich.cupertino.CupertinoText
 import io.github.alexzhirkevich.cupertino.section.CupertinoSection
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import org.threeten.bp.DayOfWeek
-import org.threeten.bp.LocalDate
-import org.threeten.bp.Month
-import org.threeten.bp.format.DateTimeFormatter
-import org.threeten.bp.format.TextStyle
-import java.util.Locale
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.Month
+import kotlinx.datetime.minus
+import kotlinx.datetime.plus
 
 /**
  * A horizontally scrollable date picker that:
  * - Always shows exactly 7 columns (days) at a time.
  * - Automatically scrolls so that the Monday of the current week is left-aligned at first composition.
  * - Highlights today's date by default.
- * - Supports “infinite” scroll by prepending or appending blocks of 30 days.
+ * - Supports "infinite" scroll by prepending or appending blocks of 30 days.
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -48,12 +51,12 @@ fun WeekDatePicker(
     onDateChange: (LocalDate) -> Unit
 ) {
     // 2) Monday of the current week
-    val mondayOfThisWeek = remember { currentDate.with(DayOfWeek.MONDAY) }
+    val mondayOfThisWeek = remember { currentDate.withDayOfWeek(DayOfWeek.MONDAY) }
 
     // 3) Build a mutable list of dates (±30 days around Monday).
     val days = remember {
-        val initialStart = mondayOfThisWeek.minusDays(30)
-        val initialEnd = mondayOfThisWeek.plusDays(30)
+        val initialStart = mondayOfThisWeek.minus(30, DateTimeUnit.DAY)
+        val initialEnd = mondayOfThisWeek.plus(30, DateTimeUnit.DAY)
         generateDateRange(initialStart, initialEnd).toMutableStateList()
     }
 
@@ -64,12 +67,11 @@ fun WeekDatePicker(
     // 5) Lazy list state + coroutine scope for smooth scrolling
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
-    // 6) On first composition, scroll so MondayOfThisWeek is at left
-    initListScroll(
-        listState = listState,
-        days = days,
-        mondayOfThisWeek = mondayOfThisWeek
-    )
+    // 6) On first composition, scroll so current date is centered
+    LaunchedEffect(Unit) {
+        val index = days.indexOf(currentDate).coerceAtLeast(0)
+        listState.scrollToItem((index - 3).coerceAtLeast(0))
+    }
 
     // 7) Observe lazy list edges, loading more days if needed
     observeInfiniteScroll(
@@ -104,13 +106,9 @@ fun WeekDatePicker(
                     isSelected = index == selectedIndex,
                     itemWidth = itemWidth,
                     onDayClick = {
-                        // Scroll so that the Monday of the clicked day is left-aligned
-                        val mondayIndex = days.indexOf(it.with(DayOfWeek.MONDAY))
-                        if (mondayIndex != -1) {
-                            selectedIndex = index
-                            coroutineScope.launch {
-                                listState.animateScrollToItem(mondayIndex)
-                            }
+                        selectedIndex = index
+                        coroutineScope.launch {
+                            listState.animateScrollToItem((index - 3).coerceAtLeast(0))
                         }
                         onDateChange(it)
                     }
@@ -129,8 +127,10 @@ fun MonthHeader(currentDate: LocalDate) {
         horizontalArrangement = Arrangement.Center
     ) {
         CupertinoText(
-            text = monthName,
-            style = MaterialTheme.typography.titleLarge
+            text = "${currentDate.dayOfMonth}. $monthName ${currentDate.year}",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.ExtraBold,
+            color = AppTheme.colors.onBackground
         )
     }
 }
@@ -157,7 +157,7 @@ private fun DayItem(
         modifier = Modifier
             .width(itemWidth)
             .background(
-                color = if (isSelected) Color.Black else Color.Transparent,
+                color = if (isSelected) AppTheme.colors.primary else Color.Transparent,
                 shape = CircleShape
             )
             .clickable(
@@ -171,8 +171,8 @@ private fun DayItem(
         // Day number
         CupertinoText(
             text = date.dayOfMonth.toString(),
-            fontWeight = FontWeight.Bold,
-            color = if (isSelected) Color.White else Color.Black,
+            fontWeight = FontWeight.ExtraBold,
+            color = if (isSelected) AppTheme.colors.onPrimary else AppTheme.colors.onBackground,
             style = MaterialTheme.typography.titleLarge
         )
         Spacer(Modifier.height(4.dp))
@@ -180,7 +180,8 @@ private fun DayItem(
         // Short Czech name for the day
         CupertinoText(
             text = date.dayOfWeek.toCzechShortName(),
-            color = if (isSelected) Color.White else Color.Gray,
+            color = if (isSelected) AppTheme.colors.onPrimary else AppTheme.colors.onBackgroundSecondary,
+            fontWeight = FontWeight.SemiBold,
             style = MaterialTheme.typography.bodyMedium
         )
         Spacer(Modifier.height(4.dp))
@@ -192,10 +193,10 @@ private fun DayItem(
                 .clip(CircleShape)
                 .then(
                     if (isSelected) {
-                        Modifier.background(Color.White)
+                        Modifier.background(AppTheme.colors.onPrimary)
                     } else {
                         Modifier
-                            .border(1.dp, Color.Black, CircleShape)
+                            .border(1.dp, AppTheme.colors.onBackground, CircleShape)
                             .background(Color.Transparent)
                     }
                 )
@@ -203,23 +204,6 @@ private fun DayItem(
     }
 }
 
-/**
- * One-time initialization: scroll so that [mondayOfThisWeek] is left-aligned
- * in the horizontal list, if present in [days].
- */
-@Composable
-private fun initListScroll(
-    listState: LazyListState,
-    days: List<LocalDate>,
-    mondayOfThisWeek: LocalDate
-) {
-    LaunchedEffect(Unit) {
-        val mondayIndex = days.indexOf(mondayOfThisWeek)
-        if (mondayIndex != -1) {
-            listState.scrollToItem(mondayIndex)
-        }
-    }
-}
 
 /**
  * Observe the first visible item in the [LazyListState].
@@ -257,16 +241,14 @@ private fun observeInfiniteScroll(
 
 /**
  * Generate a list of [LocalDate] from [start] to [end] (inclusive).
- *
- * @throws IllegalArgumentException if [end] is before [start].
  */
 private fun generateDateRange(start: LocalDate, end: LocalDate): List<LocalDate> {
-    require(!end.isBefore(start)) { "End date can't be before start date." }
+    require(end >= start) { "End date can't be before start date." }
     val result = mutableListOf<LocalDate>()
     var cursor = start
-    while (!cursor.isAfter(end)) {
+    while (cursor <= end) {
         result += cursor
-        cursor = cursor.plusDays(1)
+        cursor = cursor.plus(1, DateTimeUnit.DAY)
     }
     return result
 }
@@ -283,8 +265,8 @@ private fun prependMoreDays(
     firstVisibleIndex: Int
 ) {
     val firstDate = days.first()
-    val newStart = firstDate.minusDays(30)
-    val newDates = generateDateRange(newStart, firstDate.minusDays(1))
+    val newStart = firstDate.minus(30, DateTimeUnit.DAY)
+    val newDates = generateDateRange(newStart, firstDate.minus(1, DateTimeUnit.DAY))
     days.addAll(0, newDates)
 
     coroutineScope.launch {
@@ -298,24 +280,10 @@ private fun prependMoreDays(
  */
 private fun appendMoreDays(days: MutableList<LocalDate>) {
     val lastDate = days.last()
-    val newEnd = lastDate.plusDays(30)
-    val newDates = generateDateRange(lastDate.plusDays(1), newEnd)
+    val newEnd = lastDate.plus(30, DateTimeUnit.DAY)
+    val newDates = generateDateRange(lastDate.plus(1, DateTimeUnit.DAY), newEnd)
     days.addAll(newDates)
 }
-
-/**
- * Map a [DayOfWeek] to a short Czech name: “Po”, “Út”, “St”, “Čt”, “Pá”, “So”, “Ne”.
- */
-private fun DayOfWeek.toCzechShortName(): String =
-    when (this) {
-        DayOfWeek.MONDAY -> "Po"
-        DayOfWeek.TUESDAY -> "Út"
-        DayOfWeek.WEDNESDAY -> "St"
-        DayOfWeek.THURSDAY -> "Čt"
-        DayOfWeek.FRIDAY -> "Pá"
-        DayOfWeek.SATURDAY -> "So"
-        DayOfWeek.SUNDAY -> "Ne"
-    }
 
 fun getNominativeMonthName(month: Month): String {
     return when(month) {
@@ -331,5 +299,6 @@ fun getNominativeMonthName(month: Month): String {
         Month.OCTOBER -> "Říjen"
         Month.NOVEMBER -> "Listopad"
         Month.DECEMBER -> "Prosinec"
+        else -> ""
     }
 }

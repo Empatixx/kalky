@@ -8,20 +8,10 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.FabPosition
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -30,7 +20,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -40,6 +29,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import cz.krokviak.kalai.analytics.AnalyticsPage
 import cz.krokviak.kalai.analytics.AnalyticsViewModel
+import cz.krokviak.kalai.barcode.BarcodeScannerActivity
 import cz.krokviak.kalai.camera.CameraActivity
 import cz.krokviak.kalai.common.DefaultRoute
 import cz.krokviak.kalai.common.FoodDetailRoute
@@ -49,7 +39,11 @@ import cz.krokviak.kalai.detail.FoodDetailViewModel
 import cz.krokviak.kalai.home.components.BottomNavBar
 import cz.krokviak.kalai.nutrientedit.NutrientEditScene
 import cz.krokviak.kalai.nutrientedit.NutrientEditViewModel
-import io.github.alexzhirkevich.cupertino.theme.CupertinoTheme
+import cz.krokviak.kalai.settings.ProfilePage
+import cz.krokviak.kalai.settings.SettingsPage
+import cz.krokviak.kalai.settings.SettingsViewModel
+import cz.krokviak.kalai.theme.AppTheme
+import cz.krokviak.kalai.theme.KalaiTheme
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
@@ -59,6 +53,7 @@ class MainActivity : ComponentActivity() {
     private val foodDetailViewModel: FoodDetailViewModel by viewModel()
     private val nutrientEditViewModel: NutrientEditViewModel by viewModel()
     private val analyticsViewModel: AnalyticsViewModel by viewModel()
+    private val settingsViewModel: SettingsViewModel by viewModel()
 
     /**
      * Launcher for the camera Activity, handles the result of taking a picture.
@@ -68,16 +63,26 @@ class MainActivity : ComponentActivity() {
             handleCameraResult(result)
         }
 
+    /**
+     * Launcher for the barcode scanner Activity.
+     */
+    private val barcodeResultLauncher: ActivityResultLauncher<Intent> =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            handleBarcodeResult(result)
+        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            CupertinoTheme {
+            KalaiTheme {
                 AppContent(
                     mainViewModel = mainViewModel,
                     foodDetailViewModel = foodDetailViewModel,
                     nutrientEditViewModel = nutrientEditViewModel,
                     analyticsViewModel = analyticsViewModel,
-                    cameraResultLauncher = cameraResultLauncher
+                    settingsViewModel = settingsViewModel,
+                    cameraResultLauncher = cameraResultLauncher,
+                    barcodeResultLauncher = barcodeResultLauncher
                 )
             }
         }
@@ -94,10 +99,25 @@ class MainActivity : ComponentActivity() {
             val imageBytes = file?.readBytes()
             if (imageBytes != null) {
                 mainViewModel.addFoodItemFromBytes(
-                    context = application,
                     imageBytes = imageBytes
                 )
             }
+        }
+    }
+
+    /**
+     * Handle the result from the barcode scanner activity.
+     */
+    private fun handleBarcodeResult(result: ActivityResult) {
+        if (result.resultCode == RESULT_OK) {
+            val data = result.data ?: return
+            mainViewModel.addFoodItemFromBarcode(
+                name = data.getStringExtra("name") ?: "Neznámý produkt",
+                calories = data.getIntExtra("calories", 0),
+                protein = data.getIntExtra("protein", 0),
+                fat = data.getIntExtra("fat", 0),
+                carbs = data.getIntExtra("carbs", 0)
+            )
         }
     }
 }
@@ -111,7 +131,9 @@ fun AppContent(
     foodDetailViewModel: FoodDetailViewModel,
     nutrientEditViewModel: NutrientEditViewModel,
     analyticsViewModel: AnalyticsViewModel,
-    cameraResultLauncher: ActivityResultLauncher<Intent>
+    settingsViewModel: SettingsViewModel,
+    cameraResultLauncher: ActivityResultLauncher<Intent>,
+    barcodeResultLauncher: ActivityResultLauncher<Intent>
 ) {
     val navController = rememberNavController()
     val context = LocalContext.current
@@ -126,13 +148,15 @@ fun AppContent(
             MainScaffold(
                 mainViewModel = mainViewModel,
                 analyticsViewModel = analyticsViewModel,
+                settingsViewModel = settingsViewModel,
                 onCaptureClick = {
-                    // Launch the camera Activity.
                     cameraResultLauncher.launch(
-                        Intent(
-                            context,
-                            CameraActivity::class.java
-                        )
+                        Intent(context, CameraActivity::class.java)
+                    )
+                },
+                onBarcodeScanClick = {
+                    barcodeResultLauncher.launch(
+                        Intent(context, BarcodeScannerActivity::class.java)
                     )
                 },
                 navController = navController
@@ -146,7 +170,7 @@ fun AppContent(
             val food: FoodDetailRoute = backStackEntry.toRoute()
             val uiState by foodDetailViewModel.uiState.collectAsState()
             LaunchedEffect(food.id) {
-                foodDetailViewModel.loadFood(context, food.id)
+                foodDetailViewModel.loadFood(food.id)
             }
             FoodDetailScene(
                 foodDetailViewModel = foodDetailViewModel,
@@ -186,12 +210,14 @@ fun AppContent(
 fun MainScaffold(
     mainViewModel: MainViewModel,
     analyticsViewModel: AnalyticsViewModel,
+    settingsViewModel: SettingsViewModel,
     onCaptureClick: () -> Unit,
+    onBarcodeScanClick: () -> Unit,
     navController: NavController
 ) {
     val pagerState = rememberPagerState(
         initialPage = 0,
-        pageCount = { 3 }
+        pageCount = { 4 }
     )
     val scope = rememberCoroutineScope()
     val uiState by mainViewModel.uiState.collectAsState()
@@ -204,37 +230,20 @@ fun MainScaffold(
     }
 
     Scaffold(
-        containerColor = Color.Transparent,
+        containerColor = AppTheme.colors.background,
         bottomBar = {
             BottomNavBar(
                 currentPage = currentPage,
                 onSceneSelected = { page ->
                     scope.launch { pagerState.animateScrollToPage(page) }
-                }
+                },
+                onCaptureClick = onCaptureClick,
+                onBarcodeScanClick = onBarcodeScanClick
             )
         },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = onCaptureClick,
-                containerColor = Color.Black,
-                shape = CircleShape,
-                modifier = Modifier
-                    .offset(y = 48.dp)
-                    .size(72.dp),
-                elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 0.dp),
-                contentColor = Color.White
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Add,
-                    contentDescription = "Add",
-                    modifier = Modifier.size(32.dp)
-                )
-            }
-        },
-        floatingActionButtonPosition = FabPosition.End
     ) { innerPadding ->
         HorizontalPager(
-            beyondViewportPageCount = 3,
+            beyondViewportPageCount = 4,
             state = pagerState,
             modifier = Modifier
                 .fillMaxSize()
@@ -252,8 +261,16 @@ fun MainScaffold(
                     analyticsViewModel = analyticsViewModel,
                     modifier = Modifier.fillMaxSize()
                 )
-                2 -> Text(
-                    text = "Settings",
+                2 -> {
+                    val settingsUiState by settingsViewModel.uiState.collectAsState()
+                    ProfilePage(
+                        uiState = settingsUiState,
+                        viewModel = settingsViewModel,
+                        navController = navController,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+                3 -> SettingsPage(
                     modifier = Modifier.fillMaxSize()
                 )
             }

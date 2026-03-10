@@ -28,7 +28,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import cz.krokviak.kalai.detail.components.FoodBottomSheetCard
@@ -69,7 +68,6 @@ fun FoodDetailScene(
             onDeleteClick = {}
         )
 
-        val context = LocalContext.current
         // Bottom Sheet
         FoodBottomSheetCard(
             name = uiState.name,
@@ -86,10 +84,10 @@ fun FoodDetailScene(
                 .height(500.dp) // Fixed height
                 .align(Alignment.BottomCenter),
             onFinish = {
-                foodDetailViewModel.finish(context)
+                foodDetailViewModel.finish()
                 onExitClick()
             },
-            onFixResult = { foodDetailViewModel.fixResult(context) }
+            onFixResult = { foodDetailViewModel.fixResult() }
         )
     }
 }

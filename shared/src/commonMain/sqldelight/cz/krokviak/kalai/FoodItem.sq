@@ -1,0 +1,73 @@
+import kotlin.Int;
+import kotlin.Boolean;
+
+CREATE TABLE food_items (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL DEFAULT 'Neznámé jídlo',
+    calories INTEGER AS Int NOT NULL DEFAULT 0,
+    protein INTEGER AS Int NOT NULL DEFAULT 0,
+    fat INTEGER AS Int NOT NULL DEFAULT 0,
+    carbs INTEGER AS Int NOT NULL DEFAULT 0,
+    portion INTEGER AS Int NOT NULL DEFAULT 1,
+    healthScore INTEGER AS Int NOT NULL DEFAULT 0,
+    createdAt TEXT NOT NULL,
+    updatedAt TEXT NOT NULL,
+    localImagePath TEXT NOT NULL,
+    loading INTEGER AS Boolean NOT NULL DEFAULT 1
+);
+
+getAllFoodItems:
+SELECT * FROM food_items ORDER BY createdAt DESC;
+
+getFoodItemsForDate:
+SELECT * FROM food_items WHERE date(createdAt) = ? ORDER BY createdAt DESC;
+
+getTotalCaloriesForDate:
+SELECT SUM(calories) FROM food_items WHERE date(createdAt) = ?;
+
+getTotalFatsForDate:
+SELECT SUM(fat) FROM food_items WHERE date(createdAt) = ?;
+
+getTotalCarbsForDate:
+SELECT SUM(carbs) FROM food_items WHERE date(createdAt) = ?;
+
+getTotalProteinForDate:
+SELECT SUM(protein) FROM food_items WHERE date(createdAt) = ?;
+
+insertFoodItem:
+INSERT INTO food_items (name, calories, protein, fat, carbs, portion, healthScore, createdAt, updatedAt, localImagePath, loading)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+lastInsertRowId:
+SELECT last_insert_rowid();
+
+updateFoodItem:
+UPDATE food_items SET
+    name = ?,
+    calories = ?,
+    protein = ?,
+    fat = ?,
+    carbs = ?,
+    portion = ?,
+    healthScore = ?,
+    updatedAt = ?,
+    localImagePath = ?,
+    loading = ?
+WHERE id = ?;
+
+deleteFoodItem:
+DELETE FROM food_items WHERE id = ?;
+
+getFoodItem:
+SELECT * FROM food_items WHERE id = ?;
+
+getDailyMacroTotalsInRange:
+SELECT
+    date(createdAt) AS day,
+    SUM(protein) AS totalProtein,
+    SUM(carbs) AS totalCarbs,
+    SUM(fat) AS totalFat
+FROM food_items
+WHERE date(createdAt) BETWEEN ? AND ?
+GROUP BY date(createdAt)
+ORDER BY day ASC;

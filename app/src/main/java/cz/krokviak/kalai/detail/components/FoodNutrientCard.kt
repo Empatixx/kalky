@@ -13,6 +13,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
 import cz.krokviak.kalai.R
+import cz.krokviak.kalai.theme.AppTheme
 import io.github.alexzhirkevich.cupertino.ExperimentalCupertinoApi
 import io.github.alexzhirkevich.cupertino.section.CupertinoSection
 
@@ -22,14 +23,14 @@ fun PhotoNutrientCard(
     label: String,
     value: String,
     icon: ImageVector,
-    iconTintColor: Color = Color.Black,
+    iconTintColor: Color = AppTheme.colors.onBackground,
     modifier: Modifier = Modifier
 ) {
     CupertinoSection(
         shape = RoundedCornerShape(16.dp),
         contentPadding = PaddingValues(0.dp),
         modifier = modifier
-            .border(width = 1.dp, color = Color.LightGray, shape = RoundedCornerShape(16.dp)).fillMaxWidth(),
+            .border(width = 1.dp, color = AppTheme.colors.border, shape = RoundedCornerShape(16.dp)).fillMaxWidth(),
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -37,7 +38,7 @@ fun PhotoNutrientCard(
         ) {
             Box(
                 modifier = Modifier
-                    .background(colorResource(R.color.lightBlueGray), RoundedCornerShape(16.dp))
+                    .background(AppTheme.colors.surfaceSecondary, RoundedCornerShape(16.dp))
                     .padding(8.dp)
             ) {
                 Icon(

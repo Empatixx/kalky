@@ -40,16 +40,18 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import cz.krokviak.kalai.R
 import cz.krokviak.kalai.common.entities.FoodItemEntity
+import cz.krokviak.kalai.theme.AppTheme
 import io.github.alexzhirkevich.cupertino.CupertinoIcon
 import io.github.alexzhirkevich.cupertino.CupertinoText
 import io.github.alexzhirkevich.cupertino.ExperimentalCupertinoApi
 import io.github.alexzhirkevich.cupertino.section.CupertinoSection
-import org.threeten.bp.format.DateTimeFormatter
+import cz.krokviak.kalai.common.formatTime
 
 @Composable
 fun FoodItemCard(
@@ -82,7 +84,7 @@ fun FoodItemLoadedCard(
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
         contentPadding = PaddingValues(0.dp),
-        color = colorResource(id = R.color.lightBlueGray)
+        color = AppTheme.colors.surfaceSecondary
     ) {
         Row(modifier = Modifier.fillMaxWidth()) {
             FoodItemImage(foodItem = foodItem)
@@ -95,7 +97,7 @@ fun FoodItemLoadedCard(
 fun FoodItemImage(foodItem: FoodItemEntity) {
     // Compute the badge time only when foodItem.createdAt changes
     val badgeTime = remember(foodItem.createdAt) {
-        DateTimeFormatter.ofPattern("HH:mm").format(foodItem.createdAt)
+        foodItem.createdAt.formatTime()
     }
     Box(
         modifier = Modifier
@@ -149,8 +151,9 @@ fun RowScope.FoodItemInfo(foodItem: FoodItemEntity) {
     ) {
         CupertinoText(
             text = foodItem.name ?: "Neznámé jídlo",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold
+            fontSize = 18.sp,
+            fontWeight = FontWeight.ExtraBold,
+            color = AppTheme.colors.onBackground
         )
         Spacer(modifier = Modifier.height(8.dp))
         CaloriesRow(calories = foodItem.calories)
@@ -172,7 +175,7 @@ fun CaloriesRow(calories: Int) {
             modifier = Modifier.size(24.dp)
         )
         Spacer(modifier = Modifier.width(4.dp))
-        CupertinoText(text = "$calories kcal")
+        CupertinoText(text = "$calories kcal", fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = AppTheme.colors.onBackground)
     }
 }
 
@@ -217,7 +220,7 @@ fun NutrientItem(
             tint = colorResource(id = tintRes)
         )
         Spacer(modifier = Modifier.width(4.dp))
-        CupertinoText(text = valueText)
+        CupertinoText(text = valueText, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = AppTheme.colors.onBackground)
     }
 }
 
@@ -232,7 +235,7 @@ fun FoodItemLoadingCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         contentPadding = PaddingValues(0.dp),
-        color = colorResource(id = R.color.lightBlueGray)
+        color = AppTheme.colors.surfaceSecondary
     ) {
         Row(modifier = Modifier.fillMaxWidth()) {
             FoodItemLoadingImage(foodItem = foodItem, progress = progress)
@@ -273,8 +276,8 @@ fun FoodItemLoadingImage(
         ) {
             CircularPercentageIndicator(
                 percentage = progress,
-                backgroundColor = colorResource(id = R.color.lightBlueGray).copy(alpha = 0.5f),
-                progressColor = colorResource(id = R.color.lightBlueGray),
+                backgroundColor = AppTheme.colors.surfaceSecondary.copy(alpha = 0.5f),
+                progressColor = AppTheme.colors.surfaceSecondary,
                 modifier = Modifier.size(70.dp)
             )
         }
@@ -292,7 +295,8 @@ fun RowScope.FoodItemLoadingInfo() {
         CupertinoText(
             text = "Počítám makroživiny...",
             style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            color = AppTheme.colors.onBackground
         )
         Spacer(modifier = Modifier.height(8.dp))
         // Skeleton placeholder for the calorie row

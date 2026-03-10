@@ -1,0 +1,18 @@
+import kotlin.Int;
+
+CREATE TABLE nutrient_settings (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    targetCalories INTEGER AS Int NOT NULL DEFAULT 0,
+    targetProtein INTEGER AS Int NOT NULL DEFAULT 0,
+    targetFat INTEGER AS Int NOT NULL DEFAULT 0,
+    targetCarbs INTEGER AS Int NOT NULL DEFAULT 0,
+    createdAt TEXT NOT NULL,
+    updatedAt TEXT NOT NULL
+);
+
+getLatestNutrientSettings:
+SELECT * FROM nutrient_settings ORDER BY createdAt DESC LIMIT 1;
+
+insertNutrientSettings:
+INSERT INTO nutrient_settings (targetCalories, targetProtein, targetFat, targetCarbs, createdAt, updatedAt)
+VALUES (?, ?, ?, ?, ?, ?);

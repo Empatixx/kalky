@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cz.krokviak.kalai.R
 import cz.krokviak.kalai.nutrientedit.components.NutrientEditRow
+import cz.krokviak.kalai.theme.AppTheme
 import cz.krokviak.kalai.nutrientedit.components.VerticalCalorieCard
 import io.github.alexzhirkevich.cupertino.CupertinoText
 
@@ -55,7 +56,7 @@ fun NutrientEditScene(
 
         CupertinoText(
             text = "Bilkoviny",
-            color = Color.Black,
+            color = AppTheme.colors.onBackground,
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.fillMaxWidth()
@@ -70,7 +71,7 @@ fun NutrientEditScene(
         )
         CupertinoText(
             text = "Sacharidy",
-            color = Color.Black,
+            color = AppTheme.colors.onBackground,
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.fillMaxWidth()
@@ -85,7 +86,7 @@ fun NutrientEditScene(
         )
         CupertinoText(
             text = "Tuky",
-            color = Color.Black,
+            color = AppTheme.colors.onBackground,
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.fillMaxWidth()
@@ -124,13 +125,13 @@ fun NutrientEditTopBar(
             Icon(
                 imageVector = Icons.Default.ArrowBack,
                 contentDescription = "Go Back",
-                tint = Color.White
+                tint = AppTheme.colors.onPrimary
             )
         }
         CupertinoText(
             text = title,
             style = MaterialTheme.typography.titleLarge,
-            color = Color.Black,
+            color = AppTheme.colors.onBackground,
             modifier = Modifier.align(Alignment.Center)
         )
     }

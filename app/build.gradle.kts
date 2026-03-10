@@ -3,7 +3,6 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.jetbrains.kotlin.android)
-    id("org.jetbrains.kotlin.kapt")
 }
 
 android {
@@ -41,55 +40,55 @@ android {
 }
 
 dependencies {
+    implementation(project(":shared"))
+
     val composeBom = platform("androidx.compose:compose-bom:2025.02.00")
     implementation(composeBom)
-    androidTestImplementation(composeBom)
-    androidTestImplementation(libs.androidx.ui.test.junit4)
-    debugImplementation(libs.androidx.ui.test.manifest)
+
+    // Compose UI
     implementation(libs.androidx.material.icons.core)
     implementation(libs.androidx.material.icons.extended)
-    implementation(libs.coil.compose)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.material3.android)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.foundation)
+
+    // CameraX
     implementation(libs.androidx.camera.core)
     implementation(libs.androidx.camera.camera2)
     implementation(libs.androidx.camera.lifecycle)
     implementation(libs.androidx.camera.view)
-    implementation(libs.androidx.camera.video)
-    implementation(libs.androidx.ui.viewbinding)
-    implementation(libs.androidx.adaptive)
-    implementation(libs.androidx.runtime.livedata)
-    implementation(libs.androidx.runtime.rxjava2)
-    implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.mpandroidchart)
-    implementation(libs.material)
-    implementation(libs.androidx.activity)
-    implementation(libs.androidx.constraintlayout)
-    implementation(libs.androidx.material3.android)
-    implementation(libs.retrofit)
-    implementation(libs.converter.jackson)
-    implementation(libs.kotlinx.coroutines.core)
-    implementation(libs.kotlinx.coroutines.android)
-    implementation(libs.jackson.module.kotlin)
-    implementation(libs.androidx.room.runtime)
-    implementation(libs.threetenabp)
+
+    // ML Kit Barcode
+    implementation(libs.barcode.scanning)
+
+    // Image loading
+    implementation(libs.coil.compose)
+
+    // UI libraries
     implementation(libs.github.cupertino)
-    implementation(libs.androidx.room.ktx)
     implementation(libs.haze)
     implementation(libs.haze.materials)
-    implementation(libs.androidx.navigation.compose)
-    implementation(libs.androidx.foundation)
+    implementation(libs.compose.charts)
+    implementation(libs.vico.multiplatform)
+
+    // AndroidX
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
+
+    // Kotlin
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.datetime)
     implementation(libs.kotlinx.serialization.json)
-    implementation (libs.compose.charts)
+
+    // DI
     implementation(libs.insert.koin.koin.core)
     implementation(libs.koin.android)
-    kapt(libs.androidx.room.compiler)
-    implementation(libs.vico.compose)
-    implementation(libs.vico.compose.m2)
-    implementation(libs.vico.compose.m3)
-    implementation(libs.vico.multiplatform)
-    implementation(libs.vico.views)
+
+    // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.min
 import cz.krokviak.kalai.R
+import cz.krokviak.kalai.theme.AppTheme
 import io.github.alexzhirkevich.cupertino.CupertinoIcon
 import ir.ehsannarmani.compose_charts.PieChart
 import ir.ehsannarmani.compose_charts.models.Pie
@@ -22,13 +23,13 @@ fun MacroNutrientDonutChart(
     modifier: Modifier = Modifier,
     percentage: Float,
     activeColor: Color,
-    inactiveColor: Color = colorResource(id = R.color.lightBlueGray),
+    inactiveColor: Color = AppTheme.colors.surfaceSecondary,
     strokeWidthFraction: Float = 0.10f,
     centerIconBackgroundFraction: Float = 0.4f,
     centerIcon: ImageVector? = null,
     iconColor: Color = activeColor,
     iconFraction: Float = 0.2f,
-    centerIconBackgroundColor: Color = colorResource(id = R.color.lightBlueGray),
+    centerIconBackgroundColor: Color = AppTheme.colors.surfaceSecondary,
 ) {
     // BoxWithConstraints gives us maxWidth & maxHeight of the parent
     BoxWithConstraints(

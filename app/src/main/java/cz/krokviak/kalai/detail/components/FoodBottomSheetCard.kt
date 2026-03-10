@@ -26,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cz.krokviak.kalai.R
+import cz.krokviak.kalai.theme.AppTheme
 import io.github.alexzhirkevich.cupertino.CupertinoText
 import io.github.alexzhirkevich.cupertino.ExperimentalCupertinoApi
 import io.github.alexzhirkevich.cupertino.section.CupertinoSection
@@ -52,7 +53,7 @@ fun BoxScope.FoodBottomSheetCard(
             .fillMaxSize()
             .clip(RoundedCornerShape(16.dp))
             .align(Alignment.BottomCenter),
-        color = colorResource(id = R.color.lightBlueGray),
+        color = AppTheme.colors.surfaceSecondary,
         contentPadding = PaddingValues(0.dp)
     ) {
         Column(

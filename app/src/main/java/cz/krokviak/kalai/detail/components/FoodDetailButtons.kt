@@ -29,6 +29,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import cz.krokviak.kalai.R
+import cz.krokviak.kalai.theme.AppTheme
 import io.github.alexzhirkevich.cupertino.CupertinoButton
 import io.github.alexzhirkevich.cupertino.CupertinoText
 import io.github.alexzhirkevich.cupertino.ExperimentalCupertinoApi
@@ -43,7 +44,7 @@ fun FoodDetailButtons(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .background(color = Color.White),
+            .background(color = AppTheme.colors.surface),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         FixResultsButton(
@@ -74,12 +75,12 @@ fun FixResultsButton(
         modifier = modifier,
         shape = RoundedCornerShape(40),
         colors = ButtonColors(
-            contentColor = Color.Black,
-            containerColor = Color.White,
-            disabledContainerColor = Color.Black,
-            disabledContentColor = Color.White,
+            contentColor = AppTheme.colors.onBackground,
+            containerColor = AppTheme.colors.surface,
+            disabledContainerColor = AppTheme.colors.primary,
+            disabledContentColor = AppTheme.colors.onPrimary,
         ),
-        border = BorderStroke(1.dp, Color.Black),
+        border = BorderStroke(1.dp, AppTheme.colors.primary),
     ) {
         Icon(
             imageVector = ImageVector.vectorResource(R.drawable.iconai),
@@ -90,7 +91,7 @@ fun FixResultsButton(
         )
         Text(
             text = "Opravit",
-            color = Color.Black,
+            color = AppTheme.colors.onBackground,
         )
     }
 }
@@ -105,15 +106,15 @@ fun DoneButton(
         modifier = modifier,
         shape = RoundedCornerShape(40),
         colors = ButtonColors(
-            contentColor = Color.White,
-            containerColor = Color.Black,
-            disabledContainerColor = Color.Black,
-            disabledContentColor = Color.White,
+            contentColor = AppTheme.colors.onPrimary,
+            containerColor = AppTheme.colors.primary,
+            disabledContainerColor = AppTheme.colors.primary,
+            disabledContentColor = AppTheme.colors.onPrimary,
         )
     ) {
         Text(
             text = "Dokončit",
-            color = Color.White,
+            color = AppTheme.colors.onPrimary,
         )
     }
 }

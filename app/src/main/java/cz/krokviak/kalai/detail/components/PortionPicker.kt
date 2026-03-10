@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.*
+import cz.krokviak.kalai.theme.AppTheme
 import io.github.alexzhirkevich.cupertino.section.CupertinoSection
 
 @Composable
@@ -27,7 +28,7 @@ fun PortionPicker(
         modifier = modifier
             .border(
                 width = 1.dp,
-                color = Color.LightGray,
+                color = AppTheme.colors.border,
                 shape = RoundedCornerShape(32.dp)
             )
             .fillMaxWidth(),

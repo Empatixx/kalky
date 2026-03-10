@@ -1,10 +1,7 @@
 package cz.krokviak.kalai.analytics.components
 
-import androidx.compose.animation.core.EaseInOutCubic
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -14,143 +11,202 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.patrykandpatrick.vico.multiplatform.cartesian.CartesianChartHost
+import com.patrykandpatrick.vico.multiplatform.cartesian.axis.HorizontalAxis
+import com.patrykandpatrick.vico.multiplatform.cartesian.axis.VerticalAxis
+import com.patrykandpatrick.vico.multiplatform.cartesian.data.CartesianChartModelProducer
+import com.patrykandpatrick.vico.multiplatform.cartesian.data.CartesianValueFormatter
+import com.patrykandpatrick.vico.multiplatform.cartesian.data.lineSeries
+import com.patrykandpatrick.vico.multiplatform.cartesian.layer.CartesianLayerPadding
+import com.patrykandpatrick.vico.multiplatform.cartesian.layer.LineCartesianLayer
+import com.patrykandpatrick.vico.multiplatform.cartesian.layer.rememberLine
+import com.patrykandpatrick.vico.multiplatform.cartesian.layer.rememberLineCartesianLayer
+import com.patrykandpatrick.vico.multiplatform.cartesian.rememberCartesianChart
+import com.patrykandpatrick.vico.multiplatform.cartesian.rememberVicoZoomState
+import com.patrykandpatrick.vico.multiplatform.cartesian.data.CartesianLayerRangeProvider
+import com.patrykandpatrick.vico.multiplatform.common.component.rememberTextComponent
+import com.patrykandpatrick.vico.multiplatform.common.data.ExtraStore
+import com.patrykandpatrick.vico.multiplatform.common.fill
+import cz.krokviak.kalai.common.repo.WeightEntry
+import cz.krokviak.kalai.theme.AppTheme
 import io.github.alexzhirkevich.cupertino.CupertinoText
 import io.github.alexzhirkevich.cupertino.section.CupertinoSection
-import ir.ehsannarmani.compose_charts.LineChart
-import ir.ehsannarmani.compose_charts.extensions.format
-import ir.ehsannarmani.compose_charts.models.AnimationMode
-import ir.ehsannarmani.compose_charts.models.DividerProperties
-import ir.ehsannarmani.compose_charts.models.DrawStyle
-import ir.ehsannarmani.compose_charts.models.GridProperties
-import ir.ehsannarmani.compose_charts.models.HorizontalIndicatorProperties
-import ir.ehsannarmani.compose_charts.models.LabelHelperProperties
-import ir.ehsannarmani.compose_charts.models.LabelProperties
-import ir.ehsannarmani.compose_charts.models.Line
 
 @Composable
 fun WeightLineChart(
-    weights: List<Double>,
-    currentWeight: Double = weights.lastOrNull() ?: 0.0,
+    weights: List<WeightEntry>,
     modifier: Modifier = Modifier
 ) {
     CupertinoSection(
         shape = RoundedCornerShape(32.dp),
         contentPadding = PaddingValues(0.dp),
-        modifier = Modifier
+        modifier = modifier
             .border(
                 width = 1.dp,
-                color = Color.LightGray,
+                color = AppTheme.colors.border,
                 shape = RoundedCornerShape(32.dp)
             )
             .fillMaxWidth(),
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .height(300.dp)
         ) {
             if (weights.isEmpty()) {
                 EmptyWeightLineChart()
             } else {
-                WeightLineChartInternal(
-                    weights = weights,
-                    currentWeight = currentWeight
-                )
+                WeightLineChartInternal(weights = weights)
             }
         }
     }
 }
 
 @Composable
-fun EmptyWeightLineChart() {
+private fun EmptyWeightLineChart() {
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
-    ){
+    ) {
         CupertinoText(
             text = "Zatím nemáme údaje o vaší váze",
-            color = Color.Black,
-            fontWeight = FontWeight.Bold,
+            color = AppTheme.colors.onBackground,
+            fontWeight = FontWeight.ExtraBold,
             fontSize = 24.sp
         )
         CupertinoText(
-            text = "Zatím nemáme údaje o vaší váze. Přidejte je v nastavení.",
-            color = Color.Black,
-            fontSize = 16.sp
+            text = "Přidejte je v nastavení.",
+            color = AppTheme.colors.onBackground,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.SemiBold
         )
     }
 }
 
-@Composable()
-fun WeightLineChartInternal(
-    weights: List<Double>,
-    currentWeight: Double = weights.lastOrNull() ?: 0.0
-){
+@Composable
+private fun WeightLineChartInternal(weights: List<WeightEntry>) {
+    val currentWeight = weights.last().weight
+    val avgWeight = weights.map { it.weight }.average()
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(horizontal = 16.dp, vertical = 12.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        CupertinoText(
-            text = "Váha",
-            color = Color.Black
-        )
-        CupertinoText(
-            text = currentWeight.format(1) + " kg",
-            color = Color.Black
-        )
+        Column {
+            CupertinoText(
+                text = "Aktuální váha",
+                color = AppTheme.colors.onBackgroundSecondary,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold
+            )
+            CupertinoText(
+                text = "%.1f kg".format(currentWeight),
+                color = AppTheme.colors.onBackground,
+                fontWeight = FontWeight.ExtraBold,
+                fontSize = 28.sp
+            )
+        }
+        Column(horizontalAlignment = Alignment.End) {
+            CupertinoText(
+                text = "Průměr",
+                color = AppTheme.colors.onBackgroundSecondary,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold
+            )
+            CupertinoText(
+                text = "%.1f kg".format(avgWeight),
+                color = AppTheme.colors.onBackground,
+                fontWeight = FontWeight.ExtraBold,
+                fontSize = 28.sp
+            )
+        }
     }
 
-    // Graph row below the header
+    val dateLabels = weights.map { entry ->
+        "${entry.date.dayOfMonth}.${entry.date.monthNumber}."
+    }
+
+    val modelProducer = remember { CartesianChartModelProducer() }
+    LaunchedEffect(weights) {
+        modelProducer.runTransaction {
+            lineSeries {
+                series(weights.indices.toList(), weights.map { it.weight })
+            }
+        }
+    }
+
+    val dateFormatter = CartesianValueFormatter { _, value, _ ->
+        dateLabels.getOrNull(value.toInt()) ?: " "
+    }
+
+    val line = LineCartesianLayer.rememberLine(
+        fill = LineCartesianLayer.LineFill.single(fill(AppTheme.colors.chartLine)),
+        areaFill = LineCartesianLayer.AreaFill.single(fill(AppTheme.colors.chartAreaFill)),
+    )
+
+    val axisLabel = rememberTextComponent(
+        style = TextStyle(color = AppTheme.colors.onBackground, fontSize = 12.sp)
+    )
+
     Row(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-            LineChart(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                gridProperties = GridProperties(false),
-                dividerProperties = DividerProperties(false),
-                data = remember {
-                    listOf(
-                        Line(
-                            values = weights,
-                            color = SolidColor(Color.Black),
-                            firstGradientFillColor = Color.Black.copy(alpha = .5f),
-                            secondGradientFillColor = Color.Transparent,
-                            strokeAnimationSpec = tween(2000, easing = EaseInOutCubic),
-                            gradientAnimationDelay = 1000,
-                            drawStyle = DrawStyle.Stroke(width = 2.dp),
-                            label = "Váha"
-                        )
-                    )
-                },
-                labelHelperProperties = LabelHelperProperties(false),
-                labelProperties = LabelProperties(false),
-                animationMode = AnimationMode.Together(delayBuilder = {
-                    it * 500L
-                }),
-                indicatorProperties = HorizontalIndicatorProperties(
-                    textStyle = TextStyle.Default,
-                    padding = 16.dp,
-                    contentBuilder = { value ->
-                        value.format(1) + " kg"
+        CartesianChartHost(
+            chart = rememberCartesianChart(
+                rememberLineCartesianLayer(
+                    lineProvider = LineCartesianLayer.LineProvider.series(line),
+                    rangeProvider = remember {
+                        object : CartesianLayerRangeProvider {
+                            override fun getMinY(minY: Double, maxY: Double, extraStore: ExtraStore): Double {
+                                val range = maxY - minY
+                                return if (range < 1.0) minY - 1.0 else minY - range * 0.1
+                            }
+                            override fun getMaxY(minY: Double, maxY: Double, extraStore: ExtraStore): Double {
+                                val range = maxY - minY
+                                return if (range < 1.0) maxY + 1.0 else maxY + range * 0.1
+                            }
+                        }
                     }
                 ),
-            )
-
+                startAxis = VerticalAxis.rememberStart(
+                    label = axisLabel,
+                    valueFormatter = CartesianValueFormatter { _, value, _ ->
+                        "${"%.1f".format(value)} kg"
+                    },
+                    itemPlacer = VerticalAxis.ItemPlacer.count({ 5 }),
+                    guideline = null,
+                    line = null,
+                    tick = null
+                ),
+                bottomAxis = HorizontalAxis.rememberBottom(
+                    label = axisLabel,
+                    itemPlacer = remember { HorizontalAxis.ItemPlacer.aligned() },
+                    guideline = null,
+                    line = null,
+                    tick = null,
+                    valueFormatter = dateFormatter
+                ),
+                layerPadding = { CartesianLayerPadding(scalableStart = 16.dp, scalableEnd = 16.dp) },
+            ),
+            modelProducer = modelProducer,
+            modifier = Modifier.fillMaxSize(),
+            zoomState = rememberVicoZoomState(zoomEnabled = false),
+        )
     }
 }

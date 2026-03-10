@@ -1,29 +1,27 @@
 package cz.krokviak.kalai.analytics.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -41,200 +39,200 @@ import com.patrykandpatrick.vico.multiplatform.cartesian.rememberCartesianChart
 import com.patrykandpatrick.vico.multiplatform.cartesian.rememberVicoZoomState
 import com.patrykandpatrick.vico.multiplatform.common.component.LineComponent
 import com.patrykandpatrick.vico.multiplatform.common.component.rememberLineComponent
+import com.patrykandpatrick.vico.multiplatform.common.component.rememberTextComponent
+import com.patrykandpatrick.vico.multiplatform.cartesian.data.CartesianLayerRangeProvider
 import com.patrykandpatrick.vico.multiplatform.common.data.ExtraStore
 import com.patrykandpatrick.vico.multiplatform.common.fill
 import com.patrykandpatrick.vico.multiplatform.common.shape.CorneredShape
 import com.patrykandpatrick.vico.multiplatform.common.shape.Shape
 import cz.krokviak.kalai.R
 import cz.krokviak.kalai.analytics.CaloriesBar
+import cz.krokviak.kalai.theme.AppTheme
+import io.github.alexzhirkevich.cupertino.CupertinoSegmentedControl
+import io.github.alexzhirkevich.cupertino.CupertinoSegmentedControlIndicator
+import io.github.alexzhirkevich.cupertino.CupertinoSegmentedControlTab
 import io.github.alexzhirkevich.cupertino.CupertinoText
+import io.github.alexzhirkevich.cupertino.ExperimentalCupertinoApi
 import io.github.alexzhirkevich.cupertino.section.CupertinoSection
 
-private val StartAxisItemPlacer = VerticalAxis.ItemPlacer.step({ 0.5 })
-
-private fun getColumnProvider(
-    top: LineComponent,
-    middle: LineComponent,
-    bottom: LineComponent
-) = object : ColumnCartesianLayer.ColumnProvider {
-    override fun getColumn(
-        entry: ColumnCartesianLayerModel.Entry,
-        seriesIndex: Int,
-        extraStore: ExtraStore,
-    ): LineComponent {
-        return when (seriesIndex) {
-            0 -> bottom       // First column: top
-            1 -> middle    // Second column: middle
-            else -> top // Any other series: bottom
-        }
-    }
-
-    override fun getWidestSeriesColumn(seriesIndex: Int, extraStore: ExtraStore): LineComponent {
-        return when (seriesIndex) {
-            0 -> bottom       // First column: top
-            1 -> middle    // Second column: middle
-            else -> top // Any other series: bottom
-        }
-    }
+private enum class NutrientTab(val label: String) {
+    CALORIES("Kalorie"),
+    PROTEIN("Bílkoviny"),
+    CARBS("Sacharidy"),
+    FAT("Tuky")
 }
 
-
+@OptIn(ExperimentalCupertinoApi::class)
 @Composable
 fun NutrientCalorieCard(
     modifier: Modifier = Modifier,
     bars: List<CaloriesBar>
 ) {
-    MacroNutrientLegendRowOnly(
-        proteinPercent = bars.sumBy { it.protein }.toFloat(),
-        carbsPercent = bars.sumBy { it.carbs }.toFloat(),
-        fatPercent = bars.sumBy { it.fat }.toFloat()
-    )
-    CupertinoSection(
-        shape = RoundedCornerShape(32.dp),
-        contentPadding = PaddingValues(0.dp),
-        modifier = Modifier
-            .border(
-                width = 1.dp,
-                color = Color.LightGray,
-                shape = RoundedCornerShape(32.dp)
-            )
-            .fillMaxWidth(),
+    var selectedTab by remember { mutableIntStateOf(0) }
+    val tabs = NutrientTab.entries
+
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        Column(modifier = Modifier.fillMaxWidth()
-            .height(300.dp)
-        ) {
-            if (bars.isEmpty()) {
-                EmptyNutrientCalorieCard()
-            } else {
-                NutrientCalorieCardInternal(
-                    modifier = modifier,
-                    bars = bars
+        CupertinoSegmentedControl(
+            selectedTabIndex = selectedTab,
+            modifier = Modifier.fillMaxWidth(),
+            indicator = { tabPositions ->
+                CupertinoSegmentedControlIndicator(
+                    selectedTabIndex = selectedTab,
+                    tabPositions = tabPositions
                 )
+            },
+            tabs = {
+                tabs.forEachIndexed { index, tab ->
+                    CupertinoSegmentedControlTab(
+                        onClick = { selectedTab = index },
+                        isSelected = index == selectedTab
+                    ) {
+                        Text(
+                            text = tab.label,
+                            fontSize = 17.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        )
+                    }
+                }
+            }
+        )
+
+        CupertinoSection(
+            shape = RoundedCornerShape(32.dp),
+            contentPadding = PaddingValues(0.dp),
+            modifier = Modifier
+                .border(
+                    width = 1.dp,
+                    color = AppTheme.colors.border,
+                    shape = RoundedCornerShape(32.dp)
+                )
+                .fillMaxWidth(),
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(400.dp)
+            ) {
+                if (bars.isEmpty()) {
+                    EmptyNutrientCard()
+                } else {
+                    val tab = tabs[selectedTab]
+                    if (tab == NutrientTab.CALORIES) {
+                        StackedCaloriesChart(bars = bars)
+                    } else {
+                        SingleNutrientChart(bars = bars, tab = tab)
+                    }
+                }
             }
         }
     }
 }
 
 @Composable
-fun EmptyNutrientCalorieCard(){
+private fun EmptyNutrientCard() {
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
-    ){
+    ) {
         CupertinoText(
             text = "Chybí informace o vaších kaloriích",
-            color = Color.Black,
-            fontWeight = FontWeight.Bold,
+            color = AppTheme.colors.onBackground,
+            fontWeight = FontWeight.ExtraBold,
             fontSize = 24.sp
         )
         CupertinoText(
             text = "Přidejte své kalorie v úvodu",
-            color = Color.Black,
-            fontSize = 16.sp
+            color = AppTheme.colors.onBackground,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.SemiBold
         )
     }
 }
 
+// Calories tab: stacked bars (protein + carbs + fat)
 @Composable
-fun NutrientCalorieCardInternal(
-    modifier: Modifier,
-    bars: List<CaloriesBar>
-) {
-    val avgCalories = remember(bars) {
-        bars.sumBy { it.totalCalories } / bars.size
-    }
-    // Header with title and calorie summary
+private fun StackedCaloriesChart(bars: List<CaloriesBar>) {
+    val avgCalories = bars.sumOf { it.totalCalories } / bars.size
+
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
+        modifier = Modifier.fillMaxWidth().padding(16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        CupertinoText(
-            text = "Průměrný denní příjem",
-            color = Color.Black
-        )
-        CupertinoText(
-            text = avgCalories.toString() + " kcal",
-            color = Color.Black
-        )
+        CupertinoText(text = "Průměrný denní příjem", color = AppTheme.colors.onBackground, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+        CupertinoText(text = "$avgCalories kcal", color = AppTheme.colors.onBackground, fontSize = 22.sp, fontWeight = FontWeight.ExtraBold)
     }
-    // Graph row with Vico’s stacked column chart
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    ) {
-        // Retrieve nutrient colors (as defined in your resources)
-        val proteinColor = colorResource(id = R.color.proteinColor)
-        val carbColor = colorResource(id = R.color.carbsColor)
-        val fatColor = colorResource(id = R.color.fatColor)
-        // Generate day labels directly from the bars data.
-        val days = bars.map { it.label }
-        // Create a custom value formatter that maps numeric indices to day names.
-        val dayFormatter = CartesianValueFormatter { _, value, _ ->
-            val index = value.toInt()
-            days.getOrNull(index) ?: ""
-        }
-        // Create and populate the Vico chart’s model.
-        val modelProducer = remember(bars) { CartesianChartModelProducer() }
-        LaunchedEffect(bars) {
-            // Generate nutrient series from the bars list.
-            val carbsSeries = bars.map { it.carbs.toDouble() * 4 }
-            val fatSeries = bars.map { it.fat.toDouble() * 9 }
-            val proteinSeries = bars.map { it.protein.toDouble() * 4 }
-            modelProducer.runTransaction {
-                columnSeries {
-                    // Note: The order here must match your column provider.
-                    series(days.indices.toList(), carbsSeries)
-                    series(days.indices.toList(), fatSeries)
-                    series(days.indices.toList(), proteinSeries)
-                }
+
+    val proteinColor = colorResource(id = R.color.proteinColor)
+    val carbColor = colorResource(id = R.color.carbsColor)
+    val fatColor = colorResource(id = R.color.fatColor)
+
+    val days = bars.map { it.label }
+    val dayFormatter = CartesianValueFormatter { _, value, _ ->
+        days.getOrNull(value.toInt()) ?: " "
+    }
+
+    val modelProducer = remember { CartesianChartModelProducer() }
+    LaunchedEffect(bars) {
+        modelProducer.runTransaction {
+            columnSeries {
+                series(days.indices.toList(), bars.map { it.carbs.toDouble() * 4 })
+                series(days.indices.toList(), bars.map { it.fat.toDouble() * 9 })
+                series(days.indices.toList(), bars.map { it.protein.toDouble() * 4 })
             }
         }
-        // Create the column components with the appropriate shapes and colors.
-        val topColumn =
-            rememberLineComponent(
-                fill = fill(proteinColor),
-                thickness = 8.dp,
-                shape = CorneredShape.rounded(topLeftPercent = 40, topRightPercent = 40),
-            )
-        val bottomColumn =
-            rememberLineComponent(
-                fill = fill(carbColor),
-                thickness = 8.dp,
-                shape = CorneredShape.rounded(bottomLeftPercent = 40, bottomRightPercent = 40),
-            )
-        val middleColumn =
-            rememberLineComponent(
-                fill = fill(fatColor),
-                thickness = 8.dp,
-                shape = Shape.Rectangle,
-            )
-        // Set up the Cartesian chart using the provided model and layer.
+    }
+
+    val topColumn = rememberLineComponent(
+        fill = fill(proteinColor),
+        thickness = 20.dp,
+        shape = CorneredShape.rounded(topLeftPercent = 40, topRightPercent = 40),
+    )
+    val middleColumn = rememberLineComponent(
+        fill = fill(fatColor),
+        thickness = 20.dp,
+        shape = Shape.Rectangle,
+    )
+    val bottomColumn = rememberLineComponent(
+        fill = fill(carbColor),
+        thickness = 20.dp,
+        shape = CorneredShape.rounded(bottomLeftPercent = 40, bottomRightPercent = 40),
+    )
+
+    val columnProvider = remember(topColumn, middleColumn, bottomColumn) {
+        stackedColumnProvider(topColumn, middleColumn, bottomColumn)
+    }
+
+    val axisLabel = rememberTextComponent(
+        style = TextStyle(color = AppTheme.colors.onBackground, fontSize = 12.sp)
+    )
+
+    Row(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         CartesianChartHost(
             chart = rememberCartesianChart(
                 rememberColumnCartesianLayer(
-                    columnProvider = remember(topColumn, middleColumn, middleColumn) {
-                        getColumnProvider(topColumn, middleColumn, bottomColumn)
-                    },
+                    columnProvider = columnProvider,
                     columnCollectionSpacing = 16.dp,
                     mergeMode = { ColumnCartesianLayer.MergeMode.Stacked },
                 ),
                 startAxis = VerticalAxis.rememberStart(
-                    valueFormatter = CartesianValueFormatter.decimal(suffix = " kcal"),
-                    itemPlacer = StartAxisItemPlacer,
-                    guideline = null,
-                    line = null,
-                    tick = null
+                    label = axisLabel,
+                    valueFormatter = CartesianValueFormatter { _, value, _ ->
+                        "${value.toInt()} kcal"
+                    },
+                    itemPlacer = VerticalAxis.ItemPlacer.count({ 5 }),
+                    guideline = null, line = null, tick = null
                 ),
                 bottomAxis = HorizontalAxis.rememberBottom(
+                    label = axisLabel,
                     itemPlacer = remember { HorizontalAxis.ItemPlacer.aligned() },
-                    guideline = null,
-                    line = null,
-                    tick = null,
+                    guideline = null, line = null, tick = null,
                     valueFormatter = dayFormatter
                 ),
                 layerPadding = { CartesianLayerPadding(scalableStart = 16.dp, scalableEnd = 16.dp) },
@@ -244,4 +242,130 @@ fun NutrientCalorieCardInternal(
             zoomState = rememberVicoZoomState(zoomEnabled = false),
         )
     }
+}
+
+// Protein/Carbs/Fat tabs: single-color bars
+@Composable
+private fun SingleNutrientChart(bars: List<CaloriesBar>, tab: NutrientTab) {
+    val values = bars.map { bar ->
+        when (tab) {
+            NutrientTab.PROTEIN -> bar.protein.toDouble()
+            NutrientTab.CARBS -> bar.carbs.toDouble()
+            NutrientTab.FAT -> bar.fat.toDouble()
+            else -> 0.0
+        }
+    }
+    val avg = if (values.isNotEmpty()) values.average().toInt() else 0
+
+    val barColor = when (tab) {
+        NutrientTab.PROTEIN -> colorResource(id = R.color.proteinColor)
+        NutrientTab.CARBS -> colorResource(id = R.color.carbsColor)
+        NutrientTab.FAT -> colorResource(id = R.color.fatColor)
+        else -> AppTheme.colors.onBackground
+    }
+    val headerTitle = when (tab) {
+        NutrientTab.PROTEIN -> "Průměr bílkovin"
+        NutrientTab.CARBS -> "Průměr sacharidů"
+        NutrientTab.FAT -> "Průměr tuků"
+        else -> ""
+    }
+
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        CupertinoText(text = headerTitle, color = AppTheme.colors.onBackground, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+        CupertinoText(text = "$avg g", color = AppTheme.colors.onBackground, fontSize = 22.sp, fontWeight = FontWeight.ExtraBold)
+    }
+
+    val days = bars.map { it.label }
+    val dayFormatter = CartesianValueFormatter { _, value, _ ->
+        days.getOrNull(value.toInt()) ?: " "
+    }
+
+    val modelProducer = remember { CartesianChartModelProducer() }
+    LaunchedEffect(bars, tab) {
+        modelProducer.runTransaction {
+            columnSeries {
+                series(days.indices.toList(), values)
+            }
+        }
+    }
+
+    val column = rememberLineComponent(
+        fill = fill(barColor),
+        thickness = 20.dp,
+        shape = CorneredShape.rounded(allPercent = 40),
+    )
+
+    val axisLabel = rememberTextComponent(
+        style = TextStyle(color = AppTheme.colors.onBackground, fontSize = 12.sp)
+    )
+
+    Row(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+        CartesianChartHost(
+            chart = rememberCartesianChart(
+                rememberColumnCartesianLayer(
+                    columnProvider = remember(column) {
+                        ColumnCartesianLayer.ColumnProvider.series(column)
+                    },
+                    columnCollectionSpacing = 16.dp,
+                    rangeProvider = remember {
+                        object : CartesianLayerRangeProvider {
+                            override fun getMinY(minY: Double, maxY: Double, extraStore: ExtraStore): Double {
+                                val range = maxY - minY
+                                return if (range < 1.0) minY - 1.0 else (minY - range * 0.1).coerceAtLeast(0.0)
+                            }
+                            override fun getMaxY(minY: Double, maxY: Double, extraStore: ExtraStore): Double {
+                                val range = maxY - minY
+                                return if (range < 1.0) maxY + 1.0 else maxY + range * 0.1
+                            }
+                        }
+                    }
+                ),
+                startAxis = VerticalAxis.rememberStart(
+                    label = axisLabel,
+                    valueFormatter = CartesianValueFormatter { _, value, _ ->
+                        "${value.toInt()} g"
+                    },
+                    itemPlacer = VerticalAxis.ItemPlacer.count({ 5 }),
+                    guideline = null, line = null, tick = null
+                ),
+                bottomAxis = HorizontalAxis.rememberBottom(
+                    label = axisLabel,
+                    itemPlacer = remember { HorizontalAxis.ItemPlacer.aligned() },
+                    guideline = null, line = null, tick = null,
+                    valueFormatter = dayFormatter
+                ),
+                layerPadding = { CartesianLayerPadding(scalableStart = 16.dp, scalableEnd = 16.dp) },
+            ),
+            modelProducer = modelProducer,
+            modifier = Modifier.fillMaxSize(),
+            zoomState = rememberVicoZoomState(zoomEnabled = false),
+        )
+    }
+}
+
+private fun stackedColumnProvider(
+    top: LineComponent,
+    middle: LineComponent,
+    bottom: LineComponent
+) = object : ColumnCartesianLayer.ColumnProvider {
+    override fun getColumn(
+        entry: ColumnCartesianLayerModel.Entry,
+        seriesIndex: Int,
+        extraStore: ExtraStore,
+    ) = when (seriesIndex) {
+        0 -> bottom
+        1 -> middle
+        else -> top
+    }
+
+    override fun getWidestSeriesColumn(seriesIndex: Int, extraStore: ExtraStore) =
+        when (seriesIndex) {
+            0 -> bottom
+            1 -> middle
+            else -> top
+        }
 }

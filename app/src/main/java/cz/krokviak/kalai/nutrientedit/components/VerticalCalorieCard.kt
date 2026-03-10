@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import cz.krokviak.kalai.theme.AppTheme
 import cz.krokviak.kalai.home.MainUiState
 import cz.krokviak.kalai.home.components.MacroNutrientDonutChart
 import io.github.alexzhirkevich.cupertino.CupertinoText
@@ -33,7 +34,7 @@ fun VerticalCalorieCard(
 ) {
     CupertinoSection(
         modifier = modifier
-            .border(width = 1.dp, color = Color.LightGray, shape = RoundedCornerShape(32.dp))
+            .border(width = 1.dp, color = AppTheme.colors.border, shape = RoundedCornerShape(32.dp))
             .fillMaxWidth(),
         shape = RoundedCornerShape(32.dp),
         contentPadding = PaddingValues(0.dp),
@@ -53,7 +54,7 @@ fun VerticalCalorieCard(
                 MacroNutrientDonutChart(
                     modifier = Modifier.matchParentSize(), // Chart fills the Box size
                     percentage = calorieRatio,
-                    activeColor = Color.Black,
+                    activeColor = AppTheme.colors.primary,
                     centerIcon = Icons.Outlined.LocalFireDepartment,
                 )
             }

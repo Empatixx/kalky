@@ -23,7 +23,7 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".detail.DetailActivity"
+            android:name=".barcode.BarcodeScannerActivity"
             android:exported="false" />
         <activity
             android:name=".camera.CameraActivity"

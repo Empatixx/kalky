@@ -27,6 +27,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import cz.krokviak.kalai.R
+import cz.krokviak.kalai.theme.AppTheme
 import io.github.alexzhirkevich.cupertino.CupertinoText
 import io.github.alexzhirkevich.cupertino.section.CupertinoSection
 
@@ -40,7 +41,7 @@ fun FoodHealthQualityCard(
         shape = RoundedCornerShape(16.dp),
         contentPadding = PaddingValues(0.dp),
         modifier = Modifier
-            .border(width = 1.dp, color = Color.LightGray, shape = RoundedCornerShape(16.dp)).fillMaxWidth(),
+            .border(width = 1.dp, color = AppTheme.colors.border, shape = RoundedCornerShape(16.dp)).fillMaxWidth(),
     ) {
         Row(
             modifier = Modifier.padding(12.dp),
@@ -49,7 +50,7 @@ fun FoodHealthQualityCard(
         ) {
             Box(
                 modifier = Modifier
-                    .background(colorResource(R.color.lightBlueGray), RoundedCornerShape(8.dp))
+                    .background(AppTheme.colors.surfaceSecondary, RoundedCornerShape(8.dp))
                     .padding(8.dp)
             ) {
                 Icon(
@@ -106,7 +107,7 @@ private fun FoodHealthQualityBar(
                 modifier = Modifier
                     .size(width = 16.dp, height = 8.dp)
                     .background(
-                        if (i <= threshold) Color.Green else Color.LightGray
+                        if (i <= threshold) Color.Green else AppTheme.colors.border
                     )
             )
         }

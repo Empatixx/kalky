@@ -32,6 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import cz.krokviak.kalai.theme.AppTheme
 import io.github.alexzhirkevich.LocalTextStyle
 import io.github.alexzhirkevich.cupertino.CupertinoIcon
 import io.github.alexzhirkevich.cupertino.CupertinoText
@@ -56,7 +57,7 @@ fun NutrientEditRow(
             .fillMaxWidth()
             .height(50.dp)
             .clip(RoundedCornerShape(16.dp))
-            .border(1.dp, Color.LightGray, RoundedCornerShape(16.dp)),
+            .border(1.dp, AppTheme.colors.border, RoundedCornerShape(16.dp)),
         contentPadding = PaddingValues(0.dp),
         dividerPadding = PaddingValues(0.dp),
     ) {
@@ -106,7 +107,8 @@ fun NutrientEditRow(
                             fontSize = 16.sp,
                             lineHeight = 20.sp,
                             fontWeight = FontWeight.Bold,
-                            textAlign = TextAlign.End
+                            textAlign = TextAlign.End,
+                            color = AppTheme.colors.onBackground
                         ),
                         modifier = Modifier
                             .weight(1f)
@@ -115,7 +117,7 @@ fun NutrientEditRow(
 
                     CupertinoText(
                         text = valueUnit,
-                        color = Color.Black,
+                        color = AppTheme.colors.onBackground,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold
                     )

@@ -22,4 +22,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "kalai"
 include(":app")
- 
+include(":shared")

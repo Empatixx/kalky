@@ -1,0 +1,28 @@
+import kotlin.Int;
+import kotlin.Float;
+
+CREATE TABLE personal_info (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    gender TEXT NOT NULL,
+    age INTEGER AS Int NOT NULL,
+    heightCm REAL AS Float NOT NULL,
+    weightKg REAL AS Float NOT NULL,
+    activityLevel INTEGER AS Int NOT NULL,
+    createdAt TEXT NOT NULL,
+    updatedAt TEXT NOT NULL
+);
+
+getLatestPersonalInfo:
+SELECT * FROM personal_info ORDER BY createdAt DESC LIMIT 1;
+
+insertPersonalInfo:
+INSERT INTO personal_info (gender, age, heightCm, weightKg, activityLevel, createdAt, updatedAt)
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+lastInsertRowId:
+SELECT last_insert_rowid();
+
+getPersonalInfoBetweenDates:
+SELECT * FROM personal_info
+WHERE date(createdAt) BETWEEN ? AND ?
+ORDER BY createdAt ASC;

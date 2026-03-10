@@ -10,6 +10,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.TextUnit
 
 
@@ -19,6 +21,8 @@ fun CupertinoAutoscaleText(
     style: TextStyle = LocalTextStyle.current,
     maxLines: Int = 1,
     fontSize: TextUnit,
+    color: Color = Color.Unspecified,
+    fontWeight: FontWeight? = null,
     stepFactor: Float = 0.95f
 ) {
     var currentFontSize by remember { mutableStateOf(fontSize) }
@@ -26,6 +30,8 @@ fun CupertinoAutoscaleText(
         Text(
             text = text,
             maxLines = maxLines,
+            color = color,
+            fontWeight = fontWeight,
             style = style.copy(fontSize = currentFontSize),
             onTextLayout = { textLayoutResult ->
                 if (textLayoutResult.hasVisualOverflow) {

@@ -1,0 +1,104 @@
+package cz.krokviak.kalai.common.repo
+
+import cz.krokviak.kalai.analytics.data.DailyMacroTotals
+import cz.krokviak.kalai.common.entities.FoodItemEntity
+import cz.krokviak.kalai.db.KalaiDatabase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.withContext
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
+
+class FoodRepository(
+    private val database: KalaiDatabase
+) {
+    private val queries get() = database.foodItemQueries
+
+    suspend fun insertFoodItem(item: FoodItemEntity): Long = withContext(Dispatchers.IO) {
+        database.transactionWithResult {
+            queries.insertFoodItem(
+                name = item.name,
+                calories = item.calories,
+                protein = item.protein,
+                fat = item.fat,
+                carbs = item.carbs,
+                portion = item.portion,
+                healthScore = item.healthScore,
+                createdAt = item.createdAt.toString(),
+                updatedAt = item.updatedAt.toString(),
+                localImagePath = item.localImagePath,
+                loading = item.loading
+            )
+            queries.lastInsertRowId().executeAsOne()
+        }
+    }
+
+    suspend fun updateFoodItem(item: FoodItemEntity) = withContext(Dispatchers.IO) {
+        queries.updateFoodItem(
+            name = item.name,
+            calories = item.calories,
+            protein = item.protein,
+            fat = item.fat,
+            carbs = item.carbs,
+            portion = item.portion,
+            healthScore = item.healthScore,
+            updatedAt = item.updatedAt.toString(),
+            localImagePath = item.localImagePath,
+            loading = item.loading,
+            id = item.id
+        )
+    }
+
+    suspend fun getFoodItemsForDate(dateStr: String): List<FoodItemEntity> = withContext(Dispatchers.IO) {
+        queries.getFoodItemsForDate(dateStr).executeAsList().map { it.toEntity() }
+    }
+
+    suspend fun getFoodItem(foodId: Long): FoodItemEntity? = withContext(Dispatchers.IO) {
+        queries.getFoodItem(foodId).executeAsOneOrNull()?.toEntity()
+    }
+
+    suspend fun getTotalCaloriesForDate(dateStr: String): Int = withContext(Dispatchers.IO) {
+        queries.getTotalCaloriesForDate(dateStr).executeAsOneOrNull()?.SUM ?: 0
+    }
+
+    suspend fun getTotalFatsForDate(dateStr: String): Int = withContext(Dispatchers.IO) {
+        queries.getTotalFatsForDate(dateStr).executeAsOneOrNull()?.SUM ?: 0
+    }
+
+    suspend fun getTotalCarbsForDate(dateStr: String): Int = withContext(Dispatchers.IO) {
+        queries.getTotalCarbsForDate(dateStr).executeAsOneOrNull()?.SUM ?: 0
+    }
+
+    suspend fun getTotalProteinForDate(dateStr: String): Int = withContext(Dispatchers.IO) {
+        queries.getTotalProteinForDate(dateStr).executeAsOneOrNull()?.SUM ?: 0
+    }
+
+    suspend fun getDailyMacroTotalsInRange(
+        startDate: String,
+        endDate: String
+    ): List<DailyMacroTotals> = withContext(Dispatchers.IO) {
+        queries.getDailyMacroTotalsInRange(startDate, endDate).executeAsList().map { row ->
+            DailyMacroTotals(
+                day = LocalDate.parse(row.day!!),
+                totalProtein = row.totalProtein,
+                totalCarbs = row.totalCarbs,
+                totalFat = row.totalFat
+            )
+        }
+    }
+}
+
+private fun cz.krokviak.kalai.Food_items.toEntity() = FoodItemEntity(
+    id = id,
+    name = name,
+    calories = calories,
+    protein = protein,
+    fat = fat,
+    carbs = carbs,
+    portion = portion,
+    healthScore = healthScore,
+    createdAt = Instant.parse(createdAt),
+    updatedAt = Instant.parse(updatedAt),
+    localImagePath = localImagePath,
+    loading = loading
+)

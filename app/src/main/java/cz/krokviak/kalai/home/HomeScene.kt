@@ -33,6 +33,7 @@ import cz.krokviak.kalai.home.components.CalorieCard
 import cz.krokviak.kalai.home.components.FoodItemCard
 import cz.krokviak.kalai.home.components.MacroNutrientCard
 import cz.krokviak.kalai.home.components.WeekDatePicker
+import cz.krokviak.kalai.theme.AppTheme
 import io.github.alexzhirkevich.cupertino.CupertinoText
 import io.github.alexzhirkevich.cupertino.ExperimentalCupertinoApi
 import io.github.alexzhirkevich.cupertino.section.CupertinoSection
@@ -106,8 +107,9 @@ fun HomeScene(
             Spacer(modifier = Modifier.height(12.dp))
             CupertinoText(
                 text = "Přidáno dnes",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = AppTheme.colors.onBackground
             )
             if (uiState.recentlyAddedItems.isEmpty()) {
                 Spacer(modifier = Modifier.height(12.dp))
@@ -147,11 +149,13 @@ private fun EmptyRecentlyAddedList() {
         ) {
             CupertinoText(
                 text = "Dneska jsi ještě nic nepřidal/a",
-                style = MaterialTheme.typography.titleMedium
+                style = MaterialTheme.typography.titleMedium,
+                color = AppTheme.colors.onBackground
             )
             CupertinoText(
                 text = "Klikni na tlačítko dole a přidej si první jídlo",
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
+                color = AppTheme.colors.onBackgroundSecondary
             )
         }
     }
