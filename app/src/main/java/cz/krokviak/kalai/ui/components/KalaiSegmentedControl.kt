@@ -24,6 +24,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cz.krokviak.kalai.theme.AppTheme
@@ -38,6 +39,7 @@ fun KalaiSegmentedControl(
     indicatorColor: Color = AppTheme.colors.surface,
     selectedTextColor: Color = AppTheme.colors.onBackground,
     unselectedTextColor: Color = AppTheme.colors.onBackgroundSecondary,
+    textSize: TextUnit = 16.sp,
 ) {
     val shape = RoundedCornerShape(8.dp)
 
@@ -94,7 +96,7 @@ fun KalaiSegmentedControl(
                             }
                             Text(
                                 text = label,
-                                fontSize = 16.sp,
+                                fontSize = textSize,
                                 fontWeight = FontWeight.SemiBold,
                                 color = if (index == selectedIndex) selectedTextColor else unselectedTextColor
                             )

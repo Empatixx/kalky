@@ -20,7 +20,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -42,6 +41,7 @@ import cz.krokviak.kalai.nutrientedit.NutrientEditViewModel
 import cz.krokviak.kalai.settings.ProfilePage
 import cz.krokviak.kalai.settings.SettingsPage
 import cz.krokviak.kalai.settings.SettingsViewModel
+import cz.krokviak.kalai.theme.AppTheme
 import cz.krokviak.kalai.theme.KalaiTheme
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -211,7 +211,7 @@ fun MainScaffold(
     }
 
     Scaffold(
-        containerColor = Color.Transparent,
+        containerColor = AppTheme.colors.background,
         bottomBar = {
             BottomNavBar(
                 currentPage = currentPage,
@@ -246,7 +246,6 @@ fun MainScaffold(
                     ProfilePage(
                         uiState = settingsUiState,
                         viewModel = settingsViewModel,
-                        navController = navController,
                         modifier = Modifier.fillMaxSize()
                     )
                 }

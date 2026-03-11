@@ -41,75 +41,79 @@ fun HomeScene(
     uiState: MainUiState,
     navController: NavController,
     model: MainViewModel
-) { LazyColumn(
+) {
+    LazyColumn(
         modifier = modifier
             .fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         contentPadding = PaddingValues(16.dp)
     ) {
-
-        item (){
-            WeekDatePicker(
-                currentDate = uiState.currentDate,
-                onDateChange = model::onDateSelected
-            )
+        item {
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable(){
-                        navController.navigate(NutrientEditRoute)
-                    }
-            ){
-                CalorieCard(
-                    uiState.currentCalories,
-                    uiState.maxCalories,
-                    uiState.calorieRatio(),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                WeekDatePicker(
+                    currentDate = uiState.currentDate,
+                    onDateChange = model::onDateSelected
                 )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            navController.navigate(NutrientEditRoute)
+                        }
                 ) {
-                    MacroNutrientCard(
-                        amount = "${uiState.currentProtein}g",
-                        maxAmount = "${uiState.maxProtein}g",
-                        title = "Bilkoviny",
-                        iconResId = R.drawable.chicken_leg,
-                        donutColor = colorResource(id = R.color.proteinColor),
-                        percentage = uiState.proteinRatio(),
+                    CalorieCard(
+                        uiState.currentCalories,
+                        uiState.maxCalories,
+                        uiState.calorieRatio(),
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    MacroNutrientCard(
-                        amount = "${uiState.currentCarbs}g",
-                        maxAmount = "${uiState.maxCarbs}g",
-                        title = "Sacharidy",
-                        iconResId = R.drawable.wheat,
-                        donutColor = colorResource(id = R.color.carbsColor),
-                        percentage = uiState.carbsRatio(),
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    MacroNutrientCard(
-                        amount = "${uiState.currentFats}g",
-                        maxAmount = "${uiState.maxFats}g",
-                        title = "Tuky",
-                        iconResId = R.drawable.avocado,
-                        donutColor = colorResource(id = R.color.fatColor),
-                        percentage = uiState.fatsRatio(),
-                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        MacroNutrientCard(
+                            amount = "${uiState.currentProtein}g",
+                            maxAmount = "${uiState.maxProtein}g",
+                            title = "Bilkoviny",
+                            iconResId = R.drawable.chicken_leg,
+                            donutColor = colorResource(id = R.color.proteinColor),
+                            percentage = uiState.proteinRatio(),
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        MacroNutrientCard(
+                            amount = "${uiState.currentCarbs}g",
+                            maxAmount = "${uiState.maxCarbs}g",
+                            title = "Sacharidy",
+                            iconResId = R.drawable.wheat,
+                            donutColor = colorResource(id = R.color.carbsColor),
+                            percentage = uiState.carbsRatio(),
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        MacroNutrientCard(
+                            amount = "${uiState.currentFats}g",
+                            maxAmount = "${uiState.maxFats}g",
+                            title = "Tuky",
+                            iconResId = R.drawable.avocado,
+                            donutColor = colorResource(id = R.color.fatColor),
+                            percentage = uiState.fatsRatio(),
+                        )
+                    }
                 }
-            }
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(
-                text = "Přidáno dnes",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.ExtraBold,
-                color = AppTheme.colors.onBackground
-            )
-            if (uiState.recentlyAddedItems.isEmpty()) {
                 Spacer(modifier = Modifier.height(12.dp))
-                EmptyRecentlyAddedList()
+                Text(
+                    text = "Přidáno dnes",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = AppTheme.colors.onBackground
+                )
+                if (uiState.recentlyAddedItems.isEmpty()) {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    EmptyRecentlyAddedList()
+                }
             }
         }
         items(uiState.recentlyAddedItems, key = {
@@ -117,7 +121,7 @@ fun HomeScene(
         }) { item ->
             FoodItemCard(
                 foodItem = item,
-                progress =  uiState.loadingProgressForItems[item.id] ?: 0,
+                progress = uiState.loadingProgressForItems[item.id] ?: 0,
                 onClick = {
                     navController.navigate(FoodDetailRoute(item.id))
                 }
@@ -125,7 +129,6 @@ fun HomeScene(
         }
 
     }
-
 }
 
 @Composable

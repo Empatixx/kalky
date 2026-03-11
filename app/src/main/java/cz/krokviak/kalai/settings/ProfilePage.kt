@@ -1,264 +1,370 @@
 package cz.krokviak.kalai.settings
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import cz.krokviak.kalai.common.NutrientEditRoute
+import cz.krokviak.kalai.settings.components.BmiIndicatorCard
+import cz.krokviak.kalai.settings.components.IosInlineValuePicker
 import cz.krokviak.kalai.theme.AppTheme
 import cz.krokviak.kalai.ui.components.KalaiButton
 import cz.krokviak.kalai.ui.components.KalaiCard
 import cz.krokviak.kalai.ui.components.KalaiSegmentedControl
+import java.util.Locale
+
+private enum class ProfilePickerField { WEIGHT, HEIGHT, AGE }
 
 @Composable
 fun ProfilePage(
     uiState: SettingsUiState,
     viewModel: SettingsViewModel,
-    navController: NavController,
     modifier: Modifier = Modifier
 ) {
     val genderOptions = listOf("Muž", "Žena")
-    val activityLabels = listOf("Sedavý", "Mírný", "Aktivní", "Velmi")
+    val activityLabels = listOf("Sedavý", "Mírný", "Aktivní", "Velmi aktivní")
+    val cardContentInset = 12.dp
+    val cardTextSize = 20.sp
+
+    val weightValues = remember {
+        (300..2500).map { index -> String.format(Locale.US, "%.1f", index / 10f) }
+    }
+    val heightValues = remember { (100..250).map { it.toString() } }
+    val ageValues = remember { (1..120).map { it.toString() } }
+
+    var activePickerField by remember { mutableStateOf<ProfilePickerField?>(null) }
+    var selectedWeightIndex by remember { mutableIntStateOf(resolveWeightIndex(uiState.weight)) }
+    var selectedHeightIndex by remember { mutableIntStateOf(resolveIndex(uiState.height, 100, 250)) }
+    var selectedAgeIndex by remember { mutableIntStateOf(resolveIndex(uiState.age, 1, 120)) }
 
     Column(
         modifier = modifier
             .fillMaxSize()
+            .background(AppTheme.colors.background)
             .verticalScroll(rememberScrollState())
-            .padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+            .padding(horizontal = 20.dp, vertical = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
-        Text(
-            text = "Profil",
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.ExtraBold,
-            color = AppTheme.colors.onBackground
-        )
-
-        // Personal info section
-        SectionHeader("Osobní údaje")
-
-        ProfileTextField(
-            label = "Váha",
-            value = uiState.weight,
-            unit = "kg",
-            onValueChange = viewModel::onWeightChange
-        )
-
-        ProfileTextField(
-            label = "Výška",
-            value = uiState.height,
-            unit = "cm",
-            onValueChange = viewModel::onHeightChange
-        )
-
-        ProfileTextField(
-            label = "Věk",
-            value = uiState.age,
-            unit = "let",
-            onValueChange = viewModel::onAgeChange,
-            keyboardType = KeyboardType.Number
-        )
-
-        // BMI display
-        uiState.bmi?.let { bmi ->
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp)
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(AppTheme.colors.surfaceSecondary)
-                    .border(1.dp, AppTheme.colors.border, RoundedCornerShape(16.dp))
-                    .padding(horizontal = 16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = "BMI",
-                    color = AppTheme.colors.onBackground,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-                Text(
-                    text = "%.1f".format(bmi),
-                    color = AppTheme.colors.onBackground,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.ExtraBold
-                )
-            }
-        }
-
-        // Gender selector
-        Text(
-            text = "Pohlaví",
-            color = AppTheme.colors.onBackground,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.SemiBold
-        )
-        KalaiSegmentedControl(
-            selectedIndex = genderOptions.indexOf(uiState.gender).coerceAtLeast(0),
-            items = genderOptions,
-            onItemSelected = { viewModel.onGenderChange(genderOptions[it]) },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        // Activity level
-        Text(
-            text = "Úroveň aktivity",
-            color = AppTheme.colors.onBackground,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.SemiBold
-        )
-        KalaiSegmentedControl(
-            selectedIndex = (uiState.activityLevel - 1).coerceIn(0, 3),
-            items = activityLabels,
-            onItemSelected = { viewModel.onActivityLevelChange(it + 1) },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        // Save button
-        KalaiButton(
-            onClick = { viewModel.save() },
+        Row(
             modifier = Modifier.fillMaxWidth(),
-            containerColor = AppTheme.colors.primary,
-            contentColor = AppTheme.colors.onPrimary
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
+                text = "Profil",
+                color = AppTheme.colors.onBackground,
+                fontSize = 44.sp,
+                fontWeight = FontWeight.ExtraBold
+            )
+            Text(
                 text = if (uiState.saved) "Uloženo" else "Uložit",
-                fontWeight = FontWeight.ExtraBold,
-                fontSize = 18.sp
+                color = Color(0xFF4A82E8),
+                fontSize = 22.sp,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.clickable { viewModel.save() }
             )
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Nutrient goals navigation
-        SectionHeader("Cíle výživy")
-
-        KalaiCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(16.dp))
-                .border(1.dp, AppTheme.colors.border, RoundedCornerShape(16.dp)),
-            contentPadding = PaddingValues(0.dp),
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { navController.navigate(NutrientEditRoute) }
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            SectionHeader(
+                title = "Osobní údaje",
+                startInset = cardContentInset,
+                emphasized = true
+            )
+            KalaiCard(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(14.dp),
+                color = AppTheme.colors.surface
             ) {
-                Text(
-                    text = "Úprava makroživin",
-                    color = AppTheme.colors.onBackground,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                    contentDescription = null,
-                    tint = AppTheme.colors.onBackgroundSecondary,
-                    modifier = Modifier.size(24.dp)
-                )
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    ProfileInfoRow(
+                        label = "Váha",
+                        value = uiState.weight.ifBlank { "--.-" },
+                        unit = "kg",
+                        onClick = {
+                            selectedWeightIndex = resolveWeightIndex(uiState.weight)
+                            activePickerField = ProfilePickerField.WEIGHT
+                        },
+                        textSize = cardTextSize
+                    )
+                    if (activePickerField == ProfilePickerField.WEIGHT) {
+                        IosInlineValuePicker(
+                            values = weightValues,
+                            selectedIndex = selectedWeightIndex,
+                            onIndexChanged = { selectedWeightIndex = it },
+                            onCancel = { activePickerField = null },
+                            onDone = {
+                                viewModel.onWeightChange(weightValues[selectedWeightIndex])
+                                activePickerField = null
+                            }
+                        )
+                    }
+                    RowDivider()
+
+                    ProfileInfoRow(
+                        label = "Výška",
+                        value = uiState.height.ifBlank { "--" },
+                        unit = "cm",
+                        onClick = {
+                            selectedHeightIndex = resolveIndex(uiState.height, 100, 250)
+                            activePickerField = ProfilePickerField.HEIGHT
+                        },
+                        textSize = cardTextSize
+                    )
+                    if (activePickerField == ProfilePickerField.HEIGHT) {
+                        IosInlineValuePicker(
+                            values = heightValues,
+                            selectedIndex = selectedHeightIndex,
+                            onIndexChanged = { selectedHeightIndex = it },
+                            onCancel = { activePickerField = null },
+                            onDone = {
+                                viewModel.onHeightChange(heightValues[selectedHeightIndex])
+                                activePickerField = null
+                            }
+                        )
+                    }
+                    RowDivider()
+
+                    ProfileInfoRow(
+                        label = "Věk",
+                        value = uiState.age.ifBlank { "--" },
+                        unit = "let",
+                        onClick = {
+                            selectedAgeIndex = resolveIndex(uiState.age, 1, 120)
+                            activePickerField = ProfilePickerField.AGE
+                        },
+                        textSize = cardTextSize
+                    )
+                    if (activePickerField == ProfilePickerField.AGE) {
+                        IosInlineValuePicker(
+                            values = ageValues,
+                            selectedIndex = selectedAgeIndex,
+                            onIndexChanged = { selectedAgeIndex = it },
+                            onCancel = { activePickerField = null },
+                            onDone = {
+                                viewModel.onAgeChange(ageValues[selectedAgeIndex])
+                                activePickerField = null
+                            }
+                        )
+                    }
+                }
             }
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
+        SectionHeader(
+            title = "Pohlaví",
+            startInset = cardContentInset,
+            emphasized = true
+        )
+        KalaiCard(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(14.dp),
+            color = AppTheme.colors.surface
+        ) {
+            KalaiSegmentedControl(
+                selectedIndex = genderOptions.indexOf(uiState.gender).coerceAtLeast(0),
+                items = genderOptions,
+                onItemSelected = { viewModel.onGenderChange(genderOptions[it]) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                trackColor = AppTheme.colors.surfaceSecondary,
+                indicatorColor = AppTheme.colors.surface,
+                textSize = cardTextSize
+            )
+        }
+
+        uiState.bmi?.let { bmi ->
+            BmiIndicatorCard(
+                bmi = bmi,
+                textSize = cardTextSize,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
+        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            SectionHeader(
+                title = "Úroveň aktivity",
+                startInset = cardContentInset,
+                emphasized = true
+            )
+            KalaiCard(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(14.dp),
+                color = AppTheme.colors.surface
+            ) {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    activityLabels.forEachIndexed { index, label ->
+                        val level = index + 1
+                        ActivityLevelRow(
+                            label = label,
+                            selected = uiState.activityLevel == level,
+                            onClick = { viewModel.onActivityLevelChange(level) },
+                            textSize = cardTextSize
+                        )
+                        if (index < activityLabels.lastIndex) {
+                            RowDivider()
+                        }
+                    }
+                }
+            }
+        }
+
+        KalaiButton(
+            onClick = { viewModel.save() },
+            modifier = Modifier.fillMaxWidth(),
+            containerColor = Color.Black,
+            contentColor = Color.White
+        ) {
+            Text(
+                text = "Uložit údaje",
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp
+            )
+        }
     }
 }
 
+private fun resolveWeightIndex(value: String): Int {
+    val parsed = value.toFloatOrNull() ?: return 509 // 80.9
+    return ((parsed * 10f).toInt() - 300).coerceIn(0, 2200)
+}
+
+private fun resolveIndex(value: String, minValue: Int, maxValue: Int): Int {
+    val parsed = value.toIntOrNull() ?: return (maxValue - minValue) / 2
+    return (parsed - minValue).coerceIn(0, maxValue - minValue)
+}
+
 @Composable
-private fun SectionHeader(title: String) {
+private fun SectionHeader(
+    title: String,
+    startInset: Dp,
+    emphasized: Boolean = false
+) {
     Text(
         text = title,
-        color = AppTheme.colors.onBackgroundSecondary,
-        fontSize = 15.sp,
-        fontWeight = FontWeight.Bold,
-        modifier = Modifier.padding(start = 4.dp)
+        color = AppTheme.colors.onBackground,
+        fontSize = if (emphasized) 20.sp else 16.sp,
+        fontWeight = if (emphasized) FontWeight.Bold else FontWeight.SemiBold,
+        modifier = Modifier.padding(start = startInset)
     )
 }
 
 @Composable
-private fun ProfileTextField(
+private fun ProfileInfoRow(
     label: String,
     value: String,
     unit: String,
-    onValueChange: (String) -> Unit,
-    keyboardType: KeyboardType = KeyboardType.Decimal
+    onClick: () -> Unit,
+    textSize: TextUnit = 20.sp
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(50.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .border(1.dp, AppTheme.colors.border, RoundedCornerShape(16.dp))
-            .padding(horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+            .height(56.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .clickable(onClick = onClick)
+            .padding(horizontal = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = label,
             color = AppTheme.colors.onBackground,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.SemiBold
+            fontSize = textSize,
+            modifier = Modifier.weight(1f)
         )
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.End
-        ) {
-            BasicTextField(
-                value = value,
-                singleLine = true,
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = keyboardType),
-                onValueChange = onValueChange,
-                textStyle = LocalTextStyle.current.copy(
-                    fontSize = 18.sp,
-                    lineHeight = 22.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    textAlign = TextAlign.End,
-                    color = AppTheme.colors.onBackground
-                ),
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(end = 8.dp)
-            )
-            Text(
-                text = unit,
-                color = AppTheme.colors.onBackgroundSecondary,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold
+        Text(
+            text = value,
+            color = AppTheme.colors.onBackground,
+            fontSize = textSize,
+            fontWeight = FontWeight.Medium
+        )
+        Spacer(modifier = Modifier.width(6.dp))
+        Text(
+            text = unit,
+            color = AppTheme.colors.onBackgroundSecondary,
+            fontSize = textSize
+        )
+        Spacer(modifier = Modifier.width(2.dp))
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            contentDescription = null,
+            tint = AppTheme.colors.onBackgroundSecondary
+        )
+    }
+}
+
+@Composable
+private fun ActivityLevelRow(
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+    textSize: TextUnit = 20.sp
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .clickable(onClick = onClick)
+            .padding(horizontal = 12.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = label,
+            color = AppTheme.colors.onBackground,
+            fontSize = textSize,
+            fontWeight = FontWeight.Normal
+        )
+        if (selected) {
+            Icon(
+                imageVector = Icons.Filled.Check,
+                contentDescription = null,
+                tint = Color.Black,
+                modifier = Modifier.padding(end = 8.dp)
             )
         }
     }
+}
+
+@Composable
+private fun RowDivider() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(1.dp)
+            .padding(horizontal = 12.dp)
+            .background(AppTheme.colors.border)
+    )
 }

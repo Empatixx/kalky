@@ -12,7 +12,7 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
-        <item name="android:windowBackground">@drawable/gradient_background</item>
+        <item name="android:windowBackground">#F4F3F8</item>
 
     </style>
 </resources>

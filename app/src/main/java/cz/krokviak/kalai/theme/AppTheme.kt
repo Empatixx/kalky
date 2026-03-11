@@ -31,12 +31,12 @@ data class AppColors(
 )
 
 val LightColors = AppColors(
-    background = Color.White,
+    background = Color(0xFFF4F3F8),
     surface = Color.White,
-    surfaceSecondary = Color(0xFFEBEDF0),
+    surfaceSecondary = Color(0xFFE9E8EF),
     onBackground = Color.Black,
-    onBackgroundSecondary = Color.Gray,
-    border = Color.LightGray,
+    onBackgroundSecondary = Color(0xFF7E7D87),
+    border = Color(0xFFD8D6E0),
     primary = Color.Black,
     onPrimary = Color.White,
     primaryVariant = Color.DarkGray,
