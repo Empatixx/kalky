@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Layer 1: White → barely-there lavender -->
+    <!-- Layer 1: Deep dark → very subtle violet -->
     <item>
         <shape android:shape="rectangle">
             <gradient
                 android:angle="90"
-                android:startColor="#FFFFFF"
-                android:centerColor="#FFFFFF"
-                android:endColor="#F7EEFF"
+                android:startColor="#0A0A10"
+                android:centerColor="#0A0A10"
+                android:endColor="#150C26"
                 android:centerY="0.6"
                 android:useLevel="false" />
         </shape>
     </item>
 
-    <!-- Layer 2: Soft violet glow at top-right, ~30% opacity -->
+    <!-- Layer 2: Soft violet glow at top-right, ~25% opacity -->
     <item>
         <shape android:shape="rectangle">
             <gradient
                 android:type="radial"
-                android:startColor="#4DCC80FF"
+                android:startColor="#408833CC"
                 android:endColor="@android:color/transparent"
                 android:centerX="0.9"
                 android:centerY="0"
