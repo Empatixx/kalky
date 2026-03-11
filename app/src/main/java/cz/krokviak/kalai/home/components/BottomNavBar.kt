@@ -16,8 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.QrCodeScanner
+import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.outlined.Analytics
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
@@ -47,8 +46,7 @@ import androidx.compose.material3.LocalContentColor
 fun BottomNavBar(
     currentPage: Int,
     onSceneSelected: (Int) -> Unit,
-    onCaptureClick: () -> Unit,
-    onBarcodeScanClick: () -> Unit
+    onCameraClick: () -> Unit
 ) {
     val navColors = KalaiNavigationBarDefaults.itemColors(
         selectedIconColor = AppTheme.colors.onBackground,
@@ -83,30 +81,15 @@ fun BottomNavBar(
             NavItem(3, Icons.Outlined.Settings, "Nastavení", currentPage, onSceneSelected, navColors)
         }
 
-        // Centered FABs overlapping the nav bar
+        // Centered FAB overlapping the nav bar
         Row(
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .offset(y = (-8).dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.Bottom
         ) {
             FloatingActionButton(
-                onClick = onBarcodeScanClick,
-                containerColor = AppTheme.colors.primaryVariant,
-                shape = CircleShape,
-                modifier = Modifier.size(48.dp),
-                elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 4.dp),
-                contentColor = AppTheme.colors.onPrimaryVariant
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.QrCodeScanner,
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp)
-                )
-            }
-            FloatingActionButton(
-                onClick = onCaptureClick,
+                onClick = onCameraClick,
                 containerColor = AppTheme.colors.primary,
                 shape = CircleShape,
                 modifier = Modifier.size(64.dp),
@@ -114,9 +97,9 @@ fun BottomNavBar(
                 contentColor = AppTheme.colors.onPrimary
             ) {
                 Icon(
-                    imageVector = Icons.Filled.Add,
+                    imageVector = Icons.Filled.PhotoCamera,
                     contentDescription = null,
-                    modifier = Modifier.size(32.dp)
+                    modifier = Modifier.size(30.dp)
                 )
             }
         }

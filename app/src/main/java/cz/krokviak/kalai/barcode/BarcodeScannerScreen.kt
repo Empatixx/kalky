@@ -199,7 +199,7 @@ fun BarcodeScannerScreen(
 }
 
 @Composable
-private fun BottomCard(
+internal fun BottomCard(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
@@ -216,7 +216,7 @@ private fun BottomCard(
 }
 
 @Composable
-private fun NutrientRow(label: String, value: String) {
+internal fun NutrientRow(label: String, value: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()

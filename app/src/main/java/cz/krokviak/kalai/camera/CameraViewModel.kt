@@ -4,23 +4,44 @@ import android.graphics.Bitmap
 import android.graphics.Matrix
 import android.util.Log
 import android.view.Surface
-import androidx.camera.core.*
+import androidx.annotation.OptIn
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.ExperimentalGetImage
+import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
+import androidx.camera.core.ImageProxy
+import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.mlkit.vision.barcode.BarcodeScanning
+import com.google.mlkit.vision.barcode.common.Barcode
+import com.google.mlkit.vision.common.InputImage
+import cz.krokviak.kalai.barcode.BarcodeScanState
+import cz.krokviak.kalai.network.OpenFoodFactsClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
-class CameraViewModel : ViewModel() {
+class CameraViewModel(
+    private val openFoodFactsClient: OpenFoodFactsClient
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CameraUiState())
     val uiState: StateFlow<CameraUiState> = _uiState
 
     private var imageCapture: ImageCapture? = null
+    private val barcodeScanner = BarcodeScanning.getClient()
+    private val analysisExecutor: ExecutorService = Executors.newSingleThreadExecutor()
+    private var lastScannedBarcode: String? = null
 
+    @OptIn(ExperimentalGetImage::class)
     fun onCameraProviderReady(
         cameraProvider: ProcessCameraProvider,
         lifecycleOwner: LifecycleOwner
@@ -32,23 +53,68 @@ class CameraViewModel : ViewModel() {
         val previewUseCase = Preview.Builder().build()
 
         // ImageCapture
-        val imageCapture = ImageCapture.Builder()
+        val imageCaptureUseCase = ImageCapture.Builder()
             .setTargetRotation(Surface.ROTATION_0)
             .build()
-        this.imageCapture = imageCapture
+        this.imageCapture = imageCaptureUseCase
+
+        // ImageAnalysis
+        val imageAnalysisUseCase = ImageAnalysis.Builder()
+            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+            .build()
+        imageAnalysisUseCase.setAnalyzer(analysisExecutor, ::processImageProxy)
 
         try {
             cameraProvider.bindToLifecycle(
                 lifecycleOwner,
                 cameraSelector,
                 previewUseCase,
-                imageCapture
+                imageCaptureUseCase,
+                imageAnalysisUseCase
             )
 
             _uiState.value = _uiState.value.copy(previewUseCase = previewUseCase)
 
         } catch (exc: Exception) {
             Log.e("CameraViewModel", "Use case binding failed", exc)
+        }
+    }
+
+    fun setMode(mode: CameraMode) {
+        if (_uiState.value.cameraMode == mode) return
+        _uiState.value = _uiState.value.copy(
+            cameraMode = mode,
+            barcodeScanState = BarcodeScanState.Scanning
+        )
+        lastScannedBarcode = null
+    }
+
+    fun resetScan() {
+        _uiState.value = _uiState.value.copy(barcodeScanState = BarcodeScanState.Scanning)
+        lastScannedBarcode = null
+    }
+
+    fun onBarcodeDetected(barcode: String) {
+        val currentState = _uiState.value
+        if (currentState.cameraMode != CameraMode.QR) return
+        if (currentState.barcodeScanState !is BarcodeScanState.Scanning) return
+        if (barcode == lastScannedBarcode) return
+
+        lastScannedBarcode = barcode
+        _uiState.value = currentState.copy(barcodeScanState = BarcodeScanState.Loading)
+
+        viewModelScope.launch {
+            val nextState = try {
+                val product = openFoodFactsClient.getProduct(barcode)
+                if (product != null && product.productName != null) {
+                    BarcodeScanState.ProductFound(product, barcode)
+                } else {
+                    BarcodeScanState.NotFound
+                }
+            } catch (e: Exception) {
+                BarcodeScanState.Error(e.message ?: "Neznámá chyba")
+            }
+            _uiState.value = _uiState.value.copy(barcodeScanState = nextState)
         }
     }
 
@@ -90,5 +156,47 @@ class CameraViewModel : ViewModel() {
         val outStream = java.io.ByteArrayOutputStream()
         this.compress(Bitmap.CompressFormat.JPEG, 100, outStream)
         return outStream.toByteArray()
+    }
+
+    @OptIn(ExperimentalGetImage::class)
+    private fun processImageProxy(imageProxy: ImageProxy) {
+        val currentState = _uiState.value
+        if (currentState.cameraMode != CameraMode.QR || currentState.barcodeScanState !is BarcodeScanState.Scanning) {
+            imageProxy.close()
+            return
+        }
+
+        val mediaImage = imageProxy.image ?: run {
+            imageProxy.close()
+            return
+        }
+        val inputImage = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+
+        barcodeScanner.process(inputImage)
+            .addOnSuccessListener { barcodes ->
+                for (barcode in barcodes) {
+                    val rawValue = barcode.rawValue ?: continue
+                    if (barcode.format == Barcode.FORMAT_EAN_13 ||
+                        barcode.format == Barcode.FORMAT_EAN_8 ||
+                        barcode.format == Barcode.FORMAT_UPC_A ||
+                        barcode.format == Barcode.FORMAT_UPC_E
+                    ) {
+                        onBarcodeDetected(rawValue)
+                        break
+                    }
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("CameraViewModel", "Barcode scan failed", e)
+            }
+            .addOnCompleteListener {
+                imageProxy.close()
+            }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        analysisExecutor.shutdown()
+        barcodeScanner.close()
     }
 }

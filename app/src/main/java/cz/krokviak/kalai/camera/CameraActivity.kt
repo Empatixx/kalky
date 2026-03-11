@@ -4,39 +4,25 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.os.Environment
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.compose.runtime.collectAsState
 import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.lifecycleScope
-import cz.krokviak.kalai.common.entities.FoodItemEntity
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-
+import cz.krokviak.kalai.barcode.data.OpenFoodFactsProduct
+import cz.krokviak.kalai.theme.KalaiTheme
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
 import java.io.FileOutputStream
-import java.util.UUID
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
 
 class CameraActivity : AppCompatActivity() {
 
-    private lateinit var cameraExecutor: ExecutorService
-    private lateinit var cameraViewModel: CameraViewModel
+    private val cameraViewModel: CameraViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        cameraExecutor = Executors.newSingleThreadExecutor()
-        cameraViewModel = ViewModelProvider(this)[CameraViewModel::class.java]
 
         // Ask for camera permission
         val requestPermissionLauncher =
@@ -69,26 +55,63 @@ class CameraActivity : AppCompatActivity() {
 
         // Set Compose content
         setContent {
-            val uiState = cameraViewModel.uiState.collectAsStateWithLifecycle()
-            CameraScreen(
-                cameraViewModel = cameraViewModel,
-                uiState = uiState.value,
-                onPictureBytesReady = { bytes ->
-                    val tempImageFile = File.createTempFile("cameraResult", ".png", cacheDir)
-                    FileOutputStream(tempImageFile).use { fos ->
-                        fos.write(bytes)
-                    }
-                    val intent = Intent().apply {
-                        putExtra("imageUrl", tempImageFile.absolutePath)
-                    }
-                    setResult(RESULT_OK, intent)
-                    finish()
-                }
-            )
+            KalaiTheme {
+                val uiState = cameraViewModel.uiState.collectAsStateWithLifecycle()
+                CameraScreen(
+                    cameraViewModel = cameraViewModel,
+                    uiState = uiState.value,
+                    onPictureBytesReady = { bytes ->
+                        val tempImageFile = File.createTempFile("cameraResult", ".png", cacheDir)
+                        FileOutputStream(tempImageFile).use { fos ->
+                            fos.write(bytes)
+                        }
+                        setResult(
+                            RESULT_OK,
+                            Intent().apply {
+                                putExtra(EXTRA_RESULT_TYPE, RESULT_TYPE_PHOTO)
+                                putExtra(EXTRA_IMAGE_URL, tempImageFile.absolutePath)
+                            }
+                        )
+                        finish()
+                    },
+                    onAddBarcodeClick = { product, quantity ->
+                        finishWithBarcodeResult(product, quantity)
+                    },
+                    onCloseClick = { finish() }
+                )
+            }
         }
     }
-    override fun onDestroy() {
-        super.onDestroy()
-        cameraExecutor.shutdown()
+
+    private fun finishWithBarcodeResult(product: OpenFoodFactsProduct, quantity: Int) {
+        val nutriments = product.nutriments
+        val multiplier = quantity / 100.0
+
+        setResult(
+            RESULT_OK,
+            Intent().apply {
+                putExtra(EXTRA_RESULT_TYPE, RESULT_TYPE_BARCODE)
+                putExtra(EXTRA_NAME, product.productName ?: "Neznámý produkt")
+                putExtra(EXTRA_CALORIES, ((nutriments?.energyKcal100g ?: 0.0) * multiplier).toInt())
+                putExtra(EXTRA_PROTEIN, ((nutriments?.proteins100g ?: 0.0) * multiplier).toInt())
+                putExtra(EXTRA_FAT, ((nutriments?.fat100g ?: 0.0) * multiplier).toInt())
+                putExtra(EXTRA_CARBS, ((nutriments?.carbohydrates100g ?: 0.0) * multiplier).toInt())
+                putExtra(EXTRA_IMAGE_URL, product.imageFrontUrl ?: "")
+            }
+        )
+        finish()
+    }
+
+    companion object {
+        const val EXTRA_RESULT_TYPE = "resultType"
+        const val EXTRA_IMAGE_URL = "imageUrl"
+        const val EXTRA_NAME = "name"
+        const val EXTRA_CALORIES = "calories"
+        const val EXTRA_PROTEIN = "protein"
+        const val EXTRA_FAT = "fat"
+        const val EXTRA_CARBS = "carbs"
+
+        const val RESULT_TYPE_PHOTO = "photo"
+        const val RESULT_TYPE_BARCODE = "barcode"
     }
 }

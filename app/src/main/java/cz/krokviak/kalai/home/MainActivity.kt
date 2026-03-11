@@ -30,7 +30,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import cz.krokviak.kalai.analytics.AnalyticsPage
 import cz.krokviak.kalai.analytics.AnalyticsViewModel
-import cz.krokviak.kalai.barcode.BarcodeScannerActivity
 import cz.krokviak.kalai.camera.CameraActivity
 import cz.krokviak.kalai.common.DefaultRoute
 import cz.krokviak.kalai.common.FoodDetailRoute
@@ -43,7 +42,6 @@ import cz.krokviak.kalai.nutrientedit.NutrientEditViewModel
 import cz.krokviak.kalai.settings.ProfilePage
 import cz.krokviak.kalai.settings.SettingsPage
 import cz.krokviak.kalai.settings.SettingsViewModel
-import cz.krokviak.kalai.theme.AppTheme
 import cz.krokviak.kalai.theme.KalaiTheme
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -64,14 +62,6 @@ class MainActivity : ComponentActivity() {
             handleCameraResult(result)
         }
 
-    /**
-     * Launcher for the barcode scanner Activity.
-     */
-    private val barcodeResultLauncher: ActivityResultLauncher<Intent> =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            handleBarcodeResult(result)
-        }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -82,8 +72,7 @@ class MainActivity : ComponentActivity() {
                     nutrientEditViewModel = nutrientEditViewModel,
                     analyticsViewModel = analyticsViewModel,
                     settingsViewModel = settingsViewModel,
-                    cameraResultLauncher = cameraResultLauncher,
-                    barcodeResultLauncher = barcodeResultLauncher
+                    cameraResultLauncher = cameraResultLauncher
                 )
             }
         }
@@ -93,33 +82,31 @@ class MainActivity : ComponentActivity() {
      * Handle the result from the camera activity.
      */
     private fun handleCameraResult(result: ActivityResult) {
-        if (result.resultCode == RESULT_OK) {
-            val data = result.data
-            val imageUrl = data?.getStringExtra("imageUrl")
-            val file = imageUrl?.let { File(it) }
-            val imageBytes = file?.readBytes()
-            if (imageBytes != null) {
-                mainViewModel.addFoodItemFromBytes(
-                    imageBytes = imageBytes
-                )
-            }
+        if (result.resultCode != RESULT_OK) return
+
+        val data = result.data ?: return
+        when (data.getStringExtra(CameraActivity.EXTRA_RESULT_TYPE)) {
+            CameraActivity.RESULT_TYPE_PHOTO -> handlePhotoResult(data)
+            CameraActivity.RESULT_TYPE_BARCODE -> handleBarcodeResult(data)
         }
     }
 
-    /**
-     * Handle the result from the barcode scanner activity.
-     */
-    private fun handleBarcodeResult(result: ActivityResult) {
-        if (result.resultCode == RESULT_OK) {
-            val data = result.data ?: return
-            mainViewModel.addFoodItemFromBarcode(
-                name = data.getStringExtra("name") ?: "Neznámý produkt",
-                calories = data.getIntExtra("calories", 0),
-                protein = data.getIntExtra("protein", 0),
-                fat = data.getIntExtra("fat", 0),
-                carbs = data.getIntExtra("carbs", 0)
-            )
+    private fun handlePhotoResult(data: Intent) {
+        val imageUrl = data.getStringExtra(CameraActivity.EXTRA_IMAGE_URL)
+        val imageBytes = imageUrl?.let { File(it).readBytes() }
+        if (imageBytes != null) {
+            mainViewModel.addFoodItemFromBytes(imageBytes = imageBytes)
         }
+    }
+
+    private fun handleBarcodeResult(data: Intent) {
+        mainViewModel.addFoodItemFromBarcode(
+            name = data.getStringExtra(CameraActivity.EXTRA_NAME) ?: "Neznámý produkt",
+            calories = data.getIntExtra(CameraActivity.EXTRA_CALORIES, 0),
+            protein = data.getIntExtra(CameraActivity.EXTRA_PROTEIN, 0),
+            fat = data.getIntExtra(CameraActivity.EXTRA_FAT, 0),
+            carbs = data.getIntExtra(CameraActivity.EXTRA_CARBS, 0)
+        )
     }
 }
 
@@ -133,8 +120,7 @@ fun AppContent(
     nutrientEditViewModel: NutrientEditViewModel,
     analyticsViewModel: AnalyticsViewModel,
     settingsViewModel: SettingsViewModel,
-    cameraResultLauncher: ActivityResultLauncher<Intent>,
-    barcodeResultLauncher: ActivityResultLauncher<Intent>
+    cameraResultLauncher: ActivityResultLauncher<Intent>
 ) {
     val navController = rememberNavController()
     val context = LocalContext.current
@@ -150,14 +136,9 @@ fun AppContent(
                 mainViewModel = mainViewModel,
                 analyticsViewModel = analyticsViewModel,
                 settingsViewModel = settingsViewModel,
-                onCaptureClick = {
+                onCameraClick = {
                     cameraResultLauncher.launch(
                         Intent(context, CameraActivity::class.java)
-                    )
-                },
-                onBarcodeScanClick = {
-                    barcodeResultLauncher.launch(
-                        Intent(context, BarcodeScannerActivity::class.java)
                     )
                 },
                 navController = navController
@@ -212,8 +193,7 @@ fun MainScaffold(
     mainViewModel: MainViewModel,
     analyticsViewModel: AnalyticsViewModel,
     settingsViewModel: SettingsViewModel,
-    onCaptureClick: () -> Unit,
-    onBarcodeScanClick: () -> Unit,
+    onCameraClick: () -> Unit,
     navController: NavController
 ) {
     val pagerState = rememberPagerState(
@@ -238,8 +218,7 @@ fun MainScaffold(
                 onSceneSelected = { page ->
                     scope.launch { pagerState.animateScrollToPage(page) }
                 },
-                onCaptureClick = onCaptureClick,
-                onBarcodeScanClick = onBarcodeScanClick
+                onCameraClick = onCameraClick
             )
         },
     ) { innerPadding ->

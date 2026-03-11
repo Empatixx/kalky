@@ -2,6 +2,7 @@ package cz.krokviak.kalai.di
 
 import cz.krokviak.kalai.analytics.AnalyticsViewModel
 import cz.krokviak.kalai.barcode.BarcodeScannerViewModel
+import cz.krokviak.kalai.camera.CameraViewModel
 import cz.krokviak.kalai.common.AndroidImageStorage
 import cz.krokviak.kalai.common.ImageStorage
 import cz.krokviak.kalai.db.DriverFactory
@@ -24,4 +25,5 @@ val appModule = module {
     viewModel { AnalyticsViewModel(get(), get()) }
     viewModel { SettingsViewModel(get()) }
     viewModel { BarcodeScannerViewModel(get()) }
+    viewModel { CameraViewModel(get()) }
 }
