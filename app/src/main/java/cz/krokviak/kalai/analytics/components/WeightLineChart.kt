@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -38,15 +39,14 @@ import com.patrykandpatrick.vico.multiplatform.common.data.ExtraStore
 import com.patrykandpatrick.vico.multiplatform.common.fill
 import cz.krokviak.kalai.common.repo.WeightEntry
 import cz.krokviak.kalai.theme.AppTheme
-import io.github.alexzhirkevich.cupertino.CupertinoText
-import io.github.alexzhirkevich.cupertino.section.CupertinoSection
+import cz.krokviak.kalai.ui.components.KalaiCard
 
 @Composable
 fun WeightLineChart(
     weights: List<WeightEntry>,
     modifier: Modifier = Modifier
 ) {
-    CupertinoSection(
+    KalaiCard(
         shape = RoundedCornerShape(32.dp),
         contentPadding = PaddingValues(0.dp),
         modifier = modifier
@@ -79,13 +79,13 @@ private fun EmptyWeightLineChart() {
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        CupertinoText(
+        Text(
             text = "Zatím nemáme údaje o vaší váze",
             color = AppTheme.colors.onBackground,
             fontWeight = FontWeight.ExtraBold,
             fontSize = 24.sp
         )
-        CupertinoText(
+        Text(
             text = "Přidejte je v nastavení.",
             color = AppTheme.colors.onBackground,
             fontSize = 18.sp,
@@ -107,13 +107,13 @@ private fun WeightLineChartInternal(weights: List<WeightEntry>) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column {
-            CupertinoText(
+            Text(
                 text = "Aktuální váha",
                 color = AppTheme.colors.onBackgroundSecondary,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold
             )
-            CupertinoText(
+            Text(
                 text = "%.1f kg".format(currentWeight),
                 color = AppTheme.colors.onBackground,
                 fontWeight = FontWeight.ExtraBold,
@@ -121,13 +121,13 @@ private fun WeightLineChartInternal(weights: List<WeightEntry>) {
             )
         }
         Column(horizontalAlignment = Alignment.End) {
-            CupertinoText(
+            Text(
                 text = "Průměr",
                 color = AppTheme.colors.onBackgroundSecondary,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold
             )
-            CupertinoText(
+            Text(
                 text = "%.1f kg".format(avgWeight),
                 color = AppTheme.colors.onBackground,
                 fontWeight = FontWeight.ExtraBold,

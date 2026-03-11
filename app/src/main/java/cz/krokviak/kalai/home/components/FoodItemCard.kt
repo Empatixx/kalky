@@ -24,7 +24,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocalFireDepartment
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -47,10 +49,7 @@ import coil3.request.ImageRequest
 import cz.krokviak.kalai.R
 import cz.krokviak.kalai.common.entities.FoodItemEntity
 import cz.krokviak.kalai.theme.AppTheme
-import io.github.alexzhirkevich.cupertino.CupertinoIcon
-import io.github.alexzhirkevich.cupertino.CupertinoText
-import io.github.alexzhirkevich.cupertino.ExperimentalCupertinoApi
-import io.github.alexzhirkevich.cupertino.section.CupertinoSection
+import cz.krokviak.kalai.ui.components.KalaiCard
 import cz.krokviak.kalai.common.formatTime
 
 @Composable
@@ -71,13 +70,12 @@ fun FoodItemCard(
     }
 }
 
-@OptIn(ExperimentalCupertinoApi::class)
 @Composable
 fun FoodItemLoadedCard(
     foodItem: FoodItemEntity,
     onClick: () -> Unit
 ) {
-    CupertinoSection(
+    KalaiCard(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
@@ -133,7 +131,7 @@ fun BoxScope.Badge(timeText: String) {
             )
             .padding(horizontal = 8.dp, vertical = 4.dp)
     ) {
-        CupertinoText(
+        Text(
             text = timeText,
             style = MaterialTheme.typography.bodySmall,
             color = Color.White
@@ -149,7 +147,7 @@ fun RowScope.FoodItemInfo(foodItem: FoodItemEntity) {
             .padding(horizontal = 12.dp)
             .align(Alignment.CenterVertically)
     ) {
-        CupertinoText(
+        Text(
             text = foodItem.name ?: "Neznámé jídlo",
             fontSize = 18.sp,
             fontWeight = FontWeight.ExtraBold,
@@ -169,13 +167,13 @@ fun RowScope.FoodItemInfo(foodItem: FoodItemEntity) {
 @Composable
 fun CaloriesRow(calories: Int) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        CupertinoIcon(
+        Icon(
             imageVector = Icons.Default.LocalFireDepartment,
             contentDescription = "Calories",
             modifier = Modifier.size(24.dp)
         )
         Spacer(modifier = Modifier.width(4.dp))
-        CupertinoText(text = "$calories kcal", fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = AppTheme.colors.onBackground)
+        Text(text = "$calories kcal", fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = AppTheme.colors.onBackground)
     }
 }
 
@@ -213,25 +211,24 @@ fun NutrientItem(
     tintRes: Int
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        CupertinoIcon(
+        Icon(
             imageVector = icon,
             contentDescription = contentDescription,
             modifier = Modifier.size(20.dp),
             tint = colorResource(id = tintRes)
         )
         Spacer(modifier = Modifier.width(4.dp))
-        CupertinoText(text = valueText, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = AppTheme.colors.onBackground)
+        Text(text = valueText, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = AppTheme.colors.onBackground)
     }
 }
 
 
-@OptIn(ExperimentalCupertinoApi::class)
 @Composable
 fun FoodItemLoadingCard(
     foodItem: FoodItemEntity,
     progress: Int
 ) {
-    CupertinoSection(
+    KalaiCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         contentPadding = PaddingValues(0.dp),
@@ -292,7 +289,7 @@ fun RowScope.FoodItemLoadingInfo() {
             .padding(horizontal = 12.dp)
             .align(Alignment.CenterVertically)
     ) {
-        CupertinoText(
+        Text(
             text = "Počítám makroživiny...",
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,

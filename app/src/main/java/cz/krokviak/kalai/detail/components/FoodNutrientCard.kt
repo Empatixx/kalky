@@ -14,10 +14,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
 import cz.krokviak.kalai.R
 import cz.krokviak.kalai.theme.AppTheme
-import io.github.alexzhirkevich.cupertino.ExperimentalCupertinoApi
-import io.github.alexzhirkevich.cupertino.section.CupertinoSection
+import cz.krokviak.kalai.ui.components.KalaiCard
 
-@OptIn(ExperimentalCupertinoApi::class)
 @Composable
 fun PhotoNutrientCard(
     label: String,
@@ -26,7 +24,7 @@ fun PhotoNutrientCard(
     iconTintColor: Color = AppTheme.colors.onBackground,
     modifier: Modifier = Modifier
 ) {
-    CupertinoSection(
+    KalaiCard(
         shape = RoundedCornerShape(16.dp),
         contentPadding = PaddingValues(0.dp),
         modifier = modifier

@@ -35,9 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cz.krokviak.kalai.barcode.data.OpenFoodFactsProduct
 import cz.krokviak.kalai.theme.AppTheme
-import io.github.alexzhirkevich.cupertino.CupertinoButton
-import io.github.alexzhirkevich.cupertino.CupertinoButtonDefaults
-import io.github.alexzhirkevich.cupertino.CupertinoText
+import cz.krokviak.kalai.ui.components.KalaiButton
 
 @Composable
 fun BarcodeScannerScreen(
@@ -136,25 +134,21 @@ fun BarcodeScannerScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        CupertinoButton(
+                        KalaiButton(
                             onClick = onRetryClick,
                             modifier = Modifier.weight(1f),
-                            colors = CupertinoButtonDefaults.filledButtonColors(
-                                containerColor = AppTheme.colors.border,
-                                contentColor = AppTheme.colors.onBackground
-                            )
+                            containerColor = AppTheme.colors.border,
+                            contentColor = AppTheme.colors.onBackground
                         ) {
-                            CupertinoText("Znovu", fontWeight = FontWeight.Bold)
+                            Text("Znovu", fontWeight = FontWeight.Bold)
                         }
-                        CupertinoButton(
+                        KalaiButton(
                             onClick = { onAddClick(product, quantity) },
                             modifier = Modifier.weight(1f),
-                            colors = CupertinoButtonDefaults.filledButtonColors(
-                                containerColor = AppTheme.colors.primary,
-                                contentColor = AppTheme.colors.onPrimary
-                            )
+                            containerColor = AppTheme.colors.primary,
+                            contentColor = AppTheme.colors.onPrimary
                         ) {
-                            CupertinoText("Přidat", fontWeight = FontWeight.Bold)
+                            Text("Přidat", fontWeight = FontWeight.Bold)
                         }
                     }
                 }
@@ -169,15 +163,13 @@ fun BarcodeScannerScreen(
                         color = AppTheme.colors.onBackground
                     )
                     Spacer(modifier = Modifier.height(12.dp))
-                    CupertinoButton(
+                    KalaiButton(
                         onClick = onRetryClick,
                         modifier = Modifier.fillMaxWidth(),
-                        colors = CupertinoButtonDefaults.filledButtonColors(
-                            containerColor = AppTheme.colors.primary,
-                            contentColor = AppTheme.colors.onPrimary
-                        )
+                        containerColor = AppTheme.colors.primary,
+                        contentColor = AppTheme.colors.onPrimary
                     ) {
-                        CupertinoText("Zkusit znovu", fontWeight = FontWeight.Bold)
+                        Text("Zkusit znovu", fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -190,15 +182,13 @@ fun BarcodeScannerScreen(
                         color = Color.Red
                     )
                     Spacer(modifier = Modifier.height(12.dp))
-                    CupertinoButton(
+                    KalaiButton(
                         onClick = onRetryClick,
                         modifier = Modifier.fillMaxWidth(),
-                        colors = CupertinoButtonDefaults.filledButtonColors(
-                            containerColor = AppTheme.colors.primary,
-                            contentColor = AppTheme.colors.onPrimary
-                        )
+                        containerColor = AppTheme.colors.primary,
+                        contentColor = AppTheme.colors.onPrimary
                     ) {
-                        CupertinoText("Zkusit znovu", fontWeight = FontWeight.Bold)
+                        Text("Zkusit znovu", fontWeight = FontWeight.Bold)
                     }
                 }
             }

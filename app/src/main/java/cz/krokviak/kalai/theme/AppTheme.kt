@@ -11,7 +11,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
-import io.github.alexzhirkevich.cupertino.theme.CupertinoTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -91,17 +90,11 @@ fun KalaiTheme(
         ThemeMode.DARK -> true
     }
     val colors = if (isDark) DarkColors else LightColors
-    val cupertinoColorScheme = if (isDark)
-        io.github.alexzhirkevich.cupertino.theme.darkColorScheme()
-    else
-        io.github.alexzhirkevich.cupertino.theme.lightColorScheme()
     val materialColorScheme = if (isDark) darkColorScheme() else lightColorScheme()
 
     CompositionLocalProvider(LocalAppColors provides colors) {
         MaterialTheme(colorScheme = materialColorScheme) {
-            CupertinoTheme(colorScheme = cupertinoColorScheme) {
-                content()
-            }
+            content()
         }
     }
 }

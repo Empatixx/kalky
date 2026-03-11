@@ -6,6 +6,8 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -13,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,8 +31,7 @@ import cz.krokviak.kalai.analytics.components.NutrientCalorieCard
 import cz.krokviak.kalai.analytics.components.WeightLineChart
 import cz.krokviak.kalai.analytics.components.WheelDatePickerInline
 import cz.krokviak.kalai.theme.AppTheme
-import io.github.alexzhirkevich.cupertino.CupertinoText
-import io.github.alexzhirkevich.cupertino.section.CupertinoSection
+import cz.krokviak.kalai.ui.components.KalaiCard
 import kotlinx.datetime.LocalDate
 
 private enum class DateField { START, END }
@@ -46,12 +48,13 @@ fun AnalyticsPage(
 
     Column(
         modifier = modifier
+            .verticalScroll(rememberScrollState())
             .padding(24.dp)
             .fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         // iOS-style date range card
-        CupertinoSection(
+        KalaiCard(
             modifier = Modifier
                 .border(
                     width = 1.dp,
@@ -74,12 +77,12 @@ fun AnalyticsPage(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    CupertinoText(
+                    Text(
                         text = "Začátek",
                         color = AppTheme.colors.onBackground,
                         fontSize = 17.sp,
                     )
-                    CupertinoText(
+                    Text(
                         text = formatDate(uiState.startDate),
                         color = if (activeDateField == DateField.START) IOS_RED else AppTheme.colors.onBackground,
                         fontSize = 17.sp,
@@ -116,12 +119,12 @@ fun AnalyticsPage(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    CupertinoText(
+                    Text(
                         text = "Konec",
                         color = AppTheme.colors.onBackground,
                         fontSize = 17.sp,
                     )
-                    CupertinoText(
+                    Text(
                         text = formatDate(uiState.endDate),
                         color = if (activeDateField == DateField.END) IOS_RED else AppTheme.colors.onBackground,
                         fontSize = 17.sp,

@@ -48,12 +48,8 @@ import com.patrykandpatrick.vico.multiplatform.common.shape.Shape
 import cz.krokviak.kalai.R
 import cz.krokviak.kalai.analytics.CaloriesBar
 import cz.krokviak.kalai.theme.AppTheme
-import io.github.alexzhirkevich.cupertino.CupertinoSegmentedControl
-import io.github.alexzhirkevich.cupertino.CupertinoSegmentedControlIndicator
-import io.github.alexzhirkevich.cupertino.CupertinoSegmentedControlTab
-import io.github.alexzhirkevich.cupertino.CupertinoText
-import io.github.alexzhirkevich.cupertino.ExperimentalCupertinoApi
-import io.github.alexzhirkevich.cupertino.section.CupertinoSection
+import cz.krokviak.kalai.ui.components.KalaiCard
+import cz.krokviak.kalai.ui.components.KalaiSegmentedControl
 
 private enum class NutrientTab(val label: String) {
     CALORIES("Kalorie"),
@@ -62,7 +58,6 @@ private enum class NutrientTab(val label: String) {
     FAT("Tuky")
 }
 
-@OptIn(ExperimentalCupertinoApi::class)
 @Composable
 fun NutrientCalorieCard(
     modifier: Modifier = Modifier,
@@ -75,33 +70,14 @@ fun NutrientCalorieCard(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        CupertinoSegmentedControl(
-            selectedTabIndex = selectedTab,
-            modifier = Modifier.fillMaxWidth(),
-            indicator = { tabPositions ->
-                CupertinoSegmentedControlIndicator(
-                    selectedTabIndex = selectedTab,
-                    tabPositions = tabPositions
-                )
-            },
-            tabs = {
-                tabs.forEachIndexed { index, tab ->
-                    CupertinoSegmentedControlTab(
-                        onClick = { selectedTab = index },
-                        isSelected = index == selectedTab
-                    ) {
-                        Text(
-                            text = tab.label,
-                            fontSize = 17.sp,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(vertical = 8.dp)
-                        )
-                    }
-                }
-            }
+        KalaiSegmentedControl(
+            selectedIndex = selectedTab,
+            items = tabs.map { it.label },
+            onItemSelected = { selectedTab = it },
+            modifier = Modifier.fillMaxWidth()
         )
 
-        CupertinoSection(
+        KalaiCard(
             shape = RoundedCornerShape(32.dp),
             contentPadding = PaddingValues(0.dp),
             modifier = Modifier
@@ -140,13 +116,13 @@ private fun EmptyNutrientCard() {
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        CupertinoText(
+        Text(
             text = "Chybí informace o vaších kaloriích",
             color = AppTheme.colors.onBackground,
             fontWeight = FontWeight.ExtraBold,
             fontSize = 24.sp
         )
-        CupertinoText(
+        Text(
             text = "Přidejte své kalorie v úvodu",
             color = AppTheme.colors.onBackground,
             fontSize = 18.sp,
@@ -165,8 +141,8 @@ private fun StackedCaloriesChart(bars: List<CaloriesBar>) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        CupertinoText(text = "Průměrný denní příjem", color = AppTheme.colors.onBackground, fontSize = 18.sp, fontWeight = FontWeight.Bold)
-        CupertinoText(text = "$avgCalories kcal", color = AppTheme.colors.onBackground, fontSize = 22.sp, fontWeight = FontWeight.ExtraBold)
+        Text(text = "Průměrný denní příjem", color = AppTheme.colors.onBackground, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+        Text(text = "$avgCalories kcal", color = AppTheme.colors.onBackground, fontSize = 22.sp, fontWeight = FontWeight.ExtraBold)
     }
 
     val proteinColor = colorResource(id = R.color.proteinColor)
@@ -275,8 +251,8 @@ private fun SingleNutrientChart(bars: List<CaloriesBar>, tab: NutrientTab) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        CupertinoText(text = headerTitle, color = AppTheme.colors.onBackground, fontSize = 18.sp, fontWeight = FontWeight.Bold)
-        CupertinoText(text = "$avg g", color = AppTheme.colors.onBackground, fontSize = 22.sp, fontWeight = FontWeight.ExtraBold)
+        Text(text = headerTitle, color = AppTheme.colors.onBackground, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+        Text(text = "$avg g", color = AppTheme.colors.onBackground, fontSize = 22.sp, fontWeight = FontWeight.ExtraBold)
     }
 
     val days = bars.map { it.label }

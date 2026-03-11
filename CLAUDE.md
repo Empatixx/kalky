@@ -6,7 +6,7 @@ Czech-language food/nutrition tracking app built with Kotlin Multiplatform (KMP)
 ## Architecture
 - **Pattern**: MVVM + Compose
 - **DI**: Koin
-- **UI**: Compose with Cupertino (iOS-style) components
+- **UI**: Compose with Material3 + custom Kalai components (`ui/components/`)
 - **Database**: SQLDelight (shared module, multiplatform)
 - **HTTP**: Ktor + kotlinx-serialization (shared module)
 - **Date/Time**: kotlinx-datetime (shared module)
@@ -23,6 +23,7 @@ kalai/
 │       ├── nutrientedit/         # NutrientEditScene, UI components
 │       ├── camera/               # CameraX (Activity, ViewModel, Screen)
 │       ├── barcode/              # ML Kit scanner (Activity, Screen)
+│       ├── ui/components/         # KalaiCard, KalaiButton, KalaiSegmentedControl
 │       ├── common/               # AndroidImageStorage
 │       └── di/                   # appModule (platform DI + ViewModels)
 ├── shared/                       # KMP shared module
@@ -53,9 +54,9 @@ kalai/
 
 ## Key Conventions
 - UI language: Czech
-- **UI style: Always prefer iOS/Cupertino-style layouts and components** — use `CupertinoButton`, `CupertinoTextField`, etc. from `io.github.alexzhirkevich.cupertino` instead of Material3 equivalents wherever possible. **WARNING: `CupertinoWheelPicker`, `CupertinoDatePicker`, and `CupertinoTimePicker` are BROKEN** — they crash at runtime with `NoSuchMethodError` on `rememberSnapFlingBehavior` due to binary incompatibility between cupertino 0.1.0-alpha04 and Compose Foundation 1.7.8. For wheel/picker UIs, build custom iOS-style pickers using `LazyColumn` + `rememberSnapFlingBehavior` + rounded rect selection band + fade gradients (see `analytics/components/WheelDatePicker.kt` as reference).
+- **UI style**: Use custom Kalai components from `ui/components/` — `KalaiCard` (card container), `KalaiButton` (filled button), `KalaiSegmentedControl` (tab selector). For text/icons use Material3 `Text` and `Icon`. For pickers, build custom iOS-style pickers using `LazyColumn` + `rememberSnapFlingBehavior` (see `analytics/components/WheelDatePicker.kt`).
 - Feature structure: `FeatureName/` with `FeatureScene.kt`, `FeatureViewModel.kt`, `FeatureUiState.kt`, `components/`
-- Colors: Black/White/Gray theme with Cupertino styling
+- Colors: Black/White/Gray theme via `AppTheme.colors`
 - Navigation: Type-safe routes with `@Serializable` objects/data classes in `NavRoutes.kt`
 - Bottom nav: 3 tabs (Domov, Analýza, Nastavení) + FABs (camera + barcode scanner)
 

@@ -6,17 +6,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.LocalFireDepartment
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,7 +29,6 @@ import cz.krokviak.kalai.R
 import cz.krokviak.kalai.nutrientedit.components.NutrientEditRow
 import cz.krokviak.kalai.theme.AppTheme
 import cz.krokviak.kalai.nutrientedit.components.VerticalCalorieCard
-import io.github.alexzhirkevich.cupertino.CupertinoText
 
 
 @Composable
@@ -54,7 +51,7 @@ fun NutrientEditScene(
             calorieRatio = 0.5f
         )
 
-        CupertinoText(
+        Text(
             text = "Bilkoviny",
             color = AppTheme.colors.onBackground,
             fontSize = 16.sp,
@@ -69,7 +66,7 @@ fun NutrientEditScene(
             icon = ImageVector.vectorResource(R.drawable.chicken_leg),
             activeColor = colorResource(id = R.color.proteinColor)
         )
-        CupertinoText(
+        Text(
             text = "Sacharidy",
             color = AppTheme.colors.onBackground,
             fontSize = 16.sp,
@@ -84,7 +81,7 @@ fun NutrientEditScene(
             icon = ImageVector.vectorResource(R.drawable.wheat),
             activeColor = colorResource(id = R.color.carbsColor)
         )
-        CupertinoText(
+        Text(
             text = "Tuky",
             color = AppTheme.colors.onBackground,
             fontSize = 16.sp,
@@ -128,7 +125,7 @@ fun NutrientEditTopBar(
                 tint = AppTheme.colors.onPrimary
             )
         }
-        CupertinoText(
+        Text(
             text = title,
             style = MaterialTheme.typography.titleLarge,
             color = AppTheme.colors.onBackground,
@@ -136,5 +133,3 @@ fun NutrientEditTopBar(
         )
     }
 }
-
-

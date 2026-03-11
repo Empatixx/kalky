@@ -17,7 +17,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.HeartBroken
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -28,8 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import cz.krokviak.kalai.R
 import cz.krokviak.kalai.theme.AppTheme
-import io.github.alexzhirkevich.cupertino.CupertinoText
-import io.github.alexzhirkevich.cupertino.section.CupertinoSection
+import cz.krokviak.kalai.ui.components.KalaiCard
 
 
 @Composable
@@ -37,7 +35,7 @@ fun FoodHealthQualityCard(
     score: Int = 0,
     maxScore: Int = 10
 ){
-    CupertinoSection(
+    KalaiCard(
         shape = RoundedCornerShape(16.dp),
         contentPadding = PaddingValues(0.dp),
         modifier = Modifier
@@ -70,11 +68,11 @@ fun FoodHealthQualityCard(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    CupertinoText(
+                    Text(
                         text = "Zdravotní kvalita",
                         style = MaterialTheme.typography.bodyMedium
                     )
-                    CupertinoText(
+                    Text(
                         text = "$score/$maxScore",
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Bold

@@ -5,15 +5,14 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.LocalFireDepartment
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -27,12 +26,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cz.krokviak.kalai.R
 import cz.krokviak.kalai.theme.AppTheme
-import io.github.alexzhirkevich.cupertino.CupertinoText
-import io.github.alexzhirkevich.cupertino.ExperimentalCupertinoApi
-import io.github.alexzhirkevich.cupertino.section.CupertinoSection
+import cz.krokviak.kalai.ui.components.KalaiCard
 
 
-@OptIn(ExperimentalCupertinoApi::class)
 @Composable
 fun BoxScope.FoodBottomSheetCard(
     name: String,
@@ -48,7 +44,7 @@ fun BoxScope.FoodBottomSheetCard(
     onFixResult: () -> Unit,
     onFinish: () -> Unit
 ) {
-    CupertinoSection(
+    KalaiCard(
         modifier = modifier
             .fillMaxSize()
             .clip(RoundedCornerShape(16.dp))
@@ -156,7 +152,7 @@ fun TitleRow(
             .padding(16.dp)
     ) {
         Row {
-            CupertinoText(
+            Text(
                 text = name,
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp,

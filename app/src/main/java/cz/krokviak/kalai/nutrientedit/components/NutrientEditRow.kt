@@ -3,7 +3,6 @@ package cz.krokviak.kalai.nutrientedit.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -15,9 +14,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,11 +32,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cz.krokviak.kalai.theme.AppTheme
-import io.github.alexzhirkevich.LocalTextStyle
-import io.github.alexzhirkevich.cupertino.CupertinoIcon
-import io.github.alexzhirkevich.cupertino.CupertinoText
-import io.github.alexzhirkevich.cupertino.CupertinoTextField
-import io.github.alexzhirkevich.cupertino.section.CupertinoSection
+import cz.krokviak.kalai.ui.components.KalaiCard
 
 import androidx.compose.ui.text.style.TextAlign
 
@@ -52,14 +47,13 @@ fun NutrientEditRow(
 ) {
     var v by remember(value) { mutableStateOf(value) }
 
-    CupertinoSection(
+    KalaiCard(
         modifier = modifier
             .fillMaxWidth()
             .height(50.dp)
             .clip(RoundedCornerShape(16.dp))
             .border(1.dp, AppTheme.colors.border, RoundedCornerShape(16.dp)),
         contentPadding = PaddingValues(0.dp),
-        dividerPadding = PaddingValues(0.dp),
     ) {
         Row(
             modifier = Modifier.fillMaxHeight(),
@@ -73,7 +67,7 @@ fun NutrientEditRow(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.Start
             ) {
-                CupertinoIcon(
+                Icon(
                     imageVector = icon,
                     contentDescription = null,
                     tint = Color.White,
@@ -115,7 +109,7 @@ fun NutrientEditRow(
                             .padding(end = 8.dp)
                     )
 
-                    CupertinoText(
+                    Text(
                         text = valueUnit,
                         color = AppTheme.colors.onBackground,
                         fontSize = 16.sp,

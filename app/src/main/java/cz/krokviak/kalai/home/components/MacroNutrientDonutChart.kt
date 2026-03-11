@@ -3,6 +3,7 @@ package cz.krokviak.kalai.home.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -10,11 +11,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.min
-import cz.krokviak.kalai.R
 import cz.krokviak.kalai.theme.AppTheme
-import io.github.alexzhirkevich.cupertino.CupertinoIcon
 import ir.ehsannarmani.compose_charts.PieChart
 import ir.ehsannarmani.compose_charts.models.Pie
 
@@ -91,7 +89,7 @@ fun MacroNutrientDonutChart(
                         .background(centerIconBackgroundColor),
                     contentAlignment = Alignment.Center
                 ) {
-                    CupertinoIcon(
+                    Icon(
                         imageVector = centerIcon,
                         tint = iconColor,
                         contentDescription = null,

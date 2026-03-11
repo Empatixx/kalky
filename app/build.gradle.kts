@@ -67,7 +67,6 @@ dependencies {
     implementation(libs.coil.compose)
 
     // UI libraries
-    implementation(libs.github.cupertino)
     implementation(libs.haze)
     implementation(libs.haze.materials)
     implementation(libs.compose.charts)

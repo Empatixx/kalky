@@ -21,6 +21,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,17 +36,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import cz.krokviak.kalai.common.NutrientEditRoute
 import cz.krokviak.kalai.theme.AppTheme
-import io.github.alexzhirkevich.LocalTextStyle
-import io.github.alexzhirkevich.cupertino.CupertinoButton
-import io.github.alexzhirkevich.cupertino.CupertinoButtonDefaults
-import io.github.alexzhirkevich.cupertino.CupertinoSegmentedControl
-import io.github.alexzhirkevich.cupertino.CupertinoSegmentedControlIndicator
-import io.github.alexzhirkevich.cupertino.CupertinoSegmentedControlTab
-import io.github.alexzhirkevich.cupertino.CupertinoText
-import io.github.alexzhirkevich.cupertino.ExperimentalCupertinoApi
-import io.github.alexzhirkevich.cupertino.section.CupertinoSection
+import cz.krokviak.kalai.ui.components.KalaiButton
+import cz.krokviak.kalai.ui.components.KalaiCard
+import cz.krokviak.kalai.ui.components.KalaiSegmentedControl
 
-@OptIn(ExperimentalCupertinoApi::class)
 @Composable
 fun ProfilePage(
     uiState: SettingsUiState,
@@ -63,7 +57,7 @@ fun ProfilePage(
             .padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        CupertinoText(
+        Text(
             text = "Profil",
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.ExtraBold,
@@ -108,13 +102,13 @@ fun ProfilePage(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                CupertinoText(
+                Text(
                     text = "BMI",
                     color = AppTheme.colors.onBackground,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold
                 )
-                CupertinoText(
+                Text(
                     text = "%.1f".format(bmi),
                     color = AppTheme.colors.onBackground,
                     fontSize = 18.sp,
@@ -124,71 +118,41 @@ fun ProfilePage(
         }
 
         // Gender selector
-        CupertinoText(
+        Text(
             text = "Pohlaví",
             color = AppTheme.colors.onBackground,
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold
         )
-        CupertinoSegmentedControl(
-            selectedTabIndex = genderOptions.indexOf(uiState.gender).coerceAtLeast(0),
-            modifier = Modifier.fillMaxWidth(),
-            indicator = { tabPositions ->
-                CupertinoSegmentedControlIndicator(
-                    selectedTabIndex = genderOptions.indexOf(uiState.gender).coerceAtLeast(0),
-                    tabPositions = tabPositions
-                )
-            },
-            tabs = {
-                genderOptions.forEachIndexed { index, label ->
-                    CupertinoSegmentedControlTab(
-                        onClick = { viewModel.onGenderChange(label) },
-                        isSelected = uiState.gender == label
-                    ) {
-                        Text(text = label, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
-                    }
-                }
-            }
+        KalaiSegmentedControl(
+            selectedIndex = genderOptions.indexOf(uiState.gender).coerceAtLeast(0),
+            items = genderOptions,
+            onItemSelected = { viewModel.onGenderChange(genderOptions[it]) },
+            modifier = Modifier.fillMaxWidth()
         )
 
         // Activity level
-        CupertinoText(
+        Text(
             text = "Úroveň aktivity",
             color = AppTheme.colors.onBackground,
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold
         )
-        CupertinoSegmentedControl(
-            selectedTabIndex = (uiState.activityLevel - 1).coerceIn(0, 3),
-            modifier = Modifier.fillMaxWidth(),
-            indicator = { tabPositions ->
-                CupertinoSegmentedControlIndicator(
-                    selectedTabIndex = (uiState.activityLevel - 1).coerceIn(0, 3),
-                    tabPositions = tabPositions
-                )
-            },
-            tabs = {
-                activityLabels.forEachIndexed { index, label ->
-                    CupertinoSegmentedControlTab(
-                        onClick = { viewModel.onActivityLevelChange(index + 1) },
-                        isSelected = uiState.activityLevel == index + 1
-                    ) {
-                        Text(text = label, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
-                    }
-                }
-            }
+        KalaiSegmentedControl(
+            selectedIndex = (uiState.activityLevel - 1).coerceIn(0, 3),
+            items = activityLabels,
+            onItemSelected = { viewModel.onActivityLevelChange(it + 1) },
+            modifier = Modifier.fillMaxWidth()
         )
 
         // Save button
-        CupertinoButton(
+        KalaiButton(
             onClick = { viewModel.save() },
             modifier = Modifier.fillMaxWidth(),
-            colors = CupertinoButtonDefaults.filledButtonColors(
-                containerColor = AppTheme.colors.primary,
-                contentColor = AppTheme.colors.onPrimary
-            )
+            containerColor = AppTheme.colors.primary,
+            contentColor = AppTheme.colors.onPrimary
         ) {
-            CupertinoText(
+            Text(
                 text = if (uiState.saved) "Uloženo" else "Uložit",
                 fontWeight = FontWeight.ExtraBold,
                 fontSize = 18.sp
@@ -200,7 +164,7 @@ fun ProfilePage(
         // Nutrient goals navigation
         SectionHeader("Cíle výživy")
 
-        CupertinoSection(
+        KalaiCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(16.dp))
@@ -215,7 +179,7 @@ fun ProfilePage(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                CupertinoText(
+                Text(
                     text = "Úprava makroživin",
                     color = AppTheme.colors.onBackground,
                     fontSize = 18.sp,
@@ -236,7 +200,7 @@ fun ProfilePage(
 
 @Composable
 private fun SectionHeader(title: String) {
-    CupertinoText(
+    Text(
         text = title,
         color = AppTheme.colors.onBackgroundSecondary,
         fontSize = 15.sp,
@@ -245,7 +209,6 @@ private fun SectionHeader(title: String) {
     )
 }
 
-@OptIn(ExperimentalCupertinoApi::class)
 @Composable
 private fun ProfileTextField(
     label: String,
@@ -264,7 +227,7 @@ private fun ProfileTextField(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        CupertinoText(
+        Text(
             text = label,
             color = AppTheme.colors.onBackground,
             fontSize = 18.sp,
@@ -290,7 +253,7 @@ private fun ProfileTextField(
                     .weight(1f)
                     .padding(end = 8.dp)
             )
-            CupertinoText(
+            Text(
                 text = unit,
                 color = AppTheme.colors.onBackgroundSecondary,
                 fontSize = 16.sp,

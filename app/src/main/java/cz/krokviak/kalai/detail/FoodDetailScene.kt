@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -31,10 +30,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import cz.krokviak.kalai.detail.components.FoodBottomSheetCard
-import cz.krokviak.kalai.detail.components.FoodHealthQualityCard
-import io.github.alexzhirkevich.cupertino.ExperimentalCupertinoApi
 
-@OptIn(ExperimentalCupertinoApi::class)
 @Composable
 fun FoodDetailScene(
     foodDetailViewModel: FoodDetailViewModel,
@@ -163,4 +159,3 @@ fun FoodDetailTopIcons(
         }
     }
 }
-

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,12 +20,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cz.krokviak.kalai.theme.AppTheme
-import io.github.alexzhirkevich.cupertino.CupertinoText
-import io.github.alexzhirkevich.cupertino.section.CupertinoSection
+import cz.krokviak.kalai.ui.components.KalaiCard
 
 @Composable
 fun RowScope.MacroNutrientCard(
@@ -36,7 +35,7 @@ fun RowScope.MacroNutrientCard(
     donutColor: Color,
     modifier: Modifier = Modifier
 ) {
-    CupertinoSection(
+    KalaiCard(
         modifier = modifier
             .border(
                 width = 1.dp,
@@ -85,7 +84,7 @@ fun RowScope.MacroNutrientCard(
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
-                CupertinoText(
+                Text(
                     text = amount,
                     fontWeight = FontWeight.ExtraBold,
                     textAlign = TextAlign.Center,
@@ -97,7 +96,7 @@ fun RowScope.MacroNutrientCard(
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
-                CupertinoText(
+                Text(
                     text = maxAmount,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,

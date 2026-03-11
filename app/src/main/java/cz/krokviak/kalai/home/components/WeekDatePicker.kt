@@ -16,17 +16,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import cz.krokviak.kalai.common.toCzechShortName
 import cz.krokviak.kalai.common.withDayOfWeek
 import cz.krokviak.kalai.theme.AppTheme
-import io.github.alexzhirkevich.cupertino.CupertinoText
-import io.github.alexzhirkevich.cupertino.section.CupertinoSection
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -126,7 +121,7 @@ fun MonthHeader(currentDate: LocalDate) {
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center
     ) {
-        CupertinoText(
+        Text(
             text = "${currentDate.dayOfMonth}. $monthName ${currentDate.year}",
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.ExtraBold,
@@ -169,7 +164,7 @@ private fun DayItem(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Day number
-        CupertinoText(
+        Text(
             text = date.dayOfMonth.toString(),
             fontWeight = FontWeight.ExtraBold,
             color = if (isSelected) AppTheme.colors.onPrimary else AppTheme.colors.onBackground,
@@ -178,7 +173,7 @@ private fun DayItem(
         Spacer(Modifier.height(4.dp))
 
         // Short Czech name for the day
-        CupertinoText(
+        Text(
             text = date.dayOfWeek.toCzechShortName(),
             color = if (isSelected) AppTheme.colors.onPrimary else AppTheme.colors.onBackgroundSecondary,
             fontWeight = FontWeight.SemiBold,

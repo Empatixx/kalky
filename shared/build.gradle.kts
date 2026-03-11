@@ -64,7 +64,6 @@ kotlin {
             implementation(libs.insert.koin.koin.core)
 
             // UI libraries (already multiplatform)
-            implementation(libs.github.cupertino)
             implementation(libs.coil.compose)
             implementation(libs.compose.charts)
             implementation(libs.vico.multiplatform)

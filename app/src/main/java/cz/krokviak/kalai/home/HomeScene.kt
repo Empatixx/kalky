@@ -1,9 +1,7 @@
 package cz.krokviak.kalai.home
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -17,8 +15,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -34,9 +32,7 @@ import cz.krokviak.kalai.home.components.FoodItemCard
 import cz.krokviak.kalai.home.components.MacroNutrientCard
 import cz.krokviak.kalai.home.components.WeekDatePicker
 import cz.krokviak.kalai.theme.AppTheme
-import io.github.alexzhirkevich.cupertino.CupertinoText
-import io.github.alexzhirkevich.cupertino.ExperimentalCupertinoApi
-import io.github.alexzhirkevich.cupertino.section.CupertinoSection
+import cz.krokviak.kalai.ui.components.KalaiCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -105,7 +101,7 @@ fun HomeScene(
                 }
             }
             Spacer(modifier = Modifier.height(12.dp))
-            CupertinoText(
+            Text(
                 text = "Přidáno dnes",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.ExtraBold,
@@ -132,10 +128,9 @@ fun HomeScene(
 
 }
 
-@OptIn(ExperimentalCupertinoApi::class)
 @Composable
 private fun EmptyRecentlyAddedList() {
-    CupertinoSection(
+    KalaiCard(
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier.fillMaxWidth(),
         contentPadding = PaddingValues(0.dp),
@@ -147,12 +142,12 @@ private fun EmptyRecentlyAddedList() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            CupertinoText(
+            Text(
                 text = "Dneska jsi ještě nic nepřidal/a",
                 style = MaterialTheme.typography.titleMedium,
                 color = AppTheme.colors.onBackground
             )
-            CupertinoText(
+            Text(
                 text = "Klikni na tlačítko dole a přidej si první jídlo",
                 style = MaterialTheme.typography.bodyMedium,
                 color = AppTheme.colors.onBackgroundSecondary

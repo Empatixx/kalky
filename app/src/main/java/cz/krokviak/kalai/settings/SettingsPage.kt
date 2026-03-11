@@ -21,13 +21,8 @@ import androidx.compose.ui.unit.sp
 import cz.krokviak.kalai.theme.AppTheme
 import cz.krokviak.kalai.theme.ThemeManager
 import cz.krokviak.kalai.theme.ThemeMode
-import io.github.alexzhirkevich.cupertino.CupertinoSegmentedControl
-import io.github.alexzhirkevich.cupertino.CupertinoSegmentedControlIndicator
-import io.github.alexzhirkevich.cupertino.CupertinoSegmentedControlTab
-import io.github.alexzhirkevich.cupertino.CupertinoText
-import io.github.alexzhirkevich.cupertino.ExperimentalCupertinoApi
+import cz.krokviak.kalai.ui.components.KalaiSegmentedControl
 
-@OptIn(ExperimentalCupertinoApi::class)
 @Composable
 fun SettingsPage(
     modifier: Modifier = Modifier
@@ -39,7 +34,7 @@ fun SettingsPage(
             .padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        CupertinoText(
+        Text(
             text = "Nastavení",
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.ExtraBold,
@@ -53,25 +48,11 @@ fun SettingsPage(
         val themeLabels = listOf("Systém", "Světlý", "Tmavý")
         val themeModes = listOf(ThemeMode.SYSTEM, ThemeMode.LIGHT, ThemeMode.DARK)
 
-        CupertinoSegmentedControl(
-            selectedTabIndex = themeModes.indexOf(themeMode),
-            modifier = Modifier.fillMaxWidth(),
-            indicator = { tabPositions ->
-                CupertinoSegmentedControlIndicator(
-                    selectedTabIndex = themeModes.indexOf(themeMode),
-                    tabPositions = tabPositions
-                )
-            },
-            tabs = {
-                themeLabels.forEachIndexed { index, label ->
-                    CupertinoSegmentedControlTab(
-                        onClick = { ThemeManager.setThemeMode(themeModes[index]) },
-                        isSelected = themeMode == themeModes[index]
-                    ) {
-                        Text(text = label, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
-                    }
-                }
-            }
+        KalaiSegmentedControl(
+            selectedIndex = themeModes.indexOf(themeMode),
+            items = themeLabels,
+            onItemSelected = { ThemeManager.setThemeMode(themeModes[it]) },
+            modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -79,7 +60,7 @@ fun SettingsPage(
         // Account section placeholder
         SectionHeader("Účet")
 
-        CupertinoText(
+        Text(
             text = "Verze aplikace 1.0",
             color = AppTheme.colors.onBackgroundSecondary,
             fontSize = 16.sp,
@@ -92,7 +73,7 @@ fun SettingsPage(
 
 @Composable
 private fun SectionHeader(title: String) {
-    CupertinoText(
+    Text(
         text = title,
         color = AppTheme.colors.onBackgroundSecondary,
         fontSize = 15.sp,

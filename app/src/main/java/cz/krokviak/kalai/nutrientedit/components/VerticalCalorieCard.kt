@@ -16,15 +16,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cz.krokviak.kalai.theme.AppTheme
-import cz.krokviak.kalai.home.MainUiState
 import cz.krokviak.kalai.home.components.MacroNutrientDonutChart
-import io.github.alexzhirkevich.cupertino.CupertinoText
-import io.github.alexzhirkevich.cupertino.section.CupertinoSection
+import cz.krokviak.kalai.ui.components.KalaiCard
 
 @Composable
 fun VerticalCalorieCard(
@@ -32,7 +29,7 @@ fun VerticalCalorieCard(
     calorieRatio: Float,
     modifier: Modifier = Modifier
 ) {
-    CupertinoSection(
+    KalaiCard(
         modifier = modifier
             .border(width = 1.dp, color = AppTheme.colors.border, shape = RoundedCornerShape(32.dp))
             .fillMaxWidth(),
@@ -60,7 +57,7 @@ fun VerticalCalorieCard(
             }
             Spacer(modifier = Modifier.size(16.dp))
             // Bottom: Total calories text
-            CupertinoText(
+            Text(
                 text = "${currentCalories} kcal",
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold

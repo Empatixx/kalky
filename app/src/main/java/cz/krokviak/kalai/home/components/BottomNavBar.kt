@@ -25,10 +25,12 @@ import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProvideTextStyle
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -39,20 +41,8 @@ import androidx.compose.ui.semantics.Role
 import cz.krokviak.kalai.theme.AppTheme
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import io.github.alexzhirkevich.LocalContentColor
-import io.github.alexzhirkevich.cupertino.CupertinoBottomSheetContent
-import io.github.alexzhirkevich.cupertino.CupertinoBottomSheetScaffold
-import io.github.alexzhirkevich.cupertino.CupertinoDivider
-import io.github.alexzhirkevich.cupertino.CupertinoIcon
-import io.github.alexzhirkevich.cupertino.CupertinoNavigationBar
-import io.github.alexzhirkevich.cupertino.CupertinoScaffold
-import io.github.alexzhirkevich.cupertino.CupertinoText
-import io.github.alexzhirkevich.cupertino.ExperimentalCupertinoApi
-import io.github.alexzhirkevich.cupertino.ProvideTextStyle
-import io.github.alexzhirkevich.cupertino.cupertinoTranslucentTopBarColor
-import io.github.alexzhirkevich.cupertino.theme.CupertinoTheme
+import androidx.compose.material3.LocalContentColor
 
-@OptIn(ExperimentalCupertinoApi::class)
 @Composable
 fun BottomNavBar(
     currentPage: Int,
@@ -60,7 +50,7 @@ fun BottomNavBar(
     onCaptureClick: () -> Unit,
     onBarcodeScanClick: () -> Unit
 ) {
-    val navColors = CupertinoNavigationBarDefaults.itemColors(
+    val navColors = KalaiNavigationBarDefaults.itemColors(
         selectedIconColor = AppTheme.colors.onBackground,
         selectedTextColor = AppTheme.colors.onBackground,
         unselectedIconColor = AppTheme.colors.onBackgroundSecondary,
@@ -74,24 +64,23 @@ fun BottomNavBar(
             .fillMaxWidth()
             .height(85.dp)
     ) {
-        CupertinoNavigationBar(
-            isTranslucent = true,
-            isTransparent = true,
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(85.dp)
-                .align(Alignment.BottomCenter)
+                .align(Alignment.BottomCenter),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             // Left side: Domov, Analyza
             NavItem(0, Icons.Outlined.Home, "Domov", currentPage, onSceneSelected, navColors)
-            NavItem(1, Icons.Outlined.Analytics, "Anal\u00FDza", currentPage, onSceneSelected, navColors)
+            NavItem(1, Icons.Outlined.Analytics, "Analýza", currentPage, onSceneSelected, navColors)
 
             // Center spacer for the FABs
             Box(modifier = Modifier.weight(1.2f))
 
             // Right side: Profil, Nastaveni
             NavItem(2, Icons.Outlined.Person, "Profil", currentPage, onSceneSelected, navColors)
-            NavItem(3, Icons.Outlined.Settings, "Nastaven\u00ED", currentPage, onSceneSelected, navColors)
+            NavItem(3, Icons.Outlined.Settings, "Nastavení", currentPage, onSceneSelected, navColors)
         }
 
         // Centered FABs overlapping the nav bar
@@ -134,7 +123,6 @@ fun BottomNavBar(
     }
 }
 
-@OptIn(ExperimentalCupertinoApi::class)
 @Composable
 private fun RowScope.NavItem(
     page: Int,
@@ -142,27 +130,26 @@ private fun RowScope.NavItem(
     label: String,
     currentPage: Int,
     onSceneSelected: (Int) -> Unit,
-    colors: CupertinoNavigationBarItemColors
+    colors: KalaiNavigationBarItemColors
 ) {
-    CupertinoNavigationBarItem(
+    KalaiNavigationBarItem(
         selected = page == currentPage,
         onClick = { onSceneSelected(page) },
         icon = {
-            CupertinoIcon(
+            Icon(
                 imageVector = icon,
                 contentDescription = label,
                 modifier = Modifier.size(24.dp)
             )
         },
-        label = { CupertinoText(text = label, fontWeight = FontWeight.Bold) },
+        label = { Text(text = label, fontWeight = FontWeight.Bold) },
         alwaysShowLabel = true,
         colors = colors
     )
 }
 
 @Composable
-@ExperimentalCupertinoApi
-fun RowScope.CupertinoNavigationBarItem(
+fun RowScope.KalaiNavigationBarItem(
     selected: Boolean,
     onClick: () -> Unit,
     icon: @Composable () -> Unit,
@@ -171,7 +158,7 @@ fun RowScope.CupertinoNavigationBarItem(
     label: @Composable (() -> Unit)? = null,
     alwaysShowLabel: Boolean = true,
     pressIndicationEnabled: Boolean = false,
-    colors: CupertinoNavigationBarItemColors = CupertinoNavigationBarDefaults.itemColors(),
+    colors: KalaiNavigationBarItemColors = KalaiNavigationBarDefaults.itemColors(),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
 ) {
 
@@ -198,7 +185,7 @@ fun RowScope.CupertinoNavigationBarItem(
         val textColor = colors.textColor(selected, enabled)
 
         ProvideTextStyle(
-            value = CupertinoTheme.typography.caption2
+            value = MaterialTheme.typography.labelSmall
         ) {
             val alpha = if (pressIndicationEnabled && pressed && !selected)
                 textColor.alpha * .33f
@@ -222,8 +209,7 @@ fun RowScope.CupertinoNavigationBarItem(
 }
 
 @Stable
-@ExperimentalCupertinoApi
-class CupertinoNavigationBarItemColors internal constructor(
+class KalaiNavigationBarItemColors internal constructor(
     private val selectedIconColor: Color,
     private val selectedTextColor: Color,
     private val unselectedIconColor: Color,
@@ -231,12 +217,6 @@ class CupertinoNavigationBarItemColors internal constructor(
     private val disabledIconColor: Color,
     private val disabledTextColor: Color,
 ) {
-    /**
-     * Represents the icon color for this item, depending on whether it is [selected].
-     *
-     * @param selected whether the item is selected
-     * @param enabled whether the item is enabled
-     */
     @Composable
     internal fun iconColor(selected: Boolean, enabled: Boolean): Color {
         return when {
@@ -246,12 +226,6 @@ class CupertinoNavigationBarItemColors internal constructor(
         }
     }
 
-    /**
-     * Represents the text color for this item, depending on whether it is [selected].
-     *
-     * @param selected whether the item is selected
-     * @param enabled whether the item is enabled
-     */
     @Composable
     internal fun textColor(selected: Boolean, enabled: Boolean): Color {
         return when {
@@ -263,7 +237,7 @@ class CupertinoNavigationBarItemColors internal constructor(
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other == null || other !is CupertinoNavigationBarItemColors) return false
+        if (other == null || other !is KalaiNavigationBarItemColors) return false
 
         if (selectedIconColor != other.selectedIconColor) return false
         if (unselectedIconColor != other.unselectedIconColor) return false
@@ -285,35 +259,18 @@ class CupertinoNavigationBarItemColors internal constructor(
     }
 }
 
-@ExperimentalCupertinoApi
 @Immutable
-object CupertinoNavigationBarDefaults {
-
-    /**
-     * Default container color of the [CupertinoNavigationBar]
-     *
-     * Note: navigation bar itself does not produce cupertino thin material glass effect.
-     * This effect works only inside [CupertinoScaffold], [CupertinoBottomSheetScaffold], [CupertinoBottomSheetContent].
-     * To achieve this effect with custom top app bar use [cupertinoTranslucentTopBarColor]
-     * function that will communicate with scaffold and return either
-     * [Color.Transparent] if color was successfully applied to scaffold (and top bar itself
-     * should be transparent) or passed color if scaffold wasn't found.
-     * */
-    val containerColor: Color
-        @Composable
-        @ReadOnlyComposable
-        get() = CupertinoTheme.colorScheme.tertiarySystemBackground
+object KalaiNavigationBarDefaults {
 
     @Composable
-    @ReadOnlyComposable
     fun itemColors(
-        selectedIconColor: Color = CupertinoTheme.colorScheme.accent,
-        selectedTextColor: Color = CupertinoTheme.colorScheme.accent,
-        unselectedIconColor: Color = CupertinoTheme.colorScheme.secondaryLabel,
-        unselectedTextColor: Color = CupertinoTheme.colorScheme.secondaryLabel,
-        disabledIconColor: Color = CupertinoTheme.colorScheme.tertiaryLabel,
-        disabledTextColor: Color = CupertinoTheme.colorScheme.tertiaryLabel,
-    ) = CupertinoNavigationBarItemColors(
+        selectedIconColor: Color = AppTheme.colors.onBackground,
+        selectedTextColor: Color = AppTheme.colors.onBackground,
+        unselectedIconColor: Color = AppTheme.colors.onBackgroundSecondary,
+        unselectedTextColor: Color = AppTheme.colors.onBackgroundSecondary,
+        disabledIconColor: Color = AppTheme.colors.onBackgroundSecondary,
+        disabledTextColor: Color = AppTheme.colors.onBackgroundSecondary,
+    ) = KalaiNavigationBarItemColors(
         selectedIconColor = selectedIconColor,
         selectedTextColor = selectedTextColor,
         unselectedIconColor = unselectedIconColor,
@@ -321,58 +278,4 @@ object CupertinoNavigationBarDefaults {
         disabledIconColor = disabledIconColor,
         disabledTextColor = disabledTextColor
     )
-
-    @Composable
-    fun divider() {
-        CupertinoDivider()
-    }
 }
-
-internal object CupertinoNavigationBarTokens {
-    val Height = 49.dp
-}
-/*
-        sceneItems.forEach { (scene, iconLabelPair) ->
-            val (icon, label) = iconLabelPair
-            val isSelected = (scene == currentScene)
-
-            CupertinoNavigationBarItem(
-                selected = isSelected,
-                onClick = { onSceneSelected(scene) },
-                icon = {
-                    CupertinoIcon(
-                        imageVector = icon,
-                        contentDescription = label,
-                        modifier = Modifier.size(64.dp) // optionally match size or omit
-                    )
-                },
-                label = {
-                    CupertinoText(
-                        text = label
-                    )
-                },
-                // Show label always or only if selected
-                alwaysShowLabel = true,
-                // Override default "blue" colors with your own
-                colors = CupertinoNavigationBarDefaults.itemColors(
-                    selectedIconColor = AppTheme.colors.onBackground,
-                    selectedTextColor = AppTheme.colors.onBackground,
-                    unselectedIconColor = AppTheme.colors.onBackgroundSecondary,
-                    unselectedTextColor = AppTheme.colors.onBackgroundSecondary,
-                    disabledIconColor = AppTheme.colors.onBackgroundSecondary,
-                    disabledTextColor = AppTheme.colors.onBackgroundSecondary
-                )
-            )
-        }
-        CupertinoNavigationBarItem(
-            selected = false,
-            onClick = { /* No-op */ },
-            icon = {},
-            label = {},
-            alwaysShowLabel = false,
-            colors = CupertinoNavigationBarDefaults.itemColors(
-                selectedIconColor = Color.Transparent,
-                unselectedIconColor = Color.Transparent
-            )
-        )
- */
