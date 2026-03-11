@@ -18,3 +18,6 @@ build/
 /captures
 .externalNativeBuild
 .cxx
+
+# Backend
+backend/node_modules/

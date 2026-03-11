@@ -53,6 +53,7 @@ kalai/
 
 ## Key Conventions
 - UI language: Czech
+- **UI style: Always prefer iOS/Cupertino-style layouts and components** — use `CupertinoButton`, `CupertinoTextField`, etc. from `io.github.alexzhirkevich.cupertino` instead of Material3 equivalents wherever possible. **WARNING: `CupertinoWheelPicker`, `CupertinoDatePicker`, and `CupertinoTimePicker` are BROKEN** — they crash at runtime with `NoSuchMethodError` on `rememberSnapFlingBehavior` due to binary incompatibility between cupertino 0.1.0-alpha04 and Compose Foundation 1.7.8. For wheel/picker UIs, build custom iOS-style pickers using `LazyColumn` + `rememberSnapFlingBehavior` + rounded rect selection band + fade gradients (see `analytics/components/WheelDatePicker.kt` as reference).
 - Feature structure: `FeatureName/` with `FeatureScene.kt`, `FeatureViewModel.kt`, `FeatureUiState.kt`, `components/`
 - Colors: Black/White/Gray theme with Cupertino styling
 - Navigation: Type-safe routes with `@Serializable` objects/data classes in `NavRoutes.kt`

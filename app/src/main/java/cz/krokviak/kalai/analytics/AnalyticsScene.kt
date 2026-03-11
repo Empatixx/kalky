@@ -1,19 +1,18 @@
 package cz.krokviak.kalai.analytics
 
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,16 +26,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cz.krokviak.kalai.analytics.components.NutrientCalorieCard
 import cz.krokviak.kalai.analytics.components.WeightLineChart
+import cz.krokviak.kalai.analytics.components.WheelDatePickerInline
 import cz.krokviak.kalai.theme.AppTheme
-import kotlinx.datetime.Instant
+import io.github.alexzhirkevich.cupertino.CupertinoText
+import io.github.alexzhirkevich.cupertino.section.CupertinoSection
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atStartOfDayIn
-import kotlinx.datetime.toLocalDateTime
 
 private enum class DateField { START, END }
 
-@OptIn(ExperimentalMaterial3Api::class)
+private val IOS_RED = Color(0xFFFF3B30)
+
 @Composable
 fun AnalyticsPage(
     analyticsViewModel: AnalyticsViewModel,
@@ -51,100 +50,105 @@ fun AnalyticsPage(
             .fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically
+        // iOS-style date range card
+        CupertinoSection(
+            modifier = Modifier
+                .border(
+                    width = 1.dp,
+                    color = AppTheme.colors.border,
+                    shape = RoundedCornerShape(16.dp)
+                )
+                .fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+            contentPadding = PaddingValues(0.dp),
         ) {
-            DateChip(
-                label = "Od",
-                date = uiState.startDate,
-                onClick = { activeDateField = DateField.START },
-                modifier = Modifier.weight(1f)
-            )
-            DateChip(
-                label = "Do",
-                date = uiState.endDate,
-                onClick = { activeDateField = DateField.END },
-                modifier = Modifier.weight(1f)
-            )
+            Column {
+                // Start date row
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            activeDateField = if (activeDateField == DateField.START) null else DateField.START
+                        }
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    CupertinoText(
+                        text = "Začátek",
+                        color = AppTheme.colors.onBackground,
+                        fontSize = 17.sp,
+                    )
+                    CupertinoText(
+                        text = formatDate(uiState.startDate),
+                        color = if (activeDateField == DateField.START) IOS_RED else AppTheme.colors.onBackground,
+                        fontSize = 17.sp,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                }
+
+                // Inline picker for start date
+                AnimatedVisibility(
+                    visible = activeDateField == DateField.START,
+                    enter = expandVertically(),
+                    exit = shrinkVertically()
+                ) {
+                    Column {
+                        HorizontalDivider(color = AppTheme.colors.border)
+                        WheelDatePickerInline(
+                            initialDate = uiState.startDate,
+                            onDateChanged = { analyticsViewModel.setStartDate(it) },
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
+                        )
+                    }
+                }
+
+                HorizontalDivider(color = AppTheme.colors.border)
+
+                // End date row
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            activeDateField = if (activeDateField == DateField.END) null else DateField.END
+                        }
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    CupertinoText(
+                        text = "Konec",
+                        color = AppTheme.colors.onBackground,
+                        fontSize = 17.sp,
+                    )
+                    CupertinoText(
+                        text = formatDate(uiState.endDate),
+                        color = if (activeDateField == DateField.END) IOS_RED else AppTheme.colors.onBackground,
+                        fontSize = 17.sp,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                }
+
+                // Inline picker for end date
+                AnimatedVisibility(
+                    visible = activeDateField == DateField.END,
+                    enter = expandVertically(),
+                    exit = shrinkVertically()
+                ) {
+                    Column {
+                        HorizontalDivider(color = AppTheme.colors.border)
+                        WheelDatePickerInline(
+                            initialDate = uiState.endDate,
+                            onDateChanged = { analyticsViewModel.setEndDate(it) },
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
+                        )
+                    }
+                }
+            }
         }
 
         WeightLineChart(weights = uiState.weights)
         NutrientCalorieCard(bars = uiState.caloriesBars)
-    }
-
-    if (activeDateField != null) {
-        val currentDate = when (activeDateField) {
-            DateField.START -> uiState.startDate
-            DateField.END -> uiState.endDate
-            null -> return
-        }
-        val initialMillis = currentDate.atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()
-        val datePickerState = rememberDatePickerState(initialSelectedDateMillis = initialMillis)
-
-        DatePickerDialog(
-            onDismissRequest = { activeDateField = null },
-            confirmButton = {
-                TextButton(onClick = {
-                    val millis = datePickerState.selectedDateMillis
-                    if (millis != null) {
-                        val selected = Instant.fromEpochMilliseconds(millis)
-                            .toLocalDateTime(TimeZone.UTC).date
-                        when (activeDateField) {
-                            DateField.START -> analyticsViewModel.setStartDate(selected)
-                            DateField.END -> analyticsViewModel.setEndDate(selected)
-                            null -> {}
-                        }
-                    }
-                    activeDateField = null
-                }) {
-                    Text("Potvrdit")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { activeDateField = null }) {
-                    Text("Zrušit")
-                }
-            }
-        ) {
-            DatePicker(state = datePickerState)
-        }
-    }
-}
-
-@Composable
-private fun DateChip(
-    label: String,
-    date: LocalDate,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Surface(
-        onClick = onClick,
-        modifier = modifier,
-        shape = RoundedCornerShape(12.dp),
-        border = BorderStroke(1.dp, AppTheme.colors.border),
-        color = AppTheme.colors.surface
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = label,
-                color = AppTheme.colors.onBackgroundSecondary,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                text = formatDate(date),
-                fontWeight = FontWeight.ExtraBold,
-                fontSize = 18.sp,
-                color = AppTheme.colors.onBackground
-            )
-        }
     }
 }
 
