@@ -17,7 +17,8 @@ data class OnboardingUiState(
     val goalChoice: GoalChoice = GoalChoice.MAINTAIN,
     val weightIndex: Int = DEFAULT_WEIGHT_INDEX,
     val heightIndex: Int = DEFAULT_HEIGHT_INDEX,
-    val ageIndex: Int = DEFAULT_AGE_INDEX
+    val ageIndex: Int = DEFAULT_AGE_INDEX,
+    val promoCode: String = ""
 )
 
 class OnboardingViewModel(
@@ -69,6 +70,10 @@ class OnboardingViewModel(
         _uiState.update { it.copy(ageIndex = index.coerceIn(0, ageValues.lastIndex)) }
     }
 
+    fun onPromoCodeChange(value: String) {
+        _uiState.update { it.copy(promoCode = value) }
+    }
+
     fun buildResult(): OnboardingResult {
         val state = _uiState.value
         return OnboardingResult(
@@ -77,7 +82,8 @@ class OnboardingViewModel(
             height = heightValues[state.heightIndex],
             age = ageValues[state.ageIndex],
             activityLevel = state.activityLevel,
-            goal = state.goalChoice
+            goal = state.goalChoice,
+            promoCode = state.promoCode.trim()
         )
     }
 }

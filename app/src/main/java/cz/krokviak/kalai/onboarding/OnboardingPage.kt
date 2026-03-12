@@ -27,6 +27,7 @@ import cz.krokviak.kalai.onboarding.pages.AgeOnboardingPage
 import cz.krokviak.kalai.onboarding.pages.GenderOnboardingPage
 import cz.krokviak.kalai.onboarding.pages.GoalOnboardingPage
 import cz.krokviak.kalai.onboarding.pages.HeightOnboardingPage
+import cz.krokviak.kalai.onboarding.pages.PromoCodeOnboardingPage
 import cz.krokviak.kalai.onboarding.pages.WeightOnboardingPage
 import cz.krokviak.kalai.settings.AppPreferencesManager
 import cz.krokviak.kalai.settings.UnitSystem
@@ -147,9 +148,13 @@ fun OnboardingPage(
                                     selectedActivityLevel = uiState.activityLevel,
                                     onSelected = onboardingViewModel::onActivityLevelSelected
                                 )
-                                else -> GoalOnboardingPage(
+                                5 -> GoalOnboardingPage(
                                     selectedGoal = uiState.goalChoice,
                                     onSelected = onboardingViewModel::onGoalSelected
+                                )
+                                else -> PromoCodeOnboardingPage(
+                                    promoCode = uiState.promoCode,
+                                    onPromoCodeChange = onboardingViewModel::onPromoCodeChange
                                 )
                             }
                         }

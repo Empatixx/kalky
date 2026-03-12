@@ -6,7 +6,8 @@ enum class OnboardingStep(val title: String) {
     HEIGHT("Jak jsi vysoký/á?"),
     AGE("Kolik je ti let?"),
     ACTIVITY("Jak aktivní jsi?"),
-    GOAL("Jaký máš cíl?")
+    GOAL("Jaký máš cíl?"),
+    PROMO("Promo kód")
 }
 
 enum class GoalChoice(val label: String) {
@@ -21,5 +22,6 @@ data class OnboardingResult(
     val height: String,
     val age: String,
     val activityLevel: Int,
-    val goal: GoalChoice
+    val goal: GoalChoice,
+    val promoCode: String
 )

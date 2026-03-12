@@ -7,7 +7,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -105,6 +107,47 @@ fun GoalOnboardingPage(
         selectedIndex = goals.indexOf(selectedGoal).coerceAtLeast(0),
         onSelected = { onSelected(goals[it]) }
     )
+}
+
+@Composable
+fun PromoCodeOnboardingPage(
+    promoCode: String,
+    onPromoCodeChange: (String) -> Unit
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Text(
+            text = "Máš promo kód?",
+            color = AppTheme.colors.onBackground,
+            fontSize = 28.sp,
+            fontWeight = FontWeight.ExtraBold
+        )
+        OutlinedTextField(
+            value = promoCode,
+            onValueChange = onPromoCodeChange,
+            singleLine = true,
+            shape = RoundedCornerShape(14.dp),
+            modifier = Modifier.fillMaxWidth(),
+            placeholder = {
+                Text(
+                    text = "Promo kód (volitelné)",
+                    color = AppTheme.colors.onBackgroundSecondary
+                )
+            },
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = AppTheme.colors.surface,
+                unfocusedContainerColor = AppTheme.colors.surface,
+                disabledContainerColor = AppTheme.colors.surface,
+                focusedTextColor = AppTheme.colors.onBackground,
+                unfocusedTextColor = AppTheme.colors.onBackground,
+                focusedIndicatorColor = AppTheme.colors.primary,
+                unfocusedIndicatorColor = AppTheme.colors.border,
+                cursorColor = AppTheme.colors.onBackground
+            )
+        )
+    }
 }
 
 @Composable
