@@ -4,7 +4,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.padding
@@ -31,36 +30,40 @@ fun VerticalCalorieCard(
 ) {
     KalaiCard(
         modifier = modifier
-            .border(width = 1.dp, color = AppTheme.colors.border, shape = RoundedCornerShape(32.dp))
+            .border(width = 1.dp, color = AppTheme.colors.border, shape = RoundedCornerShape(20.dp))
             .fillMaxWidth(),
-        shape = RoundedCornerShape(32.dp),
+        shape = RoundedCornerShape(20.dp),
         contentPadding = PaddingValues(0.dp),
     ) {
         Column(
             modifier = Modifier
-                .padding(32.dp)
+                .padding(vertical = 24.dp, horizontal = 20.dp)
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterVertically)
         ) {
-            // Top: Donut (pie) chart
             Box(
-                modifier = Modifier.size(125.dp),
+                modifier = Modifier.size(112.dp),
                 contentAlignment = Alignment.Center
             ) {
                 MacroNutrientDonutChart(
-                    modifier = Modifier.matchParentSize(), // Chart fills the Box size
+                    modifier = Modifier.matchParentSize(),
                     percentage = calorieRatio,
                     activeColor = AppTheme.colors.primary,
                     centerIcon = Icons.Outlined.LocalFireDepartment,
                 )
             }
-            Spacer(modifier = Modifier.size(16.dp))
-            // Bottom: Total calories text
             Text(
                 text = "${currentCalories} kcal",
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Bold
+                color = AppTheme.colors.onBackground,
+                fontSize = 34.sp,
+                fontWeight = FontWeight.ExtraBold
+            )
+            Text(
+                text = "Denní cíl kalorií",
+                color = AppTheme.colors.onBackgroundSecondary,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium
             )
         }
     }

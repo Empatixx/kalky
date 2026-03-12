@@ -38,7 +38,6 @@ import androidx.compose.ui.unit.sp
 import cz.krokviak.kalai.settings.components.BmiIndicatorCard
 import cz.krokviak.kalai.settings.components.IosInlineValuePicker
 import cz.krokviak.kalai.theme.AppTheme
-import cz.krokviak.kalai.ui.components.KalaiButton
 import cz.krokviak.kalai.ui.components.KalaiCard
 import cz.krokviak.kalai.ui.components.KalaiSegmentedControl
 import java.util.Locale
@@ -75,31 +74,17 @@ fun ProfilePage(
             .padding(horizontal = 20.dp, vertical = 16.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Profil",
-                color = AppTheme.colors.onBackground,
-                fontSize = 44.sp,
-                fontWeight = FontWeight.ExtraBold
-            )
-            Text(
-                text = if (uiState.saved) "Uloženo" else "Uložit",
-                color = Color(0xFF4A82E8),
-                fontSize = 22.sp,
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.clickable { viewModel.save() }
-            )
-        }
+        Text(
+            text = "Profil",
+            color = AppTheme.colors.onBackground,
+            fontSize = 44.sp,
+            fontWeight = FontWeight.ExtraBold
+        )
 
         Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
             SectionHeader(
                 title = "Osobní údaje",
-                startInset = cardContentInset,
-                emphasized = true
+                startInset = cardContentInset
             )
             KalaiCard(
                 modifier = Modifier.fillMaxWidth(),
@@ -112,8 +97,12 @@ fun ProfilePage(
                         value = uiState.weight.ifBlank { "--.-" },
                         unit = "kg",
                         onClick = {
-                            selectedWeightIndex = resolveWeightIndex(uiState.weight)
-                            activePickerField = ProfilePickerField.WEIGHT
+                            if (activePickerField == ProfilePickerField.WEIGHT) {
+                                activePickerField = null
+                            } else {
+                                selectedWeightIndex = resolveWeightIndex(uiState.weight)
+                                activePickerField = ProfilePickerField.WEIGHT
+                            }
                         },
                         textSize = cardTextSize
                     )
@@ -121,12 +110,11 @@ fun ProfilePage(
                         IosInlineValuePicker(
                             values = weightValues,
                             selectedIndex = selectedWeightIndex,
-                            onIndexChanged = { selectedWeightIndex = it },
-                            onCancel = { activePickerField = null },
-                            onDone = {
-                                viewModel.onWeightChange(weightValues[selectedWeightIndex])
-                                activePickerField = null
-                            }
+                            onIndexChanged = {
+                                selectedWeightIndex = it
+                                viewModel.onWeightChange(weightValues[it])
+                            },
+                            unitSuffix = "kg"
                         )
                     }
                     RowDivider()
@@ -136,8 +124,12 @@ fun ProfilePage(
                         value = uiState.height.ifBlank { "--" },
                         unit = "cm",
                         onClick = {
-                            selectedHeightIndex = resolveIndex(uiState.height, 100, 250)
-                            activePickerField = ProfilePickerField.HEIGHT
+                            if (activePickerField == ProfilePickerField.HEIGHT) {
+                                activePickerField = null
+                            } else {
+                                selectedHeightIndex = resolveIndex(uiState.height, 100, 250)
+                                activePickerField = ProfilePickerField.HEIGHT
+                            }
                         },
                         textSize = cardTextSize
                     )
@@ -145,12 +137,11 @@ fun ProfilePage(
                         IosInlineValuePicker(
                             values = heightValues,
                             selectedIndex = selectedHeightIndex,
-                            onIndexChanged = { selectedHeightIndex = it },
-                            onCancel = { activePickerField = null },
-                            onDone = {
-                                viewModel.onHeightChange(heightValues[selectedHeightIndex])
-                                activePickerField = null
-                            }
+                            onIndexChanged = {
+                                selectedHeightIndex = it
+                                viewModel.onHeightChange(heightValues[it])
+                            },
+                            unitSuffix = "cm"
                         )
                     }
                     RowDivider()
@@ -160,8 +151,12 @@ fun ProfilePage(
                         value = uiState.age.ifBlank { "--" },
                         unit = "let",
                         onClick = {
-                            selectedAgeIndex = resolveIndex(uiState.age, 1, 120)
-                            activePickerField = ProfilePickerField.AGE
+                            if (activePickerField == ProfilePickerField.AGE) {
+                                activePickerField = null
+                            } else {
+                                selectedAgeIndex = resolveIndex(uiState.age, 1, 120)
+                                activePickerField = ProfilePickerField.AGE
+                            }
                         },
                         textSize = cardTextSize
                     )
@@ -169,12 +164,11 @@ fun ProfilePage(
                         IosInlineValuePicker(
                             values = ageValues,
                             selectedIndex = selectedAgeIndex,
-                            onIndexChanged = { selectedAgeIndex = it },
-                            onCancel = { activePickerField = null },
-                            onDone = {
-                                viewModel.onAgeChange(ageValues[selectedAgeIndex])
-                                activePickerField = null
-                            }
+                            onIndexChanged = {
+                                selectedAgeIndex = it
+                                viewModel.onAgeChange(ageValues[it])
+                            },
+                            unitSuffix = "let"
                         )
                     }
                 }
@@ -183,26 +177,17 @@ fun ProfilePage(
 
         SectionHeader(
             title = "Pohlaví",
-            startInset = cardContentInset,
-            emphasized = true
+            startInset = cardContentInset
         )
-        KalaiCard(
+        KalaiSegmentedControl(
+            selectedIndex = genderOptions.indexOf(uiState.gender).coerceAtLeast(0),
+            items = genderOptions,
+            onItemSelected = { viewModel.onGenderChange(genderOptions[it]) },
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(14.dp),
-            color = AppTheme.colors.surface
-        ) {
-            KalaiSegmentedControl(
-                selectedIndex = genderOptions.indexOf(uiState.gender).coerceAtLeast(0),
-                items = genderOptions,
-                onItemSelected = { viewModel.onGenderChange(genderOptions[it]) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                trackColor = AppTheme.colors.surfaceSecondary,
-                indicatorColor = AppTheme.colors.surface,
-                textSize = cardTextSize
-            )
-        }
+            trackColor = AppTheme.colors.surfaceSecondary,
+            indicatorColor = AppTheme.colors.surface,
+            textSize = cardTextSize
+        )
 
         uiState.bmi?.let { bmi ->
             BmiIndicatorCard(
@@ -215,8 +200,7 @@ fun ProfilePage(
         Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
             SectionHeader(
                 title = "Úroveň aktivity",
-                startInset = cardContentInset,
-                emphasized = true
+                startInset = cardContentInset
             )
             KalaiCard(
                 modifier = Modifier.fillMaxWidth(),
@@ -240,18 +224,6 @@ fun ProfilePage(
             }
         }
 
-        KalaiButton(
-            onClick = { viewModel.save() },
-            modifier = Modifier.fillMaxWidth(),
-            containerColor = Color.Black,
-            contentColor = Color.White
-        ) {
-            Text(
-                text = "Uložit údaje",
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp
-            )
-        }
     }
 }
 
@@ -268,14 +240,13 @@ private fun resolveIndex(value: String, minValue: Int, maxValue: Int): Int {
 @Composable
 private fun SectionHeader(
     title: String,
-    startInset: Dp,
-    emphasized: Boolean = false
+    startInset: Dp
 ) {
     Text(
         text = title,
-        color = AppTheme.colors.onBackground,
-        fontSize = if (emphasized) 20.sp else 16.sp,
-        fontWeight = if (emphasized) FontWeight.Bold else FontWeight.SemiBold,
+        color = AppTheme.colors.onBackgroundSecondary,
+        fontSize = 14.sp,
+        fontWeight = FontWeight.SemiBold,
         modifier = Modifier.padding(start = startInset)
     )
 }

@@ -1,14 +1,11 @@
 package cz.krokviak.kalai.settings.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -39,8 +36,7 @@ fun IosInlineValuePicker(
     values: List<String>,
     selectedIndex: Int,
     onIndexChanged: (Int) -> Unit,
-    onCancel: () -> Unit,
-    onDone: () -> Unit
+    unitSuffix: String? = null
 ) {
     Column(
         modifier = Modifier
@@ -49,39 +45,11 @@ fun IosInlineValuePicker(
             .padding(bottom = 8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Zrušit",
-                color = AppTheme.colors.onBackgroundSecondary,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.clickable(
-                    interactionSource = MutableInteractionSource(),
-                    indication = null,
-                    onClick = onCancel
-                )
-            )
-            Text(
-                text = "Hotovo",
-                color = AppTheme.colors.onBackground,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.clickable(
-                    interactionSource = MutableInteractionSource(),
-                    indication = null,
-                    onClick = onDone
-                )
-            )
-        }
-
         NumberWheel(
             values = values,
             initialIndex = selectedIndex.coerceIn(0, values.lastIndex),
-            onIndexChanged = onIndexChanged
+            onIndexChanged = onIndexChanged,
+            unitSuffix = unitSuffix
         )
     }
 }
@@ -90,7 +58,8 @@ fun IosInlineValuePicker(
 private fun NumberWheel(
     values: List<String>,
     initialIndex: Int,
-    onIndexChanged: (Int) -> Unit
+    onIndexChanged: (Int) -> Unit,
+    unitSuffix: String?
 ) {
     val listState = rememberLazyListState(initialFirstVisibleItemIndex = initialIndex)
     val snapBehavior = rememberSnapFlingBehavior(listState)
@@ -126,6 +95,7 @@ private fun NumberWheel(
             modifier = Modifier.fillMaxWidth()
         ) {
             itemsIndexed(values) { _, value ->
+                val displayValue = if (unitSuffix.isNullOrBlank()) value else "$value $unitSuffix"
                 Box(
                     modifier = Modifier
                         .height(ItemHeight)
@@ -134,7 +104,7 @@ private fun NumberWheel(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = value,
+                        text = displayValue,
                         color = textColor,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Normal,

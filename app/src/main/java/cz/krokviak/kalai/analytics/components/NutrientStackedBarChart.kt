@@ -68,7 +68,7 @@ fun NutrientCalorieCard(
 
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         KalaiSegmentedControl(
             selectedIndex = selectedTab,

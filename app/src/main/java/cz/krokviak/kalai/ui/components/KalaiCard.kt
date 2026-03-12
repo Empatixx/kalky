@@ -9,12 +9,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
+import cz.krokviak.kalai.theme.AppTheme
 
 @Composable
 fun KalaiCard(
     modifier: Modifier = Modifier,
     shape: Shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
-    color: Color = Color.Transparent,
+    color: Color = AppTheme.colors.surface,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     content: @Composable () -> Unit
 ) {
