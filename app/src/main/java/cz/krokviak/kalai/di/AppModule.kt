@@ -9,6 +9,7 @@ import cz.krokviak.kalai.db.DriverFactory
 import cz.krokviak.kalai.detail.FoodDetailViewModel
 import cz.krokviak.kalai.home.MainViewModel
 import cz.krokviak.kalai.nutrientedit.NutrientEditViewModel
+import cz.krokviak.kalai.onboarding.OnboardingViewModel
 import cz.krokviak.kalai.settings.SettingsViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -24,6 +25,7 @@ val appModule = module {
     viewModel { NutrientEditViewModel(get()) }
     viewModel { AnalyticsViewModel(get(), get()) }
     viewModel { SettingsViewModel(get()) }
+    viewModel { OnboardingViewModel(get()) }
     viewModel { BarcodeScannerViewModel(get()) }
     viewModel { CameraViewModel(get()) }
 }

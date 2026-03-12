@@ -39,7 +39,8 @@ import cz.krokviak.kalai.detail.FoodDetailViewModel
 import cz.krokviak.kalai.home.components.BottomNavBar
 import cz.krokviak.kalai.nutrientedit.NutrientEditScene
 import cz.krokviak.kalai.nutrientedit.NutrientEditViewModel
-import cz.krokviak.kalai.onboarding.OnboardingFlow
+import cz.krokviak.kalai.onboarding.OnboardingPage
+import cz.krokviak.kalai.onboarding.OnboardingViewModel
 import cz.krokviak.kalai.settings.ProfilePage
 import cz.krokviak.kalai.settings.SettingsPage
 import cz.krokviak.kalai.settings.SettingsViewModel
@@ -55,6 +56,7 @@ class MainActivity : ComponentActivity() {
     private val nutrientEditViewModel: NutrientEditViewModel by viewModel()
     private val analyticsViewModel: AnalyticsViewModel by viewModel()
     private val settingsViewModel: SettingsViewModel by viewModel()
+    private val onboardingViewModel: OnboardingViewModel by viewModel()
 
     /**
      * Launcher for the camera Activity, handles the result of taking a picture.
@@ -74,6 +76,7 @@ class MainActivity : ComponentActivity() {
                     nutrientEditViewModel = nutrientEditViewModel,
                     analyticsViewModel = analyticsViewModel,
                     settingsViewModel = settingsViewModel,
+                    onboardingViewModel = onboardingViewModel,
                     cameraResultLauncher = cameraResultLauncher
                 )
             }
@@ -122,6 +125,7 @@ fun AppContent(
     nutrientEditViewModel: NutrientEditViewModel,
     analyticsViewModel: AnalyticsViewModel,
     settingsViewModel: SettingsViewModel,
+    onboardingViewModel: OnboardingViewModel,
     cameraResultLauncher: ActivityResultLauncher<Intent>
 ) {
     val navController = rememberNavController()
@@ -131,9 +135,8 @@ fun AppContent(
         startDestination = OnboardingRoute
     ) {
         composable<OnboardingRoute> {
-            val onboardingSettings by settingsViewModel.uiState.collectAsState()
-            OnboardingFlow(
-                initialSettings = onboardingSettings,
+            OnboardingPage(
+                onboardingViewModel = onboardingViewModel,
                 onFinish = { result ->
                     settingsViewModel.onGenderChange(result.gender)
                     settingsViewModel.onWeightChange(result.weight)
