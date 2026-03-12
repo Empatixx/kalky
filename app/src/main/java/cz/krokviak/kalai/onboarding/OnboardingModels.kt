@@ -1,12 +1,12 @@
 package cz.krokviak.kalai.onboarding
 
-enum class OnboardingStepRoute(val route: String, val title: String) {
-    GENDER("onboarding_gender", "Vyber pohlaví"),
-    WEIGHT("onboarding_weight", "Kolik vážíš?"),
-    HEIGHT("onboarding_height", "Jak jsi vysoký/á?"),
-    AGE("onboarding_age", "Kolik je ti let?"),
-    ACTIVITY("onboarding_activity", "Jak aktivní jsi?"),
-    GOAL("onboarding_goal", "Jaký máš cíl?")
+enum class OnboardingStep(val title: String) {
+    GENDER("Vyber pohlaví"),
+    WEIGHT("Kolik vážíš?"),
+    HEIGHT("Jak jsi vysoký/á?"),
+    AGE("Kolik je ti let?"),
+    ACTIVITY("Jak aktivní jsi?"),
+    GOAL("Jaký máš cíl?")
 }
 
 enum class GoalChoice(val label: String) {

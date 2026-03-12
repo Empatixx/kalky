@@ -27,6 +27,18 @@ import cz.krokviak.kalai.ui.components.KalaiSegmentedControl
 fun SettingsPage(
     modifier: Modifier = Modifier
 ) {
+    val themeMode by ThemeManager.themeMode.collectAsState()
+    val themeLabels = listOf("Systém", "Světlý", "Tmavý")
+    val themeModes = listOf(ThemeMode.SYSTEM, ThemeMode.LIGHT, ThemeMode.DARK)
+
+    val language by AppPreferencesManager.language.collectAsState()
+    val languageLabels = listOf("Čeština", "English")
+    val languageValues = listOf(AppLanguage.CS, AppLanguage.EN)
+
+    val unitSystem by AppPreferencesManager.unitSystem.collectAsState()
+    val unitLabels = listOf("Metrické", "Imperiální")
+    val unitValues = listOf(UnitSystem.METRIC, UnitSystem.IMPERIAL)
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -44,14 +56,30 @@ fun SettingsPage(
         // Theme section
         SectionHeader("Vzhled")
 
-        val themeMode by ThemeManager.themeMode.collectAsState()
-        val themeLabels = listOf("Systém", "Světlý", "Tmavý")
-        val themeModes = listOf(ThemeMode.SYSTEM, ThemeMode.LIGHT, ThemeMode.DARK)
-
         KalaiSegmentedControl(
             selectedIndex = themeModes.indexOf(themeMode),
             items = themeLabels,
             onItemSelected = { ThemeManager.setThemeMode(themeModes[it]) },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        SectionHeader("Jazyk")
+        KalaiSegmentedControl(
+            selectedIndex = languageValues.indexOf(language),
+            items = languageLabels,
+            onItemSelected = { AppPreferencesManager.setLanguage(languageValues[it]) },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        SectionHeader("Jednotky")
+        KalaiSegmentedControl(
+            selectedIndex = unitValues.indexOf(unitSystem),
+            items = unitLabels,
+            onItemSelected = { AppPreferencesManager.setUnitSystem(unitValues[it]) },
             modifier = Modifier.fillMaxWidth()
         )
 

@@ -37,13 +37,14 @@ fun GenderOnboardingPage(
 fun WeightOnboardingPage(
     values: List<String>,
     selectedIndex: Int,
+    unitSuffix: String = "kg",
     onIndexChanged: (Int) -> Unit
 ) {
     PickerOnboardingPage(
         title = "Kolik vážíš?",
         values = values,
         selectedIndex = selectedIndex,
-        unitSuffix = "kg",
+        unitSuffix = unitSuffix,
         onIndexChanged = onIndexChanged
     )
 }
@@ -52,13 +53,14 @@ fun WeightOnboardingPage(
 fun HeightOnboardingPage(
     values: List<String>,
     selectedIndex: Int,
+    unitSuffix: String = "cm",
     onIndexChanged: (Int) -> Unit
 ) {
     PickerOnboardingPage(
         title = "Jak jsi vysoký/á?",
         values = values,
         selectedIndex = selectedIndex,
-        unitSuffix = "cm",
+        unitSuffix = unitSuffix,
         onIndexChanged = onIndexChanged
     )
 }
@@ -113,7 +115,10 @@ private fun PickerOnboardingPage(
     unitSuffix: String,
     onIndexChanged: (Int) -> Unit
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
         Text(
             text = title,
             color = AppTheme.colors.onBackground,
@@ -136,7 +141,10 @@ private fun ChoiceOnboardingPage(
     selectedIndex: Int,
     onSelected: (Int) -> Unit
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
         Text(
             text = title,
             color = AppTheme.colors.onBackground,

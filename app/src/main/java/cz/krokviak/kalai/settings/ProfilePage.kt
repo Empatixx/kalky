@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -54,12 +55,27 @@ fun ProfilePage(
     val activityLabels = listOf("Sedavý", "Mírný", "Aktivní", "Velmi aktivní")
     val cardContentInset = 12.dp
     val cardTextSize = 20.sp
+    val unitSystem by AppPreferencesManager.unitSystem.collectAsState()
 
-    val weightValues = remember {
+    val metricWeightValues = remember {
         (300..2500).map { index -> String.format(Locale.US, "%.1f", index / 10f) }
     }
-    val heightValues = remember { (100..250).map { it.toString() } }
+    val metricHeightValues = remember { (100..250).map { it.toString() } }
     val ageValues = remember { (1..120).map { it.toString() } }
+    val displayWeightValues = remember(metricWeightValues, unitSystem) {
+        if (unitSystem == UnitSystem.METRIC) {
+            metricWeightValues
+        } else {
+            metricWeightValues.map { formatWeightForDisplay(it.toFloat(), unitSystem) }
+        }
+    }
+    val displayHeightValues = remember(metricHeightValues, unitSystem) {
+        if (unitSystem == UnitSystem.METRIC) {
+            metricHeightValues
+        } else {
+            metricHeightValues.map { formatHeightForDisplay(it.toFloat(), unitSystem) }
+        }
+    }
 
     var activePickerField by remember { mutableStateOf<ProfilePickerField?>(null) }
     var selectedWeightIndex by remember { mutableIntStateOf(resolveWeightIndex(uiState.weight)) }
@@ -94,8 +110,8 @@ fun ProfilePage(
                 Column(modifier = Modifier.fillMaxWidth()) {
                     ProfileInfoRow(
                         label = "Váha",
-                        value = uiState.weight.ifBlank { "--.-" },
-                        unit = "kg",
+                        value = formatWeightValue(uiState.weight, unitSystem),
+                        unit = weightUnitLabel(unitSystem),
                         onClick = {
                             if (activePickerField == ProfilePickerField.WEIGHT) {
                                 activePickerField = null
@@ -108,21 +124,21 @@ fun ProfilePage(
                     )
                     if (activePickerField == ProfilePickerField.WEIGHT) {
                         IosInlineValuePicker(
-                            values = weightValues,
+                            values = displayWeightValues,
                             selectedIndex = selectedWeightIndex,
                             onIndexChanged = {
                                 selectedWeightIndex = it
-                                viewModel.onWeightChange(weightValues[it])
+                                viewModel.onWeightChange(metricWeightValues[it])
                             },
-                            unitSuffix = "kg"
+                            unitSuffix = weightUnitLabel(unitSystem)
                         )
                     }
                     RowDivider()
 
                     ProfileInfoRow(
                         label = "Výška",
-                        value = uiState.height.ifBlank { "--" },
-                        unit = "cm",
+                        value = formatHeightValue(uiState.height, unitSystem),
+                        unit = heightUnitLabel(unitSystem),
                         onClick = {
                             if (activePickerField == ProfilePickerField.HEIGHT) {
                                 activePickerField = null
@@ -135,13 +151,13 @@ fun ProfilePage(
                     )
                     if (activePickerField == ProfilePickerField.HEIGHT) {
                         IosInlineValuePicker(
-                            values = heightValues,
+                            values = displayHeightValues,
                             selectedIndex = selectedHeightIndex,
                             onIndexChanged = {
                                 selectedHeightIndex = it
-                                viewModel.onHeightChange(heightValues[it])
+                                viewModel.onHeightChange(metricHeightValues[it])
                             },
-                            unitSuffix = "cm"
+                            unitSuffix = heightUnitLabel(unitSystem)
                         )
                     }
                     RowDivider()
@@ -235,6 +251,16 @@ private fun resolveWeightIndex(value: String): Int {
 private fun resolveIndex(value: String, minValue: Int, maxValue: Int): Int {
     val parsed = value.toIntOrNull() ?: return (maxValue - minValue) / 2
     return (parsed - minValue).coerceIn(0, maxValue - minValue)
+}
+
+private fun formatWeightValue(metricWeightValue: String, unitSystem: UnitSystem): String {
+    val metricWeight = metricWeightValue.toFloatOrNull() ?: return "--.-"
+    return formatWeightForDisplay(metricWeight, unitSystem)
+}
+
+private fun formatHeightValue(metricHeightValue: String, unitSystem: UnitSystem): String {
+    val metricHeight = metricHeightValue.toFloatOrNull() ?: return "--"
+    return formatHeightForDisplay(metricHeight, unitSystem)
 }
 
 @Composable
