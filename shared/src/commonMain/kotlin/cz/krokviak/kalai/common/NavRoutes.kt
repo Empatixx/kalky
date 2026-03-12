@@ -6,6 +6,9 @@ import kotlinx.serialization.Serializable
 object DefaultRoute
 
 @Serializable
+object OnboardingRoute
+
+@Serializable
 data class FoodDetailRoute(
     val id: Long,
 )

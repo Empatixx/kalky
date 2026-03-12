@@ -33,11 +33,13 @@ import cz.krokviak.kalai.camera.CameraActivity
 import cz.krokviak.kalai.common.DefaultRoute
 import cz.krokviak.kalai.common.FoodDetailRoute
 import cz.krokviak.kalai.common.NutrientEditRoute
+import cz.krokviak.kalai.common.OnboardingRoute
 import cz.krokviak.kalai.detail.FoodDetailScene
 import cz.krokviak.kalai.detail.FoodDetailViewModel
 import cz.krokviak.kalai.home.components.BottomNavBar
 import cz.krokviak.kalai.nutrientedit.NutrientEditScene
 import cz.krokviak.kalai.nutrientedit.NutrientEditViewModel
+import cz.krokviak.kalai.onboarding.OnboardingFlow
 import cz.krokviak.kalai.settings.ProfilePage
 import cz.krokviak.kalai.settings.SettingsPage
 import cz.krokviak.kalai.settings.SettingsViewModel
@@ -126,8 +128,27 @@ fun AppContent(
     val context = LocalContext.current
     NavHost(
         navController = navController,
-        startDestination = DefaultRoute
+        startDestination = OnboardingRoute
     ) {
+        composable<OnboardingRoute> {
+            val onboardingSettings by settingsViewModel.uiState.collectAsState()
+            OnboardingFlow(
+                initialSettings = onboardingSettings,
+                onFinish = { result ->
+                    settingsViewModel.onGenderChange(result.gender)
+                    settingsViewModel.onWeightChange(result.weight)
+                    settingsViewModel.onHeightChange(result.height)
+                    settingsViewModel.onAgeChange(result.age)
+                    settingsViewModel.onActivityLevelChange(result.activityLevel)
+                    settingsViewModel.save()
+                    navController.navigate(DefaultRoute) {
+                        popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+
         /**
          * The default (home) composable which uses our main scaffold layout.
          */
