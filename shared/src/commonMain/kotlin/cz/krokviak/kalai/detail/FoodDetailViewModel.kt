@@ -56,6 +56,30 @@ class FoodDetailViewModel(
         }
     }
 
+    fun onProteinChange(newValue: Int) {
+        updateNutrients(
+            protein = newValue,
+            carbs = _uiState.value.carbs,
+            fat = _uiState.value.fat
+        )
+    }
+
+    fun onCarbsChange(newValue: Int) {
+        updateNutrients(
+            protein = _uiState.value.protein,
+            carbs = newValue,
+            fat = _uiState.value.fat
+        )
+    }
+
+    fun onFatChange(newValue: Int) {
+        updateNutrients(
+            protein = _uiState.value.protein,
+            carbs = _uiState.value.carbs,
+            fat = newValue
+        )
+    }
+
     fun fixResult() {
         viewModelScope.launch {
             val bytes = _uiState.value.localImagePath?.let { imageStorage.getImageBytes(it) }
@@ -102,5 +126,27 @@ class FoodDetailViewModel(
                 )
             )
         }
+    }
+
+    private fun updateNutrients(protein: Int, carbs: Int, fat: Int) {
+        val clampedProtein = protein.coerceIn(0, 500)
+        val clampedCarbs = carbs.coerceIn(0, 500)
+        val clampedFat = fat.coerceIn(0, 500)
+        _uiState.update {
+            it.copy(
+                protein = clampedProtein,
+                carbs = clampedCarbs,
+                fat = clampedFat,
+                calories = caloriesFromNutrients(
+                    protein = clampedProtein,
+                    carbs = clampedCarbs,
+                    fat = clampedFat
+                )
+            )
+        }
+    }
+
+    private fun caloriesFromNutrients(protein: Int, carbs: Int, fat: Int): Int {
+        return (protein * 4) + (carbs * 4) + (fat * 9)
     }
 }

@@ -2,6 +2,7 @@ package cz.krokviak.kalai.home
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResult
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Scaffold
+import androidx.compose.ui.graphics.Color
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -46,6 +48,7 @@ import cz.krokviak.kalai.settings.SettingsPage
 import cz.krokviak.kalai.settings.SettingsViewModel
 import cz.krokviak.kalai.theme.AppTheme
 import cz.krokviak.kalai.theme.KalaiTheme
+import cz.krokviak.kalai.ui.components.KalaiGradientBackground
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
@@ -68,6 +71,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         setContent {
             KalaiTheme {
                 AppContent(
@@ -234,48 +238,50 @@ fun MainScaffold(
         mainViewModel.loadFoodItemsForDate(uiState.currentDate)
     }
 
-    Scaffold(
-        containerColor = AppTheme.colors.background,
-        bottomBar = {
-            BottomNavBar(
-                currentPage = currentPage,
-                onSceneSelected = { page ->
-                    scope.launch { pagerState.animateScrollToPage(page) }
-                },
-                onCameraClick = onCameraClick
-            )
-        },
-    ) { innerPadding ->
-        HorizontalPager(
-            beyondViewportPageCount = 4,
-            state = pagerState,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-        ) { page ->
-            when (page) {
-                0 -> HomeScene(
-                    uiState = uiState,
-                    model = mainViewModel,
-                    navController = navController,
-                    modifier = Modifier.fillMaxSize()
+    KalaiGradientBackground {
+        Scaffold(
+            containerColor = Color.Transparent,
+            bottomBar = {
+                BottomNavBar(
+                    currentPage = currentPage,
+                    onSceneSelected = { page ->
+                        scope.launch { pagerState.animateScrollToPage(page) }
+                    },
+                    onCameraClick = onCameraClick
                 )
-                1 -> AnalyticsPage(
-                    uiState = analyticsUiState,
-                    analyticsViewModel = analyticsViewModel,
-                    modifier = Modifier.fillMaxSize()
-                )
-                2 -> {
-                    val settingsUiState by settingsViewModel.uiState.collectAsState()
-                    ProfilePage(
-                        uiState = settingsUiState,
-                        viewModel = settingsViewModel,
+            },
+        ) { innerPadding ->
+            HorizontalPager(
+                beyondViewportPageCount = 4,
+                state = pagerState,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+            ) { page ->
+                when (page) {
+                    0 -> HomeScene(
+                        uiState = uiState,
+                        model = mainViewModel,
+                        navController = navController,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                    1 -> AnalyticsPage(
+                        uiState = analyticsUiState,
+                        analyticsViewModel = analyticsViewModel,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                    2 -> {
+                        val settingsUiState by settingsViewModel.uiState.collectAsState()
+                        ProfilePage(
+                            uiState = settingsUiState,
+                            viewModel = settingsViewModel,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+                    3 -> SettingsPage(
                         modifier = Modifier.fillMaxSize()
                     )
                 }
-                3 -> SettingsPage(
-                    modifier = Modifier.fillMaxSize()
-                )
             }
         }
     }

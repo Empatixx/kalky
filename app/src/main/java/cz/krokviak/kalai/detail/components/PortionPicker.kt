@@ -44,7 +44,7 @@ fun PortionPicker(
                     modifier = Modifier.size(16.dp)
                 )
             }
-            Text("$amount")
+            Text("$amount ks")
             IconButton(onClick = onIncrease) {
                 Icon(
                     imageVector = Icons.Outlined.Add,

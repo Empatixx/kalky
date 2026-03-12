@@ -1,171 +1,317 @@
 package cz.krokviak.kalai.detail.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.LocalFireDepartment
+import androidx.compose.material.icons.filled.LocalFireDepartment
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cz.krokviak.kalai.R
+import cz.krokviak.kalai.nutrientedit.components.NutrientEditRow
+import cz.krokviak.kalai.settings.components.IosInlineValuePicker
 import cz.krokviak.kalai.theme.AppTheme
 import cz.krokviak.kalai.ui.components.KalaiCard
 
+private enum class DetailMacroPickerField { PROTEIN, CARBS, FAT }
 
 @Composable
 fun BoxScope.FoodBottomSheetCard(
     name: String,
-    portion: Int,
-    onIncreasePortion: () -> Unit,
-    onDecreasePortion: () -> Unit,
     calories: Int,
     protein: Int,
     fats: Int,
     carbs: Int,
-    healthScore: Int,
     modifier: Modifier = Modifier,
     onFixResult: () -> Unit,
-    onFinish: () -> Unit
+    onFinish: () -> Unit,
+    onProteinChange: (Int) -> Unit,
+    onCarbsChange: (Int) -> Unit,
+    onFatChange: (Int) -> Unit
 ) {
+    val macroValues = remember { (0..500).map { it.toString() } }
+    val sheetShape = RoundedCornerShape(topStart = 22.dp, topEnd = 22.dp)
+    var activePickerField by remember { mutableStateOf<DetailMacroPickerField?>(null) }
+    var selectedProteinIndex by remember { mutableIntStateOf(resolveMacroIndex(protein, macroValues.lastIndex)) }
+    var selectedCarbsIndex by remember { mutableIntStateOf(resolveMacroIndex(carbs, macroValues.lastIndex)) }
+    var selectedFatIndex by remember { mutableIntStateOf(resolveMacroIndex(fats, macroValues.lastIndex)) }
+
+    LaunchedEffect(protein) {
+        selectedProteinIndex = resolveMacroIndex(protein, macroValues.lastIndex)
+    }
+    LaunchedEffect(carbs) {
+        selectedCarbsIndex = resolveMacroIndex(carbs, macroValues.lastIndex)
+    }
+    LaunchedEffect(fats) {
+        selectedFatIndex = resolveMacroIndex(fats, macroValues.lastIndex)
+    }
+
     KalaiCard(
         modifier = modifier
             .fillMaxSize()
-            .clip(RoundedCornerShape(16.dp))
             .align(Alignment.BottomCenter),
+        shape = sheetShape,
         color = AppTheme.colors.surfaceSecondary,
         contentPadding = PaddingValues(0.dp)
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(0.dp)
         ) {
             Column(
-                modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ){
-                TitleRow(
-                    name = name,
-                    portion = portion,
-                    onIncreasePortion = onIncreasePortion,
-                    onDecreasePortion = onDecreasePortion
-                )
-                NutrientsGrid(
-                    calories = calories,
-                    protein = protein,
-                    fats = fats,
-                    carbs = carbs
-                )
-                FoodHealthQualityCard(
-                    score = healthScore,
-                    maxScore = 10,
-                )
-            }
-                FoodDetailButtons(
-                    onFixResult = onFixResult,
-                    onFinish = onFinish,
-                    modifier = Modifier.fillMaxWidth().fillMaxHeight(),
-                )
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 14.dp, vertical = 10.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                SheetHandle()
+                TitleRow(name = name)
+                CaloriesSummaryCard(calories = calories)
 
+                KalaiCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    color = AppTheme.colors.surface
+                ) {
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        NutrientEditRow(
+                            label = "Bílkoviny",
+                            value = protein,
+                            valueUnit = "g",
+                            icon = ImageVector.vectorResource(R.drawable.chicken_leg),
+                            activeColor = colorResource(id = R.color.proteinColor),
+                            onClick = {
+                                activePickerField =
+                                    if (activePickerField == DetailMacroPickerField.PROTEIN) null
+                                    else DetailMacroPickerField.PROTEIN
+                            }
+                        )
+                        if (activePickerField == DetailMacroPickerField.PROTEIN) {
+                            IosInlineValuePicker(
+                                values = macroValues,
+                                selectedIndex = selectedProteinIndex,
+                                onIndexChanged = {
+                                    selectedProteinIndex = it
+                                    onProteinChange(macroValues[it].toInt())
+                                },
+                                unitSuffix = "g",
+                                itemHeight = 28.dp,
+                                visibleItemsCount = 3,
+                                textSize = 17.sp,
+                                horizontalPadding = 8.dp,
+                                bottomPadding = 2.dp
+                            )
+                        }
+                        DetailGroupDivider()
+
+                        NutrientEditRow(
+                            label = "Sacharidy",
+                            value = carbs,
+                            valueUnit = "g",
+                            icon = ImageVector.vectorResource(R.drawable.wheat),
+                            activeColor = colorResource(id = R.color.carbsColor),
+                            onClick = {
+                                activePickerField =
+                                    if (activePickerField == DetailMacroPickerField.CARBS) null
+                                    else DetailMacroPickerField.CARBS
+                            }
+                        )
+                        if (activePickerField == DetailMacroPickerField.CARBS) {
+                            IosInlineValuePicker(
+                                values = macroValues,
+                                selectedIndex = selectedCarbsIndex,
+                                onIndexChanged = {
+                                    selectedCarbsIndex = it
+                                    onCarbsChange(macroValues[it].toInt())
+                                },
+                                unitSuffix = "g",
+                                itemHeight = 28.dp,
+                                visibleItemsCount = 3,
+                                textSize = 17.sp,
+                                horizontalPadding = 8.dp,
+                                bottomPadding = 2.dp
+                            )
+                        }
+                        DetailGroupDivider()
+
+                        NutrientEditRow(
+                            label = "Tuky",
+                            value = fats,
+                            valueUnit = "g",
+                            icon = ImageVector.vectorResource(R.drawable.avocado),
+                            activeColor = colorResource(id = R.color.fatColor),
+                            onClick = {
+                                activePickerField =
+                                    if (activePickerField == DetailMacroPickerField.FAT) null
+                                    else DetailMacroPickerField.FAT
+                            }
+                        )
+                        if (activePickerField == DetailMacroPickerField.FAT) {
+                            IosInlineValuePicker(
+                                values = macroValues,
+                                selectedIndex = selectedFatIndex,
+                                onIndexChanged = {
+                                    selectedFatIndex = it
+                                    onFatChange(macroValues[it].toInt())
+                                },
+                                unitSuffix = "g",
+                                itemHeight = 28.dp,
+                                visibleItemsCount = 3,
+                                textSize = 17.sp,
+                                horizontalPadding = 8.dp,
+                                bottomPadding = 2.dp
+                            )
+                        }
+                    }
+                }
+            }
+
+            FoodDetailButtons(
+                onFixResult = onFixResult,
+                onFinish = onFinish,
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }
 
-@Composable
-fun NutrientsGrid(
-    calories: Int,
-    protein: Int,
-    fats: Int,
-    carbs: Int
-) {
-    val carbsValue = remember(carbs) { "$carbs g" }
-    val proteinValue = remember(protein) { "$protein g" }
-    val fatsValue = remember(fats) { "$fats g" }
-    val caloriesValue = remember(calories) { "$calories kcal" }
+private fun resolveMacroIndex(value: Int, maxIndex: Int): Int = value.coerceIn(0, maxIndex)
 
-    Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+@Composable
+private fun SheetHandle() {
+    Box(
+        modifier = Modifier.fillMaxWidth(),
+        contentAlignment = Alignment.Center
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            PhotoNutrientCard(
-                "Kalorie",
-                caloriesValue,
-                icon = Icons.Outlined.LocalFireDepartment,
-                modifier = Modifier.weight(1f)
-            )
-            PhotoNutrientCard(
-                "Sacharidy", carbsValue,
-                icon = ImageVector.vectorResource(R.drawable.wheat),
-                iconTintColor = colorResource(id = R.color.carbsColor),
-                modifier = Modifier.weight(1f)
-            )
-        }
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            PhotoNutrientCard(
-                "Bilkoviny",
-                proteinValue,
-                icon = ImageVector.vectorResource(R.drawable.chicken_leg),
-                iconTintColor = colorResource(id = R.color.proteinColor),
-                modifier = Modifier.weight(1f)
-            )
-            PhotoNutrientCard(
-                "Tuky", fatsValue,
-                icon = ImageVector.vectorResource(R.drawable.avocado),
-                iconTintColor = colorResource(id = R.color.fatColor),
-                modifier = Modifier.weight(1f)
-            )
-        }
+        Box(
+            modifier = Modifier
+                .width(36.dp)
+                .height(4.dp)
+                .clip(RoundedCornerShape(99.dp))
+                .background(AppTheme.colors.border)
+        )
     }
+}
+
+@Composable
+private fun DetailGroupDivider() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(1.dp)
+            .padding(start = 56.dp, end = 14.dp)
+            .background(AppTheme.colors.border)
+    )
 }
 
 @Composable
 fun TitleRow(
-    name: String,
-    portion: Int,
-    onIncreasePortion: () -> Unit,
-    onDecreasePortion: () -> Unit
+    name: String
 ) {
     Column(
-        modifier = Modifier
-            .padding(16.dp)
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Row {
-            Text(
-                text = name,
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp,
+        Text(
+            text = name,
+            color = AppTheme.colors.onBackground,
+            fontWeight = FontWeight.Bold,
+            fontSize = 24.sp,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@Composable
+private fun CaloriesSummaryCard(calories: Int) {
+    KalaiCard(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(14.dp),
+        color = AppTheme.colors.surface
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+                .padding(horizontal = 14.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
                 modifier = Modifier
-                    .weight(0.65f)
-                    .align(Alignment.CenterVertically)
+                    .size(40.dp)
+                    .background(
+                        color = Color.Black,
+                        shape = CircleShape
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.LocalFireDepartment,
+                    contentDescription = "Calories",
+                    tint = Color.White,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+            Spacer(modifier = Modifier.width(12.dp))
+            Text(
+                text = "Kalorie",
+                color = AppTheme.colors.onBackground,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.weight(1f)
             )
-            PortionPicker(
-                amount = portion,
-                onIncrease = onIncreasePortion,
-                onDecrease = onDecreasePortion,
-                modifier = Modifier.weight(0.35f)
+            Text(
+                text = calories.toString(),
+                color = AppTheme.colors.onBackground,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.SemiBold,
             )
+            Spacer(modifier = Modifier.width(6.dp))
+            Text(
+                text = "kcal",
+                color = AppTheme.colors.onBackgroundSecondary,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+            // Keep the same trailing width as nutrient rows (spacer + chevron),
+            // so unit text aligns with the "g" column.
+            Spacer(modifier = Modifier.width(26.dp))
         }
     }
 }

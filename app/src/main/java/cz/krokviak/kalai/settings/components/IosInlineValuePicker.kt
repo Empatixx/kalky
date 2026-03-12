@@ -23,33 +23,47 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cz.krokviak.kalai.theme.AppTheme
 import kotlinx.coroutines.flow.distinctUntilChanged
-
-private val ItemHeight = 36.dp
-private val PickerHeight = ItemHeight * 5
 
 @Composable
 fun IosInlineValuePicker(
     values: List<String>,
     selectedIndex: Int,
     onIndexChanged: (Int) -> Unit,
-    unitSuffix: String? = null
+    unitSuffix: String? = null,
+    itemHeight: Dp = 36.dp,
+    visibleItemsCount: Int = 5,
+    textSize: TextUnit = 20.sp,
+    horizontalPadding: Dp = 12.dp,
+    bottomPadding: Dp = 8.dp
 ) {
+    val resolvedVisibleCount = visibleItemsCount
+        .coerceAtLeast(3)
+        .let { if (it % 2 == 0) it + 1 else it }
+    val halfVisibleCount = resolvedVisibleCount / 2
+    val pickerHeight = itemHeight * resolvedVisibleCount
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp)
-            .padding(bottom = 8.dp),
+            .padding(horizontal = horizontalPadding)
+            .padding(bottom = bottomPadding),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         NumberWheel(
             values = values,
             initialIndex = selectedIndex.coerceIn(0, values.lastIndex),
             onIndexChanged = onIndexChanged,
-            unitSuffix = unitSuffix
+            unitSuffix = unitSuffix,
+            itemHeight = itemHeight,
+            pickerHeight = pickerHeight,
+            halfVisibleCount = halfVisibleCount,
+            textSize = textSize
         )
     }
 }
@@ -59,7 +73,11 @@ private fun NumberWheel(
     values: List<String>,
     initialIndex: Int,
     onIndexChanged: (Int) -> Unit,
-    unitSuffix: String?
+    unitSuffix: String?,
+    itemHeight: Dp,
+    pickerHeight: Dp,
+    halfVisibleCount: Int,
+    textSize: TextUnit
 ) {
     val listState = rememberLazyListState(initialFirstVisibleItemIndex = initialIndex)
     val snapBehavior = rememberSnapFlingBehavior(listState)
@@ -75,13 +93,13 @@ private fun NumberWheel(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(PickerHeight)
+            .height(pickerHeight)
     ) {
         Box(
             modifier = Modifier
                 .align(Alignment.Center)
                 .fillMaxWidth()
-                .height(ItemHeight)
+                .height(itemHeight)
                 .background(
                     color = AppTheme.colors.onBackground.copy(alpha = 0.06f),
                     shape = RoundedCornerShape(8.dp)
@@ -91,14 +109,14 @@ private fun NumberWheel(
         LazyColumn(
             state = listState,
             flingBehavior = snapBehavior,
-            contentPadding = PaddingValues(vertical = ItemHeight * 2),
+            contentPadding = PaddingValues(vertical = itemHeight * halfVisibleCount),
             modifier = Modifier.fillMaxWidth()
         ) {
             itemsIndexed(values) { _, value ->
                 val displayValue = if (unitSuffix.isNullOrBlank()) value else "$value $unitSuffix"
                 Box(
                     modifier = Modifier
-                        .height(ItemHeight)
+                        .height(itemHeight)
                         .fillMaxWidth()
                         .padding(horizontal = 8.dp),
                     contentAlignment = Alignment.Center
@@ -106,7 +124,7 @@ private fun NumberWheel(
                     Text(
                         text = displayValue,
                         color = textColor,
-                        fontSize = 20.sp,
+                        fontSize = textSize,
                         fontWeight = FontWeight.Normal,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth()
@@ -115,11 +133,12 @@ private fun NumberWheel(
             }
         }
 
+        val fadeHeight = itemHeight * halfVisibleCount.coerceAtLeast(1)
         Box(
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .fillMaxWidth()
-                .height(ItemHeight * 2)
+                .height(fadeHeight)
                 .background(
                     brush = Brush.verticalGradient(
                         0f to surfaceColor,
@@ -133,7 +152,7 @@ private fun NumberWheel(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .height(ItemHeight * 2)
+                .height(fadeHeight)
                 .background(
                     brush = Brush.verticalGradient(
                         0f to Color.Transparent,

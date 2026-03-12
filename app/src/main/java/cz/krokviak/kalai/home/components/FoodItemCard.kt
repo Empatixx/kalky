@@ -35,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -246,6 +247,11 @@ fun FoodItemLoadingImage(
     foodItem: FoodItemEntity,
     progress: Int
 ) {
+    val isDarkTheme = AppTheme.colors.background.luminance() < 0.5f
+    val loadingOverlayAlpha = if (isDarkTheme) 0.62f else 0.48f
+    val loadingProgressColor = Color.White.copy(alpha = 0.96f)
+    val loadingTrackColor = Color.White.copy(alpha = 0.28f)
+
     Box(
         modifier = Modifier
             .width(125.dp)
@@ -264,7 +270,7 @@ fun FoodItemLoadingImage(
         Box(
             modifier = Modifier
                 .matchParentSize()
-                .background(Color.Black.copy(alpha = 0.5f))
+                .background(Color.Black.copy(alpha = loadingOverlayAlpha))
         )
         // Centered progress indicator
         Box(
@@ -273,8 +279,8 @@ fun FoodItemLoadingImage(
         ) {
             CircularPercentageIndicator(
                 percentage = progress,
-                backgroundColor = AppTheme.colors.surfaceSecondary.copy(alpha = 0.5f),
-                progressColor = AppTheme.colors.surfaceSecondary,
+                backgroundColor = loadingTrackColor,
+                progressColor = loadingProgressColor,
                 modifier = Modifier.size(70.dp)
             )
         }

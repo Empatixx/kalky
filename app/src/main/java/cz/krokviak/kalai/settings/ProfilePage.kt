@@ -85,7 +85,6 @@ fun ProfilePage(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(AppTheme.colors.background)
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 20.dp, vertical = 16.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp)
@@ -239,8 +238,7 @@ fun ProfilePage(
                 }
             }
         }
-
-    }
+    } 
 }
 
 private fun resolveWeightIndex(value: String): Int {

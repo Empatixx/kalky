@@ -5,9 +5,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -26,7 +25,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import cz.krokviak.kalai.detail.components.FoodBottomSheetCard
@@ -46,10 +44,7 @@ fun FoodDetailScene(
             contentDescription = null,
             modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(
-                    min = 0.dp,
-                    max = LocalConfiguration.current.screenHeightDp.dp - (500 - 25).dp
-                ) // Dynamic height
+                .fillMaxHeight(0.52f)
                 .align(Alignment.TopCenter),
             contentScale = ContentScale.Crop
         )
@@ -67,17 +62,16 @@ fun FoodDetailScene(
         // Bottom Sheet
         FoodBottomSheetCard(
             name = uiState.name,
-            portion = uiState.portion,
             calories = uiState.calories,
             protein = uiState.protein,
             fats = uiState.fat,
             carbs = uiState.carbs,
-            healthScore = uiState.healthScore,
-            onIncreasePortion = { foodDetailViewModel.increasePortion() },
-            onDecreasePortion = { foodDetailViewModel.decreasePortion() },
+            onProteinChange = foodDetailViewModel::onProteinChange,
+            onCarbsChange = foodDetailViewModel::onCarbsChange,
+            onFatChange = foodDetailViewModel::onFatChange,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(500.dp) // Fixed height
+                .fillMaxHeight(0.5f)
                 .align(Alignment.BottomCenter),
             onFinish = {
                 foodDetailViewModel.finish()

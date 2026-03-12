@@ -15,7 +15,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,6 +39,7 @@ import cz.krokviak.kalai.theme.AppTheme
 import cz.krokviak.kalai.nutrientedit.components.VerticalCalorieCard
 import cz.krokviak.kalai.settings.components.IosInlineValuePicker
 import cz.krokviak.kalai.ui.components.KalaiCard
+import cz.krokviak.kalai.ui.components.KalaiGradientBackground
 
 private enum class MacroPickerField { PROTEIN, CARBS, FAT }
 
@@ -54,125 +55,126 @@ fun NutrientEditScene(
     var selectedCarbsIndex by remember { mutableIntStateOf(resolveMacroIndex(uiState.carbs, macroValues.lastIndex)) }
     var selectedFatIndex by remember { mutableIntStateOf(resolveMacroIndex(uiState.fat, macroValues.lastIndex)) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 20.dp, vertical = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        NutrientEditTopBar(
-            onBackClick = onBackClick
-        )
-        VerticalCalorieCard(
-            currentCalories = uiState.calories,
-            calorieRatio = 0.5f,
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text(
-                text = "Makroživiny",
-                color = AppTheme.colors.onBackgroundSecondary,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.padding(start = 12.dp)
+    KalaiGradientBackground {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 20.dp, vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            NutrientEditTopBar(
+                onBackClick = onBackClick
             )
-            KalaiCard(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .border(1.dp, AppTheme.colors.border, RoundedCornerShape(16.dp)),
-                shape = RoundedCornerShape(16.dp),
-                color = AppTheme.colors.surface
-            ) {
-                Column {
-                    NutrientEditRow(
-                        label = "Bílkoviny",
-                        value = uiState.protein,
-                        valueUnit = "g",
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = {
-                            if (activePickerField == MacroPickerField.PROTEIN) {
-                                activePickerField = null
-                            } else {
-                                selectedProteinIndex = resolveMacroIndex(uiState.protein, macroValues.lastIndex)
-                                activePickerField = MacroPickerField.PROTEIN
-                            }
-                        },
-                        icon = ImageVector.vectorResource(R.drawable.chicken_leg),
-                        activeColor = colorResource(id = R.color.proteinColor)
-                    )
-                    if (activePickerField == MacroPickerField.PROTEIN) {
-                        IosInlineValuePicker(
-                            values = macroValues,
-                            selectedIndex = selectedProteinIndex,
-                            onIndexChanged = {
-                                selectedProteinIndex = it
-                                nutrientEditViewModel.onProteinChange(macroValues[it].toInt())
+            VerticalCalorieCard(
+                currentCalories = uiState.calories,
+                calorieRatio = 0.5f,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(
+                    text = "Makroživiny",
+                    color = AppTheme.colors.onBackgroundSecondary,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(start = 12.dp)
+                )
+                KalaiCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(1.dp, AppTheme.colors.border, RoundedCornerShape(16.dp)),
+                    shape = RoundedCornerShape(16.dp),
+                    color = AppTheme.colors.surface
+                ) {
+                    Column {
+                        NutrientEditRow(
+                            label = "Bílkoviny",
+                            value = uiState.protein,
+                            valueUnit = "g",
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = {
+                                if (activePickerField == MacroPickerField.PROTEIN) {
+                                    activePickerField = null
+                                } else {
+                                    selectedProteinIndex = resolveMacroIndex(uiState.protein, macroValues.lastIndex)
+                                    activePickerField = MacroPickerField.PROTEIN
+                                }
                             },
-                            unitSuffix = "g"
+                            icon = ImageVector.vectorResource(R.drawable.chicken_leg),
+                            activeColor = colorResource(id = R.color.proteinColor)
                         )
-                    }
-                    GroupDivider()
-                    NutrientEditRow(
-                        label = "Sacharidy",
-                        value = uiState.carbs,
-                        valueUnit = "g",
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = {
-                            if (activePickerField == MacroPickerField.CARBS) {
-                                activePickerField = null
-                            } else {
-                                selectedCarbsIndex = resolveMacroIndex(uiState.carbs, macroValues.lastIndex)
-                                activePickerField = MacroPickerField.CARBS
-                            }
-                        },
-                        icon = ImageVector.vectorResource(R.drawable.wheat),
-                        activeColor = colorResource(id = R.color.carbsColor)
-                    )
-                    if (activePickerField == MacroPickerField.CARBS) {
-                        IosInlineValuePicker(
-                            values = macroValues,
-                            selectedIndex = selectedCarbsIndex,
-                            onIndexChanged = {
-                                selectedCarbsIndex = it
-                                nutrientEditViewModel.onCarbsChange(macroValues[it].toInt())
+                        if (activePickerField == MacroPickerField.PROTEIN) {
+                            IosInlineValuePicker(
+                                values = macroValues,
+                                selectedIndex = selectedProteinIndex,
+                                onIndexChanged = {
+                                    selectedProteinIndex = it
+                                    nutrientEditViewModel.onProteinChange(macroValues[it].toInt())
+                                },
+                                unitSuffix = "g"
+                            )
+                        }
+                        GroupDivider()
+                        NutrientEditRow(
+                            label = "Sacharidy",
+                            value = uiState.carbs,
+                            valueUnit = "g",
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = {
+                                if (activePickerField == MacroPickerField.CARBS) {
+                                    activePickerField = null
+                                } else {
+                                    selectedCarbsIndex = resolveMacroIndex(uiState.carbs, macroValues.lastIndex)
+                                    activePickerField = MacroPickerField.CARBS
+                                }
                             },
-                            unitSuffix = "g"
+                            icon = ImageVector.vectorResource(R.drawable.wheat),
+                            activeColor = colorResource(id = R.color.carbsColor)
                         )
-                    }
-                    GroupDivider()
-                    NutrientEditRow(
-                        label = "Tuky",
-                        value = uiState.fat,
-                        valueUnit = "g",
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = {
-                            if (activePickerField == MacroPickerField.FAT) {
-                                activePickerField = null
-                            } else {
-                                selectedFatIndex = resolveMacroIndex(uiState.fat, macroValues.lastIndex)
-                                activePickerField = MacroPickerField.FAT
-                            }
-                        },
-                        icon = ImageVector.vectorResource(R.drawable.avocado),
-                        activeColor = colorResource(id = R.color.fatColor)
-                    )
-                    if (activePickerField == MacroPickerField.FAT) {
-                        IosInlineValuePicker(
-                            values = macroValues,
-                            selectedIndex = selectedFatIndex,
-                            onIndexChanged = {
-                                selectedFatIndex = it
-                                nutrientEditViewModel.onFatChange(macroValues[it].toInt())
+                        if (activePickerField == MacroPickerField.CARBS) {
+                            IosInlineValuePicker(
+                                values = macroValues,
+                                selectedIndex = selectedCarbsIndex,
+                                onIndexChanged = {
+                                    selectedCarbsIndex = it
+                                    nutrientEditViewModel.onCarbsChange(macroValues[it].toInt())
+                                },
+                                unitSuffix = "g"
+                            )
+                        }
+                        GroupDivider()
+                        NutrientEditRow(
+                            label = "Tuky",
+                            value = uiState.fat,
+                            valueUnit = "g",
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = {
+                                if (activePickerField == MacroPickerField.FAT) {
+                                    activePickerField = null
+                                } else {
+                                    selectedFatIndex = resolveMacroIndex(uiState.fat, macroValues.lastIndex)
+                                    activePickerField = MacroPickerField.FAT
+                                }
                             },
-                            unitSuffix = "g"
+                            icon = ImageVector.vectorResource(R.drawable.avocado),
+                            activeColor = colorResource(id = R.color.fatColor)
                         )
+                        if (activePickerField == MacroPickerField.FAT) {
+                            IosInlineValuePicker(
+                                values = macroValues,
+                                selectedIndex = selectedFatIndex,
+                                onIndexChanged = {
+                                    selectedFatIndex = it
+                                    nutrientEditViewModel.onFatChange(macroValues[it].toInt())
+                                },
+                                unitSuffix = "g"
+                            )
+                        }
                     }
                 }
             }
-        }
-
+        }        
     }
 }
 
@@ -198,8 +200,9 @@ fun NutrientEditTopBar(
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Icon(
-                imageVector = Icons.Default.ArrowBack,
-                contentDescription = "Go Back"
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "Go Back",
+                tint = AppTheme.colors.onBackground
             )
             Text(
                 text = "Zpět",

@@ -1,6 +1,5 @@
 package cz.krokviak.kalai.onboarding
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.*
@@ -37,6 +36,7 @@ import cz.krokviak.kalai.settings.heightUnitLabel
 import cz.krokviak.kalai.settings.weightUnitLabel
 import cz.krokviak.kalai.theme.AppTheme
 import cz.krokviak.kalai.ui.components.KalaiButton
+import cz.krokviak.kalai.ui.components.KalaiGradientBackground
 
 @Composable
 fun OnboardingPage(
@@ -81,114 +81,99 @@ fun OnboardingPage(
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(AppTheme.colors.background)
-            .padding(horizontal = 20.dp, vertical = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        OnboardingTopBar(
-            progress = (currentStepIndex + 1f) / steps.size.toFloat(),
-            page = currentStepIndex,
-            totalPages = steps.size,
-            onBack = {
-                navigateToPreviousStep()
-            }
-        )
-
-        Box(
+    KalaiGradientBackground {
+        Column(
             modifier = Modifier
-                .weight(1f)
+                .fillMaxSize()
+                .statusBarsPadding()
+                .padding(horizontal = 20.dp, vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            val isLastStep = currentStepIndex == steps.lastIndex
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .pointerInput(currentStepIndex) {
-                            var totalDragX = 0f
-                            detectHorizontalDragGestures(
-                                onHorizontalDrag = { _, dragAmount -> totalDragX += dragAmount },
-                                onDragEnd = {
-                                    if (totalDragX <= -80f && currentStepIndex < steps.lastIndex) {
-                                        navigateToNextStep()
-                                    } else if (totalDragX >= 80f && currentStepIndex > 0) {
-                                        navigateToPreviousStep()
-                                    }
-                                    totalDragX = 0f
-                                }
-                            )
-                        }
+            OnboardingTopBar(
+                progress = (currentStepIndex + 1f) / steps.size.toFloat(),
+                page = currentStepIndex,
+                totalPages = steps.size,
+                onBack = { navigateToPreviousStep() }
+            )
+
+            Box(modifier = Modifier.weight(1f)) {
+                val isLastStep = currentStepIndex == steps.lastIndex
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center
                 ) {
-                    Box(modifier = Modifier.fillMaxWidth()) {
-                        when (currentStepIndex) {
-                            0 -> {
-                            GenderOnboardingPage(
-                                selectedGender = uiState.gender,
-                                onSelected = onboardingViewModel::onGenderSelected
-                            )
-                        }
-                            1 -> {
-                            WeightOnboardingPage(
-                                values = displayWeightValues,
-                                selectedIndex = uiState.weightIndex,
-                                unitSuffix = weightUnit,
-                                onIndexChanged = onboardingViewModel::onWeightIndexChanged
-                            )
-                        }
-                            2 -> {
-                            HeightOnboardingPage(
-                                values = displayHeightValues,
-                                selectedIndex = uiState.heightIndex,
-                                unitSuffix = heightUnit,
-                                onIndexChanged = onboardingViewModel::onHeightIndexChanged
-                            )
-                        }
-                            3 -> {
-                            AgeOnboardingPage(
-                                values = ageValues,
-                                selectedIndex = uiState.ageIndex,
-                                onIndexChanged = onboardingViewModel::onAgeIndexChanged
-                            )
-                        }
-                            4 -> {
-                            ActivityOnboardingPage(
-                                selectedActivityLevel = uiState.activityLevel,
-                                onSelected = onboardingViewModel::onActivityLevelSelected
-                            )
-                        }
-                            else -> {
-                            GoalOnboardingPage(
-                                selectedGoal = uiState.goalChoice,
-                                onSelected = onboardingViewModel::onGoalSelected
-                            )
-                        }
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .pointerInput(currentStepIndex) {
+                                var totalDragX = 0f
+                                detectHorizontalDragGestures(
+                                    onHorizontalDrag = { _, dragAmount -> totalDragX += dragAmount },
+                                    onDragEnd = {
+                                        if (totalDragX <= -80f && currentStepIndex < steps.lastIndex) {
+                                            navigateToNextStep()
+                                        } else if (totalDragX >= 80f && currentStepIndex > 0) {
+                                            navigateToPreviousStep()
+                                        }
+                                        totalDragX = 0f
+                                    }
+                                )
+                            }
+                    ) {
+                        Box(modifier = Modifier.fillMaxWidth()) {
+                            when (currentStepIndex) {
+                                0 -> GenderOnboardingPage(
+                                    selectedGender = uiState.gender,
+                                    onSelected = onboardingViewModel::onGenderSelected
+                                )
+                                1 -> WeightOnboardingPage(
+                                    values = displayWeightValues,
+                                    selectedIndex = uiState.weightIndex,
+                                    unitSuffix = weightUnit,
+                                    onIndexChanged = onboardingViewModel::onWeightIndexChanged
+                                )
+                                2 -> HeightOnboardingPage(
+                                    values = displayHeightValues,
+                                    selectedIndex = uiState.heightIndex,
+                                    unitSuffix = heightUnit,
+                                    onIndexChanged = onboardingViewModel::onHeightIndexChanged
+                                )
+                                3 -> AgeOnboardingPage(
+                                    values = ageValues,
+                                    selectedIndex = uiState.ageIndex,
+                                    onIndexChanged = onboardingViewModel::onAgeIndexChanged
+                                )
+                                4 -> ActivityOnboardingPage(
+                                    selectedActivityLevel = uiState.activityLevel,
+                                    onSelected = onboardingViewModel::onActivityLevelSelected
+                                )
+                                else -> GoalOnboardingPage(
+                                    selectedGoal = uiState.goalChoice,
+                                    onSelected = onboardingViewModel::onGoalSelected
+                                )
+                            }
                         }
                     }
-                }
 
-                Spacer(modifier = Modifier.height(16.dp))
-                KalaiButton(
-                    onClick = {
-                        if (isLastStep) {
-                            onFinish(onboardingViewModel.buildResult())
-                        } else {
-                            navigateToNextStep()
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    containerColor = Color.Black,
-                    contentColor = Color.White
-                ) {
-                    Text(
-                        text = if (isLastStep) "Dokončit" else "Pokračovat",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp
-                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    KalaiButton(
+                        onClick = {
+                            if (isLastStep) {
+                                onFinish(onboardingViewModel.buildResult())
+                            } else {
+                                navigateToNextStep()
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        containerColor = Color.Black,
+                        contentColor = Color.White
+                    ) {
+                        Text(
+                            text = if (isLastStep) "Dokončit" else "Pokračovat",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 20.sp
+                        )
+                    }
                 }
             }
         }
