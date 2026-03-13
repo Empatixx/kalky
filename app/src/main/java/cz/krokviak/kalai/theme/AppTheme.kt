@@ -11,6 +11,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
+import cz.krokviak.kalai.i18n.LocalStrings
+import cz.krokviak.kalai.i18n.rememberStrings
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -92,7 +94,11 @@ fun KalaiTheme(
     val colors = if (isDark) DarkColors else LightColors
     val materialColorScheme = if (isDark) darkColorScheme() else lightColorScheme()
 
-    CompositionLocalProvider(LocalAppColors provides colors) {
+    val strings = rememberStrings()
+    CompositionLocalProvider(
+        LocalAppColors provides colors,
+        LocalStrings provides strings
+    ) {
         MaterialTheme(colorScheme = materialColorScheme) {
             content()
         }

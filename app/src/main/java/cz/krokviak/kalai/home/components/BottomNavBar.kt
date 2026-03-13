@@ -37,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
+import cz.krokviak.kalai.i18n.LocalStrings
 import cz.krokviak.kalai.theme.AppTheme
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -69,16 +70,17 @@ fun BottomNavBar(
                 .align(Alignment.BottomCenter),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Left side: Domov, Analyza
-            NavItem(0, Icons.Outlined.Home, "Domov", currentPage, onSceneSelected, navColors)
-            NavItem(1, Icons.Outlined.Analytics, "Analýza", currentPage, onSceneSelected, navColors)
+            // Left side
+            val s = LocalStrings.current
+            NavItem(0, Icons.Outlined.Home, s.nav.home, currentPage, onSceneSelected, navColors)
+            NavItem(1, Icons.Outlined.Analytics, s.nav.analytics, currentPage, onSceneSelected, navColors)
 
             // Center spacer for the FABs
             Box(modifier = Modifier.weight(1.2f))
 
-            // Right side: Profil, Nastaveni
-            NavItem(2, Icons.Outlined.Person, "Profil", currentPage, onSceneSelected, navColors)
-            NavItem(3, Icons.Outlined.Settings, "Nastavení", currentPage, onSceneSelected, navColors)
+            // Right side
+            NavItem(2, Icons.Outlined.Person, s.nav.profile, currentPage, onSceneSelected, navColors)
+            NavItem(3, Icons.Outlined.Settings, s.nav.settings, currentPage, onSceneSelected, navColors)
         }
 
         // Centered FAB overlapping the nav bar

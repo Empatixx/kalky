@@ -12,6 +12,10 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cz.krokviak.kalai.barcode.data.OpenFoodFactsProduct
+import cz.krokviak.kalai.i18n.CzechStrings
+import cz.krokviak.kalai.i18n.EnglishStrings
+import cz.krokviak.kalai.settings.AppLanguage
+import cz.krokviak.kalai.settings.AppPreferencesManager
 import cz.krokviak.kalai.theme.KalaiTheme
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
@@ -30,7 +34,8 @@ class CameraActivity : AppCompatActivity() {
                 if (isGranted) {
                     initCameraAndSetContent()
                 } else {
-                    Toast.makeText(this, "Camera permission denied", Toast.LENGTH_LONG).show()
+                    val strings = if (AppPreferencesManager.language.value == AppLanguage.EN) EnglishStrings else CzechStrings
+                    Toast.makeText(this, strings.camera.permissionDenied, Toast.LENGTH_LONG).show()
                     finish()
                 }
             }
@@ -91,7 +96,8 @@ class CameraActivity : AppCompatActivity() {
             RESULT_OK,
             Intent().apply {
                 putExtra(EXTRA_RESULT_TYPE, RESULT_TYPE_BARCODE)
-                putExtra(EXTRA_NAME, product.productName ?: "Neznámý produkt")
+                val strings = if (AppPreferencesManager.language.value == AppLanguage.EN) EnglishStrings else CzechStrings
+                putExtra(EXTRA_NAME, product.productName ?: strings.common.unknownProduct)
                 putExtra(EXTRA_CALORIES, ((nutriments?.energyKcal100g ?: 0.0) * multiplier).toInt())
                 putExtra(EXTRA_PROTEIN, ((nutriments?.proteins100g ?: 0.0) * multiplier).toInt())
                 putExtra(EXTRA_FAT, ((nutriments?.fat100g ?: 0.0) * multiplier).toInt())

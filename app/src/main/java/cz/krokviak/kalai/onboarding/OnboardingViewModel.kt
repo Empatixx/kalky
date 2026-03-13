@@ -12,12 +12,16 @@ import java.util.Locale
 import kotlin.math.roundToInt
 
 data class OnboardingUiState(
-    val gender: String = "Muž",
+    val gender: String = "Mu\u017E",
     val activityLevel: Int = 2,
     val goalChoice: GoalChoice = GoalChoice.MAINTAIN,
     val weightIndex: Int = DEFAULT_WEIGHT_INDEX,
     val heightIndex: Int = DEFAULT_HEIGHT_INDEX,
     val ageIndex: Int = DEFAULT_AGE_INDEX,
+    val targetCalories: Int = 0,
+    val targetProtein: Int = 0,
+    val targetCarbs: Int = 0,
+    val targetFat: Int = 0,
     val promoCode: String = ""
 )
 
@@ -74,6 +78,65 @@ class OnboardingViewModel(
         _uiState.update { it.copy(promoCode = value) }
     }
 
+    fun onCaloriesChanged(value: Int) {
+        _uiState.update { it.copy(targetCalories = value) }
+    }
+
+    fun onProteinChanged(value: Int) {
+        _uiState.update { it.copy(targetProtein = value) }
+    }
+
+    fun onCarbsChanged(value: Int) {
+        _uiState.update { it.copy(targetCarbs = value) }
+    }
+
+    fun onFatChanged(value: Int) {
+        _uiState.update { it.copy(targetFat = value) }
+    }
+
+    fun calculateMacros() {
+        val state = _uiState.value
+        val weightKg = weightValues[state.weightIndex].toFloat()
+        val heightCm = heightValues[state.heightIndex].toFloat()
+        val age = ageValues[state.ageIndex].toInt()
+
+        // Mifflin-St Jeor
+        val bmr = if (state.gender == "Mu\u017E") {
+            10.0 * weightKg + 6.25 * heightCm - 5.0 * age + 5
+        } else {
+            10.0 * weightKg + 6.25 * heightCm - 5.0 * age - 161
+        }
+
+        val activityMultiplier = when (state.activityLevel) {
+            1 -> 1.2
+            2 -> 1.375
+            3 -> 1.55
+            4 -> 1.725
+            else -> 1.375
+        }
+
+        val tdee = bmr * activityMultiplier
+
+        val targetCalories = when (state.goalChoice) {
+            GoalChoice.LOSE -> (tdee - 500).roundToInt()
+            GoalChoice.MAINTAIN -> tdee.roundToInt()
+            GoalChoice.GAIN -> (tdee + 300).roundToInt()
+        }
+
+        val protein = (targetCalories * 0.30 / 4).roundToInt()
+        val carbs = (targetCalories * 0.40 / 4).roundToInt()
+        val fat = (targetCalories * 0.30 / 9).roundToInt()
+
+        _uiState.update {
+            it.copy(
+                targetCalories = targetCalories.coerceAtLeast(0),
+                targetProtein = protein.coerceAtLeast(0),
+                targetCarbs = carbs.coerceAtLeast(0),
+                targetFat = fat.coerceAtLeast(0)
+            )
+        }
+    }
+
     fun buildResult(): OnboardingResult {
         val state = _uiState.value
         return OnboardingResult(
@@ -83,6 +146,10 @@ class OnboardingViewModel(
             age = ageValues[state.ageIndex],
             activityLevel = state.activityLevel,
             goal = state.goalChoice,
+            targetCalories = state.targetCalories,
+            targetProtein = state.targetProtein,
+            targetCarbs = state.targetCarbs,
+            targetFat = state.targetFat,
             promoCode = state.promoCode.trim()
         )
     }

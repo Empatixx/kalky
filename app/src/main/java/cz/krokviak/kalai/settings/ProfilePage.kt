@@ -40,6 +40,7 @@ import cz.krokviak.kalai.settings.components.BmiIndicatorCard
 import cz.krokviak.kalai.settings.components.IosInlineValuePicker
 import cz.krokviak.kalai.theme.AppTheme
 import cz.krokviak.kalai.ui.components.KalaiCard
+import cz.krokviak.kalai.i18n.LocalStrings
 import cz.krokviak.kalai.ui.components.KalaiSegmentedControl
 import java.util.Locale
 
@@ -51,8 +52,10 @@ fun ProfilePage(
     viewModel: SettingsViewModel,
     modifier: Modifier = Modifier
 ) {
-    val genderOptions = listOf("Muž", "Žena")
-    val activityLabels = listOf("Sedavý", "Mírný", "Aktivní", "Velmi aktivní")
+    val s = LocalStrings.current
+    val genderOptions = listOf(s.profile.male, s.profile.female)
+    val genderKeys = listOf("Mu\u017E", "\u017Dena")
+    val activityLabels = listOf(s.profile.sedentary, s.profile.light, s.profile.active, s.profile.veryActive)
     val cardContentInset = 12.dp
     val cardTextSize = 20.sp
     val unitSystem by AppPreferencesManager.unitSystem.collectAsState()
@@ -90,7 +93,7 @@ fun ProfilePage(
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
         Text(
-            text = "Profil",
+            text = s.profile.title,
             color = AppTheme.colors.onBackground,
             fontSize = 44.sp,
             fontWeight = FontWeight.ExtraBold
@@ -98,7 +101,7 @@ fun ProfilePage(
 
         Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
             SectionHeader(
-                title = "Osobní údaje",
+                title = s.profile.personalInfo,
                 startInset = cardContentInset
             )
             KalaiCard(
@@ -108,7 +111,7 @@ fun ProfilePage(
             ) {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     ProfileInfoRow(
-                        label = "Váha",
+                        label = s.profile.weight,
                         value = formatWeightValue(uiState.weight, unitSystem),
                         unit = weightUnitLabel(unitSystem),
                         onClick = {
@@ -135,7 +138,7 @@ fun ProfilePage(
                     RowDivider()
 
                     ProfileInfoRow(
-                        label = "Výška",
+                        label = s.profile.height,
                         value = formatHeightValue(uiState.height, unitSystem),
                         unit = heightUnitLabel(unitSystem),
                         onClick = {
@@ -162,9 +165,9 @@ fun ProfilePage(
                     RowDivider()
 
                     ProfileInfoRow(
-                        label = "Věk",
+                        label = s.profile.age,
                         value = uiState.age.ifBlank { "--" },
-                        unit = "let",
+                        unit = s.common.years,
                         onClick = {
                             if (activePickerField == ProfilePickerField.AGE) {
                                 activePickerField = null
@@ -183,7 +186,7 @@ fun ProfilePage(
                                 selectedAgeIndex = it
                                 viewModel.onAgeChange(ageValues[it])
                             },
-                            unitSuffix = "let"
+                            unitSuffix = s.common.years
                         )
                     }
                 }
@@ -191,13 +194,13 @@ fun ProfilePage(
         }
 
         SectionHeader(
-            title = "Pohlaví",
+            title = s.profile.gender,
             startInset = cardContentInset
         )
         KalaiSegmentedControl(
-            selectedIndex = genderOptions.indexOf(uiState.gender).coerceAtLeast(0),
+            selectedIndex = genderKeys.indexOf(uiState.gender).coerceAtLeast(0),
             items = genderOptions,
-            onItemSelected = { viewModel.onGenderChange(genderOptions[it]) },
+            onItemSelected = { viewModel.onGenderChange(genderKeys[it]) },
             modifier = Modifier.fillMaxWidth(),
             trackColor = AppTheme.colors.surfaceSecondary,
             indicatorColor = AppTheme.colors.surface,
@@ -214,7 +217,7 @@ fun ProfilePage(
 
         Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
             SectionHeader(
-                title = "Úroveň aktivity",
+                title = s.profile.activityLevel,
                 startInset = cardContentInset
             )
             KalaiCard(

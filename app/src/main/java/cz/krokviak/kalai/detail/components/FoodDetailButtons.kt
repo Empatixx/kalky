@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import cz.krokviak.kalai.R
+import cz.krokviak.kalai.i18n.LocalStrings
 import cz.krokviak.kalai.theme.AppTheme
 
 @Composable
@@ -75,7 +76,7 @@ fun FixResultsButton(
             contentDescription = null
         )
         Text(
-            text = "Opravit",
+            text = LocalStrings.current.detail.fix,
             color = AppTheme.colors.onBackground,
         )
     }
@@ -98,7 +99,7 @@ fun DoneButton(
         )
     ) {
         Text(
-            text = "Dokončit",
+            text = LocalStrings.current.detail.done,
             color = AppTheme.colors.onPrimary,
         )
     }

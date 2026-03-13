@@ -39,6 +39,7 @@ import cz.krokviak.kalai.theme.AppTheme
 import cz.krokviak.kalai.nutrientedit.components.VerticalCalorieCard
 import cz.krokviak.kalai.settings.components.IosInlineValuePicker
 import cz.krokviak.kalai.ui.components.KalaiCard
+import cz.krokviak.kalai.i18n.LocalStrings
 import cz.krokviak.kalai.ui.components.KalaiGradientBackground
 
 private enum class MacroPickerField { PROTEIN, CARBS, FAT }
@@ -64,7 +65,8 @@ fun NutrientEditScene(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             NutrientEditTopBar(
-                onBackClick = onBackClick
+                onBackClick = onBackClick,
+                title = LocalStrings.current.nutrientEdit.title
             )
             VerticalCalorieCard(
                 currentCalories = uiState.calories,
@@ -74,7 +76,7 @@ fun NutrientEditScene(
 
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
-                    text = "Makroživiny",
+                    text = LocalStrings.current.nutrientEdit.macronutrients,
                     color = AppTheme.colors.onBackgroundSecondary,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
@@ -89,7 +91,7 @@ fun NutrientEditScene(
                 ) {
                     Column {
                         NutrientEditRow(
-                            label = "Bílkoviny",
+                            label = LocalStrings.current.common.protein,
                             value = uiState.protein,
                             valueUnit = "g",
                             modifier = Modifier.fillMaxWidth(),
@@ -117,7 +119,7 @@ fun NutrientEditScene(
                         }
                         GroupDivider()
                         NutrientEditRow(
-                            label = "Sacharidy",
+                            label = LocalStrings.current.common.carbs,
                             value = uiState.carbs,
                             valueUnit = "g",
                             modifier = Modifier.fillMaxWidth(),
@@ -145,7 +147,7 @@ fun NutrientEditScene(
                         }
                         GroupDivider()
                         NutrientEditRow(
-                            label = "Tuky",
+                            label = LocalStrings.current.common.fat,
                             value = uiState.fat,
                             valueUnit = "g",
                             modifier = Modifier.fillMaxWidth(),
@@ -184,7 +186,7 @@ private fun resolveMacroIndex(value: Int, maxIndex: Int): Int = value.coerceIn(0
 fun NutrientEditTopBar(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
-    title: String = "Úprava makroživin"
+    title: String = ""
 ) {
     Box(
         modifier = modifier
@@ -205,7 +207,7 @@ fun NutrientEditTopBar(
                 tint = AppTheme.colors.onBackground
             )
             Text(
-                text = "Zpět",
+                text = LocalStrings.current.common.back,
                 color = AppTheme.colors.onBackground,
                 fontSize = 17.sp,
                 fontWeight = FontWeight.Medium

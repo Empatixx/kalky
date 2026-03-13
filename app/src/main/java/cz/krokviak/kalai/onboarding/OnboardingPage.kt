@@ -24,19 +24,27 @@ import androidx.compose.ui.unit.sp
 import cz.krokviak.kalai.onboarding.components.OnboardingProgressBar
 import cz.krokviak.kalai.onboarding.pages.ActivityOnboardingPage
 import cz.krokviak.kalai.onboarding.pages.AgeOnboardingPage
+import cz.krokviak.kalai.onboarding.pages.AppearanceOnboardingPage
 import cz.krokviak.kalai.onboarding.pages.GenderOnboardingPage
 import cz.krokviak.kalai.onboarding.pages.GoalOnboardingPage
 import cz.krokviak.kalai.onboarding.pages.HeightOnboardingPage
+import cz.krokviak.kalai.onboarding.pages.LanguageOnboardingPage
+import cz.krokviak.kalai.onboarding.pages.MacrosOnboardingPage
 import cz.krokviak.kalai.onboarding.pages.PromoCodeOnboardingPage
+import cz.krokviak.kalai.onboarding.pages.UnitsOnboardingPage
 import cz.krokviak.kalai.onboarding.pages.WeightOnboardingPage
+import cz.krokviak.kalai.settings.AppLanguage
 import cz.krokviak.kalai.settings.AppPreferencesManager
 import cz.krokviak.kalai.settings.UnitSystem
+import cz.krokviak.kalai.theme.ThemeManager
+import cz.krokviak.kalai.theme.ThemeMode
 import cz.krokviak.kalai.settings.formatHeightForDisplay
 import cz.krokviak.kalai.settings.formatWeightForDisplay
 import cz.krokviak.kalai.settings.heightUnitLabel
 import cz.krokviak.kalai.settings.weightUnitLabel
 import cz.krokviak.kalai.theme.AppTheme
 import cz.krokviak.kalai.ui.components.KalaiButton
+import cz.krokviak.kalai.i18n.LocalStrings
 import cz.krokviak.kalai.ui.components.KalaiGradientBackground
 
 @Composable
@@ -48,7 +56,9 @@ fun OnboardingPage(
     val weightValues = onboardingViewModel.weightValues
     val heightValues = onboardingViewModel.heightValues
     val ageValues = onboardingViewModel.ageValues
+    val language by AppPreferencesManager.language.collectAsState()
     val unitSystem by AppPreferencesManager.unitSystem.collectAsState()
+    val themeMode by ThemeManager.themeMode.collectAsState()
     val displayWeightValues = remember(weightValues, unitSystem) {
         if (unitSystem == UnitSystem.METRIC) {
             weightValues
@@ -72,6 +82,9 @@ fun OnboardingPage(
     fun navigateToNextStep() {
         val nextIndex = currentStepIndex + 1
         if (nextIndex <= steps.lastIndex) {
+            if (steps[nextIndex] == OnboardingStep.MACROS) {
+                onboardingViewModel.calculateMacros()
+            }
             currentStepIndex = nextIndex
         }
     }
@@ -123,34 +136,56 @@ fun OnboardingPage(
                     ) {
                         Box(modifier = Modifier.fillMaxWidth()) {
                             when (currentStepIndex) {
-                                0 -> GenderOnboardingPage(
+                                0 -> LanguageOnboardingPage(
+                                    selectedLanguage = language,
+                                    onSelected = { AppPreferencesManager.setLanguage(it) }
+                                )
+                                1 -> UnitsOnboardingPage(
+                                    selectedUnit = unitSystem,
+                                    onSelected = { AppPreferencesManager.setUnitSystem(it) }
+                                )
+                                2 -> AppearanceOnboardingPage(
+                                    selectedTheme = themeMode,
+                                    onSelected = { ThemeManager.setThemeMode(it) }
+                                )
+                                3 -> GenderOnboardingPage(
                                     selectedGender = uiState.gender,
                                     onSelected = onboardingViewModel::onGenderSelected
                                 )
-                                1 -> WeightOnboardingPage(
+                                4 -> WeightOnboardingPage(
                                     values = displayWeightValues,
                                     selectedIndex = uiState.weightIndex,
                                     unitSuffix = weightUnit,
                                     onIndexChanged = onboardingViewModel::onWeightIndexChanged
                                 )
-                                2 -> HeightOnboardingPage(
+                                5 -> HeightOnboardingPage(
                                     values = displayHeightValues,
                                     selectedIndex = uiState.heightIndex,
                                     unitSuffix = heightUnit,
                                     onIndexChanged = onboardingViewModel::onHeightIndexChanged
                                 )
-                                3 -> AgeOnboardingPage(
+                                6 -> AgeOnboardingPage(
                                     values = ageValues,
                                     selectedIndex = uiState.ageIndex,
                                     onIndexChanged = onboardingViewModel::onAgeIndexChanged
                                 )
-                                4 -> ActivityOnboardingPage(
+                                7 -> ActivityOnboardingPage(
                                     selectedActivityLevel = uiState.activityLevel,
                                     onSelected = onboardingViewModel::onActivityLevelSelected
                                 )
-                                5 -> GoalOnboardingPage(
+                                8 -> GoalOnboardingPage(
                                     selectedGoal = uiState.goalChoice,
                                     onSelected = onboardingViewModel::onGoalSelected
+                                )
+                                9 -> MacrosOnboardingPage(
+                                    calories = uiState.targetCalories,
+                                    protein = uiState.targetProtein,
+                                    carbs = uiState.targetCarbs,
+                                    fat = uiState.targetFat,
+                                    onCaloriesChanged = onboardingViewModel::onCaloriesChanged,
+                                    onProteinChanged = onboardingViewModel::onProteinChanged,
+                                    onCarbsChanged = onboardingViewModel::onCarbsChanged,
+                                    onFatChanged = onboardingViewModel::onFatChanged
                                 )
                                 else -> PromoCodeOnboardingPage(
                                     promoCode = uiState.promoCode,
@@ -173,8 +208,9 @@ fun OnboardingPage(
                         containerColor = Color.Black,
                         contentColor = Color.White
                     ) {
+                        val s = LocalStrings.current
                         Text(
-                            text = if (isLastStep) "Dokončit" else "Pokračovat",
+                            text = if (isLastStep) s.common.done else s.common.continueText,
                             fontWeight = FontWeight.Bold,
                             fontSize = 20.sp
                         )
@@ -200,7 +236,7 @@ private fun OnboardingTopBar(
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Zpět",
+                contentDescription = LocalStrings.current.common.back,
                 tint = if (page > 0) AppTheme.colors.onBackground else AppTheme.colors.onBackgroundSecondary.copy(alpha = 0.35f),
                 modifier = Modifier.clickable(enabled = page > 0, onClick = onBack)
             )

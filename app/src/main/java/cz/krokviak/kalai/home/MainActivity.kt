@@ -47,6 +47,11 @@ import cz.krokviak.kalai.settings.ProfilePage
 import cz.krokviak.kalai.settings.SettingsPage
 import cz.krokviak.kalai.settings.SettingsViewModel
 import cz.krokviak.kalai.theme.AppTheme
+import cz.krokviak.kalai.i18n.CzechStrings
+import cz.krokviak.kalai.i18n.EnglishStrings
+import cz.krokviak.kalai.i18n.LocalStrings
+import cz.krokviak.kalai.settings.AppLanguage
+import cz.krokviak.kalai.settings.AppPreferencesManager
 import cz.krokviak.kalai.theme.KalaiTheme
 import cz.krokviak.kalai.ui.components.KalaiGradientBackground
 import kotlinx.coroutines.launch
@@ -110,7 +115,8 @@ class MainActivity : ComponentActivity() {
 
     private fun handleBarcodeResult(data: Intent) {
         mainViewModel.addFoodItemFromBarcode(
-            name = data.getStringExtra(CameraActivity.EXTRA_NAME) ?: "Neznámý produkt",
+            name = data.getStringExtra(CameraActivity.EXTRA_NAME)
+                ?: (if (AppPreferencesManager.language.value == AppLanguage.EN) EnglishStrings else CzechStrings).common.unknownProduct,
             calories = data.getIntExtra(CameraActivity.EXTRA_CALORIES, 0),
             protein = data.getIntExtra(CameraActivity.EXTRA_PROTEIN, 0),
             fat = data.getIntExtra(CameraActivity.EXTRA_FAT, 0),
@@ -148,6 +154,17 @@ fun AppContent(
                     settingsViewModel.onAgeChange(result.age)
                     settingsViewModel.onActivityLevelChange(result.activityLevel)
                     settingsViewModel.save()
+                    if (result.targetCalories > 0) {
+                        nutrientEditViewModel.onProteinChange(result.targetProtein)
+                        nutrientEditViewModel.onCarbsChange(result.targetCarbs)
+                        nutrientEditViewModel.onFatChange(result.targetFat)
+                        mainViewModel.updateNutrientSettings(
+                            result.targetProtein,
+                            result.targetCarbs,
+                            result.targetFat,
+                            result.targetCalories
+                        )
+                    }
                     navController.navigate(DefaultRoute) {
                         popUpTo(navController.graph.startDestinationId) { inclusive = true }
                         launchSingleTop = true

@@ -49,13 +49,11 @@ import cz.krokviak.kalai.R
 import cz.krokviak.kalai.analytics.CaloriesBar
 import cz.krokviak.kalai.theme.AppTheme
 import cz.krokviak.kalai.ui.components.KalaiCard
+import cz.krokviak.kalai.i18n.LocalStrings
 import cz.krokviak.kalai.ui.components.KalaiSegmentedControl
 
-private enum class NutrientTab(val label: String) {
-    CALORIES("Kalorie"),
-    PROTEIN("Bílkoviny"),
-    CARBS("Sacharidy"),
-    FAT("Tuky")
+private enum class NutrientTab {
+    CALORIES, PROTEIN, CARBS, FAT
 }
 
 @Composable
@@ -63,8 +61,10 @@ fun NutrientCalorieCard(
     modifier: Modifier = Modifier,
     bars: List<CaloriesBar>
 ) {
+    val s = LocalStrings.current
     var selectedTab by remember { mutableIntStateOf(0) }
     val tabs = NutrientTab.entries
+    val tabLabels = listOf(s.common.calories, s.common.protein, s.common.carbs, s.common.fat)
 
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -72,7 +72,7 @@ fun NutrientCalorieCard(
     ) {
         KalaiSegmentedControl(
             selectedIndex = selectedTab,
-            items = tabs.map { it.label },
+            items = tabLabels,
             onItemSelected = { selectedTab = it },
             modifier = Modifier.fillMaxWidth()
         )
@@ -117,13 +117,13 @@ private fun EmptyNutrientCard() {
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text(
-            text = "Chybí informace o vaších kaloriích",
+            text = LocalStrings.current.analytics.noCaloriesTitle,
             color = AppTheme.colors.onBackground,
             fontWeight = FontWeight.ExtraBold,
             fontSize = 24.sp
         )
         Text(
-            text = "Přidejte své kalorie v úvodu",
+            text = LocalStrings.current.analytics.noCaloriesSubtitle,
             color = AppTheme.colors.onBackground,
             fontSize = 18.sp,
             fontWeight = FontWeight.SemiBold
@@ -141,7 +141,7 @@ private fun StackedCaloriesChart(bars: List<CaloriesBar>) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = "Průměrný denní příjem", color = AppTheme.colors.onBackground, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+        Text(text = LocalStrings.current.analytics.avgDailyIntake, color = AppTheme.colors.onBackground, fontSize = 18.sp, fontWeight = FontWeight.Bold)
         Text(text = "$avgCalories kcal", color = AppTheme.colors.onBackground, fontSize = 22.sp, fontWeight = FontWeight.ExtraBold)
     }
 
@@ -239,10 +239,11 @@ private fun SingleNutrientChart(bars: List<CaloriesBar>, tab: NutrientTab) {
         NutrientTab.FAT -> colorResource(id = R.color.fatColor)
         else -> AppTheme.colors.onBackground
     }
+    val analyticsStrings = LocalStrings.current.analytics
     val headerTitle = when (tab) {
-        NutrientTab.PROTEIN -> "Průměr bílkovin"
-        NutrientTab.CARBS -> "Průměr sacharidů"
-        NutrientTab.FAT -> "Průměr tuků"
+        NutrientTab.PROTEIN -> analyticsStrings.avgProtein
+        NutrientTab.CARBS -> analyticsStrings.avgCarbs
+        NutrientTab.FAT -> analyticsStrings.avgFat
         else -> ""
     }
 

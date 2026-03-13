@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cz.krokviak.kalai.barcode.data.OpenFoodFactsProduct
 import cz.krokviak.kalai.theme.AppTheme
+import cz.krokviak.kalai.i18n.LocalStrings
 import cz.krokviak.kalai.ui.components.KalaiButton
 
 @Composable
@@ -45,6 +46,7 @@ fun BarcodeScannerScreen(
     onRetryClick: () -> Unit,
     onCloseClick: () -> Unit
 ) {
+    val s = LocalStrings.current
     Box(modifier = Modifier.fillMaxSize()) {
         // Camera preview as background
         cameraPreview()
@@ -58,7 +60,7 @@ fun BarcodeScannerScreen(
         ) {
             Icon(
                 imageVector = Icons.Filled.Close,
-                contentDescription = "Zavřít",
+                contentDescription = s.common.close,
                 tint = Color.White,
                 modifier = Modifier.size(32.dp)
             )
@@ -67,7 +69,7 @@ fun BarcodeScannerScreen(
         // Scan hint at top
         if (state is BarcodeScanState.Scanning) {
             Text(
-                text = "Naskenujte čárový kód",
+                text = s.barcode.scanBarcode,
                 color = Color.White,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
@@ -91,7 +93,7 @@ fun BarcodeScannerScreen(
                         modifier = Modifier.size(32.dp)
                     )
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text("Hledám produkt...")
+                    Text(s.barcode.searchingProduct)
                 }
             }
 
@@ -107,7 +109,7 @@ fun BarcodeScannerScreen(
 
                 BottomCard(Modifier.align(Alignment.BottomCenter)) {
                     Text(
-                        text = product.productName ?: "Neznámý produkt",
+                        text = product.productName ?: s.common.unknownProduct,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         color = AppTheme.colors.onBackground
@@ -117,17 +119,17 @@ fun BarcodeScannerScreen(
                     OutlinedTextField(
                         value = quantityText,
                         onValueChange = { quantityText = it.filter { c -> c.isDigit() } },
-                        label = { Text("Množství (g)") },
+                        label = { Text(s.barcode.quantityGrams) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth()
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
-                    NutrientRow("Kalorie", "${((nutriments?.energyKcal100g ?: 0.0) * multiplier).toInt()} kcal")
-                    NutrientRow("Bílkoviny", "${((nutriments?.proteins100g ?: 0.0) * multiplier).toInt()} g")
-                    NutrientRow("Tuky", "${((nutriments?.fat100g ?: 0.0) * multiplier).toInt()} g")
-                    NutrientRow("Sacharidy", "${((nutriments?.carbohydrates100g ?: 0.0) * multiplier).toInt()} g")
+                    NutrientRow(s.common.calories, "${((nutriments?.energyKcal100g ?: 0.0) * multiplier).toInt()} kcal")
+                    NutrientRow(s.common.protein, "${((nutriments?.proteins100g ?: 0.0) * multiplier).toInt()} g")
+                    NutrientRow(s.common.fat, "${((nutriments?.fat100g ?: 0.0) * multiplier).toInt()} g")
+                    NutrientRow(s.common.carbs, "${((nutriments?.carbohydrates100g ?: 0.0) * multiplier).toInt()} g")
 
                     Spacer(modifier = Modifier.height(16.dp))
                     Row(
@@ -140,7 +142,7 @@ fun BarcodeScannerScreen(
                             containerColor = AppTheme.colors.border,
                             contentColor = AppTheme.colors.onBackground
                         ) {
-                            Text("Znovu", fontWeight = FontWeight.Bold)
+                            Text(s.common.again, fontWeight = FontWeight.Bold)
                         }
                         KalaiButton(
                             onClick = { onAddClick(product, quantity) },
@@ -148,7 +150,7 @@ fun BarcodeScannerScreen(
                             containerColor = AppTheme.colors.primary,
                             contentColor = AppTheme.colors.onPrimary
                         ) {
-                            Text("Přidat", fontWeight = FontWeight.Bold)
+                            Text(s.common.add, fontWeight = FontWeight.Bold)
                         }
                     }
                 }
@@ -157,7 +159,7 @@ fun BarcodeScannerScreen(
             is BarcodeScanState.NotFound -> {
                 BottomCard(Modifier.align(Alignment.BottomCenter)) {
                     Text(
-                        text = "Produkt nenalezen",
+                        text = s.barcode.productNotFound,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         color = AppTheme.colors.onBackground
@@ -169,7 +171,7 @@ fun BarcodeScannerScreen(
                         containerColor = AppTheme.colors.primary,
                         contentColor = AppTheme.colors.onPrimary
                     ) {
-                        Text("Zkusit znovu", fontWeight = FontWeight.Bold)
+                        Text(s.common.retry, fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -177,7 +179,7 @@ fun BarcodeScannerScreen(
             is BarcodeScanState.Error -> {
                 BottomCard(Modifier.align(Alignment.BottomCenter)) {
                     Text(
-                        text = "Chyba: ${state.message}",
+                        text = "${s.barcode.error}: ${state.message}",
                         fontSize = 16.sp,
                         color = Color.Red
                     )
@@ -188,7 +190,7 @@ fun BarcodeScannerScreen(
                         containerColor = AppTheme.colors.primary,
                         contentColor = AppTheme.colors.onPrimary
                     ) {
-                        Text("Zkusit znovu", fontWeight = FontWeight.Bold)
+                        Text(s.common.retry, fontWeight = FontWeight.Bold)
                     }
                 }
             }

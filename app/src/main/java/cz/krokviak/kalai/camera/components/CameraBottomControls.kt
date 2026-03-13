@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import cz.krokviak.kalai.camera.CameraMode
+import cz.krokviak.kalai.i18n.LocalStrings
 
 @Composable
 fun CameraBottomControls(
@@ -37,11 +38,12 @@ fun CameraBottomControls(
             .padding(start = 24.dp, end = 24.dp, top = 12.dp, bottom = 44.dp),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
+        val s = LocalStrings.current
         ModeToggleButton(
             isActive = cameraMode == CameraMode.PHOTO,
             onClick = onPhotoModeClick,
             imageVector = Icons.Outlined.PhotoCamera,
-            contentDescription = "Režim foto"
+            contentDescription = s.camera.photoMode
         )
 
         CaptureButton(
@@ -57,7 +59,7 @@ fun CameraBottomControls(
             isActive = cameraMode == CameraMode.QR,
             onClick = onQrModeClick,
             imageVector = Icons.Outlined.QrCodeScanner,
-            contentDescription = "Režim QR"
+            contentDescription = s.camera.qrMode
         )
     }
 }

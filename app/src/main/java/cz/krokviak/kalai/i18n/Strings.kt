@@ -1,0 +1,353 @@
+package cz.krokviak.kalai.i18n
+
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.staticCompositionLocalOf
+import cz.krokviak.kalai.settings.AppLanguage
+import cz.krokviak.kalai.settings.AppPreferencesManager
+
+data class AppStrings(
+    val nav: NavStrings,
+    val home: HomeStrings,
+    val settings: SettingsStrings,
+    val profile: ProfileStrings,
+    val camera: CameraStrings,
+    val barcode: BarcodeStrings,
+    val analytics: AnalyticsStrings,
+    val nutrientEdit: NutrientEditStrings,
+    val detail: DetailStrings,
+    val onboarding: OnboardingStrings,
+    val common: CommonStrings
+)
+
+data class NavStrings(
+    val home: String,
+    val analytics: String,
+    val profile: String,
+    val settings: String
+)
+
+data class HomeStrings(
+    val addedToday: String,
+    val emptyTitle: String,
+    val emptySubtitle: String
+)
+
+data class SettingsStrings(
+    val title: String,
+    val appearance: String,
+    val language: String,
+    val units: String,
+    val account: String,
+    val appVersion: String,
+    val themeSystem: String,
+    val themeLight: String,
+    val themeDark: String,
+    val metric: String,
+    val imperial: String
+)
+
+data class ProfileStrings(
+    val title: String,
+    val personalInfo: String,
+    val weight: String,
+    val height: String,
+    val age: String,
+    val gender: String,
+    val male: String,
+    val female: String,
+    val activityLevel: String,
+    val sedentary: String,
+    val light: String,
+    val active: String,
+    val veryActive: String
+)
+
+data class CameraStrings(
+    val photoMode: String,
+    val qrMode: String,
+    val permissionDenied: String
+)
+
+data class BarcodeStrings(
+    val scanBarcode: String,
+    val searchingProduct: String,
+    val productNotFound: String,
+    val quantityGrams: String,
+    val error: String
+)
+
+data class AnalyticsStrings(
+    val avgDailyIntake: String,
+    val avgProtein: String,
+    val avgCarbs: String,
+    val avgFat: String,
+    val noCaloriesTitle: String,
+    val noCaloriesSubtitle: String
+)
+
+data class NutrientEditStrings(
+    val title: String,
+    val macronutrients: String
+)
+
+data class DetailStrings(
+    val fix: String,
+    val done: String
+)
+
+data class OnboardingStrings(
+    val chooseLanguage: String,
+    val chooseUnits: String,
+    val chooseAppearance: String,
+    val chooseGender: String,
+    val howMuchWeigh: String,
+    val howTall: String,
+    val howOld: String,
+    val howActive: String,
+    val whatsYourGoal: String,
+    val yourDailyTargets: String,
+    val macrosIndicativeNote: String,
+    val promoCode: String,
+    val havePromoCode: String,
+    val promoCodeOptional: String,
+    val loseWeight: String,
+    val maintain: String,
+    val gainWeight: String
+)
+
+data class CommonStrings(
+    val calories: String,
+    val protein: String,
+    val fat: String,
+    val carbs: String,
+    val back: String,
+    val add: String,
+    val retry: String,
+    val again: String,
+    val unknownProduct: String,
+    val close: String,
+    val done: String,
+    val continueText: String,
+    val years: String
+)
+
+val CzechStrings = AppStrings(
+    nav = NavStrings(
+        home = "Domov",
+        analytics = "Anal\u00FDza",
+        profile = "Profil",
+        settings = "Nastaven\u00ED"
+    ),
+    home = HomeStrings(
+        addedToday = "P\u0159id\u00E1no dnes",
+        emptyTitle = "Dneska jsi je\u0161t\u011B nic nep\u0159idal/a",
+        emptySubtitle = "Klikni na tla\u010D\u00EDtko dole a p\u0159idej si prvn\u00ED j\u00EDdlo"
+    ),
+    settings = SettingsStrings(
+        title = "Nastaven\u00ED",
+        appearance = "Vzhled",
+        language = "Jazyk",
+        units = "Jednotky",
+        account = "\u00DA\u010Det",
+        appVersion = "Verze aplikace 1.0",
+        themeSystem = "Syst\u00E9m",
+        themeLight = "Sv\u011Btl\u00FD",
+        themeDark = "Tmav\u00FD",
+        metric = "Metrick\u00E9",
+        imperial = "Imperi\u00E1ln\u00ED"
+    ),
+    profile = ProfileStrings(
+        title = "Profil",
+        personalInfo = "Osobn\u00ED \u00FAdaje",
+        weight = "V\u00E1ha",
+        height = "V\u00FD\u0161ka",
+        age = "V\u011Bk",
+        gender = "Pohlav\u00ED",
+        male = "Mu\u017E",
+        female = "\u017Dena",
+        activityLevel = "\u00DArove\u0148 aktivity",
+        sedentary = "Sedav\u00FD",
+        light = "M\u00EDrn\u00FD",
+        active = "Aktivn\u00ED",
+        veryActive = "Velmi aktivn\u00ED"
+    ),
+    camera = CameraStrings(
+        photoMode = "Re\u017Eim foto",
+        qrMode = "Re\u017Eim QR",
+        permissionDenied = "P\u0159\u00EDstup ke kame\u0159e zam\u00EDtnut"
+    ),
+    barcode = BarcodeStrings(
+        scanBarcode = "Naskenujte \u010D\u00E1rov\u00FD k\u00F3d",
+        searchingProduct = "Hled\u00E1m produkt...",
+        productNotFound = "Produkt nenalezen",
+        quantityGrams = "Mno\u017Estv\u00ED (g)",
+        error = "Chyba"
+    ),
+    analytics = AnalyticsStrings(
+        avgDailyIntake = "Pr\u016Fm\u011Brn\u00FD denn\u00ED p\u0159\u00EDjem",
+        avgProtein = "Pr\u016Fm\u011Br b\u00EDlkovin",
+        avgCarbs = "Pr\u016Fm\u011Br sacharid\u016F",
+        avgFat = "Pr\u016Fm\u011Br tuk\u016F",
+        noCaloriesTitle = "Chyb\u00ED informace o va\u0161\u00EDch kalori\u00EDch",
+        noCaloriesSubtitle = "P\u0159idejte sv\u00E9 kalorie v \u00FAvodu"
+    ),
+    nutrientEdit = NutrientEditStrings(
+        title = "\u00DAprava makro\u017Eivin",
+        macronutrients = "Makro\u017Eiviny"
+    ),
+    detail = DetailStrings(
+        fix = "Opravit",
+        done = "Dokon\u010Dit"
+    ),
+    onboarding = OnboardingStrings(
+        chooseLanguage = "Vyber jazyk",
+        chooseUnits = "Vyber jednotky",
+        chooseAppearance = "Vyber vzhled",
+        chooseGender = "Vyber pohlav\u00ED",
+        howMuchWeigh = "Kolik v\u00E1\u017E\u00ED\u0161?",
+        howTall = "Jak jsi vysok\u00FD/\u00E1?",
+        howOld = "Kolik je ti let?",
+        howActive = "Jak aktivn\u00ED jsi?",
+        whatsYourGoal = "Jak\u00FD m\u00E1\u0161 c\u00EDl?",
+        yourDailyTargets = "Tvoje denn\u00ED c\u00EDle",
+        macrosIndicativeNote = "Hodnoty jsou orienta\u010Dn\u00ED a vypo\u010D\u00EDtan\u00E9 na z\u00E1klad\u011B tvych \u00FAdaj\u016F. M\u016F\u017Ee\u0161 je kdykoliv upravit.",
+        promoCode = "Promo k\u00F3d",
+        havePromoCode = "M\u00E1\u0161 promo k\u00F3d?",
+        promoCodeOptional = "Promo k\u00F3d (voliteln\u00E9)",
+        loseWeight = "Chci zhubnout",
+        maintain = "Chci udr\u017Eet",
+        gainWeight = "Chci nabrat"
+    ),
+    common = CommonStrings(
+        calories = "Kalorie",
+        protein = "B\u00EDlkoviny",
+        fat = "Tuky",
+        carbs = "Sacharidy",
+        back = "Zp\u011Bt",
+        add = "P\u0159idat",
+        retry = "Zkusit znovu",
+        again = "Znovu",
+        unknownProduct = "Nezn\u00E1m\u00FD produkt",
+        close = "Zav\u0159\u00EDt",
+        done = "Dokon\u010Dit",
+        continueText = "Pokra\u010Dovat",
+        years = "let"
+    )
+)
+
+val EnglishStrings = AppStrings(
+    nav = NavStrings(
+        home = "Home",
+        analytics = "Analytics",
+        profile = "Profile",
+        settings = "Settings"
+    ),
+    home = HomeStrings(
+        addedToday = "Added today",
+        emptyTitle = "You haven't added anything yet",
+        emptySubtitle = "Tap the button below to add your first food"
+    ),
+    settings = SettingsStrings(
+        title = "Settings",
+        appearance = "Appearance",
+        language = "Language",
+        units = "Units",
+        account = "Account",
+        appVersion = "App version 1.0",
+        themeSystem = "System",
+        themeLight = "Light",
+        themeDark = "Dark",
+        metric = "Metric",
+        imperial = "Imperial"
+    ),
+    profile = ProfileStrings(
+        title = "Profile",
+        personalInfo = "Personal info",
+        weight = "Weight",
+        height = "Height",
+        age = "Age",
+        gender = "Gender",
+        male = "Male",
+        female = "Female",
+        activityLevel = "Activity level",
+        sedentary = "Sedentary",
+        light = "Light",
+        active = "Active",
+        veryActive = "Very active"
+    ),
+    camera = CameraStrings(
+        photoMode = "Photo mode",
+        qrMode = "QR mode",
+        permissionDenied = "Camera permission denied"
+    ),
+    barcode = BarcodeStrings(
+        scanBarcode = "Scan a barcode",
+        searchingProduct = "Searching product...",
+        productNotFound = "Product not found",
+        quantityGrams = "Quantity (g)",
+        error = "Error"
+    ),
+    analytics = AnalyticsStrings(
+        avgDailyIntake = "Average daily intake",
+        avgProtein = "Average protein",
+        avgCarbs = "Average carbs",
+        avgFat = "Average fat",
+        noCaloriesTitle = "No calorie data available",
+        noCaloriesSubtitle = "Add your calories on the home screen"
+    ),
+    nutrientEdit = NutrientEditStrings(
+        title = "Edit macronutrients",
+        macronutrients = "Macronutrients"
+    ),
+    detail = DetailStrings(
+        fix = "Fix",
+        done = "Done"
+    ),
+    onboarding = OnboardingStrings(
+        chooseLanguage = "Choose language",
+        chooseUnits = "Choose units",
+        chooseAppearance = "Choose appearance",
+        chooseGender = "Choose gender",
+        howMuchWeigh = "How much do you weigh?",
+        howTall = "How tall are you?",
+        howOld = "How old are you?",
+        howActive = "How active are you?",
+        whatsYourGoal = "What's your goal?",
+        yourDailyTargets = "Your daily targets",
+        macrosIndicativeNote = "These values are indicative, calculated from your data. You can adjust them anytime.",
+        promoCode = "Promo code",
+        havePromoCode = "Got a promo code?",
+        promoCodeOptional = "Promo code (optional)",
+        loseWeight = "Lose weight",
+        maintain = "Maintain weight",
+        gainWeight = "Gain weight"
+    ),
+    common = CommonStrings(
+        calories = "Calories",
+        protein = "Protein",
+        fat = "Fat",
+        carbs = "Carbs",
+        back = "Back",
+        add = "Add",
+        retry = "Try again",
+        again = "Again",
+        unknownProduct = "Unknown product",
+        close = "Close",
+        done = "Done",
+        continueText = "Continue",
+        years = "yrs"
+    )
+)
+
+val LocalStrings = staticCompositionLocalOf { CzechStrings }
+
+@Composable
+fun rememberStrings(): AppStrings {
+    val language by AppPreferencesManager.language.collectAsState()
+    return when (language) {
+        AppLanguage.CS -> CzechStrings
+        AppLanguage.EN -> EnglishStrings
+    }
+}

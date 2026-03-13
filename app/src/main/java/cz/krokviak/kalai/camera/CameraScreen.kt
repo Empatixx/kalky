@@ -37,6 +37,7 @@ import cz.krokviak.kalai.barcode.NutrientRow
 import cz.krokviak.kalai.barcode.data.OpenFoodFactsProduct
 import cz.krokviak.kalai.camera.components.CameraBottomControls
 import cz.krokviak.kalai.camera.components.CameraPreview
+import cz.krokviak.kalai.i18n.LocalStrings
 import cz.krokviak.kalai.theme.AppTheme
 import cz.krokviak.kalai.ui.components.KalaiButton
 
@@ -68,7 +69,7 @@ fun CameraScreen(
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Zpět",
+                    contentDescription = LocalStrings.current.common.back,
                     tint = Color.White,
                     modifier = Modifier.size(30.dp)
                 )
@@ -103,6 +104,7 @@ private fun BarcodeOverlay(
     onAddClick: (OpenFoodFactsProduct, Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val s = LocalStrings.current
     when (state) {
         is BarcodeScanState.Loading -> {
             BottomCard(modifier = modifier) {
@@ -110,7 +112,7 @@ private fun BarcodeOverlay(
                     color = AppTheme.colors.onBackground
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                Text("Hledám produkt...")
+                Text(s.barcode.searchingProduct)
             }
         }
         is BarcodeScanState.ProductFound -> {
@@ -124,7 +126,7 @@ private fun BarcodeOverlay(
         is BarcodeScanState.NotFound -> {
             BottomCard(modifier = modifier) {
                 Text(
-                    text = "Produkt nenalezen",
+                    text = s.barcode.productNotFound,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = AppTheme.colors.onBackground
@@ -136,14 +138,14 @@ private fun BarcodeOverlay(
                     containerColor = AppTheme.colors.primary,
                     contentColor = AppTheme.colors.onPrimary
                 ) {
-                    Text("Zkusit znovu", fontWeight = FontWeight.Bold)
+                    Text(s.common.retry, fontWeight = FontWeight.Bold)
                 }
             }
         }
         is BarcodeScanState.Error -> {
             BottomCard(modifier = modifier) {
                 Text(
-                    text = "Chyba: ${state.message}",
+                    text = "${s.barcode.error}: ${state.message}",
                     fontSize = 16.sp,
                     color = Color.Red
                 )
@@ -154,7 +156,7 @@ private fun BarcodeOverlay(
                     containerColor = AppTheme.colors.primary,
                     contentColor = AppTheme.colors.onPrimary
                 ) {
-                    Text("Zkusit znovu", fontWeight = FontWeight.Bold)
+                    Text(s.common.retry, fontWeight = FontWeight.Bold)
                 }
             }
         }
@@ -178,9 +180,10 @@ private fun ProductFoundCard(
     val quantity = quantityText.toIntOrNull() ?: 0
     val multiplier = quantity / 100.0
 
+    val s = LocalStrings.current
     BottomCard(modifier = modifier) {
         Text(
-            text = product.productName ?: "Neznámý produkt",
+            text = product.productName ?: s.common.unknownProduct,
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             color = AppTheme.colors.onBackground
@@ -190,17 +193,17 @@ private fun ProductFoundCard(
         OutlinedTextField(
             value = quantityText,
             onValueChange = { quantityText = it.filter { c -> c.isDigit() } },
-            label = { Text("Množství (g)") },
+            label = { Text(s.barcode.quantityGrams) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             singleLine = true,
             modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(12.dp))
-        NutrientRow("Kalorie", "${((nutriments?.energyKcal100g ?: 0.0) * multiplier).toInt()} kcal")
-        NutrientRow("Bílkoviny", "${((nutriments?.proteins100g ?: 0.0) * multiplier).toInt()} g")
-        NutrientRow("Tuky", "${((nutriments?.fat100g ?: 0.0) * multiplier).toInt()} g")
-        NutrientRow("Sacharidy", "${((nutriments?.carbohydrates100g ?: 0.0) * multiplier).toInt()} g")
+        NutrientRow(s.common.calories, "${((nutriments?.energyKcal100g ?: 0.0) * multiplier).toInt()} kcal")
+        NutrientRow(s.common.protein, "${((nutriments?.proteins100g ?: 0.0) * multiplier).toInt()} g")
+        NutrientRow(s.common.fat, "${((nutriments?.fat100g ?: 0.0) * multiplier).toInt()} g")
+        NutrientRow(s.common.carbs, "${((nutriments?.carbohydrates100g ?: 0.0) * multiplier).toInt()} g")
 
         Spacer(modifier = Modifier.height(16.dp))
         Row(
@@ -213,7 +216,7 @@ private fun ProductFoundCard(
                 containerColor = AppTheme.colors.border,
                 contentColor = AppTheme.colors.onBackground
             ) {
-                Text("Znovu", fontWeight = FontWeight.Bold)
+                Text(s.common.again, fontWeight = FontWeight.Bold)
             }
             KalaiButton(
                 onClick = { onAddClick(product, quantity) },
@@ -221,7 +224,7 @@ private fun ProductFoundCard(
                 containerColor = AppTheme.colors.primary,
                 contentColor = AppTheme.colors.onPrimary
             ) {
-                Text("Přidat", fontWeight = FontWeight.Bold)
+                Text(s.common.add, fontWeight = FontWeight.Bold)
             }
         }
     }

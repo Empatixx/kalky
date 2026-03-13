@@ -44,6 +44,7 @@ import cz.krokviak.kalai.R
 import cz.krokviak.kalai.nutrientedit.components.NutrientEditRow
 import cz.krokviak.kalai.settings.components.IosInlineValuePicker
 import cz.krokviak.kalai.theme.AppTheme
+import cz.krokviak.kalai.i18n.LocalStrings
 import cz.krokviak.kalai.ui.components.KalaiCard
 
 private enum class DetailMacroPickerField { PROTEIN, CARBS, FAT }
@@ -109,8 +110,9 @@ fun BoxScope.FoodBottomSheetCard(
                     color = AppTheme.colors.surface
                 ) {
                     Column(modifier = Modifier.fillMaxWidth()) {
+                        val s = LocalStrings.current
                         NutrientEditRow(
-                            label = "Bílkoviny",
+                            label = s.common.protein,
                             value = protein,
                             valueUnit = "g",
                             icon = ImageVector.vectorResource(R.drawable.chicken_leg),
@@ -140,7 +142,7 @@ fun BoxScope.FoodBottomSheetCard(
                         DetailGroupDivider()
 
                         NutrientEditRow(
-                            label = "Sacharidy",
+                            label = s.common.carbs,
                             value = carbs,
                             valueUnit = "g",
                             icon = ImageVector.vectorResource(R.drawable.wheat),
@@ -170,7 +172,7 @@ fun BoxScope.FoodBottomSheetCard(
                         DetailGroupDivider()
 
                         NutrientEditRow(
-                            label = "Tuky",
+                            label = s.common.fat,
                             value = fats,
                             valueUnit = "g",
                             icon = ImageVector.vectorResource(R.drawable.avocado),
@@ -290,7 +292,7 @@ private fun CaloriesSummaryCard(calories: Int) {
             }
             Spacer(modifier = Modifier.width(12.dp))
             Text(
-                text = "Kalorie",
+                text = LocalStrings.current.common.calories,
                 color = AppTheme.colors.onBackground,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Medium,

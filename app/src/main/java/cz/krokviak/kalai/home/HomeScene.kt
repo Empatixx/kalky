@@ -34,6 +34,7 @@ import cz.krokviak.kalai.home.components.FoodItemCard
 import cz.krokviak.kalai.home.components.MacroNutrientCard
 import cz.krokviak.kalai.home.components.WeekDatePicker
 import cz.krokviak.kalai.theme.AppTheme
+import cz.krokviak.kalai.i18n.LocalStrings
 import cz.krokviak.kalai.ui.components.KalaiCard
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -51,6 +52,7 @@ fun HomeScene(
         contentPadding = PaddingValues(16.dp)
     ) {
         item {
+            val s = LocalStrings.current
             Column(
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -83,7 +85,7 @@ fun HomeScene(
                         MacroNutrientCard(
                             amount = "${uiState.currentProtein}g",
                             maxAmount = "${uiState.maxProtein}g",
-                            title = "Bilkoviny",
+                            title = s.common.protein,
                             iconResId = R.drawable.chicken_leg,
                             donutColor = colorResource(id = R.color.proteinColor),
                             percentage = uiState.proteinRatio(),
@@ -92,7 +94,7 @@ fun HomeScene(
                         MacroNutrientCard(
                             amount = "${uiState.currentCarbs}g",
                             maxAmount = "${uiState.maxCarbs}g",
-                            title = "Sacharidy",
+                            title = s.common.carbs,
                             iconResId = R.drawable.wheat,
                             donutColor = colorResource(id = R.color.carbsColor),
                             percentage = uiState.carbsRatio(),
@@ -101,7 +103,7 @@ fun HomeScene(
                         MacroNutrientCard(
                             amount = "${uiState.currentFats}g",
                             maxAmount = "${uiState.maxFats}g",
-                            title = "Tuky",
+                            title = s.common.fat,
                             iconResId = R.drawable.avocado,
                             donutColor = colorResource(id = R.color.fatColor),
                             percentage = uiState.fatsRatio(),
@@ -110,7 +112,7 @@ fun HomeScene(
                 }
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(
-                    text = "Přidáno dnes",
+                    text = s.home.addedToday,
                     fontSize = 24.sp,
                     fontWeight = FontWeight.ExtraBold,
                     color = AppTheme.colors.onBackground
@@ -138,6 +140,7 @@ fun HomeScene(
 
 @Composable
 private fun EmptyRecentlyAddedList() {
+    val s = LocalStrings.current
     KalaiCard(
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier.fillMaxWidth(),
@@ -151,12 +154,12 @@ private fun EmptyRecentlyAddedList() {
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Text(
-                text = "Dneska jsi ještě nic nepřidal/a",
+                text = s.home.emptyTitle,
                 style = MaterialTheme.typography.titleMedium,
                 color = AppTheme.colors.onBackground
             )
             Text(
-                text = "Klikni na tlačítko dole a přidej si první jídlo",
+                text = s.home.emptySubtitle,
                 style = MaterialTheme.typography.bodyMedium,
                 color = AppTheme.colors.onBackgroundSecondary
             )
