@@ -71,3 +71,28 @@ FROM food_items
 WHERE date(createdAt) BETWEEN ? AND ?
 GROUP BY date(createdAt)
 ORDER BY day ASC;
+
+getDistinctFoodsByName:
+SELECT f.*
+FROM food_items f
+INNER JOIN (
+    SELECT name, MAX(updatedAt) AS latestUpdate
+    FROM food_items
+    WHERE loading = 0 AND name != 'Neznámé jídlo'
+    GROUP BY name
+) latest ON f.name = latest.name AND f.updatedAt = latest.latestUpdate
+ORDER BY f.updatedAt DESC
+LIMIT 50;
+
+searchDistinctFoodsByName:
+SELECT f.*
+FROM food_items f
+INNER JOIN (
+    SELECT name, MAX(updatedAt) AS latestUpdate
+    FROM food_items
+    WHERE loading = 0 AND name != 'Neznámé jídlo'
+    AND LOWER(name) LIKE '%' || LOWER(?) || '%'
+    GROUP BY name
+) latest ON f.name = latest.name AND f.updatedAt = latest.latestUpdate
+ORDER BY f.updatedAt DESC
+LIMIT 50;

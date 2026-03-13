@@ -5,6 +5,7 @@ import cz.krokviak.kalai.barcode.BarcodeScannerViewModel
 import cz.krokviak.kalai.camera.CameraViewModel
 import cz.krokviak.kalai.common.AndroidImageStorage
 import cz.krokviak.kalai.common.ImageStorage
+import cz.krokviak.kalai.customfood.CustomFoodViewModel
 import cz.krokviak.kalai.db.DriverFactory
 import cz.krokviak.kalai.detail.FoodDetailViewModel
 import cz.krokviak.kalai.home.MainViewModel
@@ -28,4 +29,5 @@ val appModule = module {
     viewModel { OnboardingViewModel(get()) }
     viewModel { BarcodeScannerViewModel(get()) }
     viewModel { CameraViewModel(get()) }
+    viewModel { CustomFoodViewModel(get()) }
 }

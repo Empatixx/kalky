@@ -32,10 +32,15 @@ import androidx.navigation.toRoute
 import cz.krokviak.kalai.analytics.AnalyticsPage
 import cz.krokviak.kalai.analytics.AnalyticsViewModel
 import cz.krokviak.kalai.camera.CameraActivity
+import cz.krokviak.kalai.common.CustomFoodRoute
 import cz.krokviak.kalai.common.DefaultRoute
 import cz.krokviak.kalai.common.FoodDetailRoute
+import cz.krokviak.kalai.common.ManualFoodEntryRoute
 import cz.krokviak.kalai.common.NutrientEditRoute
 import cz.krokviak.kalai.common.OnboardingRoute
+import cz.krokviak.kalai.customfood.CustomFoodScene
+import cz.krokviak.kalai.customfood.CustomFoodViewModel
+import cz.krokviak.kalai.customfood.ManualFoodEntryScene
 import cz.krokviak.kalai.detail.FoodDetailScene
 import cz.krokviak.kalai.detail.FoodDetailViewModel
 import cz.krokviak.kalai.home.components.BottomNavBar
@@ -65,6 +70,7 @@ class MainActivity : ComponentActivity() {
     private val analyticsViewModel: AnalyticsViewModel by viewModel()
     private val settingsViewModel: SettingsViewModel by viewModel()
     private val onboardingViewModel: OnboardingViewModel by viewModel()
+    private val customFoodViewModel: CustomFoodViewModel by viewModel()
 
     /**
      * Launcher for the camera Activity, handles the result of taking a picture.
@@ -86,6 +92,7 @@ class MainActivity : ComponentActivity() {
                     analyticsViewModel = analyticsViewModel,
                     settingsViewModel = settingsViewModel,
                     onboardingViewModel = onboardingViewModel,
+                    customFoodViewModel = customFoodViewModel,
                     cameraResultLauncher = cameraResultLauncher
                 )
             }
@@ -136,6 +143,7 @@ fun AppContent(
     analyticsViewModel: AnalyticsViewModel,
     settingsViewModel: SettingsViewModel,
     onboardingViewModel: OnboardingViewModel,
+    customFoodViewModel: CustomFoodViewModel,
     cameraResultLauncher: ActivityResultLauncher<Intent>
 ) {
     val navController = rememberNavController()
@@ -224,6 +232,29 @@ fun AppContent(
                         uiState.fat,
                         uiState.calories
                     )
+                }
+            )
+        }
+
+        composable<CustomFoodRoute> {
+            CustomFoodScene(
+                viewModel = customFoodViewModel,
+                onBackClick = { navController.popBackStack() },
+                onAddNewClick = { navController.navigate(ManualFoodEntryRoute) },
+                onFoodAdded = {
+                    mainViewModel.loadFoodItemsForDate(mainViewModel.uiState.value.currentDate)
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable<ManualFoodEntryRoute> {
+            ManualFoodEntryScene(
+                viewModel = customFoodViewModel,
+                onBackClick = { navController.popBackStack() },
+                onFoodAdded = {
+                    mainViewModel.loadFoodItemsForDate(mainViewModel.uiState.value.currentDate)
+                    navController.popBackStack(CustomFoodRoute, inclusive = true)
                 }
             )
         }

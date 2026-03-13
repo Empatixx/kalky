@@ -15,3 +15,9 @@ data class FoodDetailRoute(
 
 @Serializable
 object NutrientEditRoute
+
+@Serializable
+object CustomFoodRoute
+
+@Serializable
+object ManualFoodEntryRoute

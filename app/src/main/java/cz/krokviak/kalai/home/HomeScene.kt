@@ -14,7 +14,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import cz.krokviak.kalai.R
+import cz.krokviak.kalai.common.CustomFoodRoute
 import cz.krokviak.kalai.common.FoodDetailRoute
 import cz.krokviak.kalai.common.NutrientEditRoute
 import cz.krokviak.kalai.home.components.CalorieCard
@@ -111,12 +116,25 @@ fun HomeScene(
                     }
                 }
                 Spacer(modifier = Modifier.height(12.dp))
-                Text(
-                    text = s.home.addedToday,
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = AppTheme.colors.onBackground
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = s.home.addedToday,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = AppTheme.colors.onBackground
+                    )
+                    IconButton(onClick = { navController.navigate(CustomFoodRoute) }) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = s.common.add,
+                            tint = AppTheme.colors.onBackground
+                        )
+                    }
+                }
                 if (uiState.recentlyAddedItems.isEmpty()) {
                     Spacer(modifier = Modifier.height(12.dp))
                     EmptyRecentlyAddedList()

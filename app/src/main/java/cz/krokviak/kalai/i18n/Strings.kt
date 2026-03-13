@@ -18,7 +18,19 @@ data class AppStrings(
     val nutrientEdit: NutrientEditStrings,
     val detail: DetailStrings,
     val onboarding: OnboardingStrings,
-    val common: CommonStrings
+    val common: CommonStrings,
+    val customFood: CustomFoodStrings
+)
+
+data class CustomFoodStrings(
+    val title: String,
+    val searchPlaceholder: String,
+    val addNew: String,
+    val recentlyUsed: String,
+    val foodName: String,
+    val noResults: String,
+    val manualEntryTitle: String,
+    val save: String
 )
 
 data class NavStrings(
@@ -234,6 +246,16 @@ val CzechStrings = AppStrings(
         done = "Dokon\u010Dit",
         continueText = "Pokra\u010Dovat",
         years = "let"
+    ),
+    customFood = CustomFoodStrings(
+        title = "P\u0159idat j\u00EDdlo",
+        searchPlaceholder = "Hledat j\u00EDdlo...",
+        addNew = "P\u0159idat novou polo\u017Eku",
+        recentlyUsed = "Ned\u00E1vno pou\u017Eit\u00E9",
+        foodName = "N\u00E1zev j\u00EDdla",
+        noResults = "\u017D\u00E1dn\u00E9 v\u00FDsledky",
+        manualEntryTitle = "Nov\u00E9 j\u00EDdlo",
+        save = "Ulo\u017Eit"
     )
 )
 
@@ -338,6 +360,16 @@ val EnglishStrings = AppStrings(
         done = "Done",
         continueText = "Continue",
         years = "yrs"
+    ),
+    customFood = CustomFoodStrings(
+        title = "Add food",
+        searchPlaceholder = "Search food...",
+        addNew = "Add new item",
+        recentlyUsed = "Recently used",
+        foodName = "Food name",
+        noResults = "No results",
+        manualEntryTitle = "New food",
+        save = "Save"
     )
 )
 
