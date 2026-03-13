@@ -29,5 +29,5 @@ val appModule = module {
     viewModel { OnboardingViewModel(get()) }
     viewModel { BarcodeScannerViewModel(get()) }
     viewModel { CameraViewModel(get()) }
-    viewModel { CustomFoodViewModel(get()) }
+    viewModel { CustomFoodViewModel(get(), get()) }
 }

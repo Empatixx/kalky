@@ -43,6 +43,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import cz.krokviak.kalai.barcode.data.OpenFoodFactsProduct
 import cz.krokviak.kalai.common.entities.FoodItemEntity
 import cz.krokviak.kalai.home.components.CaloriesRow
 import cz.krokviak.kalai.home.components.FoodItemImage
@@ -51,6 +52,7 @@ import cz.krokviak.kalai.i18n.LocalStrings
 import cz.krokviak.kalai.theme.AppTheme
 import cz.krokviak.kalai.ui.components.KalaiButton
 import cz.krokviak.kalai.ui.components.KalaiCard
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -153,16 +155,9 @@ fun CustomFoodScene(
                     )
                 }
 
-                if (uiState.historyItems.isNotEmpty()) {
-                    Text(
-                        text = s.customFood.recentlyUsed,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = AppTheme.colors.onBackgroundSecondary
-                    )
-                }
+                val hasAnyResults = uiState.historyItems.isNotEmpty() || uiState.apiResults.isNotEmpty()
 
-                if (uiState.historyItems.isEmpty() && !uiState.isLoading && uiState.searchQuery.isNotBlank()) {
+                if (!hasAnyResults && !uiState.isLoading && uiState.searchQuery.isNotBlank()) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -182,12 +177,40 @@ fun CustomFoodScene(
                             bottom = if (uiState.selectedItems.isNotEmpty()) 80.dp else 16.dp
                         )
                     ) {
-                        items(uiState.historyItems, key = { it.id }) { item ->
-                            HistoryFoodItem(
-                                item = item,
-                                isSelected = item.id in uiState.selectedItems,
-                                onClick = { viewModel.toggleSelection(item.id) }
-                            )
+                        if (uiState.historyItems.isNotEmpty()) {
+                            item {
+                                Text(
+                                    text = s.customFood.recentlyUsed,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = AppTheme.colors.onBackgroundSecondary
+                                )
+                            }
+                            items(uiState.historyItems, key = { it.id }) { item ->
+                                HistoryFoodItem(
+                                    item = item,
+                                    isSelected = item.id in uiState.selectedItems,
+                                    onClick = { viewModel.toggleSelection(item.id) }
+                                )
+                            }
+                        }
+                        if (uiState.apiResults.isNotEmpty()) {
+                            item {
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    text = s.customFood.onlineResults,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = AppTheme.colors.onBackgroundSecondary
+                                )
+                            }
+                            items(uiState.apiResults.size, key = { "api_$it" }) { index ->
+                                val product = uiState.apiResults[index]
+                                ApiResultItem(
+                                    product = product,
+                                    onClick = { viewModel.addFromApi(product) }
+                                )
+                            }
                         }
                     }
                 }
@@ -242,7 +265,6 @@ private fun HistoryFoodItem(
             Row(modifier = Modifier.fillMaxWidth()) {
                 FoodItemImage(foodItem = item, showBadge = false)
 
-                // Info column (reuses CaloriesRow + NutrientsRow from homepage)
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -250,7 +272,7 @@ private fun HistoryFoodItem(
                         .align(Alignment.CenterVertically)
                 ) {
                     Text(
-                        text = item.name ?: "Neznámé jídlo",
+                        text = item.name,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.ExtraBold,
                         color = AppTheme.colors.onBackground
@@ -266,7 +288,6 @@ private fun HistoryFoodItem(
                 }
             }
 
-            // Selection checkmark badge
             if (isSelected) {
                 Box(
                     modifier = Modifier
@@ -288,5 +309,80 @@ private fun HistoryFoodItem(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun ApiResultItem(
+    product: OpenFoodFactsProduct,
+    onClick: () -> Unit
+) {
+    val s = LocalStrings.current
+    val name = product.productName?.takeIf { it.isNotBlank() } ?: s.common.unknownProduct
+    val nutrients = product.nutriments
+    val calories = nutrients?.energyKcal100g?.roundToInt() ?: 0
+    val protein = nutrients?.proteins100g?.roundToInt() ?: 0
+    val carbs = nutrients?.carbohydrates100g?.roundToInt() ?: 0
+    val fat = nutrients?.fat100g?.roundToInt() ?: 0
+
+    KalaiCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .clickable(onClick = onClick),
+        shape = RoundedCornerShape(16.dp),
+        color = AppTheme.colors.surfaceSecondary
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 14.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    text = name,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp,
+                    color = AppTheme.colors.onBackground,
+                    maxLines = 2
+                )
+                Text(
+                    text = "$calories kcal  |  ${s.common.protein}: ${protein}g  ${s.common.carbs}: ${carbs}g  ${s.common.fat}: ${fat}g",
+                    fontSize = 13.sp,
+                    color = AppTheme.colors.onBackgroundSecondary
+                )
+                Text(
+                    text = s.customFood.per100g,
+                    fontSize = 11.sp,
+                    color = AppTheme.colors.onBackgroundSecondary
+                )
+            }
+            AddButton()
+        }
+    }
+}
+
+@Composable
+private fun AddButton() {
+    val s = LocalStrings.current
+    Box(
+        modifier = Modifier
+            .size(36.dp)
+            .background(
+                color = AppTheme.colors.onBackground,
+                shape = CircleShape
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            imageVector = Icons.Default.Add,
+            contentDescription = s.common.add,
+            tint = AppTheme.colors.background,
+            modifier = Modifier.size(20.dp)
+        )
     }
 }

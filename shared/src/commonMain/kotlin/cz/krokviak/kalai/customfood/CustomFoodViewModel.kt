@@ -2,9 +2,12 @@ package cz.krokviak.kalai.customfood
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import cz.krokviak.kalai.barcode.data.OpenFoodFactsProduct
 import cz.krokviak.kalai.common.entities.FoodItemEntity
 import cz.krokviak.kalai.common.repo.FoodRepository
+import cz.krokviak.kalai.network.OpenFoodFactsClient
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,9 +16,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
+import kotlin.math.roundToInt
 
 class CustomFoodViewModel(
-    private val foodRepository: FoodRepository
+    private val foodRepository: FoodRepository,
+    private val openFoodFactsClient: OpenFoodFactsClient
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CustomFoodUiState())
@@ -24,7 +29,7 @@ class CustomFoodViewModel(
     private val _manualEntryState = MutableStateFlow(ManualFoodEntryState())
     val manualEntryState: StateFlow<ManualFoodEntryState> = _manualEntryState
 
-    private val _foodAdded = MutableSharedFlow<Long>()
+    private val _foodAdded = MutableSharedFlow<Long>(extraBufferCapacity = 1)
     val foodAdded: SharedFlow<Long> = _foodAdded
 
     private var searchJob: Job? = null
@@ -47,12 +52,40 @@ class CustomFoodViewModel(
         searchJob = viewModelScope.launch {
             delay(300)
             _uiState.update { it.copy(isLoading = true) }
-            val items = if (query.isBlank()) {
-                foodRepository.getDistinctFoodsByName()
+            if (query.isBlank()) {
+                val items = foodRepository.getDistinctFoodsByName()
+                _uiState.update { it.copy(historyItems = items, apiResults = emptyList(), isLoading = false) }
             } else {
-                foodRepository.searchDistinctFoodsByName(query)
+                val localDeferred = async { foodRepository.searchDistinctFoodsByName(query) }
+                val apiDeferred = async { openFoodFactsClient.searchProducts(query) }
+                val localItems = localDeferred.await()
+                val apiItems = apiDeferred.await()
+                _uiState.update { it.copy(historyItems = localItems, apiResults = apiItems, isLoading = false) }
             }
-            _uiState.update { it.copy(historyItems = items, isLoading = false) }
+        }
+    }
+
+    fun addFromApi(product: OpenFoodFactsProduct) {
+        viewModelScope.launch {
+            val nutrients = product.nutriments
+            val protein = nutrients?.proteins100g?.roundToInt() ?: 0
+            val carbs = nutrients?.carbohydrates100g?.roundToInt() ?: 0
+            val fat = nutrients?.fat100g?.roundToInt() ?: 0
+            val calories = nutrients?.energyKcal100g?.roundToInt() ?: (protein * 4 + carbs * 4 + fat * 9)
+            val now = Clock.System.now()
+            val item = FoodItemEntity(
+                name = product.productName ?: "",
+                calories = calories,
+                protein = protein,
+                carbs = carbs,
+                fat = fat,
+                createdAt = now,
+                updatedAt = now,
+                localImagePath = "",
+                loading = false
+            )
+            val newId = foodRepository.insertFoodItem(item)
+            _foodAdded.emit(newId)
         }
     }
 

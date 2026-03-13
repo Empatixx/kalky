@@ -11,6 +11,12 @@ data class OpenFoodFactsResponse(
 )
 
 @Serializable
+data class OpenFoodFactsSearchResponse(
+    val count: Int? = null,
+    val products: List<OpenFoodFactsProduct> = emptyList()
+)
+
+@Serializable
 data class OpenFoodFactsProduct(
     @SerialName("product_name") val productName: String? = null,
     val nutriments: OpenFoodFactsNutriments? = null,
