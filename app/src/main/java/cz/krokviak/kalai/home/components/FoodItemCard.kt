@@ -93,7 +93,7 @@ fun FoodItemLoadedCard(
 }
 
 @Composable
-fun FoodItemImage(foodItem: FoodItemEntity) {
+fun FoodItemImage(foodItem: FoodItemEntity, showBadge: Boolean = true) {
     // Compute the badge time only when foodItem.createdAt changes
     val badgeTime = remember(foodItem.createdAt) {
         foodItem.createdAt.formatTime()
@@ -104,19 +104,37 @@ fun FoodItemImage(foodItem: FoodItemEntity) {
             .height(125.dp)
             .clip(RoundedCornerShape(topStart = 16.dp, bottomStart = 16.dp))
     ) {
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(foodItem.localImagePath)
-                .memoryCachePolicy(CachePolicy.ENABLED)
-                .diskCachePolicy(CachePolicy.ENABLED)
-                .size(200)
-                .build(),
-            contentDescription = "Food image",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.matchParentSize(),
-            filterQuality = FilterQuality.Low
-        )
-        Badge(timeText = badgeTime)
+        if (foodItem.localImagePath.isNotEmpty()) {
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(foodItem.localImagePath)
+                    .memoryCachePolicy(CachePolicy.ENABLED)
+                    .diskCachePolicy(CachePolicy.ENABLED)
+                    .size(200)
+                    .build(),
+                contentDescription = "Food image",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.matchParentSize(),
+                filterQuality = FilterQuality.Low
+            )
+        } else {
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .background(AppTheme.colors.border),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(R.drawable.fork_knife),
+                    contentDescription = null,
+                    modifier = Modifier.size(40.dp),
+                    tint = AppTheme.colors.onBackgroundSecondary
+                )
+            }
+        }
+        if (showBadge) {
+            Badge(timeText = badgeTime)
+        }
     }
 }
 

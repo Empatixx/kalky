@@ -5,7 +5,8 @@ import cz.krokviak.kalai.common.entities.FoodItemEntity
 data class CustomFoodUiState(
     val searchQuery: String = "",
     val historyItems: List<FoodItemEntity> = emptyList(),
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val selectedItems: Set<Long> = emptySet()
 )
 
 data class ManualFoodEntryState(

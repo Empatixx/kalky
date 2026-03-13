@@ -33,7 +33,7 @@ class CustomFoodViewModel(
         loadHistory()
     }
 
-    private fun loadHistory() {
+    fun loadHistory() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             val items = foodRepository.getDistinctFoodsByName()
@@ -56,19 +56,40 @@ class CustomFoodViewModel(
         }
     }
 
-    fun reAddFood(historyItem: FoodItemEntity) {
-        viewModelScope.launch {
-            val now = Clock.System.now()
-            val newItem = historyItem.copy(
-                id = 0,
-                createdAt = now,
-                updatedAt = now,
-                loading = false,
-                localImagePath = ""
-            )
-            val newId = foodRepository.insertFoodItem(newItem)
-            _foodAdded.emit(newId)
+    fun toggleSelection(itemId: Long) {
+        _uiState.update { state ->
+            val newSelection = if (itemId in state.selectedItems) {
+                state.selectedItems - itemId
+            } else {
+                state.selectedItems + itemId
+            }
+            state.copy(selectedItems = newSelection)
         }
+    }
+
+    fun addSelectedFoods() {
+        viewModelScope.launch {
+            val state = _uiState.value
+            val now = Clock.System.now()
+            for (itemId in state.selectedItems) {
+                val item = state.historyItems.find { it.id == itemId } ?: continue
+                val newItem = item.copy(
+                    id = 0,
+                    createdAt = now,
+                    updatedAt = now,
+                    loading = false,
+                    localImagePath = ""
+                )
+                foodRepository.insertFoodItem(newItem)
+            }
+            _uiState.update { it.copy(selectedItems = emptySet()) }
+            _foodAdded.emit(0)
+            loadHistory()
+        }
+    }
+
+    fun clearSelection() {
+        _uiState.update { it.copy(selectedItems = emptySet()) }
     }
 
     fun onNameChange(name: String) {
