@@ -178,11 +178,9 @@ fun OnboardingPage(
                                     onSelected = onboardingViewModel::onGoalSelected
                                 )
                                 9 -> MacrosOnboardingPage(
-                                    calories = uiState.targetCalories,
                                     protein = uiState.targetProtein,
                                     carbs = uiState.targetCarbs,
                                     fat = uiState.targetFat,
-                                    onCaloriesChanged = onboardingViewModel::onCaloriesChanged,
                                     onProteinChanged = onboardingViewModel::onProteinChanged,
                                     onCarbsChanged = onboardingViewModel::onCarbsChanged,
                                     onFatChanged = onboardingViewModel::onFatChanged

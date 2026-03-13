@@ -78,20 +78,22 @@ class OnboardingViewModel(
         _uiState.update { it.copy(promoCode = value) }
     }
 
-    fun onCaloriesChanged(value: Int) {
-        _uiState.update { it.copy(targetCalories = value) }
-    }
-
     fun onProteinChanged(value: Int) {
-        _uiState.update { it.copy(targetProtein = value) }
+        _uiState.update {
+            it.copy(targetProtein = value, targetCalories = value * 4 + it.targetCarbs * 4 + it.targetFat * 9)
+        }
     }
 
     fun onCarbsChanged(value: Int) {
-        _uiState.update { it.copy(targetCarbs = value) }
+        _uiState.update {
+            it.copy(targetCarbs = value, targetCalories = it.targetProtein * 4 + value * 4 + it.targetFat * 9)
+        }
     }
 
     fun onFatChanged(value: Int) {
-        _uiState.update { it.copy(targetFat = value) }
+        _uiState.update {
+            it.copy(targetFat = value, targetCalories = it.targetProtein * 4 + it.targetCarbs * 4 + value * 9)
+        }
     }
 
     fun calculateMacros() {

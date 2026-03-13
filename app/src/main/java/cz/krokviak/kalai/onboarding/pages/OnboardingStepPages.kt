@@ -11,7 +11,10 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -166,20 +169,21 @@ fun GoalOnboardingPage(
     )
 }
 
+private enum class MacroField { PROTEIN, CARBS, FAT }
+
 @Composable
 fun MacrosOnboardingPage(
-    calories: Int,
     protein: Int,
     carbs: Int,
     fat: Int,
-    onCaloriesChanged: (Int) -> Unit,
     onProteinChanged: (Int) -> Unit,
     onCarbsChanged: (Int) -> Unit,
     onFatChanged: (Int) -> Unit
 ) {
     val s = LocalStrings.current
-    val calorieValues = remember { (0..6000).map { it.toString() } }
     val macroValues = remember { (0..500).map { it.toString() } }
+    var expandedField by remember { mutableStateOf<MacroField?>(null) }
+    val calories = protein * 4 + carbs * 4 + fat * 9
 
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -196,6 +200,22 @@ fun MacrosOnboardingPage(
             color = AppTheme.colors.onBackgroundSecondary,
             fontSize = 14.sp
         )
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "$calories",
+                color = AppTheme.colors.onBackground,
+                fontSize = 48.sp,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = "kcal",
+                color = AppTheme.colors.onBackgroundSecondary,
+                fontSize = 16.sp
+            )
+        }
         KalaiCard(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(14.dp),
@@ -203,34 +223,32 @@ fun MacrosOnboardingPage(
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 MacroPickerRow(
-                    label = s.common.calories,
-                    value = calories,
-                    values = calorieValues,
-                    unitSuffix = "kcal",
-                    onValueChanged = onCaloriesChanged
-                )
-                PickerDivider()
-                MacroPickerRow(
                     label = s.common.protein,
                     value = protein,
-                    values = macroValues,
                     unitSuffix = "g",
+                    expanded = expandedField == MacroField.PROTEIN,
+                    onToggle = { expandedField = if (expandedField == MacroField.PROTEIN) null else MacroField.PROTEIN },
+                    values = macroValues,
                     onValueChanged = onProteinChanged
                 )
                 PickerDivider()
                 MacroPickerRow(
                     label = s.common.carbs,
                     value = carbs,
-                    values = macroValues,
                     unitSuffix = "g",
+                    expanded = expandedField == MacroField.CARBS,
+                    onToggle = { expandedField = if (expandedField == MacroField.CARBS) null else MacroField.CARBS },
+                    values = macroValues,
                     onValueChanged = onCarbsChanged
                 )
                 PickerDivider()
                 MacroPickerRow(
                     label = s.common.fat,
                     value = fat,
-                    values = macroValues,
                     unitSuffix = "g",
+                    expanded = expandedField == MacroField.FAT,
+                    onToggle = { expandedField = if (expandedField == MacroField.FAT) null else MacroField.FAT },
+                    values = macroValues,
                     onValueChanged = onFatChanged
                 )
             }
@@ -242,15 +260,18 @@ fun MacrosOnboardingPage(
 private fun MacroPickerRow(
     label: String,
     value: Int,
-    values: List<String>,
     unitSuffix: String,
+    expanded: Boolean,
+    onToggle: () -> Unit,
+    values: List<String>,
     onValueChanged: (Int) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 14.dp, vertical = 10.dp),
+                .clickable(onClick = onToggle)
+                .padding(horizontal = 14.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
@@ -262,16 +283,19 @@ private fun MacroPickerRow(
             )
             Text(
                 text = "$value $unitSuffix",
-                color = AppTheme.colors.onBackgroundSecondary,
-                fontSize = 16.sp
+                color = if (expanded) AppTheme.colors.onBackground else AppTheme.colors.onBackgroundSecondary,
+                fontSize = 16.sp,
+                fontWeight = if (expanded) FontWeight.SemiBold else FontWeight.Normal
             )
         }
-        IosInlineValuePicker(
-            values = values,
-            selectedIndex = value.coerceIn(0, values.lastIndex),
-            onIndexChanged = { onValueChanged(values[it].toInt()) },
-            unitSuffix = unitSuffix
-        )
+        if (expanded) {
+            IosInlineValuePicker(
+                values = values,
+                selectedIndex = value.coerceIn(0, values.lastIndex),
+                onIndexChanged = { onValueChanged(values[it].toInt()) },
+                unitSuffix = unitSuffix
+            )
+        }
     }
 }
 
