@@ -4,7 +4,6 @@ import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -38,7 +37,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -253,6 +251,7 @@ fun FoodItemLoadingImage(
     val isDarkTheme = AppTheme.colors.background.luminance() < 0.5f
     val loadingOverlayAlpha = if (isDarkTheme) 0.62f else 0.48f
     val loadingProgressColor = Color.White.copy(alpha = 0.96f)
+    val loadingTrackColor = Color.White.copy(alpha = 0.28f)
 
     Box(
         modifier = Modifier
@@ -279,58 +278,16 @@ fun FoodItemLoadingImage(
             modifier = Modifier.matchParentSize(),
             contentAlignment = Alignment.Center
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
-                FireLoadingIcon(
-                    modifier = Modifier.size(56.dp),
-                    tint = loadingProgressColor
-                )
-                Text(
-                    text = "${progress.coerceIn(0, 100)}%",
-                    color = loadingProgressColor,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
+            CircularPercentageIndicator(
+                percentage = progress,
+                backgroundColor = loadingTrackColor,
+                progressColor = loadingProgressColor,
+                modifier = Modifier.size(70.dp)
+            )
         }
     }
 }
 
-@Composable
-private fun FireLoadingIcon(
-    modifier: Modifier = Modifier,
-    tint: Color = Color.White
-) {
-    val transition = rememberInfiniteTransition()
-    val scale by transition.animateFloat(
-        initialValue = 0.9f,
-        targetValue = 1.08f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 850, easing = LinearEasing),
-            repeatMode = RepeatMode.Reverse
-        )
-    )
-    val alpha by transition.animateFloat(
-        initialValue = 0.55f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 850, easing = LinearEasing),
-            repeatMode = RepeatMode.Reverse
-        )
-    )
-
-    Icon(
-        imageVector = Icons.Outlined.LocalFireDepartment,
-        contentDescription = "Loading",
-        tint = tint.copy(alpha = alpha),
-        modifier = modifier.graphicsLayer {
-            scaleX = scale
-            scaleY = scale
-        }
-    )
-}
 
 @Composable
 fun RowScope.FoodItemLoadingInfo() {
