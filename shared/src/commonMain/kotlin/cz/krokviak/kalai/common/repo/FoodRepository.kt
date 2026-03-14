@@ -73,6 +73,10 @@ class FoodRepository(
         queries.getTotalProteinForDate(dateStr).executeAsOneOrNull()?.SUM ?: 0
     }
 
+    suspend fun deleteFoodItem(id: Long) = withContext(Dispatchers.IO) {
+        queries.deleteFoodItem(id)
+    }
+
     suspend fun getDistinctFoodsByName(): List<FoodItemEntity> = withContext(Dispatchers.IO) {
         queries.getDistinctFoodsByName().executeAsList().map { it.toEntity() }
     }

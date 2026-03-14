@@ -4,23 +4,24 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,6 +29,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import cz.krokviak.kalai.detail.components.FoodBottomSheetCard
+import cz.krokviak.kalai.i18n.rememberStrings
+import cz.krokviak.kalai.ui.components.KalaiContextMenu
+import cz.krokviak.kalai.ui.components.KalaiContextMenuItem
 
 @Composable
 fun FoodDetailScene(
@@ -35,7 +39,8 @@ fun FoodDetailScene(
     uiState: FoodDetailState,
     foodId: Long,
     onExitClick: () -> Unit = {},
-    onShareClick: () -> Unit = {}
+    onShareClick: () -> Unit = {},
+    onDeleteClick: () -> Unit = {}
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         // Main Image
@@ -49,14 +54,14 @@ fun FoodDetailScene(
             contentScale = ContentScale.Crop
         )
 
-        // Refactored Top Icons
+        // Top Icons with context menu
         FoodDetailTopIcons(
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .padding(top = 16.dp, start = 16.dp, end = 16.dp),
             onExitClick = onExitClick,
             onShareClick = onShareClick,
-            onDeleteClick = {}
+            onDeleteClick = onDeleteClick
         )
 
         // Bottom Sheet
@@ -89,6 +94,9 @@ fun FoodDetailTopIcons(
     onShareClick: () -> Unit,
     onDeleteClick: () -> Unit
 ) {
+    val strings = rememberStrings()
+    var menuExpanded by remember { mutableStateOf(false) }
+
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
@@ -110,13 +118,10 @@ fun FoodDetailTopIcons(
             )
         }
 
-        // 3 dots with Dropdown Menu
-        // We use a Box as an anchor for the dropdown
+        // 3 dots button - opens context menu
         Box {
-            val menuExpanded = remember { mutableStateOf(false) }
-
             IconButton(
-                onClick = { menuExpanded.value = true },
+                onClick = { menuExpanded = true },
                 modifier = Modifier
                     .background(
                         color = Color.Gray.copy(alpha = 0.5f),
@@ -131,25 +136,23 @@ fun FoodDetailTopIcons(
                 )
             }
 
-            DropdownMenu(
-                expanded = menuExpanded.value,
-                onDismissRequest = { menuExpanded.value = false }
-            ) {
-                DropdownMenuItem(
-                    text = { Text("Share") },
-                    onClick = {
-                        onShareClick()
-                        menuExpanded.value = false
-                    }
+            KalaiContextMenu(
+                expanded = menuExpanded,
+                onDismissRequest = { menuExpanded = false },
+                items = listOf(
+                    KalaiContextMenuItem(
+                        label = strings.detail.share,
+                        icon = Icons.Default.Share,
+                        onClick = onShareClick
+                    ),
+                    KalaiContextMenuItem(
+                        label = strings.detail.delete,
+                        icon = Icons.Default.Delete,
+                        isDestructive = true,
+                        onClick = onDeleteClick
+                    )
                 )
-                DropdownMenuItem(
-                    text = { Text("Delete") },
-                    onClick = {
-                        onDeleteClick()
-                        menuExpanded.value = false
-                    }
-                )
-            }
+            )
         }
     }
 }

@@ -121,7 +121,9 @@ data class NutrientEditStrings(
 
 data class DetailStrings(
     val fix: String,
-    val done: String
+    val done: String,
+    val share: String,
+    val delete: String
 )
 
 data class OnboardingStrings(
@@ -228,7 +230,9 @@ val CzechStrings = AppStrings(
     ),
     detail = DetailStrings(
         fix = "Opravit",
-        done = "Dokon\u010Dit"
+        done = "Dokon\u010Dit",
+        share = "Sd\u00EDlet",
+        delete = "Smazat"
     ),
     onboarding = OnboardingStrings(
         chooseLanguage = "Vyber jazyk",
@@ -355,7 +359,9 @@ val EnglishStrings = AppStrings(
     ),
     detail = DetailStrings(
         fix = "Fix",
-        done = "Done"
+        done = "Done",
+        share = "Share",
+        delete = "Delete"
     ),
     onboarding = OnboardingStrings(
         chooseLanguage = "Choose language",

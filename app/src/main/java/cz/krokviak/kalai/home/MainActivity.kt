@@ -32,6 +32,7 @@ import androidx.navigation.toRoute
 import cz.krokviak.kalai.analytics.AnalyticsPage
 import cz.krokviak.kalai.analytics.AnalyticsViewModel
 import cz.krokviak.kalai.camera.CameraActivity
+import cz.krokviak.kalai.common.ShareImageHelper
 import cz.krokviak.kalai.common.CustomFoodRoute
 import cz.krokviak.kalai.common.DefaultRoute
 import cz.krokviak.kalai.common.FoodDetailRoute
@@ -212,7 +213,36 @@ fun AppContent(
                 uiState = uiState,
                 foodId = food.id,
                 onExitClick = { navController.popBackStack() },
-                onShareClick = { /* TODO */ }
+                onShareClick = {
+                    val imagePath = uiState.localImagePath
+                    if (imagePath != null) {
+                        val uri = ShareImageHelper.createShareImage(
+                            context, imagePath,
+                            uiState.name, uiState.calories, uiState.protein, uiState.carbs, uiState.fat
+                        )
+                        if (uri != null) {
+                            val sendIntent = Intent(Intent.ACTION_SEND).apply {
+                                putExtra(Intent.EXTRA_STREAM, uri)
+                                type = "image/jpeg"
+                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            }
+                            context.startActivity(Intent.createChooser(sendIntent, null))
+                        }
+                    } else {
+                        val text = "${uiState.name}\n" +
+                            "${uiState.calories} kcal\n" +
+                            "${uiState.protein}g protein, ${uiState.carbs}g carbs, ${uiState.fat}g fat"
+                        val sendIntent = Intent(Intent.ACTION_SEND).apply {
+                            putExtra(Intent.EXTRA_TEXT, text)
+                            type = "text/plain"
+                        }
+                        context.startActivity(Intent.createChooser(sendIntent, null))
+                    }
+                },
+                onDeleteClick = {
+                    foodDetailViewModel.deleteFood()
+                    navController.popBackStack()
+                }
             )
         }
 

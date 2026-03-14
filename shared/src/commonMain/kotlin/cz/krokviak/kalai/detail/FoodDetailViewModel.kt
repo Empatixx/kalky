@@ -42,6 +42,12 @@ class FoodDetailViewModel(
         }
     }
 
+    fun deleteFood() {
+        viewModelScope.launch {
+            foodRepository.deleteFoodItem(_uiState.value.id)
+        }
+    }
+
     fun increasePortion() {
         _uiState.update {
             it.copy(portion = it.portion + 1)
