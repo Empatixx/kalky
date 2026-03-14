@@ -19,7 +19,18 @@ data class AppStrings(
     val detail: DetailStrings,
     val onboarding: OnboardingStrings,
     val common: CommonStrings,
-    val customFood: CustomFoodStrings
+    val customFood: CustomFoodStrings,
+    val notifications: NotificationStrings
+)
+
+data class NotificationStrings(
+    val reminders: String,
+    val enableReminders: String,
+    val noFoodTitle: String,
+    val noFoodBody: String,
+    val behindTitle: String,
+    val behindBody: String,
+    val channelName: String
 )
 
 data class CustomFoodStrings(
@@ -45,7 +56,9 @@ data class NavStrings(
 data class HomeStrings(
     val addedToday: String,
     val emptyTitle: String,
-    val emptySubtitle: String
+    val emptySubtitle: String,
+    val streakDay: String,
+    val streakDays: String
 )
 
 data class SettingsStrings(
@@ -157,7 +170,9 @@ val CzechStrings = AppStrings(
     home = HomeStrings(
         addedToday = "P\u0159id\u00E1no dnes",
         emptyTitle = "Dneska jsi je\u0161t\u011B nic nep\u0159idal/a",
-        emptySubtitle = "Klikni na tla\u010D\u00EDtko dole a p\u0159idej si prvn\u00ED j\u00EDdlo"
+        emptySubtitle = "Klikni na tla\u010D\u00EDtko dole a p\u0159idej si prvn\u00ED j\u00EDdlo",
+        streakDay = "1 den v \u0159ad\u011B",
+        streakDays = "%d dn\u00ED v \u0159ad\u011B"
     ),
     settings = SettingsStrings(
         title = "Nastaven\u00ED",
@@ -260,6 +275,15 @@ val CzechStrings = AppStrings(
         noResults = "\u017D\u00E1dn\u00E9 v\u00FDsledky",
         manualEntryTitle = "Nov\u00E9 j\u00EDdlo",
         save = "Ulo\u017Eit"
+    ),
+    notifications = NotificationStrings(
+        reminders = "Upozorn\u011Bn\u00ED",
+        enableReminders = "P\u0159ipom\u00EDnky j\u00EDdel",
+        noFoodTitle = "Zapomn\u011Bl/a jsi j\u00EDst?",
+        noFoodBody = "Dnes jsi je\u0161t\u011B nic nezaznamenal/a. P\u0159idej si j\u00EDdlo!",
+        behindTitle = "Jsi pozadu s j\u00EDdlem",
+        behindBody = "M\u00E1\u0161 za sebou jen %d%% kalori\u00ED. Nezapome\u0148 j\u00EDst!",
+        channelName = "P\u0159ipom\u00EDnky j\u00EDdel"
     )
 )
 
@@ -273,7 +297,9 @@ val EnglishStrings = AppStrings(
     home = HomeStrings(
         addedToday = "Added today",
         emptyTitle = "You haven't added anything yet",
-        emptySubtitle = "Tap the button below to add your first food"
+        emptySubtitle = "Tap the button below to add your first food",
+        streakDay = "1 day streak",
+        streakDays = "%d day streak"
     ),
     settings = SettingsStrings(
         title = "Settings",
@@ -376,6 +402,15 @@ val EnglishStrings = AppStrings(
         noResults = "No results",
         manualEntryTitle = "New food",
         save = "Save"
+    ),
+    notifications = NotificationStrings(
+        reminders = "Notifications",
+        enableReminders = "Meal reminders",
+        noFoodTitle = "Forgot to eat?",
+        noFoodBody = "You haven't logged any food today. Add something!",
+        behindTitle = "You're behind on food",
+        behindBody = "You've only logged %d%% of your calories. Don't forget to eat!",
+        channelName = "Meal reminders"
     )
 )
 

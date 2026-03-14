@@ -39,7 +39,6 @@ fun CalorieCard(
             modifier = Modifier.padding(32.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Right side: Donut chart
             Box(
                 modifier = Modifier.size(125.dp),
                 contentAlignment = Alignment.Center
@@ -68,7 +67,6 @@ fun CalorieCard(
                     color = AppTheme.colors.onBackgroundSecondary
                 )
             }
-
         }
     }
 }

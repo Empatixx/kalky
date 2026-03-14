@@ -81,6 +81,10 @@ class FoodRepository(
         queries.searchDistinctFoodsByName(query).executeAsList().map { it.toEntity() }
     }
 
+    suspend fun getDistinctFoodDates(): List<String> = withContext(Dispatchers.IO) {
+        queries.getDistinctFoodDates().executeAsList()
+    }
+
     suspend fun getDailyMacroTotalsInRange(
         startDate: String,
         endDate: String

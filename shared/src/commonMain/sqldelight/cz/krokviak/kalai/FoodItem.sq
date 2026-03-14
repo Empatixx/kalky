@@ -84,6 +84,9 @@ INNER JOIN (
 ORDER BY f.updatedAt DESC
 LIMIT 50;
 
+getDistinctFoodDates:
+SELECT DISTINCT date(createdAt) AS day FROM food_items ORDER BY day DESC;
+
 searchDistinctFoodsByName:
 SELECT f.*
 FROM food_items f

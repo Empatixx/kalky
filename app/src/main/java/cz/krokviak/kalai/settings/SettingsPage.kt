@@ -1,7 +1,13 @@
 package cz.krokviak.kalai.settings
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,14 +16,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
+import cz.krokviak.kalai.notifications.MealReminderScheduler
 import cz.krokviak.kalai.theme.AppTheme
 import cz.krokviak.kalai.theme.ThemeManager
 import cz.krokviak.kalai.theme.ThemeMode
@@ -29,6 +41,7 @@ fun SettingsPage(
     modifier: Modifier = Modifier
 ) {
     val s = LocalStrings.current
+    val context = LocalContext.current
     val themeMode by ThemeManager.themeMode.collectAsState()
     val themeLabels = listOf(s.settings.themeSystem, s.settings.themeLight, s.settings.themeDark)
     val themeModes = listOf(ThemeMode.SYSTEM, ThemeMode.LIGHT, ThemeMode.DARK)
@@ -40,6 +53,18 @@ fun SettingsPage(
     val unitSystem by AppPreferencesManager.unitSystem.collectAsState()
     val unitLabels = listOf(s.settings.metric, s.settings.imperial)
     val unitValues = listOf(UnitSystem.METRIC, UnitSystem.IMPERIAL)
+
+    val notificationsEnabled by AppPreferencesManager.notificationsEnabled.collectAsState()
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) {
+            AppPreferencesManager.setNotificationsEnabled(true)
+            MealReminderScheduler.schedule(context)
+        } else {
+            AppPreferencesManager.setNotificationsEnabled(false)
+        }
+    }
 
     Column(
         modifier = modifier
@@ -84,6 +109,55 @@ fun SettingsPage(
             onItemSelected = { AppPreferencesManager.setUnitSystem(unitValues[it]) },
             modifier = Modifier.fillMaxWidth()
         )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Notifications section
+        SectionHeader(s.notifications.reminders)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 4.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = s.notifications.enableReminders,
+                color = AppTheme.colors.onBackground,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+            Switch(
+                checked = notificationsEnabled,
+                onCheckedChange = { enabled ->
+                    if (enabled) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            val hasPermission = ContextCompat.checkSelfPermission(
+                                context, Manifest.permission.POST_NOTIFICATIONS
+                            ) == PackageManager.PERMISSION_GRANTED
+                            if (hasPermission) {
+                                AppPreferencesManager.setNotificationsEnabled(true)
+                                MealReminderScheduler.schedule(context)
+                            } else {
+                                permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                            }
+                        } else {
+                            AppPreferencesManager.setNotificationsEnabled(true)
+                            MealReminderScheduler.schedule(context)
+                        }
+                    } else {
+                        AppPreferencesManager.setNotificationsEnabled(false)
+                        MealReminderScheduler.cancel(context)
+                    }
+                },
+                colors = SwitchDefaults.colors(
+                    checkedThumbColor = AppTheme.colors.onBackground,
+                    checkedTrackColor = AppTheme.colors.onBackgroundSecondary,
+                    uncheckedThumbColor = AppTheme.colors.onBackgroundSecondary,
+                    uncheckedTrackColor = AppTheme.colors.background
+                )
+            )
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 

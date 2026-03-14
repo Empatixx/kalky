@@ -72,6 +72,9 @@ dependencies {
     implementation(libs.compose.charts)
     implementation(libs.vico.multiplatform)
 
+    // WorkManager
+    implementation(libs.androidx.work.runtime.ktx)
+
     // AndroidX
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

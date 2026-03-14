@@ -13,6 +13,8 @@ object AppPreferencesManager {
     private const val PREFS_NAME = "kalai_app_prefs"
     private const val KEY_LANGUAGE = "language"
     private const val KEY_UNIT_SYSTEM = "unit_system"
+    private const val KEY_NOTIFICATIONS_ENABLED = "notifications_enabled"
+    private const val KEY_LAST_NOTIFICATION_TIME = "last_notification_time"
 
     private var sharedPreferences: SharedPreferences? = null
 
@@ -22,6 +24,9 @@ object AppPreferencesManager {
     private val _unitSystem = MutableStateFlow(UnitSystem.METRIC)
     val unitSystem: StateFlow<UnitSystem> = _unitSystem
 
+    private val _notificationsEnabled = MutableStateFlow(true)
+    val notificationsEnabled: StateFlow<Boolean> = _notificationsEnabled
+
     fun initialize(context: Context) {
         if (sharedPreferences != null) return
 
@@ -29,6 +34,7 @@ object AppPreferencesManager {
         sharedPreferences = prefs
         _language.value = prefs.getEnum(KEY_LANGUAGE, AppLanguage.CS)
         _unitSystem.value = prefs.getEnum(KEY_UNIT_SYSTEM, UnitSystem.METRIC)
+        _notificationsEnabled.value = prefs.getBoolean(KEY_NOTIFICATIONS_ENABLED, true)
     }
 
     fun setLanguage(value: AppLanguage) {
@@ -39,6 +45,19 @@ object AppPreferencesManager {
     fun setUnitSystem(value: UnitSystem) {
         _unitSystem.value = value
         sharedPreferences?.edit()?.putString(KEY_UNIT_SYSTEM, value.name)?.apply()
+    }
+
+    fun setNotificationsEnabled(value: Boolean) {
+        _notificationsEnabled.value = value
+        sharedPreferences?.edit()?.putBoolean(KEY_NOTIFICATIONS_ENABLED, value)?.apply()
+    }
+
+    fun getLastNotificationTime(): Long {
+        return sharedPreferences?.getLong(KEY_LAST_NOTIFICATION_TIME, 0L) ?: 0L
+    }
+
+    fun setLastNotificationTime(timeMillis: Long) {
+        sharedPreferences?.edit()?.putLong(KEY_LAST_NOTIFICATION_TIME, timeMillis)?.apply()
     }
 }
 

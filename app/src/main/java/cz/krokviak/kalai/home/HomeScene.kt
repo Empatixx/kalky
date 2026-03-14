@@ -63,7 +63,9 @@ fun HomeScene(
             ) {
                 WeekDatePicker(
                     currentDate = uiState.currentDate,
-                    onDateChange = model::onDateSelected
+                    isToday = uiState.isToday,
+                    onDateChange = model::onDateSelected,
+                    onTodayClick = model::resetToToday
                 )
                 Column(
                     modifier = Modifier

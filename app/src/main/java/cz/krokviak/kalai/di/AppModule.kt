@@ -21,7 +21,7 @@ val appModule = module {
     single<ImageStorage> { AndroidImageStorage(get()) }
 
     // ViewModels
-    viewModel { MainViewModel(get(), get(), get(), get()) }
+    viewModel { MainViewModel(get(), get(), get(), get(), get()) }
     viewModel { FoodDetailViewModel(get(), get(), get()) }
     viewModel { NutrientEditViewModel(get()) }
     viewModel { AnalyticsViewModel(get(), get()) }

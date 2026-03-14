@@ -1,8 +1,10 @@
 package cz.krokviak.kalai.di
 
+import cz.krokviak.kalai.common.StreakCalculator
 import cz.krokviak.kalai.common.repo.FoodRepository
 import cz.krokviak.kalai.common.repo.NutrientSettingRepo
 import cz.krokviak.kalai.common.repo.PersonalInfoRepo
+import cz.krokviak.kalai.notifications.MealReminderChecker
 import cz.krokviak.kalai.db.createDatabase
 import cz.krokviak.kalai.network.FoodAnalysisClient
 import cz.krokviak.kalai.network.OpenFoodFactsClient
@@ -24,4 +26,10 @@ val sharedModule = module {
     single { FoodRepository(get()) }
     single { PersonalInfoRepo(get()) }
     single { NutrientSettingRepo(get()) }
+
+    // Streak
+    single { StreakCalculator(get()) }
+
+    // Notifications
+    single { MealReminderChecker(get(), get()) }
 }

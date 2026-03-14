@@ -218,6 +218,10 @@ class MainViewModel(
         }
     }
 
+    fun resetToToday() {
+        onDateSelected(cz.krokviak.kalai.common.currentLocalDate())
+    }
+
     fun onDateSelected(date: LocalDate) {
         _uiState.update { current ->
             current.copy(currentDate = date)

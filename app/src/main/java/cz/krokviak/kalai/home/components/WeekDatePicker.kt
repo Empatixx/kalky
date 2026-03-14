@@ -1,5 +1,6 @@
 package cz.krokviak.kalai.home.components
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -8,12 +9,17 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Restore
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -43,7 +49,9 @@ import kotlinx.datetime.plus
 @Composable
 fun WeekDatePicker(
     currentDate: LocalDate,
-    onDateChange: (LocalDate) -> Unit
+    isToday: Boolean,
+    onDateChange: (LocalDate) -> Unit,
+    onTodayClick: () -> Unit
 ) {
     // 2) Monday of the current week
     val mondayOfThisWeek = remember { currentDate.withDayOfWeek(DayOfWeek.MONDAY) }
@@ -68,14 +76,23 @@ fun WeekDatePicker(
         listState.scrollToItem((index - 3).coerceAtLeast(0))
     }
 
-    // 7) Observe lazy list edges, loading more days if needed
+    // 7) Scroll back when currentDate changes externally (e.g. "back to today")
+    LaunchedEffect(currentDate) {
+        val index = days.indexOf(currentDate)
+        if (index >= 0 && index != selectedIndex) {
+            selectedIndex = index
+            listState.animateScrollToItem((index - 3).coerceAtLeast(0))
+        }
+    }
+
+    // 8) Observe lazy list edges, loading more days if needed
     observeInfiniteScroll(
         listState = listState,
         days = days,
         selectedIndexUpdater = { selectedIndex += it },  // shift selected index if needed
         coroutineScope = coroutineScope
     )
-    MonthHeader(currentDate = currentDate)
+    MonthHeader(currentDate = currentDate, isToday = isToday, onTodayClick = onTodayClick)
 
     BoxWithConstraints(
         modifier = Modifier.fillMaxWidth()
@@ -115,11 +132,15 @@ fun WeekDatePicker(
 
 
 @Composable
-fun MonthHeader(currentDate: LocalDate) {
+fun MonthHeader(currentDate: LocalDate, isToday: Boolean, onTodayClick: () -> Unit) {
     val monthName = getNominativeMonthName(currentDate.month)
-    Row(
+    val iconAlpha by animateFloatAsState(
+        targetValue = if (isToday) 0f else 1f,
+        label = "todayIconAlpha"
+    )
+    Box(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center
+        contentAlignment = Alignment.Center
     ) {
         Text(
             text = "${currentDate.dayOfMonth}. $monthName ${currentDate.year}",
@@ -127,6 +148,19 @@ fun MonthHeader(currentDate: LocalDate) {
             fontWeight = FontWeight.ExtraBold,
             color = AppTheme.colors.onBackground
         )
+        IconButton(
+            onClick = onTodayClick,
+            enabled = !isToday,
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .alpha(iconAlpha)
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Restore,
+                contentDescription = "Dnes",
+                tint = AppTheme.colors.onBackground
+            )
+        }
     }
 }
 
