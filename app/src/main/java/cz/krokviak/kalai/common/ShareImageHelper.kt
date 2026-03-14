@@ -68,47 +68,45 @@ object ShareImageHelper {
             typeface = Typeface.DEFAULT
         }
 
-        // Macro row: icon + value for each macro
-        val macroY = height - padding
-        val iconTop = (macroY - iconSize + 4f * scale).toInt()
-        var cursorX = padding
-
-        // Calories (fire icon)
-        drawIconAndText(
-            context, canvas, R.drawable.ic_local_fire_department,
-            "$calories kcal", macroPaint,
-            cursorX, iconTop, iconSize, macroY, iconTextGap
-        ).let { cursorX = it + macroGap }
-
-        // Protein (chicken_leg icon)
-        drawIconAndText(
-            context, canvas, R.drawable.chicken_leg,
-            "${protein}g", macroPaint,
-            cursorX, iconTop, iconSize, macroY, iconTextGap
-        ).let { cursorX = it + macroGap }
-
-        // Carbs (wheat icon)
-        drawIconAndText(
-            context, canvas, R.drawable.wheat,
-            "${carbs}g", macroPaint,
-            cursorX, iconTop, iconSize, macroY, iconTextGap
-        ).let { cursorX = it + macroGap }
-
-        // Fat (avocado icon)
-        drawIconAndText(
-            context, canvas, R.drawable.avocado,
-            "${fat}g", macroPaint,
-            cursorX, iconTop, iconSize, macroY, iconTextGap
+        // Macro items: icon + text for each
+        val macroItems = listOf(
+            R.drawable.ic_local_fire_department to "$calories kcal",
+            R.drawable.chicken_leg to "${protein}g",
+            R.drawable.wheat to "${carbs}g",
+            R.drawable.avocado to "${fat}g"
         )
 
-        // Food name
+        // Measure total macro row width to center it
+        val itemWidths = macroItems.map { (_, text) ->
+            iconSize + iconTextGap + macroPaint.measureText(text)
+        }
+        val totalMacroWidth = itemWidths.sum() + macroGap * (macroItems.size - 1)
+
+        val macroY = height - padding
+        val iconTop = (macroY - iconSize + 4f * scale).toInt()
+        var cursorX = (width - totalMacroWidth) / 2f
+
+        // Draw each macro item
+        macroItems.forEachIndexed { index, (iconRes, text) ->
+            drawIconAndText(
+                context, canvas, iconRes,
+                text, macroPaint,
+                cursorX, iconTop, iconSize, macroY, iconTextGap
+            ).let { endX ->
+                cursorX = if (index < macroItems.size - 1) endX + macroGap else endX
+            }
+        }
+
+        // Food name (centered)
         val namePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = Color.WHITE
             textSize = nameSizePx
             typeface = Typeface.DEFAULT_BOLD
         }
         val nameY = macroY - iconSize - 12f * scale
-        canvas.drawText(name, padding, nameY, namePaint)
+        val nameWidth = namePaint.measureText(name)
+        val nameX = (width - nameWidth) / 2f
+        canvas.drawText(name, nameX, nameY, namePaint)
 
         // Save to cache
         val shareDir = File(context.cacheDir, "share_images")
