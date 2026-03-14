@@ -1,6 +1,7 @@
 package cz.krokviak.kalai.onboarding.pages
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,15 +13,22 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import cz.krokviak.kalai.R
+import cz.krokviak.kalai.nutrientedit.components.NutrientEditRow
+import cz.krokviak.kalai.nutrientedit.components.VerticalCalorieCard
 import cz.krokviak.kalai.onboarding.GoalChoice
 import cz.krokviak.kalai.settings.AppLanguage
 import cz.krokviak.kalai.settings.AppPreferencesManager
@@ -183,6 +191,9 @@ fun MacrosOnboardingPage(
     val s = LocalStrings.current
     val macroValues = remember { (0..500).map { it.toString() } }
     var expandedField by remember { mutableStateOf<MacroField?>(null) }
+    var selectedProteinIndex by remember { mutableIntStateOf(protein.coerceIn(0, 500)) }
+    var selectedCarbsIndex by remember { mutableIntStateOf(carbs.coerceIn(0, 500)) }
+    var selectedFatIndex by remember { mutableIntStateOf(fat.coerceIn(0, 500)) }
     val calories = protein * 4 + carbs * 4 + fat * 9
 
     Column(
@@ -200,112 +211,114 @@ fun MacrosOnboardingPage(
             color = AppTheme.colors.onBackgroundSecondary,
             fontSize = 14.sp
         )
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = "$calories",
-                color = AppTheme.colors.onBackground,
-                fontSize = 48.sp,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                text = "kcal",
-                color = AppTheme.colors.onBackgroundSecondary,
-                fontSize = 16.sp
-            )
-        }
+        VerticalCalorieCard(
+            currentCalories = calories,
+            calorieRatio = 0.5f,
+            modifier = Modifier.fillMaxWidth()
+        )
         KalaiCard(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(14.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .border(1.dp, AppTheme.colors.border, RoundedCornerShape(16.dp)),
+            shape = RoundedCornerShape(16.dp),
             color = AppTheme.colors.surface
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
-                MacroPickerRow(
+                NutrientEditRow(
                     label = s.common.protein,
                     value = protein,
-                    unitSuffix = "g",
-                    expanded = expandedField == MacroField.PROTEIN,
-                    onToggle = { expandedField = if (expandedField == MacroField.PROTEIN) null else MacroField.PROTEIN },
-                    values = macroValues,
-                    onValueChanged = onProteinChanged
+                    valueUnit = "g",
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        if (expandedField == MacroField.PROTEIN) {
+                            expandedField = null
+                        } else {
+                            selectedProteinIndex = protein.coerceIn(0, macroValues.lastIndex)
+                            expandedField = MacroField.PROTEIN
+                        }
+                    },
+                    icon = ImageVector.vectorResource(R.drawable.chicken_leg),
+                    activeColor = colorResource(id = R.color.proteinColor)
                 )
-                PickerDivider()
-                MacroPickerRow(
+                if (expandedField == MacroField.PROTEIN) {
+                    IosInlineValuePicker(
+                        values = macroValues,
+                        selectedIndex = selectedProteinIndex,
+                        onIndexChanged = {
+                            selectedProteinIndex = it
+                            onProteinChanged(macroValues[it].toInt())
+                        },
+                        unitSuffix = "g"
+                    )
+                }
+                OnboardingGroupDivider()
+                NutrientEditRow(
                     label = s.common.carbs,
                     value = carbs,
-                    unitSuffix = "g",
-                    expanded = expandedField == MacroField.CARBS,
-                    onToggle = { expandedField = if (expandedField == MacroField.CARBS) null else MacroField.CARBS },
-                    values = macroValues,
-                    onValueChanged = onCarbsChanged
+                    valueUnit = "g",
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        if (expandedField == MacroField.CARBS) {
+                            expandedField = null
+                        } else {
+                            selectedCarbsIndex = carbs.coerceIn(0, macroValues.lastIndex)
+                            expandedField = MacroField.CARBS
+                        }
+                    },
+                    icon = ImageVector.vectorResource(R.drawable.wheat),
+                    activeColor = colorResource(id = R.color.carbsColor)
                 )
-                PickerDivider()
-                MacroPickerRow(
+                if (expandedField == MacroField.CARBS) {
+                    IosInlineValuePicker(
+                        values = macroValues,
+                        selectedIndex = selectedCarbsIndex,
+                        onIndexChanged = {
+                            selectedCarbsIndex = it
+                            onCarbsChanged(macroValues[it].toInt())
+                        },
+                        unitSuffix = "g"
+                    )
+                }
+                OnboardingGroupDivider()
+                NutrientEditRow(
                     label = s.common.fat,
                     value = fat,
-                    unitSuffix = "g",
-                    expanded = expandedField == MacroField.FAT,
-                    onToggle = { expandedField = if (expandedField == MacroField.FAT) null else MacroField.FAT },
-                    values = macroValues,
-                    onValueChanged = onFatChanged
+                    valueUnit = "g",
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        if (expandedField == MacroField.FAT) {
+                            expandedField = null
+                        } else {
+                            selectedFatIndex = fat.coerceIn(0, macroValues.lastIndex)
+                            expandedField = MacroField.FAT
+                        }
+                    },
+                    icon = ImageVector.vectorResource(R.drawable.avocado),
+                    activeColor = colorResource(id = R.color.fatColor)
                 )
+                if (expandedField == MacroField.FAT) {
+                    IosInlineValuePicker(
+                        values = macroValues,
+                        selectedIndex = selectedFatIndex,
+                        onIndexChanged = {
+                            selectedFatIndex = it
+                            onFatChanged(macroValues[it].toInt())
+                        },
+                        unitSuffix = "g"
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-private fun MacroPickerRow(
-    label: String,
-    value: Int,
-    unitSuffix: String,
-    expanded: Boolean,
-    onToggle: () -> Unit,
-    values: List<String>,
-    onValueChanged: (Int) -> Unit
-) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable(onClick = onToggle)
-                .padding(horizontal = 14.dp, vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = label,
-                color = AppTheme.colors.onBackground,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier.weight(1f)
-            )
-            Text(
-                text = "$value $unitSuffix",
-                color = if (expanded) AppTheme.colors.onBackground else AppTheme.colors.onBackgroundSecondary,
-                fontSize = 16.sp,
-                fontWeight = if (expanded) FontWeight.SemiBold else FontWeight.Normal
-            )
-        }
-        if (expanded) {
-            IosInlineValuePicker(
-                values = values,
-                selectedIndex = value.coerceIn(0, values.lastIndex),
-                onIndexChanged = { onValueChanged(values[it].toInt()) },
-                unitSuffix = unitSuffix
-            )
-        }
-    }
-}
-
-@Composable
-private fun PickerDivider() {
+private fun OnboardingGroupDivider() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(1.dp)
-            .padding(horizontal = 14.dp)
+            .padding(start = 56.dp, end = 14.dp)
             .background(AppTheme.colors.border)
     )
 }
