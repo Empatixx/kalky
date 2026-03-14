@@ -3,6 +3,7 @@ package cz.krokviak.kalai.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cz.krokviak.kalai.common.ImageStorage
+import cz.krokviak.kalai.common.StreakCalculator
 import cz.krokviak.kalai.common.entities.FoodItemEntity
 import cz.krokviak.kalai.common.repo.FoodRepository
 import cz.krokviak.kalai.common.repo.NutrientSettingRepo
@@ -22,7 +23,8 @@ class MainViewModel(
     private val foodRepository: FoodRepository,
     private val nutrientSettingRepo: NutrientSettingRepo,
     private val foodAnalysisClient: FoodAnalysisClient,
-    private val imageStorage: ImageStorage
+    private val imageStorage: ImageStorage,
+    private val streakCalculator: StreakCalculator
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MainUiState(
@@ -41,7 +43,13 @@ class MainViewModel(
                     maxCalories = latestSettings?.targetCalories ?: 0
                 )
             }
+            refreshStreak()
         }
+    }
+
+    private suspend fun refreshStreak() {
+        val streak = streakCalculator.getCurrentStreak()
+        _uiState.update { it.copy(currentStreak = streak) }
     }
 
     fun addFoodItemFromBytes(imageBytes: ByteArray) {
@@ -181,6 +189,7 @@ class MainViewModel(
                 currentCarbs = totalCarbs
             )
         }
+        viewModelScope.launch { refreshStreak() }
     }
 
     fun loadFoodItemsForDate(date: LocalDate) {

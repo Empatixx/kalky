@@ -81,6 +81,7 @@ fun HomeScene(
                         uiState.currentCalories,
                         uiState.maxCalories,
                         uiState.calorieRatio(),
+                        currentStreak = uiState.currentStreak,
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))

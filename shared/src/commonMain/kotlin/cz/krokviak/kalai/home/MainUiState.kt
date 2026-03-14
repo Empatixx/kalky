@@ -17,7 +17,8 @@ data class MainUiState(
     val currentFats: Int = 0,
     val recentlyAddedItems: List<FoodItemEntity> = emptyList(),
     val loadingProgressForItems: Map<Long, Int> = emptyMap(),
-    val currentDate: LocalDate = currentLocalDate()
+    val currentDate: LocalDate = currentLocalDate(),
+    val currentStreak: Int = 0
 ) {
     val isToday: Boolean get() = currentDate == currentLocalDate()
     fun calorieRatio(): Float = amountRatio(currentCalories, maxCalories)
