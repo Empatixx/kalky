@@ -41,8 +41,9 @@ class CustomFoodViewModel(
     fun loadHistory() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
+            val custom = foodRepository.getCustomFoods()
             val items = foodRepository.getDistinctFoodsByName()
-            _uiState.update { it.copy(historyItems = items, isLoading = false) }
+            _uiState.update { it.copy(customFoods = custom, historyItems = items, isLoading = false) }
         }
     }
 
@@ -53,29 +54,47 @@ class CustomFoodViewModel(
             delay(300)
             _uiState.update { it.copy(isLoading = true) }
             if (query.isBlank()) {
+                val custom = foodRepository.getCustomFoods()
                 val items = foodRepository.getDistinctFoodsByName()
-                _uiState.update { it.copy(historyItems = items, apiResults = emptyList(), isLoading = false) }
+                _uiState.update { it.copy(customFoods = custom, historyItems = items, apiResults = emptyList(), isLoading = false) }
             } else {
+                val customDeferred = async { foodRepository.searchCustomFoods(query) }
                 val localDeferred = async { foodRepository.searchDistinctFoodsByName(query) }
                 val apiDeferred = async { openFoodFactsClient.searchProducts(query) }
+                val customItems = customDeferred.await()
                 val localItems = localDeferred.await()
                 val apiItems = apiDeferred.await()
-                _uiState.update { it.copy(historyItems = localItems, apiResults = apiItems, isLoading = false) }
+                _uiState.update { it.copy(customFoods = customItems, historyItems = localItems, apiResults = apiItems, isLoading = false) }
             }
         }
     }
 
-    fun addFromApi(product: OpenFoodFactsProduct) {
+    fun selectApiProduct(product: OpenFoodFactsProduct) {
+        _uiState.update { it.copy(selectedApiProduct = product, portionGrams = 100) }
+    }
+
+    fun dismissPortionPicker() {
+        _uiState.update { it.copy(selectedApiProduct = null) }
+    }
+
+    fun setPortionGrams(grams: Int) {
+        _uiState.update { it.copy(portionGrams = grams.coerceIn(1, 9999)) }
+    }
+
+    fun confirmAddApiProduct() {
+        val product = _uiState.value.selectedApiProduct ?: return
+        val grams = _uiState.value.portionGrams
         viewModelScope.launch {
             val nutrients = product.nutriments
-            val protein = nutrients?.proteins100g?.roundToInt() ?: 0
-            val carbs = nutrients?.carbohydrates100g?.roundToInt() ?: 0
-            val fat = nutrients?.fat100g?.roundToInt() ?: 0
-            val calories = nutrients?.energyKcal100g?.roundToInt() ?: (protein * 4 + carbs * 4 + fat * 9)
+            val factor = grams / 100.0
+            val protein = ((nutrients?.proteins100g ?: 0.0) * factor).roundToInt()
+            val carbs = ((nutrients?.carbohydrates100g ?: 0.0) * factor).roundToInt()
+            val fat = ((nutrients?.fat100g ?: 0.0) * factor).roundToInt()
+            val calories = ((nutrients?.energyKcal100g ?: 0.0) * factor).roundToInt()
             val now = Clock.System.now()
             val item = FoodItemEntity(
                 name = product.productName ?: "",
-                calories = calories,
+                calories = if (calories > 0) calories else (protein * 4 + carbs * 4 + fat * 9),
                 protein = protein,
                 carbs = carbs,
                 fat = fat,
@@ -85,6 +104,7 @@ class CustomFoodViewModel(
                 loading = false
             )
             val newId = foodRepository.insertFoodItem(item)
+            _uiState.update { it.copy(selectedApiProduct = null) }
             _foodAdded.emit(newId)
         }
     }
@@ -160,6 +180,7 @@ class CustomFoodViewModel(
         viewModelScope.launch {
             val state = _manualEntryState.value
             val now = Clock.System.now()
+            val isCustom = true
             val item = FoodItemEntity(
                 name = state.name,
                 calories = state.calories,
@@ -169,10 +190,118 @@ class CustomFoodViewModel(
                 createdAt = now,
                 updatedAt = now,
                 localImagePath = "",
-                loading = false
+                loading = false,
+                isCustom = isCustom
             )
             val newId = foodRepository.insertFoodItem(item)
             _foodAdded.emit(newId)
+        }
+    }
+
+    fun setSourceFoods(items: List<FoodItemEntity>) {
+        val defaultPortions = items.associate { it.id to 100 }
+        _manualEntryState.update { it.copy(sourceFoods = items, sourcePortionGrams = defaultPortions) }
+    }
+
+    fun addSourceFood(item: FoodItemEntity) {
+        _manualEntryState.update { state ->
+            if (state.sourceFoods.any { it.id == item.id }) return@update state
+            val newFoods = state.sourceFoods + item
+            val newPortions = state.sourcePortionGrams + (item.id to 100)
+            val totalProtein = newFoods.sumOf { f -> ((f.protein * (newPortions[f.id] ?: 100)) / 100.0).roundToInt() }
+            val totalCarbs = newFoods.sumOf { f -> ((f.carbs * (newPortions[f.id] ?: 100)) / 100.0).roundToInt() }
+            val totalFat = newFoods.sumOf { f -> ((f.fat * (newPortions[f.id] ?: 100)) / 100.0).roundToInt() }
+            state.copy(
+                sourceFoods = newFoods,
+                sourcePortionGrams = newPortions,
+                protein = totalProtein,
+                carbs = totalCarbs,
+                fat = totalFat,
+                calories = totalProtein * 4 + totalCarbs * 4 + totalFat * 9
+            )
+        }
+    }
+
+    fun removeSourceFood(foodId: Long) {
+        _manualEntryState.update { state ->
+            val newFoods = state.sourceFoods.filter { it.id != foodId }
+            val newPortions = state.sourcePortionGrams - foodId
+            val totalProtein = newFoods.sumOf { f -> ((f.protein * (newPortions[f.id] ?: 100)) / 100.0).roundToInt() }
+            val totalCarbs = newFoods.sumOf { f -> ((f.carbs * (newPortions[f.id] ?: 100)) / 100.0).roundToInt() }
+            val totalFat = newFoods.sumOf { f -> ((f.fat * (newPortions[f.id] ?: 100)) / 100.0).roundToInt() }
+            state.copy(
+                sourceFoods = newFoods,
+                sourcePortionGrams = newPortions,
+                protein = totalProtein,
+                carbs = totalCarbs,
+                fat = totalFat,
+                calories = totalProtein * 4 + totalCarbs * 4 + totalFat * 9
+            )
+        }
+    }
+
+    private var ingredientSearchJob: Job? = null
+    private val _ingredientResults = MutableStateFlow<List<FoodItemEntity>>(emptyList())
+    val ingredientResults: StateFlow<List<FoodItemEntity>> = _ingredientResults
+
+    private val _ingredientApiResults = MutableStateFlow<List<OpenFoodFactsProduct>>(emptyList())
+    val ingredientApiResults: StateFlow<List<OpenFoodFactsProduct>> = _ingredientApiResults
+
+    fun searchIngredients(query: String) {
+        ingredientSearchJob?.cancel()
+        if (query.isBlank()) {
+            _ingredientResults.value = emptyList()
+            _ingredientApiResults.value = emptyList()
+            return
+        }
+        ingredientSearchJob = viewModelScope.launch {
+            delay(300)
+            val localDeferred = async { foodRepository.searchDistinctFoodsByName(query) }
+            val apiDeferred = async { openFoodFactsClient.searchProducts(query, 10) }
+            _ingredientResults.value = localDeferred.await()
+            _ingredientApiResults.value = apiDeferred.await()
+        }
+    }
+
+    fun addSourceFoodFromApi(product: OpenFoodFactsProduct) {
+        val nutrients = product.nutriments
+        val now = Clock.System.now()
+        val food = FoodItemEntity(
+            id = now.toEpochMilliseconds(),
+            name = product.productName ?: "",
+            calories = nutrients?.energyKcal100g?.roundToInt() ?: 0,
+            protein = nutrients?.proteins100g?.roundToInt() ?: 0,
+            carbs = nutrients?.carbohydrates100g?.roundToInt() ?: 0,
+            fat = nutrients?.fat100g?.roundToInt() ?: 0,
+            createdAt = now,
+            updatedAt = now,
+            loading = false
+        )
+        addSourceFood(food)
+    }
+
+    fun updateSourcePortion(foodId: Long, grams: Int) {
+        _manualEntryState.update { state ->
+            val newPortions = state.sourcePortionGrams + (foodId to grams.coerceAtLeast(0))
+            val totalProtein = state.sourceFoods.sumOf { food ->
+                val portion = newPortions[food.id] ?: 100
+                (food.protein * portion / 100.0).roundToInt()
+            }
+            val totalCarbs = state.sourceFoods.sumOf { food ->
+                val portion = newPortions[food.id] ?: 100
+                (food.carbs * portion / 100.0).roundToInt()
+            }
+            val totalFat = state.sourceFoods.sumOf { food ->
+                val portion = newPortions[food.id] ?: 100
+                (food.fat * portion / 100.0).roundToInt()
+            }
+            state.copy(
+                sourcePortionGrams = newPortions,
+                protein = totalProtein,
+                carbs = totalCarbs,
+                fat = totalFat,
+                calories = totalProtein * 4 + totalCarbs * 4 + totalFat * 9
+            )
         }
     }
 

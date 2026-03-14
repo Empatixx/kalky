@@ -24,18 +24,25 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,6 +59,7 @@ import cz.krokviak.kalai.i18n.LocalStrings
 import cz.krokviak.kalai.theme.AppTheme
 import cz.krokviak.kalai.ui.components.KalaiButton
 import cz.krokviak.kalai.ui.components.KalaiCard
+import cz.krokviak.kalai.ui.components.KalaiSegmentedControl
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -64,6 +72,7 @@ fun CustomFoodScene(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val s = LocalStrings.current
+    var selectedTab by remember { mutableStateOf(0) } // 0=All, 1=My Foods, 2=Recently Used
 
     LaunchedEffect(Unit) {
         viewModel.loadHistory()
@@ -138,26 +147,21 @@ fun CustomFoodScene(
                     singleLine = true
                 )
 
-                KalaiButton(
-                    onClick = onAddNewClick,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = s.customFood.addNew,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 16.sp
-                    )
+                KalaiSegmentedControl(
+                    selectedIndex = selectedTab,
+                    items = listOf(s.customFood.all, s.customFood.myFoods, s.customFood.history),
+                    onItemSelected = { selectedTab = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    textSize = 13.sp
+                )
+
+                val hasAnyResults = when (selectedTab) {
+                    1 -> uiState.customFoods.isNotEmpty()
+                    2 -> uiState.historyItems.isNotEmpty()
+                    else -> uiState.customFoods.isNotEmpty() || uiState.historyItems.isNotEmpty() || uiState.apiResults.isNotEmpty()
                 }
 
-                val hasAnyResults = uiState.historyItems.isNotEmpty() || uiState.apiResults.isNotEmpty()
-
-                if (!hasAnyResults && !uiState.isLoading && uiState.searchQuery.isNotBlank()) {
+                if (!hasAnyResults && !uiState.isLoading) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -177,7 +181,50 @@ fun CustomFoodScene(
                             bottom = if (uiState.selectedItems.isNotEmpty()) 80.dp else 16.dp
                         )
                     ) {
-                        if (uiState.historyItems.isNotEmpty()) {
+                        if (selectedTab == 1) {
+                            item {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clip(RoundedCornerShape(12.dp))
+                                        .clickable(onClick = onAddNewClick)
+                                        .padding(vertical = 12.dp),
+                                    horizontalArrangement = Arrangement.Center,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Add,
+                                        contentDescription = null,
+                                        tint = AppTheme.colors.onBackgroundSecondary,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text(
+                                        text = s.customFood.addManually,
+                                        fontSize = 14.sp,
+                                        color = AppTheme.colors.onBackgroundSecondary
+                                    )
+                                }
+                            }
+                        }
+                        if (uiState.customFoods.isNotEmpty() && selectedTab != 2) {
+                            item {
+                                Text(
+                                    text = s.customFood.myFoods,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = AppTheme.colors.onBackgroundSecondary
+                                )
+                            }
+                            items(uiState.customFoods, key = { "custom_${it.id}" }) { item ->
+                                HistoryFoodItem(
+                                    item = item,
+                                    isSelected = item.id in uiState.selectedItems,
+                                    onClick = { viewModel.toggleSelection(item.id) }
+                                )
+                            }
+                        }
+                        if (uiState.historyItems.isNotEmpty() && selectedTab != 1) {
                             item {
                                 Text(
                                     text = s.customFood.recentlyUsed,
@@ -194,7 +241,7 @@ fun CustomFoodScene(
                                 )
                             }
                         }
-                        if (uiState.apiResults.isNotEmpty()) {
+                        if (uiState.apiResults.isNotEmpty() && selectedTab == 0) {
                             item {
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Text(
@@ -208,7 +255,7 @@ fun CustomFoodScene(
                                 val product = uiState.apiResults[index]
                                 ApiResultItem(
                                     product = product,
-                                    onClick = { viewModel.addFromApi(product) }
+                                    onClick = { viewModel.selectApiProduct(product) }
                                 )
                             }
                         }
@@ -232,6 +279,16 @@ fun CustomFoodScene(
                 )
             }
         }
+    }
+
+    uiState.selectedApiProduct?.let { product ->
+        PortionPickerSheet(
+            product = product,
+            portionGrams = uiState.portionGrams,
+            onPortionChanged = viewModel::setPortionGrams,
+            onConfirm = viewModel::confirmAddApiProduct,
+            onDismiss = viewModel::dismissPortionPicker
+        )
     }
 }
 
@@ -362,6 +419,167 @@ private fun ApiResultItem(
                 )
             }
             AddButton()
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun PortionPickerSheet(
+    product: OpenFoodFactsProduct,
+    portionGrams: Int,
+    onPortionChanged: (Int) -> Unit,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    val s = LocalStrings.current
+    val nutrients = product.nutriments
+    val factor = portionGrams / 100.0
+    val calories = ((nutrients?.energyKcal100g ?: 0.0) * factor).roundToInt()
+    val protein = ((nutrients?.proteins100g ?: 0.0) * factor).roundToInt()
+    val carbs = ((nutrients?.carbohydrates100g ?: 0.0) * factor).roundToInt()
+    val fat = ((nutrients?.fat100g ?: 0.0) * factor).roundToInt()
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        containerColor = AppTheme.colors.background
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp)
+                .padding(bottom = 32.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Text(
+                text = product.productName ?: s.common.unknownProduct,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = AppTheme.colors.onBackground
+            )
+
+            // Portion input
+            Text(
+                text = s.customFood.portionSize,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = AppTheme.colors.onBackgroundSecondary
+            )
+            OutlinedTextField(
+                value = portionGrams.toString(),
+                onValueChange = { text ->
+                    val grams = text.filter { it.isDigit() }.toIntOrNull() ?: 0
+                    onPortionChanged(grams)
+                },
+                suffix = { Text(s.customFood.grams, color = AppTheme.colors.onBackgroundSecondary) },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                singleLine = true,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = AppTheme.colors.onBackgroundSecondary,
+                    unfocusedBorderColor = AppTheme.colors.border,
+                    focusedContainerColor = AppTheme.colors.surface,
+                    unfocusedContainerColor = AppTheme.colors.surface,
+                    focusedTextColor = AppTheme.colors.onBackground,
+                    unfocusedTextColor = AppTheme.colors.onBackground
+                )
+            )
+
+            // Quick portion buttons
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                listOf(50, 100, 150, 200, 250).forEach { grams ->
+                    KalaiCard(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(10.dp))
+                            .clickable { onPortionChanged(grams) },
+                        shape = RoundedCornerShape(10.dp),
+                        color = if (portionGrams == grams) AppTheme.colors.onBackground else AppTheme.colors.surface
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "${grams}g",
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = if (portionGrams == grams) AppTheme.colors.background else AppTheme.colors.onBackground
+                            )
+                        }
+                    }
+                }
+            }
+
+            // Scaled macros display
+            KalaiCard(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(14.dp),
+                color = AppTheme.colors.surface
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(14.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = s.common.calories,
+                            fontSize = 16.sp,
+                            color = AppTheme.colors.onBackground
+                        )
+                        Text(
+                            text = "$calories kcal",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = AppTheme.colors.onBackground
+                        )
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(text = s.common.protein, fontSize = 14.sp, color = AppTheme.colors.onBackgroundSecondary)
+                        Text(text = "${protein}g", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = AppTheme.colors.onBackground)
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(text = s.common.carbs, fontSize = 14.sp, color = AppTheme.colors.onBackgroundSecondary)
+                        Text(text = "${carbs}g", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = AppTheme.colors.onBackground)
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(text = s.common.fat, fontSize = 14.sp, color = AppTheme.colors.onBackgroundSecondary)
+                        Text(text = "${fat}g", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = AppTheme.colors.onBackground)
+                    }
+                }
+            }
+
+            KalaiButton(
+                onClick = onConfirm,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = s.common.add,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 16.sp
+                )
+            }
         }
     }
 }

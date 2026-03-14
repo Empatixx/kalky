@@ -136,7 +136,8 @@ private fun seedMockData(db: KalaiDatabase) {
                 createdAt = timestamp,
                 updatedAt = timestamp,
                 localImagePath = "",
-                loading = false
+                loading = false,
+                isCustom = false
             )
         }
     }

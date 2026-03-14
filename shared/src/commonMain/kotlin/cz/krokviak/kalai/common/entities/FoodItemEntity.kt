@@ -15,5 +15,6 @@ data class FoodItemEntity(
     val createdAt: Instant = Clock.System.now(),
     val updatedAt: Instant = Clock.System.now(),
     val localImagePath: String = "",
-    val loading: Boolean = true
+    val loading: Boolean = true,
+    val isCustom: Boolean = false
 )

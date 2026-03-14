@@ -27,7 +27,8 @@ class FoodRepository(
                 createdAt = item.createdAt.toString(),
                 updatedAt = item.updatedAt.toString(),
                 localImagePath = item.localImagePath,
-                loading = item.loading
+                loading = item.loading,
+                isCustom = item.isCustom
             )
             queries.lastInsertRowId().executeAsOne()
         }
@@ -85,6 +86,14 @@ class FoodRepository(
         queries.searchDistinctFoodsByName(query).executeAsList().map { it.toEntity() }
     }
 
+    suspend fun getCustomFoods(): List<FoodItemEntity> = withContext(Dispatchers.IO) {
+        queries.getCustomFoods().executeAsList().map { it.toEntity() }
+    }
+
+    suspend fun searchCustomFoods(query: String): List<FoodItemEntity> = withContext(Dispatchers.IO) {
+        queries.searchCustomFoods(query).executeAsList().map { it.toEntity() }
+    }
+
     suspend fun getDistinctFoodDates(): List<String> = withContext(Dispatchers.IO) {
         queries.getDistinctFoodDates().executeAsList()
     }
@@ -116,5 +125,6 @@ private fun cz.krokviak.kalai.Food_items.toEntity() = FoodItemEntity(
     createdAt = Instant.parse(createdAt),
     updatedAt = Instant.parse(updatedAt),
     localImagePath = localImagePath,
-    loading = loading
+    loading = loading,
+    isCustom = isCustom
 )

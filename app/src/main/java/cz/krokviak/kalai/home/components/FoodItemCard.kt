@@ -6,8 +6,11 @@ import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -21,8 +24,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.outlined.LocalFireDepartment
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -57,37 +62,78 @@ import cz.krokviak.kalai.common.formatTime
 fun FoodItemCard(
     foodItem: FoodItemEntity,
     progress: Int,
-    onClick: () -> Unit
+    isSelected: Boolean = false,
+    onClick: () -> Unit,
+    onLongClick: (() -> Unit)? = null
 ) {
     if (foodItem.loading) {
-        // Show the "loading" version
         FoodItemLoadingCard(foodItem, progress)
     } else {
-        // Show the normal "loaded" version
         FoodItemLoadedCard(
             foodItem,
-            onClick = onClick
+            isSelected = isSelected,
+            onClick = onClick,
+            onLongClick = onLongClick
         )
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FoodItemLoadedCard(
     foodItem: FoodItemEntity,
-    onClick: () -> Unit
+    isSelected: Boolean = false,
+    onClick: () -> Unit,
+    onLongClick: (() -> Unit)? = null
 ) {
     KalaiCard(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
-            .clickable(onClick = onClick),
+            .then(
+                if (isSelected) {
+                    Modifier.border(
+                        width = 2.dp,
+                        color = AppTheme.colors.onBackground,
+                        shape = RoundedCornerShape(16.dp)
+                    )
+                } else {
+                    Modifier
+                }
+            )
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick
+            ),
         shape = RoundedCornerShape(16.dp),
         contentPadding = PaddingValues(0.dp),
         color = AppTheme.colors.surfaceSecondary
     ) {
-        Row(modifier = Modifier.fillMaxWidth()) {
-            FoodItemImage(foodItem = foodItem)
-            FoodItemInfo(foodItem = foodItem)
+        Box {
+            Row(modifier = Modifier.fillMaxWidth()) {
+                FoodItemImage(foodItem = foodItem)
+                FoodItemInfo(foodItem = foodItem)
+            }
+            if (isSelected) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(8.dp)
+                        .size(28.dp)
+                        .background(
+                            color = AppTheme.colors.onBackground,
+                            shape = CircleShape
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = "Selected",
+                        tint = AppTheme.colors.background,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+            }
         }
     }
 }

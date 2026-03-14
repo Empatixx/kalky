@@ -238,6 +238,42 @@ class MainViewModel(
         loadFoodItemsForDate(date)
     }
 
+    fun toggleFoodSelection(id: Long) {
+        _uiState.update { current ->
+            val newSelection = if (id in current.selectedFoodIds) {
+                current.selectedFoodIds - id
+            } else {
+                current.selectedFoodIds + id
+            }
+            current.copy(selectedFoodIds = newSelection)
+        }
+    }
+
+    fun clearSelection() {
+        _uiState.update { it.copy(selectedFoodIds = emptySet()) }
+    }
+
+    fun deleteSelectedFoods() {
+        viewModelScope.launch {
+            val ids = _uiState.value.selectedFoodIds
+            for (id in ids) {
+                foodRepository.deleteFoodItem(id)
+            }
+            _uiState.update { current ->
+                current.copy(
+                    recentlyAddedItems = current.recentlyAddedItems.filter { it.id !in ids },
+                    selectedFoodIds = emptySet()
+                )
+            }
+            recalculateMacros()
+        }
+    }
+
+    fun getSelectedFoodItems(): List<FoodItemEntity> {
+        val state = _uiState.value
+        return state.recentlyAddedItems.filter { it.id in state.selectedFoodIds }
+    }
+
     fun updateNutrientSettings(protein: Int, carbs: Int, fat: Int, calories: Int) {
         _uiState.update { current ->
             current.copy(

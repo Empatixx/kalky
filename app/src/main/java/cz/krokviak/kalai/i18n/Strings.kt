@@ -37,9 +37,16 @@ data class CustomFoodStrings(
     val title: String,
     val searchPlaceholder: String,
     val addNew: String,
+    val myFoods: String,
+    val all: String,
+    val history: String,
+    val addManually: String,
+    val addIngredient: String,
     val recentlyUsed: String,
     val onlineResults: String,
     val per100g: String,
+    val portionSize: String,
+    val grams: String,
     val foodName: String,
     val noResults: String,
     val manualEntryTitle: String,
@@ -58,7 +65,10 @@ data class HomeStrings(
     val emptyTitle: String,
     val emptySubtitle: String,
     val streakDay: String,
-    val streakDays: String
+    val streakDays: String,
+    val selected: String,
+    val deleteSelected: String,
+    val saveAsCustom: String
 )
 
 data class SettingsStrings(
@@ -174,7 +184,10 @@ val CzechStrings = AppStrings(
         emptyTitle = "Dneska jsi je\u0161t\u011B nic nep\u0159idal/a",
         emptySubtitle = "Klikni na tla\u010D\u00EDtko dole a p\u0159idej si prvn\u00ED j\u00EDdlo",
         streakDay = "1 den v \u0159ad\u011B",
-        streakDays = "%d dn\u00ED v \u0159ad\u011B"
+        streakDays = "%d dn\u00ED v \u0159ad\u011B",
+        selected = "Vybr\u00E1no",
+        deleteSelected = "Smazat",
+        saveAsCustom = "Ulo\u017Eit jako j\u00EDdlo"
     ),
     settings = SettingsStrings(
         title = "Nastaven\u00ED",
@@ -272,9 +285,16 @@ val CzechStrings = AppStrings(
         title = "P\u0159idat j\u00EDdlo",
         searchPlaceholder = "Hledat j\u00EDdlo...",
         addNew = "P\u0159idat novou polo\u017Eku",
+        myFoods = "Moje j\u00EDdla",
+        all = "V\u0161e",
+        history = "Historie",
+        addManually = "P\u0159idat ru\u010Dn\u011B",
+        addIngredient = "P\u0159idat ingredienci",
         recentlyUsed = "Ned\u00E1vno pou\u017Eit\u00E9",
         onlineResults = "V\u00FDsledky z datab\u00E1ze",
         per100g = "na 100 g",
+        portionSize = "Velikost porce",
+        grams = "g",
         foodName = "N\u00E1zev j\u00EDdla",
         noResults = "\u017D\u00E1dn\u00E9 v\u00FDsledky",
         manualEntryTitle = "Nov\u00E9 j\u00EDdlo",
@@ -303,7 +323,10 @@ val EnglishStrings = AppStrings(
         emptyTitle = "You haven't added anything yet",
         emptySubtitle = "Tap the button below to add your first food",
         streakDay = "1 day streak",
-        streakDays = "%d day streak"
+        streakDays = "%d day streak",
+        selected = "Selected",
+        deleteSelected = "Delete",
+        saveAsCustom = "Save as food"
     ),
     settings = SettingsStrings(
         title = "Settings",
@@ -401,9 +424,16 @@ val EnglishStrings = AppStrings(
         title = "Add food",
         searchPlaceholder = "Search food...",
         addNew = "Add new item",
+        myFoods = "My foods",
+        all = "All",
+        history = "History",
+        addManually = "Add manually",
+        addIngredient = "Add ingredient",
         recentlyUsed = "Recently used",
         onlineResults = "Database results",
         per100g = "per 100 g",
+        portionSize = "Portion size",
+        grams = "g",
         foodName = "Food name",
         noResults = "No results",
         manualEntryTitle = "New food",

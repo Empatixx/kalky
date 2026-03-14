@@ -13,7 +13,8 @@ CREATE TABLE food_items (
     createdAt TEXT NOT NULL,
     updatedAt TEXT NOT NULL,
     localImagePath TEXT NOT NULL,
-    loading INTEGER AS Boolean NOT NULL DEFAULT 1
+    loading INTEGER AS Boolean NOT NULL DEFAULT 1,
+    isCustom INTEGER AS Boolean NOT NULL DEFAULT 0
 );
 
 getAllFoodItems:
@@ -35,8 +36,8 @@ getTotalProteinForDate:
 SELECT SUM(protein) FROM food_items WHERE date(createdAt) = ?;
 
 insertFoodItem:
-INSERT INTO food_items (name, calories, protein, fat, carbs, portion, healthScore, createdAt, updatedAt, localImagePath, loading)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+INSERT INTO food_items (name, calories, protein, fat, carbs, portion, healthScore, createdAt, updatedAt, localImagePath, loading, isCustom)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 lastInsertRowId:
 SELECT last_insert_rowid();
@@ -86,6 +87,12 @@ LIMIT 50;
 
 getDistinctFoodDates:
 SELECT DISTINCT date(createdAt) AS day FROM food_items ORDER BY day DESC;
+
+getCustomFoods:
+SELECT * FROM food_items WHERE isCustom = 1 ORDER BY updatedAt DESC;
+
+searchCustomFoods:
+SELECT * FROM food_items WHERE isCustom = 1 AND LOWER(name) LIKE '%' || LOWER(?) || '%' ORDER BY updatedAt DESC;
 
 searchDistinctFoodsByName:
 SELECT f.*

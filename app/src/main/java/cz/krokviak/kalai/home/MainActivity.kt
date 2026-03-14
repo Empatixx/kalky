@@ -190,6 +190,7 @@ fun AppContent(
                 mainViewModel = mainViewModel,
                 analyticsViewModel = analyticsViewModel,
                 settingsViewModel = settingsViewModel,
+                customFoodViewModel = customFoodViewModel,
                 onCameraClick = {
                     cameraResultLauncher.launch(
                         Intent(context, CameraActivity::class.java)
@@ -270,7 +271,10 @@ fun AppContent(
             CustomFoodScene(
                 viewModel = customFoodViewModel,
                 onBackClick = { navController.popBackStack() },
-                onAddNewClick = { navController.navigate(ManualFoodEntryRoute) },
+                onAddNewClick = {
+                    customFoodViewModel.resetManualEntry()
+                    navController.navigate(ManualFoodEntryRoute)
+                },
                 onFoodAdded = {
                     mainViewModel.loadFoodItemsForDate(mainViewModel.uiState.value.currentDate)
                     navController.popBackStack()
@@ -284,7 +288,10 @@ fun AppContent(
                 onBackClick = { navController.popBackStack() },
                 onFoodAdded = {
                     mainViewModel.loadFoodItemsForDate(mainViewModel.uiState.value.currentDate)
-                    navController.popBackStack(CustomFoodRoute, inclusive = true)
+                    navController.navigate(DefaultRoute) {
+                        popUpTo(DefaultRoute) { inclusive = false }
+                        launchSingleTop = true
+                    }
                 }
             )
         }
@@ -299,6 +306,7 @@ fun MainScaffold(
     mainViewModel: MainViewModel,
     analyticsViewModel: AnalyticsViewModel,
     settingsViewModel: SettingsViewModel,
+    customFoodViewModel: CustomFoodViewModel,
     onCameraClick: () -> Unit,
     navController: NavController
 ) {
@@ -341,7 +349,20 @@ fun MainScaffold(
                         uiState = uiState,
                         model = mainViewModel,
                         navController = navController,
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier.fillMaxSize(),
+                        onSaveAsCustom = { items ->
+                            val totalProtein = items.sumOf { it.protein }
+                            val totalCarbs = items.sumOf { it.carbs }
+                            val totalFat = items.sumOf { it.fat }
+                            val name = items.joinToString(" + ") { it.name }
+                            customFoodViewModel.resetManualEntry()
+                            customFoodViewModel.onNameChange(name)
+                            customFoodViewModel.onManualProteinChange(totalProtein)
+                            customFoodViewModel.onManualCarbsChange(totalCarbs)
+                            customFoodViewModel.onManualFatChange(totalFat)
+                            customFoodViewModel.setSourceFoods(items)
+                            navController.navigate(ManualFoodEntryRoute)
+                        }
                     )
                     1 -> AnalyticsPage(
                         uiState = analyticsUiState,
