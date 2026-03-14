@@ -13,7 +13,7 @@ data class OpenFoodFactsResponse(
 @Serializable
 data class OpenFoodFactsSearchResponse(
     val count: Int? = null,
-    val products: List<OpenFoodFactsProduct> = emptyList()
+    val hits: List<OpenFoodFactsProduct> = emptyList()
 )
 
 @Serializable

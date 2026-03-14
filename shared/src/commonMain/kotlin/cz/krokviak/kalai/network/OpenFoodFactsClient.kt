@@ -22,12 +22,12 @@ class OpenFoodFactsClient(private val httpClient: HttpClient) {
     suspend fun searchProducts(query: String, pageSize: Int = 20): List<OpenFoodFactsProduct> {
         return try {
             val response: OpenFoodFactsSearchResponse =
-                httpClient.get("https://world.openfoodfacts.org/cgi/search.pl") {
-                    parameter("search_terms", query)
-                    parameter("json", "true")
+                httpClient.get("https://search.openfoodfacts.org/search") {
+                    parameter("q", query)
                     parameter("page_size", pageSize)
+                    parameter("fields", "product_name,nutriments")
                 }.body()
-            response.products
+            response.hits.filter { !it.productName.isNullOrBlank() }
         } catch (e: Exception) {
             emptyList()
         }
