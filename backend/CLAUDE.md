@@ -18,7 +18,10 @@ backend/
 │   ├── db/
 │   │   ├── schema.ts            # DB init, connection, WAL + FK pragmas
 │   │   └── products.ts          # Product queries (getByBarcode, search, insert)
+│   ├── middleware/
+│   │   └── auth.ts              # Admin auth middleware (Bearer token vs ADMIN_KEY)
 │   ├── routes/
+│   │   ├── admin.ts             # POST /api/admin/import — bulk product import
 │   │   ├── analyze.ts           # POST /cal — image analysis
 │   │   ├── barcode.ts           # GET /api/barcode/:code — lookup
 │   │   └── search.ts            # GET /api/search?q= — text search
@@ -68,6 +71,14 @@ Indexes: `idx_products_barcode` (barcode), `idx_products_name` (name).
 - Case-insensitive LIKE search on product name, max 20 results.
 - **Response**: Array of product objects.
 
+### `POST /api/admin/import` — Bulk Product Import
+- **Auth**: `Authorization: Bearer <ADMIN_KEY>` required
+- **Body**: `{ "products": [...] }` or bare array `[...]`
+- Each product requires `name` (string); `barcode`, numeric fields, `serving_size`, `image_url` are optional
+- Uses SQLite transaction for batch performance; calls `insertProduct()` per product (upsert on barcode)
+- **Response**: `{ "imported": N, "failed": N, "errors": [...] }`
+- **Errors**: `401` (bad/missing auth), `503` (ADMIN_KEY not configured), `400` (invalid JSON/format)
+
 ### `GET /health` — Health Check
 - **Response**: `{ "status": "ok" }`
 
@@ -77,6 +88,7 @@ Indexes: `idx_products_barcode` (barcode), `idx_products_name` (name).
 ## Environment Variables
 - `OPENAI_API_KEY` — Required for `/cal` endpoint
 - `PORT` — Server port (default: 3000)
+- `ADMIN_KEY` — Required for `/api/admin/import` endpoint
 
 ## Build & Run
 ```bash

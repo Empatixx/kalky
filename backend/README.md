@@ -8,6 +8,7 @@ Food analysis and product lookup backend for the Kalai nutrition tracking app. A
 
 - [Bun](https://bun.sh/) runtime (v1.0+)
 - OpenAI API key (for food image analysis)
+- `ADMIN_KEY` env var (for admin import endpoint)
 
 ## Setup
 
@@ -94,6 +95,41 @@ curl "http://localhost:3000/api/search?q=jogurt"
 
 Response: array of product objects.
 
+### POST /api/admin/import — Bulk Product Import
+
+Import products in bulk. Requires admin authentication.
+
+```bash
+curl -X POST http://localhost:3000/api/admin/import \
+  -H "Authorization: Bearer YOUR_ADMIN_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "products": [
+      {
+        "barcode": "TEST001",
+        "name": "Testovací produkt",
+        "energy_kcal_100g": 100,
+        "protein_100g": 5,
+        "fat_100g": 3,
+        "carbs_100g": 15
+      }
+    ]
+  }'
+```
+
+Accepts `{ "products": [...] }` or a bare array `[...]`. Fields `name` is required; numeric fields default to 0.
+
+Response:
+```json
+{
+  "imported": 1,
+  "failed": 0,
+  "errors": []
+}
+```
+
+Returns `401` if the `Authorization` header is missing or invalid, `503` if `ADMIN_KEY` is not configured.
+
 ### GET /health — Health Check
 
 ```bash
@@ -153,7 +189,10 @@ backend/
 │   ├── db/
 │   │   ├── schema.ts         # Database init (WAL mode, schema)
 │   │   └── products.ts       # Product queries & upserts
+│   ├── middleware/
+│   │   └── auth.ts           # Admin auth (Bearer token)
 │   ├── routes/
+│   │   ├── admin.ts          # POST /api/admin/import — bulk import
 │   │   ├── analyze.ts        # POST /cal — OpenAI vision analysis
 │   │   ├── barcode.ts        # GET /api/barcode/:code
 │   │   └── search.ts         # GET /api/search?q=

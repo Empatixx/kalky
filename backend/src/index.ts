@@ -2,6 +2,8 @@ import { initDb } from "./db/schema";
 import { handleBarcode } from "./routes/barcode";
 import { handleSearch } from "./routes/search";
 import { handleAnalyze } from "./routes/analyze";
+import { handleAdminImport } from "./routes/admin";
+import { requireAdmin } from "./middleware/auth";
 
 const PORT = Number(process.env.PORT) || 3000;
 
@@ -9,7 +11,7 @@ function corsHeaders(): HeadersInit {
   return {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
   };
 }
 
@@ -52,6 +54,13 @@ Bun.serve({
       // POST /cal
       if (url.pathname === "/cal" && req.method === "POST") {
         return withCors(await handleAnalyze(req));
+      }
+
+      // POST /api/admin/import
+      if (url.pathname === "/api/admin/import" && req.method === "POST") {
+        const authError = requireAdmin(req);
+        if (authError) return withCors(authError);
+        return withCors(await handleAdminImport(req));
       }
 
       // Health check
