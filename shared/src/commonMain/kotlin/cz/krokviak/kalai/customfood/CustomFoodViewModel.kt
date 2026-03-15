@@ -98,6 +98,7 @@ class CustomFoodViewModel(
                 protein = protein,
                 carbs = carbs,
                 fat = fat,
+                portion = grams,
                 createdAt = now,
                 updatedAt = now,
                 localImagePath = "",
@@ -125,7 +126,8 @@ class CustomFoodViewModel(
             val state = _uiState.value
             val now = Clock.System.now()
             for (itemId in state.selectedItems) {
-                val item = state.historyItems.find { it.id == itemId } ?: continue
+                val allItems = state.customFoods + state.historyItems
+                val item = allItems.find { it.id == itemId } ?: continue
                 val newItem = item.copy(
                     id = 0,
                     createdAt = now,
