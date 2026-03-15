@@ -61,8 +61,11 @@ kalai/
 - Bottom nav: 3 tabs (Domov, Analýza, Nastavení) + FABs (camera + barcode scanner)
 
 ## APIs
-- **Food analysis**: `POST http://192.168.0.115:8080/cal` (local backend, sends image bytes)
-- **Barcode lookup**: Open Food Facts `GET https://world.openfoodfacts.org/api/v2/product/{barcode}.json`
+- **Backend** (`backend/`): Bun + SQLite server, default port 3000
+  - **Food analysis**: `POST http://<host>:3000/cal` (sends raw image bytes, returns nutrition JSON via OpenAI GPT-4o vision)
+  - **Barcode lookup**: `GET http://<host>:3000/api/barcode/:code` (local SQLite product DB)
+  - **Product search**: `GET http://<host>:3000/api/search?q=...` (text search, max 20 results)
+- **Open Food Facts** (fallback): `GET https://world.openfoodfacts.org/api/v2/product/{barcode}.json`
 
 ## Platform-specific code (stays in app module)
 - CameraX (CameraActivity, CameraViewModel, CameraScreen)

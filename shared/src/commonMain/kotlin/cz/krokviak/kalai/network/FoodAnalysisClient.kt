@@ -8,8 +8,15 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 
-class FoodAnalysisClient(private val httpClient: HttpClient) {
-    suspend fun getAnalysis(imageBytes: ByteArray, baseUrl: String = "http://192.168.0.115:8080"): FoodAnalysisDto? {
+class FoodAnalysisClient(
+    private val httpClient: HttpClient,
+    private val baseUrl: String = DEFAULT_BASE_URL
+) {
+    companion object {
+        const val DEFAULT_BASE_URL = "http://192.168.0.115:3000"
+    }
+
+    suspend fun getAnalysis(imageBytes: ByteArray): FoodAnalysisDto? {
         return try {
             httpClient.post("$baseUrl/cal") {
                 contentType(ContentType.Image.JPEG)

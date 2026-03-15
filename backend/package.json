@@ -1,12 +1,16 @@
 {
   "name": "kalai-backend",
-  "version": "1.0.0",
-  "description": "Mock backend for Kalai calorie tracking app",
-  "main": "index.js",
+  "version": "2.0.0",
+  "description": "Kalai food tracking backend — Bun + SQLite",
   "scripts": {
-    "start": "node index.js"
+    "start": "bun run src/index.ts",
+    "dev": "bun --watch run src/index.ts",
+    "import": "bun run scripts/import.ts"
   },
   "dependencies": {
-    "express": "^4.18.2"
+    "openai": "^4.73.0"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
   }
 }
