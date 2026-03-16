@@ -23,9 +23,26 @@ export function getProductByBarcode(barcode: string): Product | null {
 
 export function searchProducts(query: string, limit: number = 20): Product[] {
   const db = getDb();
-  return db.query<Product, [string, number]>(
-    "SELECT * FROM products WHERE name LIKE ? LIMIT ?"
-  ).all(`%${query}%`, limit);
+
+  // FTS5 search with relevance ranking (bm25)
+  // Append * for prefix matching: "mle" matches "mléko", "mlekárna", etc.
+  const ftsQuery = query.split(/\s+/).map(t => `"${t}"*`).join(' ');
+  const results = db.query<Product, [string, number]>(
+    `SELECT p.* FROM products p
+     JOIN products_fts fts ON fts.rowid = p.id
+     WHERE products_fts MATCH ?
+     ORDER BY fts.rank
+     LIMIT ?`
+  ).all(ftsQuery, limit);
+
+  // Fallback to LIKE if FTS returns nothing (handles edge cases)
+  if (results.length === 0) {
+    return db.query<Product, [string, number]>(
+      "SELECT * FROM products WHERE name LIKE ? LIMIT ?"
+    ).all(`%${query}%`, limit);
+  }
+
+  return results;
 }
 
 export function insertProduct(product: Omit<Product, "id" | "created_at" | "updated_at">): Product | null {

@@ -39,5 +39,36 @@ export async function initDb(): Promise<Database> {
   db.exec(`CREATE INDEX IF NOT EXISTS idx_products_barcode ON products(barcode)`);
   db.exec(`CREATE INDEX IF NOT EXISTS idx_products_name ON products(name)`);
 
+  // FTS5 virtual table: indexes product name, strips Czech diacritics
+  db.exec(`
+    CREATE VIRTUAL TABLE IF NOT EXISTS products_fts USING fts5(
+      name,
+      content=products,
+      content_rowid=id,
+      tokenize='unicode61 remove_diacritics 2'
+    );
+  `);
+
+  // Triggers to keep FTS in sync with products table
+  db.exec(`
+    CREATE TRIGGER IF NOT EXISTS products_ai AFTER INSERT ON products BEGIN
+      INSERT INTO products_fts(rowid, name) VALUES (new.id, new.name);
+    END;
+  `);
+  db.exec(`
+    CREATE TRIGGER IF NOT EXISTS products_ad AFTER DELETE ON products BEGIN
+      INSERT INTO products_fts(products_fts, rowid, name) VALUES('delete', old.id, old.name);
+    END;
+  `);
+  db.exec(`
+    CREATE TRIGGER IF NOT EXISTS products_au AFTER UPDATE ON products BEGIN
+      INSERT INTO products_fts(products_fts, rowid, name) VALUES('delete', old.id, old.name);
+      INSERT INTO products_fts(rowid, name) VALUES (new.id, new.name);
+    END;
+  `);
+
+  // Rebuild FTS index from existing data (idempotent, safe on every startup)
+  db.exec(`INSERT INTO products_fts(products_fts) VALUES('rebuild')`);
+
   return db;
 }
