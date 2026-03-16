@@ -27,6 +27,14 @@ data class Dimensions(
     val fontCaption: TextUnit,
     val contextMenuMinWidth: Dp,
     val iconSize: Dp,
+    val fontHero: TextUnit,
+    val fontSubtitle: TextUnit,
+    val fontSmall: TextUnit,
+    val rowHeight: Dp,
+    val iconCircleSize: Dp,
+    val thumbnailSize: Dp,
+    val donutChartSize: Dp,
+    val halfSpacing: Dp,
 )
 
 val compactDimensions = Dimensions(
@@ -44,6 +52,14 @@ val compactDimensions = Dimensions(
     fontCaption = 10.sp,
     contextMenuMinWidth = 130.dp,
     iconSize = 18.dp,
+    fontHero = 28.sp,
+    fontSubtitle = 16.sp,
+    fontSmall = 12.sp,
+    rowHeight = 44.dp,
+    iconCircleSize = 32.dp,
+    thumbnailSize = 100.dp,
+    donutChartSize = 90.dp,
+    halfSpacing = 4.dp,
 )
 
 val normalDimensions = Dimensions(
@@ -61,6 +77,14 @@ val normalDimensions = Dimensions(
     fontCaption = 12.sp,
     contextMenuMinWidth = 160.dp,
     iconSize = 24.dp,
+    fontHero = 36.sp,
+    fontSubtitle = 20.sp,
+    fontSmall = 15.sp,
+    rowHeight = 56.dp,
+    iconCircleSize = 40.dp,
+    thumbnailSize = 125.dp,
+    donutChartSize = 125.dp,
+    halfSpacing = 8.dp,
 )
 
 val largeDimensions = Dimensions(
@@ -78,6 +102,14 @@ val largeDimensions = Dimensions(
     fontCaption = 13.sp,
     contextMenuMinWidth = 180.dp,
     iconSize = 28.dp,
+    fontHero = 40.sp,
+    fontSubtitle = 22.sp,
+    fontSmall = 16.sp,
+    rowHeight = 62.dp,
+    iconCircleSize = 44.dp,
+    thumbnailSize = 140.dp,
+    donutChartSize = 140.dp,
+    halfSpacing = 10.dp,
 )
 
 val LocalDimensions = compositionLocalOf { normalDimensions }

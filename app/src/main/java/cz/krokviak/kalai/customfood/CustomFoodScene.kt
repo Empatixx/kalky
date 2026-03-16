@@ -57,6 +57,7 @@ import cz.krokviak.kalai.home.components.FoodItemImage
 import cz.krokviak.kalai.home.components.NutrientsRow
 import cz.krokviak.kalai.i18n.LocalStrings
 import cz.krokviak.kalai.theme.AppTheme
+import cz.krokviak.kalai.ui.LocalDimensions
 import cz.krokviak.kalai.ui.components.KalaiButton
 import cz.krokviak.kalai.ui.components.KalaiCard
 import cz.krokviak.kalai.ui.components.KalaiSegmentedControl
@@ -112,11 +113,12 @@ fun CustomFoodScene(
                 )
             )
 
+            val dims = LocalDimensions.current
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                    .padding(horizontal = dims.screenPadding),
+                verticalArrangement = Arrangement.spacedBy(dims.itemSpacing)
             ) {
                 OutlinedTextField(
                     value = uiState.searchQuery,
@@ -171,7 +173,7 @@ fun CustomFoodScene(
                         Text(
                             text = s.customFood.noResults,
                             color = AppTheme.colors.onBackgroundSecondary,
-                            fontSize = 16.sp
+                            fontSize = dims.fontBody
                         )
                     }
                 } else {
@@ -211,7 +213,7 @@ fun CustomFoodScene(
                             item {
                                 Text(
                                     text = s.customFood.myFoods,
-                                    fontSize = 16.sp,
+                                    fontSize = dims.fontBody,
                                     fontWeight = FontWeight.SemiBold,
                                     color = AppTheme.colors.onBackgroundSecondary
                                 )
@@ -228,7 +230,7 @@ fun CustomFoodScene(
                             item {
                                 Text(
                                     text = s.customFood.recentlyUsed,
-                                    fontSize = 16.sp,
+                                    fontSize = dims.fontBody,
                                     fontWeight = FontWeight.SemiBold,
                                     color = AppTheme.colors.onBackgroundSecondary
                                 )
@@ -246,7 +248,7 @@ fun CustomFoodScene(
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Text(
                                     text = s.customFood.onlineResults,
-                                    fontSize = 16.sp,
+                                    fontSize = dims.fontBody,
                                     fontWeight = FontWeight.SemiBold,
                                     color = AppTheme.colors.onBackgroundSecondary
                                 )
@@ -298,6 +300,7 @@ private fun HistoryFoodItem(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
+    val dims = LocalDimensions.current
     KalaiCard(
         modifier = Modifier
             .fillMaxWidth()
@@ -330,13 +333,13 @@ private fun HistoryFoodItem(
                 ) {
                     Text(
                         text = item.name,
-                        fontSize = 18.sp,
+                        fontSize = dims.fontBody,
                         fontWeight = FontWeight.ExtraBold,
                         color = AppTheme.colors.onBackground
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(dims.halfSpacing))
                     CaloriesRow(calories = item.calories)
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(dims.halfSpacing))
                     NutrientsRow(
                         protein = item.protein,
                         carbs = item.carbs,
@@ -374,6 +377,7 @@ private fun ApiResultItem(
     product: OpenFoodFactsProduct,
     onClick: () -> Unit
 ) {
+    val dims = LocalDimensions.current
     val s = LocalStrings.current
     val name = product.productName?.takeIf { it.isNotBlank() } ?: s.common.unknownProduct
     val nutrients = product.nutriments
@@ -403,18 +407,18 @@ private fun ApiResultItem(
                 Text(
                     text = name,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp,
+                    fontSize = dims.fontBody,
                     color = AppTheme.colors.onBackground,
                     maxLines = 2
                 )
                 Text(
                     text = "$calories kcal  |  ${s.common.protein}: ${protein}g  ${s.common.carbs}: ${carbs}g  ${s.common.fat}: ${fat}g",
-                    fontSize = 13.sp,
+                    fontSize = dims.fontCaption,
                     color = AppTheme.colors.onBackgroundSecondary
                 )
                 Text(
                     text = s.customFood.per100g,
-                    fontSize = 11.sp,
+                    fontSize = dims.fontCaption,
                     color = AppTheme.colors.onBackgroundSecondary
                 )
             }

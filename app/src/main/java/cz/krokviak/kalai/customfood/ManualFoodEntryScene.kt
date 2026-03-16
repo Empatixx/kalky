@@ -56,6 +56,7 @@ import cz.krokviak.kalai.i18n.LocalStrings
 import cz.krokviak.kalai.nutrientedit.components.NutrientEditRow
 import cz.krokviak.kalai.settings.components.IosInlineValuePicker
 import cz.krokviak.kalai.theme.AppTheme
+import cz.krokviak.kalai.ui.LocalDimensions
 import cz.krokviak.kalai.ui.components.KalaiButton
 import cz.krokviak.kalai.ui.components.KalaiCard
 import kotlin.math.roundToInt
@@ -125,12 +126,13 @@ fun ManualFoodEntryScene(
             )
         )
 
+        val dims = LocalDimensions.current
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = dims.screenPadding)
                 .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(dims.itemSpacing)
         ) {
             OutlinedTextField(
                 value = state.name,
@@ -374,13 +376,13 @@ fun ManualFoodEntryScene(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(56.dp)
+                        .height(dims.rowHeight)
                         .padding(horizontal = 14.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(40.dp)
+                            .size(dims.iconCircleSize)
                             .background(
                                 color = Color.Black,
                                 shape = CircleShape
@@ -391,28 +393,28 @@ fun ManualFoodEntryScene(
                             imageVector = Icons.Default.LocalFireDepartment,
                             contentDescription = "Calories",
                             tint = Color.White,
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier.size(dims.iconSize)
                         )
                     }
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
                         text = s.common.calories,
                         color = AppTheme.colors.onBackground,
-                        fontSize = 18.sp,
+                        fontSize = dims.fontBody,
                         fontWeight = FontWeight.Medium,
                         modifier = Modifier.weight(1f)
                     )
                     Text(
                         text = state.calories.toString(),
                         color = AppTheme.colors.onBackground,
-                        fontSize = 18.sp,
+                        fontSize = dims.fontBody,
                         fontWeight = FontWeight.SemiBold
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
                         text = "kcal",
                         color = AppTheme.colors.onBackgroundSecondary,
-                        fontSize = 18.sp,
+                        fontSize = dims.fontBody,
                         fontWeight = FontWeight.SemiBold
                     )
                     Spacer(modifier = Modifier.width(26.dp))

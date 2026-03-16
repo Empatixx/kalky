@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import cz.krokviak.kalai.camera.CameraMode
 import cz.krokviak.kalai.i18n.LocalStrings
+import cz.krokviak.kalai.ui.LocalDimensions
 
 @Composable
 fun CameraBottomControls(
@@ -74,7 +75,7 @@ private fun ModeToggleButton(
     Surface(
         shape = CircleShape,
         color = if (isActive) Color.White else Color.White.copy(alpha = 0.25f),
-        modifier = Modifier.size(56.dp)
+        modifier = Modifier.size(LocalDimensions.current.rowHeight)
     ) {
         IconButton(onClick = onClick) {
             CompositionLocalProvider(

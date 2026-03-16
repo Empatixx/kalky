@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import cz.krokviak.kalai.common.toCzechShortName
 import cz.krokviak.kalai.common.withDayOfWeek
 import cz.krokviak.kalai.theme.AppTheme
+import cz.krokviak.kalai.ui.LocalDimensions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -94,11 +95,12 @@ fun WeekDatePicker(
     )
     MonthHeader(currentDate = currentDate, isToday = isToday, onTodayClick = onTodayClick)
 
+    val dims = LocalDimensions.current
     BoxWithConstraints(
         modifier = Modifier.fillMaxWidth()
     ) {
         val columnsToShow = 7
-        val spacing = 8.dp
+        val spacing = dims.halfSpacing
         // 6 gaps between 7 columns
         val totalSpacing = spacing * (columnsToShow - 1)
         // Each item's width = (availableWidth - spacing) / columns
@@ -108,7 +110,7 @@ fun WeekDatePicker(
             state = listState,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 16.dp),
+                .padding(vertical = dims.itemSpacing),
             horizontalArrangement = Arrangement.spacedBy(spacing),
             contentPadding = PaddingValues(horizontal = 0.dp)
         ) {

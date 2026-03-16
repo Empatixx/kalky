@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import cz.krokviak.kalai.R
 import cz.krokviak.kalai.i18n.LocalStrings
 import cz.krokviak.kalai.theme.AppTheme
+import cz.krokviak.kalai.ui.LocalDimensions
 
 @Composable
 fun FoodDetailButtons(
@@ -27,6 +28,7 @@ fun FoodDetailButtons(
     onFixResult: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val dims = LocalDimensions.current
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -36,14 +38,14 @@ fun FoodDetailButtons(
         FixResultsButton(
             onClick = onFixResult,
             modifier = Modifier
-                .padding(16.dp)
+                .padding(dims.screenPadding)
                 .weight(0.5f)
         )
 
         DoneButton(
             onClick = onFinish,
             modifier = Modifier
-                .padding(16.dp)
+                .padding(dims.screenPadding)
                 .weight(0.5f)
         )
 

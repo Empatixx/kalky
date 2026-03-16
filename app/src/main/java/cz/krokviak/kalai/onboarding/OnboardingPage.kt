@@ -45,6 +45,7 @@ import cz.krokviak.kalai.settings.formatWeightForDisplay
 import cz.krokviak.kalai.settings.heightUnitLabel
 import cz.krokviak.kalai.settings.weightUnitLabel
 import cz.krokviak.kalai.theme.AppTheme
+import cz.krokviak.kalai.ui.LocalDimensions
 import cz.krokviak.kalai.ui.components.KalaiButton
 import cz.krokviak.kalai.i18n.LocalStrings
 import cz.krokviak.kalai.ui.components.KalaiGradientBackground
@@ -97,13 +98,14 @@ fun OnboardingPage(
         }
     }
 
+    val dims = LocalDimensions.current
     KalaiGradientBackground {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .statusBarsPadding()
-                .padding(horizontal = 20.dp, vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(horizontal = dims.screenPadding, vertical = dims.itemSpacing),
+            verticalArrangement = Arrangement.spacedBy(dims.itemSpacing)
         ) {
             OnboardingTopBar(
                 progress = (currentStepIndex + 1f) / steps.size.toFloat(),
@@ -218,7 +220,7 @@ fun OnboardingPage(
                         Text(
                             text = if (isLastStep) s.common.done else s.common.continueText,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 20.sp
+                            fontSize = dims.fontSubtitle
                         )
                     }
                 }
@@ -249,7 +251,7 @@ private fun OnboardingTopBar(
             Text(
                 text = "${page + 1}/$totalPages",
                 color = AppTheme.colors.onBackgroundSecondary,
-                fontSize = 14.sp,
+                fontSize = LocalDimensions.current.fontSmall,
                 fontWeight = FontWeight.SemiBold
             )
         }

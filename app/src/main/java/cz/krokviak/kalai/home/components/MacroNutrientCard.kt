@@ -21,8 +21,8 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import cz.krokviak.kalai.theme.AppTheme
+import cz.krokviak.kalai.ui.LocalDimensions
 import cz.krokviak.kalai.ui.components.KalaiCard
 
 @Composable
@@ -35,6 +35,7 @@ fun RowScope.MacroNutrientCard(
     donutColor: Color,
     modifier: Modifier = Modifier
 ) {
+    val dims = LocalDimensions.current
     KalaiCard(
         modifier = modifier
             .border(
@@ -43,28 +44,27 @@ fun RowScope.MacroNutrientCard(
                 shape = RoundedCornerShape(16.dp)
             )
             .weight(1f),
-        // add border
         shape = RoundedCornerShape(16.dp),
         contentPadding = PaddingValues(0.dp),
     ) {
         Column(
             modifier = Modifier.padding(
-                start = 10.dp,
+                start = dims.cardPadding,
                 top = 0.dp,
-                end = 10.dp,
-                bottom = 16.dp
+                end = dims.cardPadding,
+                bottom = dims.cardPadding
             ),
             verticalArrangement = Arrangement.spacedBy(1.dp)
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 16.dp),
+                    .padding(top = dims.cardPadding),
                 contentAlignment = Alignment.Center
             ) {
                 CupertinoAutoscaleText(
                     text = title,
-                    fontSize = 18.sp,
+                    fontSize = dims.fontBody,
                     color = AppTheme.colors.onBackground,
                     fontWeight = FontWeight.SemiBold,
                 )
@@ -88,7 +88,7 @@ fun RowScope.MacroNutrientCard(
                     text = amount,
                     fontWeight = FontWeight.ExtraBold,
                     textAlign = TextAlign.Center,
-                    fontSize = 20.sp,
+                    fontSize = dims.fontSubtitle,
                     color = AppTheme.colors.onBackground
                 )
             }
@@ -98,7 +98,7 @@ fun RowScope.MacroNutrientCard(
             ) {
                 Text(
                     text = maxAmount,
-                    fontSize = 14.sp,
+                    fontSize = dims.fontSmall,
                     fontWeight = FontWeight.SemiBold,
                     color = AppTheme.colors.onBackgroundSecondary
                 )

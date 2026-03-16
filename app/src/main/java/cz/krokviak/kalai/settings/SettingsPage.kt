@@ -93,7 +93,7 @@ fun SettingsPage(
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(dims.halfSpacing))
 
         SectionHeader(s.settings.language)
         KalaiSegmentedControl(
@@ -103,7 +103,7 @@ fun SettingsPage(
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(dims.halfSpacing))
 
         SectionHeader(s.settings.units)
         KalaiSegmentedControl(
@@ -113,7 +113,7 @@ fun SettingsPage(
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(dims.halfSpacing))
 
         // Notifications section
         SectionHeader(s.notifications.reminders)
@@ -127,7 +127,7 @@ fun SettingsPage(
             Text(
                 text = s.notifications.enableReminders,
                 color = AppTheme.colors.onBackground,
-                fontSize = 16.sp,
+                fontSize = dims.fontBody,
                 fontWeight = FontWeight.SemiBold
             )
             Switch(
@@ -170,7 +170,7 @@ fun SettingsPage(
         Text(
             text = s.settings.appVersion,
             color = AppTheme.colors.onBackgroundSecondary,
-            fontSize = 16.sp,
+            fontSize = dims.fontBody,
             fontWeight = FontWeight.SemiBold
         )
 
@@ -180,10 +180,11 @@ fun SettingsPage(
 
 @Composable
 private fun SectionHeader(title: String) {
+    val dims = LocalDimensions.current
     Text(
         text = title,
         color = AppTheme.colors.onBackgroundSecondary,
-        fontSize = 15.sp,
+        fontSize = dims.fontSmall,
         fontWeight = FontWeight.Bold,
         modifier = Modifier.padding(start = 4.dp)
     )

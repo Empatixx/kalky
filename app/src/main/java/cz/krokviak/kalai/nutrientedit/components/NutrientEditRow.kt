@@ -17,8 +17,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import cz.krokviak.kalai.theme.AppTheme
+import cz.krokviak.kalai.ui.LocalDimensions
 
 @Composable
 fun NutrientEditRow(
@@ -30,10 +30,11 @@ fun NutrientEditRow(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val dims = LocalDimensions.current
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .height(56.dp)
+            .height(dims.rowHeight)
             .clip(RoundedCornerShape(10.dp))
             .clickable(onClick = onClick)
             .padding(horizontal = 14.dp),
@@ -42,7 +43,7 @@ fun NutrientEditRow(
     ) {
         Box(
             modifier = Modifier
-                .size(40.dp)
+                .size(dims.iconCircleSize)
                 .background(color = activeColor.copy(alpha = 0.14f), shape = CircleShape),
             contentAlignment = Alignment.Center
         ) {
@@ -50,14 +51,14 @@ fun NutrientEditRow(
                 imageVector = icon,
                 contentDescription = null,
                 tint = activeColor,
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier.size(dims.iconSize)
             )
         }
 
         Text(
             text = label,
             color = AppTheme.colors.onBackground,
-            fontSize = 18.sp,
+            fontSize = dims.fontBody,
             fontWeight = FontWeight.Medium,
             modifier = Modifier.weight(1f)
         )
@@ -65,14 +66,14 @@ fun NutrientEditRow(
         Text(
             text = value.toString(),
             color = AppTheme.colors.onBackground,
-            fontSize = 18.sp,
+            fontSize = dims.fontBody,
             fontWeight = FontWeight.SemiBold
         )
         Spacer(modifier = Modifier.width(6.dp))
         Text(
             text = valueUnit,
             color = AppTheme.colors.onBackgroundSecondary,
-            fontSize = 18.sp,
+            fontSize = dims.fontBody,
             fontWeight = FontWeight.SemiBold
         )
         Spacer(modifier = Modifier.width(2.dp))

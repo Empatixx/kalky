@@ -45,6 +45,7 @@ import cz.krokviak.kalai.nutrientedit.components.NutrientEditRow
 import cz.krokviak.kalai.settings.components.IosInlineValuePicker
 import cz.krokviak.kalai.theme.AppTheme
 import cz.krokviak.kalai.i18n.LocalStrings
+import cz.krokviak.kalai.ui.LocalDimensions
 import cz.krokviak.kalai.ui.components.KalaiCard
 
 private enum class DetailMacroPickerField { PROTEIN, CARBS, FAT }
@@ -245,6 +246,7 @@ private fun DetailGroupDivider() {
 fun TitleRow(
     name: String
 ) {
+    val dims = LocalDimensions.current
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -253,7 +255,7 @@ fun TitleRow(
             text = name,
             color = AppTheme.colors.onBackground,
             fontWeight = FontWeight.Bold,
-            fontSize = 24.sp,
+            fontSize = dims.fontTitle,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )
@@ -262,6 +264,7 @@ fun TitleRow(
 
 @Composable
 private fun CaloriesSummaryCard(calories: Int) {
+    val dims = LocalDimensions.current
     KalaiCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(14.dp),
@@ -270,13 +273,13 @@ private fun CaloriesSummaryCard(calories: Int) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(56.dp)
+                .height(dims.rowHeight)
                 .padding(horizontal = 14.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
-                    .size(40.dp)
+                    .size(dims.iconCircleSize)
                     .background(
                         color = Color.Black,
                         shape = CircleShape
@@ -287,28 +290,28 @@ private fun CaloriesSummaryCard(calories: Int) {
                     imageVector = Icons.Default.LocalFireDepartment,
                     contentDescription = "Calories",
                     tint = Color.White,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(dims.iconSize)
                 )
             }
             Spacer(modifier = Modifier.width(12.dp))
             Text(
                 text = LocalStrings.current.common.calories,
                 color = AppTheme.colors.onBackground,
-                fontSize = 18.sp,
+                fontSize = dims.fontBody,
                 fontWeight = FontWeight.Medium,
                 modifier = Modifier.weight(1f)
             )
             Text(
                 text = calories.toString(),
                 color = AppTheme.colors.onBackground,
-                fontSize = 18.sp,
+                fontSize = dims.fontBody,
                 fontWeight = FontWeight.SemiBold,
             )
             Spacer(modifier = Modifier.width(6.dp))
             Text(
                 text = "kcal",
                 color = AppTheme.colors.onBackgroundSecondary,
-                fontSize = 18.sp,
+                fontSize = dims.fontBody,
                 fontWeight = FontWeight.SemiBold
             )
             // Keep the same trailing width as nutrient rows (spacer + chevron),

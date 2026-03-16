@@ -74,22 +74,23 @@ fun WeightLineChart(
 
 @Composable
 private fun EmptyWeightLineChart() {
+    val dims = LocalDimensions.current
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+            .padding(dims.cardPadding),
+        verticalArrangement = Arrangement.spacedBy(dims.halfSpacing)
     ) {
         Text(
             text = "Zatím nemáme údaje o vaší váze",
             color = AppTheme.colors.onBackground,
             fontWeight = FontWeight.ExtraBold,
-            fontSize = 24.sp
+            fontSize = dims.fontTitle
         )
         Text(
             text = "Přidejte je v nastavení.",
             color = AppTheme.colors.onBackground,
-            fontSize = 18.sp,
+            fontSize = dims.fontBody,
             fontWeight = FontWeight.SemiBold
         )
     }
@@ -97,13 +98,14 @@ private fun EmptyWeightLineChart() {
 
 @Composable
 private fun WeightLineChartInternal(weights: List<WeightEntry>) {
+    val dims = LocalDimensions.current
     val currentWeight = weights.last().weight
     val avgWeight = weights.map { it.weight }.average()
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            .padding(horizontal = dims.cardPadding, vertical = dims.halfSpacing * 1.5f),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -111,28 +113,28 @@ private fun WeightLineChartInternal(weights: List<WeightEntry>) {
             Text(
                 text = "Aktuální váha",
                 color = AppTheme.colors.onBackgroundSecondary,
-                fontSize = 16.sp,
+                fontSize = dims.fontBody,
                 fontWeight = FontWeight.Bold
             )
             Text(
                 text = "%.1f kg".format(currentWeight),
                 color = AppTheme.colors.onBackground,
                 fontWeight = FontWeight.ExtraBold,
-                fontSize = 28.sp
+                fontSize = dims.fontTitle
             )
         }
         Column(horizontalAlignment = Alignment.End) {
             Text(
                 text = "Průměr",
                 color = AppTheme.colors.onBackgroundSecondary,
-                fontSize = 16.sp,
+                fontSize = dims.fontBody,
                 fontWeight = FontWeight.Bold
             )
             Text(
                 text = "%.1f kg".format(avgWeight),
                 color = AppTheme.colors.onBackground,
                 fontWeight = FontWeight.ExtraBold,
-                fontSize = 28.sp
+                fontSize = dims.fontTitle
             )
         }
     }
@@ -160,13 +162,13 @@ private fun WeightLineChartInternal(weights: List<WeightEntry>) {
     )
 
     val axisLabel = rememberTextComponent(
-        style = TextStyle(color = AppTheme.colors.onBackground, fontSize = 12.sp)
+        style = TextStyle(color = AppTheme.colors.onBackground, fontSize = dims.fontCaption)
     )
 
     Row(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(dims.cardPadding)
     ) {
         CartesianChartHost(
             chart = rememberCartesianChart(
@@ -203,7 +205,7 @@ private fun WeightLineChartInternal(weights: List<WeightEntry>) {
                     tick = null,
                     valueFormatter = dateFormatter
                 ),
-                layerPadding = { CartesianLayerPadding(scalableStart = 16.dp, scalableEnd = 16.dp) },
+                layerPadding = { CartesianLayerPadding(scalableStart = dims.cardPadding, scalableEnd = dims.cardPadding) },
             ),
             modelProducer = modelProducer,
             modifier = Modifier.fillMaxSize(),

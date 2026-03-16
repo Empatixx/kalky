@@ -19,8 +19,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import cz.krokviak.kalai.theme.AppTheme
+import cz.krokviak.kalai.ui.LocalDimensions
 import cz.krokviak.kalai.ui.components.KalaiCard
 
 @Composable
@@ -31,51 +31,44 @@ fun CalorieCard(
     currentStreak: Int = 0,
     modifier: Modifier = Modifier
 ) {
+    val dims = LocalDimensions.current
+
     KalaiCard(
         modifier = modifier.border(width = 1.dp, color = AppTheme.colors.border, shape = RoundedCornerShape(32.dp)).fillMaxWidth(),
         shape = RoundedCornerShape(32.dp),
         contentPadding = PaddingValues(0.dp),
     ) {
-        Box {
-            Row(
-                modifier = Modifier.padding(32.dp),
-                verticalAlignment = Alignment.CenterVertically
+        Row(
+            modifier = Modifier.padding(dims.cardPadding * 2),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier.size(dims.donutChartSize),
+                contentAlignment = Alignment.Center
             ) {
-                Box(
-                    modifier = Modifier.size(125.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    MacroNutrientDonutChart(
-                        modifier = Modifier.fillMaxSize(),
-                        percentage = calorieRatio,
-                        activeColor = AppTheme.colors.primary,
-                        centerIcon = Icons.Outlined.LocalFireDepartment,
-                    )
-                }
-                Spacer(modifier = Modifier.size(16.dp))
-                Column(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(
-                        text = "$currentCalories",
-                        fontSize = 36.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = AppTheme.colors.onBackground
-                    )
-                    Text(
-                        text = "kcal",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = AppTheme.colors.onBackground
-                    )
-                    Spacer(modifier = Modifier.size(4.dp))
-                    Text(
-                        text = "${maxCalories} kcal",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = AppTheme.colors.onBackgroundSecondary
-                    )
-                }
+                MacroNutrientDonutChart(
+                    modifier = Modifier.fillMaxSize(),
+                    percentage = calorieRatio,
+                    activeColor = AppTheme.colors.primary,
+                    centerIcon = Icons.Outlined.LocalFireDepartment,
+                )
+            }
+            Spacer(modifier = Modifier.size(16.dp))
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = "${currentCalories} kcal",
+                    fontSize = dims.fontHero,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = AppTheme.colors.onBackground
+                )
+                Text(
+                    text = "${maxCalories} kcal",
+                    fontSize = dims.fontSubtitle,
+                    fontWeight = FontWeight.SemiBold,
+                    color = AppTheme.colors.onBackgroundSecondary
+                )
             }
         }
     }

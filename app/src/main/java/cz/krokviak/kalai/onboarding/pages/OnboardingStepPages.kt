@@ -38,6 +38,7 @@ import cz.krokviak.kalai.theme.AppTheme
 import cz.krokviak.kalai.theme.ThemeManager
 import cz.krokviak.kalai.theme.ThemeMode
 import cz.krokviak.kalai.i18n.LocalStrings
+import cz.krokviak.kalai.ui.LocalDimensions
 import cz.krokviak.kalai.ui.components.KalaiCard
 
 @Composable
@@ -196,6 +197,7 @@ fun MacrosOnboardingPage(
     var selectedFatIndex by remember { mutableIntStateOf(fat.coerceIn(0, 500)) }
     val calories = protein * 4 + carbs * 4 + fat * 9
 
+    val dims = LocalDimensions.current
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -203,13 +205,13 @@ fun MacrosOnboardingPage(
         Text(
             text = s.onboarding.yourDailyTargets,
             color = AppTheme.colors.onBackground,
-            fontSize = 28.sp,
+            fontSize = dims.fontTitle,
             fontWeight = FontWeight.ExtraBold
         )
         Text(
             text = s.onboarding.macrosIndicativeNote,
             color = AppTheme.colors.onBackgroundSecondary,
-            fontSize = 14.sp
+            fontSize = dims.fontSmall
         )
         VerticalCalorieCard(
             currentCalories = calories,
@@ -328,6 +330,7 @@ fun PromoCodeOnboardingPage(
     promoCode: String,
     onPromoCodeChange: (String) -> Unit
 ) {
+    val dims = LocalDimensions.current
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -335,7 +338,7 @@ fun PromoCodeOnboardingPage(
         Text(
             text = LocalStrings.current.onboarding.havePromoCode,
             color = AppTheme.colors.onBackground,
-            fontSize = 28.sp,
+            fontSize = dims.fontTitle,
             fontWeight = FontWeight.ExtraBold
         )
         OutlinedTextField(
@@ -372,6 +375,7 @@ private fun PickerOnboardingPage(
     unitSuffix: String,
     onIndexChanged: (Int) -> Unit
 ) {
+    val dims = LocalDimensions.current
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -379,7 +383,7 @@ private fun PickerOnboardingPage(
         Text(
             text = title,
             color = AppTheme.colors.onBackground,
-            fontSize = 28.sp,
+            fontSize = dims.fontTitle,
             fontWeight = FontWeight.ExtraBold
         )
         IosInlineValuePicker(
@@ -398,6 +402,7 @@ private fun ChoiceOnboardingPage(
     selectedIndex: Int,
     onSelected: (Int) -> Unit
 ) {
+    val dims = LocalDimensions.current
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -405,7 +410,7 @@ private fun ChoiceOnboardingPage(
         Text(
             text = title,
             color = AppTheme.colors.onBackground,
-            fontSize = 28.sp,
+            fontSize = dims.fontTitle,
             fontWeight = FontWeight.ExtraBold
         )
         KalaiCard(
@@ -418,15 +423,15 @@ private fun ChoiceOnboardingPage(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(56.dp)
+                            .height(dims.rowHeight)
                             .clickable { onSelected(index) }
-                            .padding(horizontal = 14.dp),
+                            .padding(horizontal = dims.cardPadding),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
                             text = label,
                             color = AppTheme.colors.onBackground,
-                            fontSize = 20.sp,
+                            fontSize = dims.fontSubtitle,
                             fontWeight = FontWeight.Medium,
                             modifier = Modifier.weight(1f)
                         )

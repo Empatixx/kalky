@@ -55,6 +55,7 @@ import coil3.request.ImageRequest
 import cz.krokviak.kalai.R
 import cz.krokviak.kalai.common.entities.FoodItemEntity
 import cz.krokviak.kalai.theme.AppTheme
+import cz.krokviak.kalai.ui.LocalDimensions
 import cz.krokviak.kalai.ui.components.KalaiCard
 import cz.krokviak.kalai.common.formatTime
 
@@ -140,14 +141,15 @@ fun FoodItemLoadedCard(
 
 @Composable
 fun FoodItemImage(foodItem: FoodItemEntity, showBadge: Boolean = true) {
+    val dims = LocalDimensions.current
     // Compute the badge time only when foodItem.createdAt changes
     val badgeTime = remember(foodItem.createdAt) {
         foodItem.createdAt.formatTime()
     }
     Box(
         modifier = Modifier
-            .width(125.dp)
-            .height(125.dp)
+            .width(dims.thumbnailSize)
+            .height(dims.thumbnailSize)
             .clip(RoundedCornerShape(topStart = 16.dp, bottomStart = 16.dp))
     ) {
         if (foodItem.localImagePath.isNotEmpty()) {
@@ -173,7 +175,7 @@ fun FoodItemImage(foodItem: FoodItemEntity, showBadge: Boolean = true) {
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.fork_knife),
                     contentDescription = null,
-                    modifier = Modifier.size(40.dp),
+                    modifier = Modifier.size(dims.iconCircleSize),
                     tint = AppTheme.colors.onBackgroundSecondary
                 )
             }
@@ -206,6 +208,7 @@ fun BoxScope.Badge(timeText: String) {
 
 @Composable
 fun RowScope.FoodItemInfo(foodItem: FoodItemEntity) {
+    val dims = LocalDimensions.current
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -214,7 +217,7 @@ fun RowScope.FoodItemInfo(foodItem: FoodItemEntity) {
     ) {
         Text(
             text = foodItem.name ?: "Neznámé jídlo",
-            fontSize = 18.sp,
+            fontSize = dims.fontBody,
             fontWeight = FontWeight.ExtraBold,
             color = AppTheme.colors.onBackground
         )
@@ -231,15 +234,16 @@ fun RowScope.FoodItemInfo(foodItem: FoodItemEntity) {
 
 @Composable
 fun CaloriesRow(calories: Int) {
+    val dims = LocalDimensions.current
     Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(
             imageVector = Icons.Outlined.LocalFireDepartment,
             contentDescription = "Calories",
-            modifier = Modifier.size(24.dp),
+            modifier = Modifier.size(dims.iconSize),
             tint = AppTheme.colors.onBackground
         )
         Spacer(modifier = Modifier.width(4.dp))
-        Text(text = "$calories kcal", fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = AppTheme.colors.onBackground)
+        Text(text = "$calories kcal", fontSize = dims.fontBody, fontWeight = FontWeight.SemiBold, color = AppTheme.colors.onBackground)
     }
 }
 
@@ -276,15 +280,16 @@ fun NutrientItem(
     valueText: String,
     tintRes: Int
 ) {
+    val dims = LocalDimensions.current
     Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(
             imageVector = icon,
             contentDescription = contentDescription,
-            modifier = Modifier.size(20.dp),
+            modifier = Modifier.size(dims.iconSize * 0.83f),
             tint = colorResource(id = tintRes)
         )
         Spacer(modifier = Modifier.width(4.dp))
-        Text(text = valueText, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = AppTheme.colors.onBackground)
+        Text(text = valueText, fontSize = dims.fontSmall, fontWeight = FontWeight.SemiBold, color = AppTheme.colors.onBackground)
     }
 }
 
@@ -312,6 +317,7 @@ fun FoodItemLoadingImage(
     foodItem: FoodItemEntity,
     progress: Int
 ) {
+    val dims = LocalDimensions.current
     val isDarkTheme = AppTheme.colors.background.luminance() < 0.5f
     val loadingOverlayAlpha = if (isDarkTheme) 0.62f else 0.48f
     val loadingProgressColor = Color.White.copy(alpha = 0.96f)
@@ -319,8 +325,8 @@ fun FoodItemLoadingImage(
 
     Box(
         modifier = Modifier
-            .width(125.dp)
-            .height(125.dp)
+            .width(dims.thumbnailSize)
+            .height(dims.thumbnailSize)
             .clip(RoundedCornerShape(topStart = 16.dp, bottomStart = 16.dp))
     ) {
         // The underlying food image

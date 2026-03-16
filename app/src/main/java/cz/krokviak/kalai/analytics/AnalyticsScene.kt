@@ -26,7 +26,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import cz.krokviak.kalai.analytics.components.NutrientCalorieCard
 import cz.krokviak.kalai.analytics.components.WeightLineChart
 import cz.krokviak.kalai.analytics.components.WheelDatePickerInline
@@ -75,19 +74,19 @@ fun AnalyticsPage(
                         .clickable {
                             activeDateField = if (activeDateField == DateField.START) null else DateField.START
                         }
-                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                        .padding(horizontal = dims.cardPadding, vertical = dims.halfSpacing * 1.5f),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
                         text = "Začátek",
                         color = AppTheme.colors.onBackground,
-                        fontSize = 17.sp,
+                        fontSize = dims.fontBody,
                     )
                     Text(
                         text = formatDate(uiState.startDate),
                         color = if (activeDateField == DateField.START) IOS_RED else AppTheme.colors.onBackground,
-                        fontSize = 17.sp,
+                        fontSize = dims.fontBody,
                         fontWeight = FontWeight.SemiBold,
                     )
                 }
@@ -103,7 +102,7 @@ fun AnalyticsPage(
                         WheelDatePickerInline(
                             initialDate = uiState.startDate,
                             onDateChanged = { analyticsViewModel.setStartDate(it) },
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
+                            modifier = Modifier.padding(horizontal = dims.halfSpacing, vertical = dims.halfSpacing)
                         )
                     }
                 }
@@ -117,19 +116,19 @@ fun AnalyticsPage(
                         .clickable {
                             activeDateField = if (activeDateField == DateField.END) null else DateField.END
                         }
-                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                        .padding(horizontal = dims.cardPadding, vertical = dims.halfSpacing * 1.5f),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
                         text = "Konec",
                         color = AppTheme.colors.onBackground,
-                        fontSize = 17.sp,
+                        fontSize = dims.fontBody,
                     )
                     Text(
                         text = formatDate(uiState.endDate),
                         color = if (activeDateField == DateField.END) IOS_RED else AppTheme.colors.onBackground,
-                        fontSize = 17.sp,
+                        fontSize = dims.fontBody,
                         fontWeight = FontWeight.SemiBold,
                     )
                 }
@@ -145,7 +144,7 @@ fun AnalyticsPage(
                         WheelDatePickerInline(
                             initialDate = uiState.endDate,
                             onDateChanged = { analyticsViewModel.setEndDate(it) },
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
+                            modifier = Modifier.padding(horizontal = dims.halfSpacing, vertical = dims.halfSpacing)
                         )
                     }
                 }

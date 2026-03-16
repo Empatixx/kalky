@@ -67,9 +67,10 @@ fun NutrientCalorieCard(
     val tabs = NutrientTab.entries
     val tabLabels = listOf(s.common.calories, s.common.protein, s.common.carbs, s.common.fat)
 
+    val dims = LocalDimensions.current
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(dims.itemSpacing)
     ) {
         KalaiSegmentedControl(
             selectedIndex = selectedTab,
@@ -111,22 +112,23 @@ fun NutrientCalorieCard(
 
 @Composable
 private fun EmptyNutrientCard() {
+    val dims = LocalDimensions.current
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+            .padding(dims.cardPadding),
+        verticalArrangement = Arrangement.spacedBy(dims.halfSpacing)
     ) {
         Text(
             text = LocalStrings.current.analytics.noCaloriesTitle,
             color = AppTheme.colors.onBackground,
             fontWeight = FontWeight.ExtraBold,
-            fontSize = 24.sp
+            fontSize = dims.fontTitle
         )
         Text(
             text = LocalStrings.current.analytics.noCaloriesSubtitle,
             color = AppTheme.colors.onBackground,
-            fontSize = 18.sp,
+            fontSize = dims.fontBody,
             fontWeight = FontWeight.SemiBold
         )
     }
@@ -135,15 +137,16 @@ private fun EmptyNutrientCard() {
 // Calories tab: stacked bars (protein + carbs + fat)
 @Composable
 private fun StackedCaloriesChart(bars: List<CaloriesBar>) {
+    val dims = LocalDimensions.current
     val avgCalories = bars.sumOf { it.totalCalories } / bars.size
 
     Row(
-        modifier = Modifier.fillMaxWidth().padding(16.dp),
+        modifier = Modifier.fillMaxWidth().padding(dims.cardPadding),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = LocalStrings.current.analytics.avgDailyIntake, color = AppTheme.colors.onBackground, fontSize = 18.sp, fontWeight = FontWeight.Bold)
-        Text(text = "$avgCalories kcal", color = AppTheme.colors.onBackground, fontSize = 22.sp, fontWeight = FontWeight.ExtraBold)
+        Text(text = LocalStrings.current.analytics.avgDailyIntake, color = AppTheme.colors.onBackground, fontSize = dims.fontBody, fontWeight = FontWeight.Bold)
+        Text(text = "$avgCalories kcal", color = AppTheme.colors.onBackground, fontSize = dims.fontSubtitle, fontWeight = FontWeight.ExtraBold)
     }
 
     val proteinColor = colorResource(id = R.color.proteinColor)
@@ -187,15 +190,15 @@ private fun StackedCaloriesChart(bars: List<CaloriesBar>) {
     }
 
     val axisLabel = rememberTextComponent(
-        style = TextStyle(color = AppTheme.colors.onBackground, fontSize = 12.sp)
+        style = TextStyle(color = AppTheme.colors.onBackground, fontSize = dims.fontCaption)
     )
 
-    Row(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    Row(modifier = Modifier.fillMaxSize().padding(dims.cardPadding)) {
         CartesianChartHost(
             chart = rememberCartesianChart(
                 rememberColumnCartesianLayer(
                     columnProvider = columnProvider,
-                    columnCollectionSpacing = 16.dp,
+                    columnCollectionSpacing = dims.itemSpacing,
                     mergeMode = { ColumnCartesianLayer.MergeMode.Stacked },
                 ),
                 startAxis = VerticalAxis.rememberStart(
@@ -212,7 +215,7 @@ private fun StackedCaloriesChart(bars: List<CaloriesBar>) {
                     guideline = null, line = null, tick = null,
                     valueFormatter = dayFormatter
                 ),
-                layerPadding = { CartesianLayerPadding(scalableStart = 16.dp, scalableEnd = 16.dp) },
+                layerPadding = { CartesianLayerPadding(scalableStart = dims.cardPadding, scalableEnd = dims.cardPadding) },
             ),
             modelProducer = modelProducer,
             modifier = Modifier.fillMaxSize(),
@@ -224,6 +227,7 @@ private fun StackedCaloriesChart(bars: List<CaloriesBar>) {
 // Protein/Carbs/Fat tabs: single-color bars
 @Composable
 private fun SingleNutrientChart(bars: List<CaloriesBar>, tab: NutrientTab) {
+    val dims = LocalDimensions.current
     val values = bars.map { bar ->
         when (tab) {
             NutrientTab.PROTEIN -> bar.protein.toDouble()
@@ -249,12 +253,12 @@ private fun SingleNutrientChart(bars: List<CaloriesBar>, tab: NutrientTab) {
     }
 
     Row(
-        modifier = Modifier.fillMaxWidth().padding(16.dp),
+        modifier = Modifier.fillMaxWidth().padding(dims.cardPadding),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = headerTitle, color = AppTheme.colors.onBackground, fontSize = 18.sp, fontWeight = FontWeight.Bold)
-        Text(text = "$avg g", color = AppTheme.colors.onBackground, fontSize = 22.sp, fontWeight = FontWeight.ExtraBold)
+        Text(text = headerTitle, color = AppTheme.colors.onBackground, fontSize = dims.fontBody, fontWeight = FontWeight.Bold)
+        Text(text = "$avg g", color = AppTheme.colors.onBackground, fontSize = dims.fontSubtitle, fontWeight = FontWeight.ExtraBold)
     }
 
     val days = bars.map { it.label }
@@ -278,17 +282,17 @@ private fun SingleNutrientChart(bars: List<CaloriesBar>, tab: NutrientTab) {
     )
 
     val axisLabel = rememberTextComponent(
-        style = TextStyle(color = AppTheme.colors.onBackground, fontSize = 12.sp)
+        style = TextStyle(color = AppTheme.colors.onBackground, fontSize = dims.fontCaption)
     )
 
-    Row(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    Row(modifier = Modifier.fillMaxSize().padding(dims.cardPadding)) {
         CartesianChartHost(
             chart = rememberCartesianChart(
                 rememberColumnCartesianLayer(
                     columnProvider = remember(column) {
                         ColumnCartesianLayer.ColumnProvider.series(column)
                     },
-                    columnCollectionSpacing = 16.dp,
+                    columnCollectionSpacing = dims.itemSpacing,
                     rangeProvider = remember {
                         object : CartesianLayerRangeProvider {
                             override fun getMinY(minY: Double, maxY: Double, extraStore: ExtraStore): Double {
@@ -316,7 +320,7 @@ private fun SingleNutrientChart(bars: List<CaloriesBar>, tab: NutrientTab) {
                     guideline = null, line = null, tick = null,
                     valueFormatter = dayFormatter
                 ),
-                layerPadding = { CartesianLayerPadding(scalableStart = 16.dp, scalableEnd = 16.dp) },
+                layerPadding = { CartesianLayerPadding(scalableStart = dims.cardPadding, scalableEnd = dims.cardPadding) },
             ),
             modelProducer = modelProducer,
             modifier = Modifier.fillMaxSize(),

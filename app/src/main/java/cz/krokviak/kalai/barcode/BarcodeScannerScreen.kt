@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.sp
 import cz.krokviak.kalai.barcode.data.OpenFoodFactsProduct
 import cz.krokviak.kalai.theme.AppTheme
 import cz.krokviak.kalai.i18n.LocalStrings
+import cz.krokviak.kalai.ui.LocalDimensions
 import cz.krokviak.kalai.ui.components.KalaiButton
 
 @Composable
@@ -47,6 +48,7 @@ fun BarcodeScannerScreen(
     onCloseClick: () -> Unit
 ) {
     val s = LocalStrings.current
+    val dims = LocalDimensions.current
     Box(modifier = Modifier.fillMaxSize()) {
         // Camera preview as background
         cameraPreview()
@@ -56,7 +58,7 @@ fun BarcodeScannerScreen(
             onClick = onCloseClick,
             modifier = Modifier
                 .align(Alignment.TopStart)
-                .padding(16.dp)
+                .padding(dims.screenPadding)
         ) {
             Icon(
                 imageVector = Icons.Filled.Close,
@@ -71,7 +73,7 @@ fun BarcodeScannerScreen(
             Text(
                 text = s.barcode.scanBarcode,
                 color = Color.White,
-                fontSize = 18.sp,
+                fontSize = dims.fontBody,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
                     .align(Alignment.TopCenter)
@@ -110,7 +112,7 @@ fun BarcodeScannerScreen(
                 BottomCard(Modifier.align(Alignment.BottomCenter)) {
                     Text(
                         text = product.productName ?: s.common.unknownProduct,
-                        fontSize = 20.sp,
+                        fontSize = dims.fontSubtitle,
                         fontWeight = FontWeight.Bold,
                         color = AppTheme.colors.onBackground
                     )
@@ -160,7 +162,7 @@ fun BarcodeScannerScreen(
                 BottomCard(Modifier.align(Alignment.BottomCenter)) {
                     Text(
                         text = s.barcode.productNotFound,
-                        fontSize = 18.sp,
+                        fontSize = dims.fontBody,
                         fontWeight = FontWeight.Bold,
                         color = AppTheme.colors.onBackground
                     )
@@ -180,7 +182,7 @@ fun BarcodeScannerScreen(
                 BottomCard(Modifier.align(Alignment.BottomCenter)) {
                     Text(
                         text = "${s.barcode.error}: ${state.message}",
-                        fontSize = 16.sp,
+                        fontSize = dims.fontBody,
                         color = Color.Red
                     )
                     Spacer(modifier = Modifier.height(12.dp))
@@ -219,13 +221,14 @@ internal fun BottomCard(
 
 @Composable
 internal fun NutrientRow(label: String, value: String) {
+    val dims = LocalDimensions.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(text = label, fontSize = 16.sp, color = AppTheme.colors.onBackgroundSecondary)
-        Text(text = value, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = AppTheme.colors.onBackground)
+        Text(text = label, fontSize = dims.fontBody, color = AppTheme.colors.onBackgroundSecondary)
+        Text(text = value, fontSize = dims.fontBody, fontWeight = FontWeight.Bold, color = AppTheme.colors.onBackground)
     }
 }

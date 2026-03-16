@@ -17,8 +17,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import cz.krokviak.kalai.theme.AppTheme
+import cz.krokviak.kalai.ui.LocalDimensions
 import cz.krokviak.kalai.home.components.MacroNutrientDonutChart
 import cz.krokviak.kalai.ui.components.KalaiCard
 
@@ -28,6 +28,7 @@ fun VerticalCalorieCard(
     calorieRatio: Float,
     modifier: Modifier = Modifier
 ) {
+    val dims = LocalDimensions.current
     KalaiCard(
         modifier = modifier
             .border(width = 1.dp, color = AppTheme.colors.border, shape = RoundedCornerShape(20.dp))
@@ -37,13 +38,13 @@ fun VerticalCalorieCard(
     ) {
         Column(
             modifier = Modifier
-                .padding(vertical = 24.dp, horizontal = 20.dp)
+                .padding(vertical = dims.cardPadding * 1.5f, horizontal = dims.cardPadding)
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterVertically)
         ) {
             Box(
-                modifier = Modifier.size(112.dp),
+                modifier = Modifier.size(dims.donutChartSize * 0.9f),
                 contentAlignment = Alignment.Center
             ) {
                 MacroNutrientDonutChart(
@@ -56,13 +57,13 @@ fun VerticalCalorieCard(
             Text(
                 text = "${currentCalories} kcal",
                 color = AppTheme.colors.onBackground,
-                fontSize = 34.sp,
+                fontSize = dims.fontHero,
                 fontWeight = FontWeight.ExtraBold
             )
             Text(
                 text = "Denní cíl kalorií",
                 color = AppTheme.colors.onBackgroundSecondary,
-                fontSize = 16.sp,
+                fontSize = dims.fontBody,
                 fontWeight = FontWeight.Medium
             )
         }
