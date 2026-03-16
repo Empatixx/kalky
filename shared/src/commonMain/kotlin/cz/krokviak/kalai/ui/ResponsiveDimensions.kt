@@ -30,20 +30,20 @@ data class Dimensions(
 )
 
 val compactDimensions = Dimensions(
-    screenPadding = 12.dp,
-    cardPadding = 12.dp,
-    itemSpacing = 12.dp,
-    sectionSpacing = 12.dp,
-    chartHeight = 240.dp,
-    chartHeightLarge = 320.dp,
-    buttonHeight = 36.dp,
-    buttonPaddingH = 12.dp,
-    buttonPaddingV = 10.dp,
-    fontTitle = 20.sp,
-    fontBody = 14.sp,
-    fontCaption = 11.sp,
-    contextMenuMinWidth = 140.dp,
-    iconSize = 20.dp,
+    screenPadding = 8.dp,
+    cardPadding = 8.dp,
+    itemSpacing = 8.dp,
+    sectionSpacing = 8.dp,
+    chartHeight = 200.dp,
+    chartHeightLarge = 260.dp,
+    buttonHeight = 32.dp,
+    buttonPaddingH = 10.dp,
+    buttonPaddingV = 6.dp,
+    fontTitle = 18.sp,
+    fontBody = 13.sp,
+    fontCaption = 10.sp,
+    contextMenuMinWidth = 130.dp,
+    iconSize = 18.dp,
 )
 
 val normalDimensions = Dimensions(

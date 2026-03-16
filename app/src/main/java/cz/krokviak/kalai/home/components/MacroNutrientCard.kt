@@ -6,10 +6,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -49,9 +49,9 @@ fun RowScope.MacroNutrientCard(
     ) {
         Column(
             modifier = Modifier.padding(
-                start = 16.dp,
+                start = 10.dp,
                 top = 0.dp,
-                end = 16.dp,
+                end = 10.dp,
                 bottom = 16.dp
             ),
             verticalArrangement = Arrangement.spacedBy(1.dp)
@@ -70,7 +70,7 @@ fun RowScope.MacroNutrientCard(
                 )
             }
             Box(
-                modifier = Modifier.size(100.dp),
+                modifier = Modifier.fillMaxWidth().aspectRatio(1f),
                 contentAlignment = Alignment.Center
             ) {
                 MacroNutrientDonutChart(
@@ -88,7 +88,7 @@ fun RowScope.MacroNutrientCard(
                     text = amount,
                     fontWeight = FontWeight.ExtraBold,
                     textAlign = TextAlign.Center,
-                    fontSize = 24.sp,
+                    fontSize = 20.sp,
                     color = AppTheme.colors.onBackground
                 )
             }

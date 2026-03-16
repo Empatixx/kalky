@@ -1,7 +1,6 @@
 package cz.krokviak.kalai.home.components
 
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -58,34 +57,21 @@ fun CalorieCard(
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(
-                        text = "${currentCalories} kcal",
+                        text = "$currentCalories",
                         fontSize = 36.sp,
                         fontWeight = FontWeight.ExtraBold,
                         color = AppTheme.colors.onBackground
                     )
                     Text(
-                        text = "${maxCalories} kcal",
+                        text = "kcal",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = AppTheme.colors.onBackgroundSecondary
+                        color = AppTheme.colors.onBackground
                     )
-                }
-            }
-            if (currentStreak > 0) {
-                Row(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
+                    Spacer(modifier = Modifier.size(4.dp))
                     Text(
-                        text = "\uD83D\uDD25",
-                        fontSize = 14.sp
-                    )
-                    Text(
-                        text = "$currentStreak",
-                        fontSize = 14.sp,
+                        text = "${maxCalories} kcal",
+                        fontSize = 20.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = AppTheme.colors.onBackgroundSecondary
                     )

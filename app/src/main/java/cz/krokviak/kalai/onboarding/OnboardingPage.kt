@@ -3,6 +3,8 @@ package cz.krokviak.kalai.onboarding
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
@@ -112,83 +114,89 @@ fun OnboardingPage(
 
             Box(modifier = Modifier.weight(1f)) {
                 val isLastStep = currentStepIndex == steps.lastIndex
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center
-                ) {
+                Column(modifier = Modifier.fillMaxSize()) {
+                    val scrollState = rememberScrollState()
                     Box(
                         modifier = Modifier
+                            .weight(1f)
                             .fillMaxWidth()
-                            .pointerInput(currentStepIndex) {
-                                var totalDragX = 0f
-                                detectHorizontalDragGestures(
-                                    onHorizontalDrag = { _, dragAmount -> totalDragX += dragAmount },
-                                    onDragEnd = {
-                                        if (totalDragX <= -80f && currentStepIndex < steps.lastIndex) {
-                                            navigateToNextStep()
-                                        } else if (totalDragX >= 80f && currentStepIndex > 0) {
-                                            navigateToPreviousStep()
-                                        }
-                                        totalDragX = 0f
-                                    }
-                                )
-                            }
+                            .verticalScroll(scrollState),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Box(modifier = Modifier.fillMaxWidth()) {
-                            when (currentStepIndex) {
-                                0 -> LanguageOnboardingPage(
-                                    selectedLanguage = language,
-                                    onSelected = { AppPreferencesManager.setLanguage(it) }
-                                )
-                                1 -> UnitsOnboardingPage(
-                                    selectedUnit = unitSystem,
-                                    onSelected = { AppPreferencesManager.setUnitSystem(it) }
-                                )
-                                2 -> AppearanceOnboardingPage(
-                                    selectedTheme = themeMode,
-                                    onSelected = { ThemeManager.setThemeMode(it) }
-                                )
-                                3 -> GenderOnboardingPage(
-                                    selectedGender = uiState.gender,
-                                    onSelected = onboardingViewModel::onGenderSelected
-                                )
-                                4 -> WeightOnboardingPage(
-                                    values = displayWeightValues,
-                                    selectedIndex = uiState.weightIndex,
-                                    unitSuffix = weightUnit,
-                                    onIndexChanged = onboardingViewModel::onWeightIndexChanged
-                                )
-                                5 -> HeightOnboardingPage(
-                                    values = displayHeightValues,
-                                    selectedIndex = uiState.heightIndex,
-                                    unitSuffix = heightUnit,
-                                    onIndexChanged = onboardingViewModel::onHeightIndexChanged
-                                )
-                                6 -> AgeOnboardingPage(
-                                    values = ageValues,
-                                    selectedIndex = uiState.ageIndex,
-                                    onIndexChanged = onboardingViewModel::onAgeIndexChanged
-                                )
-                                7 -> ActivityOnboardingPage(
-                                    selectedActivityLevel = uiState.activityLevel,
-                                    onSelected = onboardingViewModel::onActivityLevelSelected
-                                )
-                                8 -> GoalOnboardingPage(
-                                    selectedGoal = uiState.goalChoice,
-                                    onSelected = onboardingViewModel::onGoalSelected
-                                )
-                                9 -> MacrosOnboardingPage(
-                                    protein = uiState.targetProtein,
-                                    carbs = uiState.targetCarbs,
-                                    fat = uiState.targetFat,
-                                    onProteinChanged = onboardingViewModel::onProteinChanged,
-                                    onCarbsChanged = onboardingViewModel::onCarbsChanged,
-                                    onFatChanged = onboardingViewModel::onFatChanged
-                                )
-                                else -> PromoCodeOnboardingPage(
-                                    promoCode = uiState.promoCode,
-                                    onPromoCodeChange = onboardingViewModel::onPromoCodeChange
-                                )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .pointerInput(currentStepIndex) {
+                                    var totalDragX = 0f
+                                    detectHorizontalDragGestures(
+                                        onHorizontalDrag = { _, dragAmount -> totalDragX += dragAmount },
+                                        onDragEnd = {
+                                            if (totalDragX <= -80f && currentStepIndex < steps.lastIndex) {
+                                                navigateToNextStep()
+                                            } else if (totalDragX >= 80f && currentStepIndex > 0) {
+                                                navigateToPreviousStep()
+                                            }
+                                            totalDragX = 0f
+                                        }
+                                    )
+                                }
+                        ) {
+                            Box(modifier = Modifier.fillMaxWidth()) {
+                                when (currentStepIndex) {
+                                    0 -> LanguageOnboardingPage(
+                                        selectedLanguage = language,
+                                        onSelected = { AppPreferencesManager.setLanguage(it) }
+                                    )
+                                    1 -> UnitsOnboardingPage(
+                                        selectedUnit = unitSystem,
+                                        onSelected = { AppPreferencesManager.setUnitSystem(it) }
+                                    )
+                                    2 -> AppearanceOnboardingPage(
+                                        selectedTheme = themeMode,
+                                        onSelected = { ThemeManager.setThemeMode(it) }
+                                    )
+                                    3 -> GenderOnboardingPage(
+                                        selectedGender = uiState.gender,
+                                        onSelected = onboardingViewModel::onGenderSelected
+                                    )
+                                    4 -> WeightOnboardingPage(
+                                        values = displayWeightValues,
+                                        selectedIndex = uiState.weightIndex,
+                                        unitSuffix = weightUnit,
+                                        onIndexChanged = onboardingViewModel::onWeightIndexChanged
+                                    )
+                                    5 -> HeightOnboardingPage(
+                                        values = displayHeightValues,
+                                        selectedIndex = uiState.heightIndex,
+                                        unitSuffix = heightUnit,
+                                        onIndexChanged = onboardingViewModel::onHeightIndexChanged
+                                    )
+                                    6 -> AgeOnboardingPage(
+                                        values = ageValues,
+                                        selectedIndex = uiState.ageIndex,
+                                        onIndexChanged = onboardingViewModel::onAgeIndexChanged
+                                    )
+                                    7 -> ActivityOnboardingPage(
+                                        selectedActivityLevel = uiState.activityLevel,
+                                        onSelected = onboardingViewModel::onActivityLevelSelected
+                                    )
+                                    8 -> GoalOnboardingPage(
+                                        selectedGoal = uiState.goalChoice,
+                                        onSelected = onboardingViewModel::onGoalSelected
+                                    )
+                                    9 -> MacrosOnboardingPage(
+                                        protein = uiState.targetProtein,
+                                        carbs = uiState.targetCarbs,
+                                        fat = uiState.targetFat,
+                                        onProteinChanged = onboardingViewModel::onProteinChanged,
+                                        onCarbsChanged = onboardingViewModel::onCarbsChanged,
+                                        onFatChanged = onboardingViewModel::onFatChanged
+                                    )
+                                    else -> PromoCodeOnboardingPage(
+                                        promoCode = uiState.promoCode,
+                                        onPromoCodeChange = onboardingViewModel::onPromoCodeChange
+                                    )
+                                }
                             }
                         }
                     }
