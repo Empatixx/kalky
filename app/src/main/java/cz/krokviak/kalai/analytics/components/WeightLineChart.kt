@@ -39,6 +39,7 @@ import com.patrykandpatrick.vico.multiplatform.common.data.ExtraStore
 import com.patrykandpatrick.vico.multiplatform.common.fill
 import cz.krokviak.kalai.common.repo.WeightEntry
 import cz.krokviak.kalai.theme.AppTheme
+import cz.krokviak.kalai.ui.LocalDimensions
 import cz.krokviak.kalai.ui.components.KalaiCard
 
 @Composable
@@ -60,7 +61,7 @@ fun WeightLineChart(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(300.dp)
+                .height(LocalDimensions.current.chartHeight)
         ) {
             if (weights.isEmpty()) {
                 EmptyWeightLineChart()

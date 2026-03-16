@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import cz.krokviak.kalai.detail.components.FoodBottomSheetCard
 import cz.krokviak.kalai.i18n.rememberStrings
+import cz.krokviak.kalai.ui.LocalDimensions
 import cz.krokviak.kalai.ui.components.KalaiContextMenu
 import cz.krokviak.kalai.ui.components.KalaiContextMenuItem
 
@@ -54,11 +55,12 @@ fun FoodDetailScene(
             contentScale = ContentScale.Crop
         )
 
+        val dims = LocalDimensions.current
         // Top Icons with context menu
         FoodDetailTopIcons(
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .padding(top = 16.dp, start = 16.dp, end = 16.dp),
+                .padding(top = dims.screenPadding, start = dims.screenPadding, end = dims.screenPadding),
             onExitClick = onExitClick,
             onShareClick = onShareClick,
             onDeleteClick = onDeleteClick

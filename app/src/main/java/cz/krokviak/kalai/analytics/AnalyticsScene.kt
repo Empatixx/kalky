@@ -31,6 +31,7 @@ import cz.krokviak.kalai.analytics.components.NutrientCalorieCard
 import cz.krokviak.kalai.analytics.components.WeightLineChart
 import cz.krokviak.kalai.analytics.components.WheelDatePickerInline
 import cz.krokviak.kalai.theme.AppTheme
+import cz.krokviak.kalai.ui.LocalDimensions
 import cz.krokviak.kalai.ui.components.KalaiCard
 import kotlinx.datetime.LocalDate
 
@@ -44,14 +45,15 @@ fun AnalyticsPage(
     uiState: AnalyticsUiState,
     modifier: Modifier = Modifier
 ) {
+    val dims = LocalDimensions.current
     var activeDateField by remember { mutableStateOf<DateField?>(null) }
 
     Column(
         modifier = modifier
             .verticalScroll(rememberScrollState())
-            .padding(24.dp)
+            .padding(dims.screenPadding)
             .fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(dims.itemSpacing)
     ) {
         // iOS-style date range card
         KalaiCard(

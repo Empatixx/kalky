@@ -48,6 +48,7 @@ import cz.krokviak.kalai.home.components.MacroNutrientCard
 import cz.krokviak.kalai.home.components.WeekDatePicker
 import cz.krokviak.kalai.theme.AppTheme
 import cz.krokviak.kalai.i18n.LocalStrings
+import cz.krokviak.kalai.ui.LocalDimensions
 import cz.krokviak.kalai.ui.components.KalaiCard
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -59,12 +60,13 @@ fun HomeScene(
     model: MainViewModel,
     onSaveAsCustom: (List<FoodItemEntity>) -> Unit = {}
 ) {
+    val dims = LocalDimensions.current
     Box(modifier = modifier.fillMaxSize()) {
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        contentPadding = PaddingValues(16.dp)
+        verticalArrangement = Arrangement.spacedBy(dims.itemSpacing),
+        contentPadding = PaddingValues(dims.screenPadding)
     ) {
         item {
             val s = LocalStrings.current
@@ -94,7 +96,7 @@ fun HomeScene(
                         currentStreak = uiState.currentStreak,
                     )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(dims.itemSpacing))
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -136,7 +138,7 @@ fun HomeScene(
                 ) {
                     Text(
                         text = s.home.addedToday,
-                        fontSize = 24.sp,
+                        fontSize = dims.fontTitle,
                         fontWeight = FontWeight.ExtraBold,
                         color = AppTheme.colors.onBackground
                     )
@@ -183,7 +185,7 @@ fun HomeScene(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(dims.screenPadding),
             shape = RoundedCornerShape(16.dp),
             color = AppTheme.colors.surface
         ) {

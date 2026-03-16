@@ -48,6 +48,7 @@ import com.patrykandpatrick.vico.multiplatform.common.shape.Shape
 import cz.krokviak.kalai.R
 import cz.krokviak.kalai.analytics.CaloriesBar
 import cz.krokviak.kalai.theme.AppTheme
+import cz.krokviak.kalai.ui.LocalDimensions
 import cz.krokviak.kalai.ui.components.KalaiCard
 import cz.krokviak.kalai.i18n.LocalStrings
 import cz.krokviak.kalai.ui.components.KalaiSegmentedControl
@@ -91,7 +92,7 @@ fun NutrientCalorieCard(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(400.dp)
+                    .height(LocalDimensions.current.chartHeightLarge)
             ) {
                 if (bars.isEmpty()) {
                     EmptyNutrientCard()

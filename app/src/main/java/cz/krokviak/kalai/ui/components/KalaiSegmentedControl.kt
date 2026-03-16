@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cz.krokviak.kalai.theme.AppTheme
+import cz.krokviak.kalai.ui.LocalDimensions
 
 @Composable
 fun KalaiSegmentedControl(
@@ -41,10 +42,11 @@ fun KalaiSegmentedControl(
     unselectedTextColor: Color = AppTheme.colors.onBackgroundSecondary,
     textSize: TextUnit = 16.sp,
 ) {
+    val dims = LocalDimensions.current
     val shape = RoundedCornerShape(8.dp)
 
     Surface(
-        modifier = modifier.height(40.dp),
+        modifier = modifier.height(dims.buttonHeight),
         shape = shape,
         color = trackColor
     ) {
@@ -77,7 +79,7 @@ fun KalaiSegmentedControl(
                         Box(
                             modifier = Modifier
                                 .weight(1f)
-                                .height(40.dp)
+                                .height(dims.buttonHeight)
                                 .clip(shape)
                                 .clickable(
                                     interactionSource = remember { MutableInteractionSource() },

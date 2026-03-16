@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import cz.krokviak.kalai.ui.LocalDimensions
 
 @Composable
 fun KalaiButton(
@@ -19,6 +20,7 @@ fun KalaiButton(
     contentColor: Color = Color.White,
     content: @Composable () -> Unit
 ) {
+    val dims = LocalDimensions.current
     Surface(
         onClick = onClick,
         modifier = modifier,
@@ -27,7 +29,7 @@ fun KalaiButton(
         contentColor = contentColor
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+            modifier = Modifier.padding(horizontal = dims.buttonPaddingH, vertical = dims.buttonPaddingV),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {

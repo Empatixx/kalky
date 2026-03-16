@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cz.krokviak.kalai.theme.AppTheme
+import cz.krokviak.kalai.ui.LocalDimensions
 
 data class KalaiContextMenuItem(
     val label: String,
@@ -37,6 +38,7 @@ fun KalaiContextMenu(
     items: List<KalaiContextMenuItem>,
     modifier: Modifier = Modifier
 ) {
+    val dims = LocalDimensions.current
     MaterialTheme(
         shapes = MaterialTheme.shapes.copy(
             extraSmall = RoundedCornerShape(14.dp)
@@ -45,7 +47,7 @@ fun KalaiContextMenu(
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = onDismissRequest,
-            modifier = modifier.widthIn(min = 160.dp),
+            modifier = modifier.widthIn(min = dims.contextMenuMinWidth),
             containerColor = AppTheme.colors.surface,
             shadowElevation = 8.dp
         ) {
@@ -58,7 +60,7 @@ fun KalaiContextMenu(
                             item.onClick()
                         }
                         .padding(horizontal = 14.dp, vertical = 12.dp)
-                        .widthIn(min = 160.dp),
+                        .widthIn(min = dims.contextMenuMinWidth),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(

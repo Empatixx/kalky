@@ -34,6 +34,7 @@ import cz.krokviak.kalai.theme.AppTheme
 import cz.krokviak.kalai.theme.ThemeManager
 import cz.krokviak.kalai.theme.ThemeMode
 import cz.krokviak.kalai.i18n.LocalStrings
+import cz.krokviak.kalai.ui.LocalDimensions
 import cz.krokviak.kalai.ui.components.KalaiSegmentedControl
 
 @Composable
@@ -66,12 +67,14 @@ fun SettingsPage(
         }
     }
 
+    val dims = LocalDimensions.current
+
     Column(
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+            .padding(dims.screenPadding),
+        verticalArrangement = Arrangement.spacedBy(dims.itemSpacing)
     ) {
         Text(
             text = s.settings.title,

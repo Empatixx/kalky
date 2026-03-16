@@ -60,6 +60,7 @@ import cz.krokviak.kalai.settings.AppLanguage
 import cz.krokviak.kalai.settings.AppPreferencesManager
 import cz.krokviak.kalai.theme.KalaiTheme
 import cz.krokviak.kalai.ui.components.KalaiGradientBackground
+import cz.krokviak.kalai.ui.components.ResponsiveProvider
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
@@ -149,6 +150,7 @@ fun AppContent(
 ) {
     val navController = rememberNavController()
     val context = LocalContext.current
+    ResponsiveProvider {
     NavHost(
         navController = navController,
         startDestination = OnboardingRoute
@@ -296,6 +298,7 @@ fun AppContent(
             )
         }
     }
+    } // end ResponsiveProvider
 }
 
 /**

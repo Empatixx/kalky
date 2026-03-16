@@ -40,6 +40,7 @@ import cz.krokviak.kalai.nutrientedit.components.VerticalCalorieCard
 import cz.krokviak.kalai.settings.components.IosInlineValuePicker
 import cz.krokviak.kalai.ui.components.KalaiCard
 import cz.krokviak.kalai.i18n.LocalStrings
+import cz.krokviak.kalai.ui.LocalDimensions
 import cz.krokviak.kalai.ui.components.KalaiGradientBackground
 
 private enum class MacroPickerField { PROTEIN, CARBS, FAT }
@@ -56,13 +57,14 @@ fun NutrientEditScene(
     var selectedCarbsIndex by remember { mutableIntStateOf(resolveMacroIndex(uiState.carbs, macroValues.lastIndex)) }
     var selectedFatIndex by remember { mutableIntStateOf(resolveMacroIndex(uiState.fat, macroValues.lastIndex)) }
 
+    val dims = LocalDimensions.current
     KalaiGradientBackground {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 20.dp, vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(horizontal = dims.screenPadding, vertical = dims.itemSpacing),
+            verticalArrangement = Arrangement.spacedBy(dims.itemSpacing)
         ) {
             NutrientEditTopBar(
                 onBackClick = onBackClick,
