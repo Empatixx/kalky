@@ -39,7 +39,7 @@ fun CalorieCard(
         contentPadding = PaddingValues(0.dp),
     ) {
         Row(
-            modifier = Modifier.padding(dims.cardPadding * 2),
+            modifier = Modifier.padding(dims.cardPadding),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
@@ -53,7 +53,7 @@ fun CalorieCard(
                     centerIcon = Icons.Outlined.LocalFireDepartment,
                 )
             }
-            Spacer(modifier = Modifier.size(16.dp))
+            Spacer(modifier = Modifier.size(dims.halfSpacing))
             Column(
                 modifier = Modifier.weight(1f)
             ) {

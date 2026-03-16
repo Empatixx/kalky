@@ -63,9 +63,9 @@ val compactDimensions = Dimensions(
 )
 
 val normalDimensions = Dimensions(
-    screenPadding = 16.dp,
+    screenPadding = 12.dp,
     cardPadding = 16.dp,
-    itemSpacing = 16.dp,
+    itemSpacing = 12.dp,
     sectionSpacing = 16.dp,
     chartHeight = 300.dp,
     chartHeightLarge = 400.dp,
@@ -83,7 +83,7 @@ val normalDimensions = Dimensions(
     rowHeight = 56.dp,
     iconCircleSize = 40.dp,
     thumbnailSize = 125.dp,
-    donutChartSize = 125.dp,
+    donutChartSize = 105.dp,
     halfSpacing = 8.dp,
 )
 

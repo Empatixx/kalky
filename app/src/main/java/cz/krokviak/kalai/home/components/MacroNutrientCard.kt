@@ -52,14 +52,14 @@ fun RowScope.MacroNutrientCard(
                 start = dims.cardPadding,
                 top = 0.dp,
                 end = dims.cardPadding,
-                bottom = dims.cardPadding
+                bottom = dims.halfSpacing * 1.5f
             ),
             verticalArrangement = Arrangement.spacedBy(1.dp)
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = dims.cardPadding),
+                    .padding(top = dims.halfSpacing),
                 contentAlignment = Alignment.Center
             ) {
                 CupertinoAutoscaleText(

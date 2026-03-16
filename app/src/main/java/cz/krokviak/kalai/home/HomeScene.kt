@@ -110,7 +110,7 @@ fun HomeScene(
                             donutColor = colorResource(id = R.color.proteinColor),
                             percentage = uiState.proteinRatio(),
                         )
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(dims.halfSpacing))
                         MacroNutrientCard(
                             amount = "${uiState.currentCarbs}g",
                             maxAmount = "${uiState.maxCarbs}g",
@@ -119,7 +119,7 @@ fun HomeScene(
                             donutColor = colorResource(id = R.color.carbsColor),
                             percentage = uiState.carbsRatio(),
                         )
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(dims.halfSpacing))
                         MacroNutrientCard(
                             amount = "${uiState.currentFats}g",
                             maxAmount = "${uiState.maxFats}g",
@@ -130,7 +130,7 @@ fun HomeScene(
                         )
                     }
                 }
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(dims.halfSpacing))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
