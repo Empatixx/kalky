@@ -20,7 +20,14 @@ data class AppStrings(
     val onboarding: OnboardingStrings,
     val common: CommonStrings,
     val customFood: CustomFoodStrings,
-    val notifications: NotificationStrings
+    val notifications: NotificationStrings,
+    val legal: LegalStrings
+)
+
+data class LegalStrings(
+    val sectionTitle: String,
+    val termsTitle: String,
+    val privacyTitle: String
 )
 
 data class NotificationStrings(
@@ -300,6 +307,11 @@ val CzechStrings = AppStrings(
         manualEntryTitle = "Nov\u00E9 j\u00EDdlo",
         save = "Ulo\u017Eit"
     ),
+    legal = LegalStrings(
+        sectionTitle = "Pr\u00E1vn\u00ED informace",
+        termsTitle = "Obchodn\u00ED podm\u00EDnky",
+        privacyTitle = "Ochrana osobn\u00EDch \u00FAdaj\u016F"
+    ),
     notifications = NotificationStrings(
         reminders = "Upozorn\u011Bn\u00ED",
         enableReminders = "P\u0159ipom\u00EDnky j\u00EDdel",
@@ -438,6 +450,11 @@ val EnglishStrings = AppStrings(
         noResults = "No results",
         manualEntryTitle = "New food",
         save = "Save"
+    ),
+    legal = LegalStrings(
+        sectionTitle = "Legal",
+        termsTitle = "Terms & Conditions",
+        privacyTitle = "Privacy Policy"
     ),
     notifications = NotificationStrings(
         reminders = "Notifications",

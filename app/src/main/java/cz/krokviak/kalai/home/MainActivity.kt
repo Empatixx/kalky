@@ -39,6 +39,8 @@ import cz.krokviak.kalai.common.FoodDetailRoute
 import cz.krokviak.kalai.common.ManualFoodEntryRoute
 import cz.krokviak.kalai.common.NutrientEditRoute
 import cz.krokviak.kalai.common.OnboardingRoute
+import cz.krokviak.kalai.common.PrivacyPolicyRoute
+import cz.krokviak.kalai.common.TermsRoute
 import cz.krokviak.kalai.customfood.CustomFoodScene
 import cz.krokviak.kalai.customfood.CustomFoodViewModel
 import cz.krokviak.kalai.customfood.ManualFoodEntryScene
@@ -50,7 +52,9 @@ import cz.krokviak.kalai.nutrientedit.NutrientEditViewModel
 import cz.krokviak.kalai.onboarding.OnboardingPage
 import cz.krokviak.kalai.onboarding.OnboardingViewModel
 import cz.krokviak.kalai.settings.ProfilePage
+import cz.krokviak.kalai.settings.PrivacyPolicyPage
 import cz.krokviak.kalai.settings.SettingsPage
+import cz.krokviak.kalai.settings.TermsPage
 import cz.krokviak.kalai.settings.SettingsViewModel
 import cz.krokviak.kalai.theme.AppTheme
 import cz.krokviak.kalai.i18n.CzechStrings
@@ -297,6 +301,14 @@ fun AppContent(
                 }
             )
         }
+
+        composable<TermsRoute> {
+            TermsPage(onBackClick = { navController.popBackStack() })
+        }
+
+        composable<PrivacyPolicyRoute> {
+            PrivacyPolicyPage(onBackClick = { navController.popBackStack() })
+        }
     }
     } // end ResponsiveProvider
 }
@@ -381,7 +393,9 @@ fun MainScaffold(
                         )
                     }
                     3 -> SettingsPage(
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier.fillMaxSize(),
+                        onTermsClick = { navController.navigate(TermsRoute) },
+                        onPrivacyClick = { navController.navigate(PrivacyPolicyRoute) }
                     )
                 }
             }

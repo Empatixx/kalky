@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,6 +16,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -26,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
@@ -39,7 +44,9 @@ import cz.krokviak.kalai.ui.components.KalaiSegmentedControl
 
 @Composable
 fun SettingsPage(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onTermsClick: () -> Unit = {},
+    onPrivacyClick: () -> Unit = {}
 ) {
     val s = LocalStrings.current
     val context = LocalContext.current
@@ -162,19 +169,50 @@ fun SettingsPage(
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(dims.halfSpacing))
 
-        // Account section placeholder
-        SectionHeader(s.settings.account)
+        // Legal section
+        SectionHeader(s.legal.sectionTitle)
+
+        LegalRow(label = s.legal.termsTitle, onClick = onTermsClick)
+        LegalRow(label = s.legal.privacyTitle, onClick = onPrivacyClick)
+
+        Spacer(modifier = Modifier.weight(1f))
 
         Text(
             text = s.settings.appVersion,
             color = AppTheme.colors.onBackgroundSecondary,
+            fontSize = dims.fontSmall,
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+    }
+}
+
+@Composable
+private fun LegalRow(label: String, onClick: () -> Unit) {
+    val dims = LocalDimensions.current
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .padding(horizontal = 4.dp, vertical = 12.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = label,
+            color = AppTheme.colors.onBackground,
             fontSize = dims.fontBody,
             fontWeight = FontWeight.SemiBold
         )
-
-        Spacer(modifier = Modifier.height(32.dp))
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            contentDescription = null,
+            tint = AppTheme.colors.onBackgroundSecondary
+        )
     }
 }
 

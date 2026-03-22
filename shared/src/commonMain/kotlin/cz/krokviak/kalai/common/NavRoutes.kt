@@ -21,3 +21,9 @@ object CustomFoodRoute
 
 @Serializable
 object ManualFoodEntryRoute
+
+@Serializable
+object TermsRoute
+
+@Serializable
+object PrivacyPolicyRoute
