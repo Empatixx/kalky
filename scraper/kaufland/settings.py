@@ -65,7 +65,7 @@ FEEDS = {
     "products.jsonl": {
         "format": "jsonlines",
         "encoding": "utf-8",
-        "overwrite": True,
+        "overwrite": False,
         "fields": [
             "barcode", "name", "energy_kcal_100g",
             "protein_100g", "fat_100g", "carbs_100g",
@@ -75,7 +75,7 @@ FEEDS = {
     "products_full.jsonl": {
         "format": "jsonlines",
         "encoding": "utf-8",
-        "overwrite": True,
+        "overwrite": False,
     },
 }
 

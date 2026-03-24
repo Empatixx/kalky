@@ -7,6 +7,8 @@ Usage:
     scrapy crawl kaufland_products -a queries="jogurt,mleko,chleba"
     scrapy crawl kaufland_products -a max_pages=10
 """
+import json
+import os
 import re
 from urllib.parse import quote, urljoin
 
@@ -84,7 +86,7 @@ class KauflandProductsSpider(scrapy.Spider):
         else:
             self.search_queries = DEFAULT_QUERIES
         self.max_pages = int(max_pages)
-        self.seen_urls = set()
+        self.seen_urls = self._load_existing_urls()
 
     def start_requests(self):
         for query in self.search_queries:
@@ -208,6 +210,25 @@ class KauflandProductsSpider(scrapy.Spider):
         )
 
         yield item
+
+    @staticmethod
+    def _load_existing_urls():
+        """Pre-seed seen_urls from existing JSONL to skip already-scraped products."""
+        urls = set()
+        for path in ("products_full.jsonl",):
+            if not os.path.exists(path):
+                continue
+            with open(path) as f:
+                for line in f:
+                    try:
+                        item = json.loads(line)
+                        if item.get("kaufland_url"):
+                            urls.add(item["kaufland_url"])
+                    except json.JSONDecodeError:
+                        continue
+        if urls:
+            print(f"[resume] Loaded {len(urls)} already-scraped URLs, will skip them")
+        return urls
 
     def errback_log(self, failure):
         self.logger.warning(f"Request failed: {failure.request.url}: {failure.value}")
