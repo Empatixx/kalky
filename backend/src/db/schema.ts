@@ -39,6 +39,19 @@ export async function initDb(): Promise<Database> {
   db.exec(`CREATE INDEX IF NOT EXISTS idx_products_barcode ON products(barcode)`);
   db.exec(`CREATE INDEX IF NOT EXISTS idx_products_name ON products(name)`);
 
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      firebase_uid TEXT UNIQUE NOT NULL,
+      email TEXT,
+      display_name TEXT,
+      photo_url TEXT,
+      created_at TEXT DEFAULT (datetime('now')),
+      updated_at TEXT DEFAULT (datetime('now'))
+    );
+  `);
+  db.exec(`CREATE INDEX IF NOT EXISTS idx_users_firebase_uid ON users(firebase_uid)`);
+
   // FTS5 virtual table: indexes product name, strips Czech diacritics
   db.exec(`
     CREATE VIRTUAL TABLE IF NOT EXISTS products_fts USING fts5(

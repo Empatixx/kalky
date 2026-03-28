@@ -3,7 +3,8 @@ import { handleBarcode } from "./routes/barcode";
 import { handleSearch } from "./routes/search";
 import { handleAnalyze } from "./routes/analyze";
 import { handleAdminImport } from "./routes/admin";
-import { requireAdmin } from "./middleware/auth";
+import { requireAdmin, requireAuth } from "./middleware/auth";
+import { handleAuthMe } from "./routes/auth";
 
 const PORT = Number(process.env.PORT) || 3000;
 
@@ -40,6 +41,13 @@ Bun.serve({
     }
 
     try {
+      // POST /api/auth/me
+      if (url.pathname === "/api/auth/me" && req.method === "POST") {
+        const authResult = await requireAuth(req);
+        if (authResult instanceof Response) return withCors(authResult);
+        return withCors(await handleAuthMe(authResult));
+      }
+
       // GET /api/barcode/:code
       const barcodeMatch = url.pathname.match(/^\/api\/barcode\/(.+)$/);
       if (barcodeMatch && req.method === "GET") {

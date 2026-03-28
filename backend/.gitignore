@@ -2,3 +2,4 @@ node_modules/
 data/products.sqlite
 .env
 dist/
+firebase-service-account.json
