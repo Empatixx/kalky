@@ -47,7 +47,7 @@ export function searchProducts(query: string, limit: number = 20): Product[] {
 
 export function insertProduct(product: Omit<Product, "id" | "created_at" | "updated_at">): Product | null {
   const db = getDb();
-  const result = db.query<Product, Record<string, unknown>>(`
+  const result = db.query<Product, any>(`
     INSERT INTO products (barcode, name, energy_kcal_100g, protein_100g, fat_100g, carbs_100g, serving_size, image_url)
     VALUES ($barcode, $name, $energy_kcal_100g, $protein_100g, $fat_100g, $carbs_100g, $serving_size, $image_url)
     ON CONFLICT(barcode) DO UPDATE SET

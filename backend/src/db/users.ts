@@ -32,7 +32,7 @@ export function getOrCreateUser(
   photoUrl?: string
 ): User | null {
   const db = getDb();
-  return db.query<User, Record<string, unknown>>(`
+  return db.query<User, any>(`
     INSERT INTO users (firebase_uid, email, display_name, photo_url)
     VALUES ($firebase_uid, $email, $display_name, $photo_url)
     ON CONFLICT(firebase_uid) DO UPDATE SET
