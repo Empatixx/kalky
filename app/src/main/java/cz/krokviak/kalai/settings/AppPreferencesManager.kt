@@ -15,6 +15,7 @@ object AppPreferencesManager {
     private const val KEY_UNIT_SYSTEM = "unit_system"
     private const val KEY_NOTIFICATIONS_ENABLED = "notifications_enabled"
     private const val KEY_LAST_NOTIFICATION_TIME = "last_notification_time"
+    private const val KEY_ONBOARDING_COMPLETED = "onboarding_completed"
 
     private var sharedPreferences: SharedPreferences? = null
 
@@ -27,6 +28,9 @@ object AppPreferencesManager {
     private val _notificationsEnabled = MutableStateFlow(true)
     val notificationsEnabled: StateFlow<Boolean> = _notificationsEnabled
 
+    private val _onboardingCompleted = MutableStateFlow(false)
+    val onboardingCompleted: StateFlow<Boolean> = _onboardingCompleted
+
     fun initialize(context: Context) {
         if (sharedPreferences != null) return
 
@@ -35,6 +39,7 @@ object AppPreferencesManager {
         _language.value = prefs.getEnum(KEY_LANGUAGE, AppLanguage.CS)
         _unitSystem.value = prefs.getEnum(KEY_UNIT_SYSTEM, UnitSystem.METRIC)
         _notificationsEnabled.value = prefs.getBoolean(KEY_NOTIFICATIONS_ENABLED, true)
+        _onboardingCompleted.value = prefs.getBoolean(KEY_ONBOARDING_COMPLETED, false)
     }
 
     fun setLanguage(value: AppLanguage) {
@@ -50,6 +55,11 @@ object AppPreferencesManager {
     fun setNotificationsEnabled(value: Boolean) {
         _notificationsEnabled.value = value
         sharedPreferences?.edit()?.putBoolean(KEY_NOTIFICATIONS_ENABLED, value)?.apply()
+    }
+
+    fun setOnboardingCompleted(value: Boolean) {
+        _onboardingCompleted.value = value
+        sharedPreferences?.edit()?.putBoolean(KEY_ONBOARDING_COMPLETED, value)?.apply()
     }
 
     fun getLastNotificationTime(): Long {

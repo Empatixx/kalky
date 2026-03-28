@@ -46,7 +46,8 @@ import cz.krokviak.kalai.ui.components.KalaiSegmentedControl
 fun SettingsPage(
     modifier: Modifier = Modifier,
     onTermsClick: () -> Unit = {},
-    onPrivacyClick: () -> Unit = {}
+    onPrivacyClick: () -> Unit = {},
+    onSignOutClick: () -> Unit = {}
 ) {
     val s = LocalStrings.current
     val context = LocalContext.current
@@ -176,6 +177,26 @@ fun SettingsPage(
 
         LegalRow(label = s.legal.termsTitle, onClick = onTermsClick)
         LegalRow(label = s.legal.privacyTitle, onClick = onPrivacyClick)
+
+        Spacer(modifier = Modifier.height(dims.halfSpacing))
+
+        // Sign out section
+        SectionHeader(s.settings.account)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onSignOutClick() }
+                .padding(horizontal = 4.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = s.auth.signOut,
+                color = MaterialTheme.colorScheme.error,
+                fontSize = dims.fontBody,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
 
         Spacer(modifier = Modifier.weight(1f))
 

@@ -21,13 +21,30 @@ data class AppStrings(
     val common: CommonStrings,
     val customFood: CustomFoodStrings,
     val notifications: NotificationStrings,
-    val legal: LegalStrings
+    val legal: LegalStrings,
+    val auth: AuthStrings
 )
 
 data class LegalStrings(
     val sectionTitle: String,
     val termsTitle: String,
     val privacyTitle: String
+)
+
+data class AuthStrings(
+    val loginTitle: String,
+    val loginSubtitle: String,
+    val continueWithGoogle: String,
+    val continueWithApple: String,
+    val continueWithEmail: String,
+    val email: String,
+    val password: String,
+    val signIn: String,
+    val createAccount: String,
+    val noAccount: String,
+    val haveAccount: String,
+    val signOut: String,
+    val or: String
 )
 
 data class NotificationStrings(
@@ -320,6 +337,21 @@ val CzechStrings = AppStrings(
         behindTitle = "Jsi pozadu s j\u00EDdlem",
         behindBody = "M\u00E1\u0161 za sebou jen %d%% kalori\u00ED. Nezapome\u0148 j\u00EDst!",
         channelName = "P\u0159ipom\u00EDnky j\u00EDdel"
+    ),
+    auth = AuthStrings(
+        loginTitle = "V\u00EDtejte v Kalai",
+        loginSubtitle = "P\u0159ihla\u0161te se pro pokra\u010Dov\u00E1n\u00ED",
+        continueWithGoogle = "Pokra\u010Dovat p\u0159es Google",
+        continueWithApple = "Pokra\u010Dovat p\u0159es Apple",
+        continueWithEmail = "Pokra\u010Dovat p\u0159es e-mail",
+        email = "E-mail",
+        password = "Heslo",
+        signIn = "P\u0159ihl\u00E1sit se",
+        createAccount = "Vytvo\u0159it \u00FA\u010Det",
+        noAccount = "Nem\u00E1te \u00FA\u010Det?",
+        haveAccount = "M\u00E1te \u00FA\u010Det?",
+        signOut = "Odhl\u00E1sit se",
+        or = "nebo"
     )
 )
 
@@ -464,6 +496,21 @@ val EnglishStrings = AppStrings(
         behindTitle = "You're behind on food",
         behindBody = "You've only logged %d%% of your calories. Don't forget to eat!",
         channelName = "Meal reminders"
+    ),
+    auth = AuthStrings(
+        loginTitle = "Welcome to Kalai",
+        loginSubtitle = "Sign in to continue",
+        continueWithGoogle = "Continue with Google",
+        continueWithApple = "Continue with Apple",
+        continueWithEmail = "Continue with Email",
+        email = "Email",
+        password = "Password",
+        signIn = "Sign in",
+        createAccount = "Create account",
+        noAccount = "Don't have an account?",
+        haveAccount = "Already have an account?",
+        signOut = "Sign out",
+        or = "or"
     )
 )
 

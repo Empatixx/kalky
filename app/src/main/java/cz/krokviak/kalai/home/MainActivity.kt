@@ -32,15 +32,19 @@ import androidx.navigation.toRoute
 import cz.krokviak.kalai.analytics.AnalyticsPage
 import cz.krokviak.kalai.analytics.AnalyticsViewModel
 import cz.krokviak.kalai.camera.CameraActivity
+import cz.krokviak.kalai.auth.AuthViewModel
+import cz.krokviak.kalai.auth.LoginPage
 import cz.krokviak.kalai.common.ShareImageHelper
 import cz.krokviak.kalai.common.CustomFoodRoute
 import cz.krokviak.kalai.common.DefaultRoute
 import cz.krokviak.kalai.common.FoodDetailRoute
+import cz.krokviak.kalai.common.LoginRoute
 import cz.krokviak.kalai.common.ManualFoodEntryRoute
 import cz.krokviak.kalai.common.NutrientEditRoute
 import cz.krokviak.kalai.common.OnboardingRoute
 import cz.krokviak.kalai.common.PrivacyPolicyRoute
 import cz.krokviak.kalai.common.TermsRoute
+import com.google.firebase.auth.FirebaseAuth
 import cz.krokviak.kalai.customfood.CustomFoodScene
 import cz.krokviak.kalai.customfood.CustomFoodViewModel
 import cz.krokviak.kalai.customfood.ManualFoodEntryScene
@@ -77,6 +81,7 @@ class MainActivity : ComponentActivity() {
     private val settingsViewModel: SettingsViewModel by viewModel()
     private val onboardingViewModel: OnboardingViewModel by viewModel()
     private val customFoodViewModel: CustomFoodViewModel by viewModel()
+    private val authViewModel: AuthViewModel by viewModel()
 
     /**
      * Launcher for the camera Activity, handles the result of taking a picture.
@@ -99,6 +104,7 @@ class MainActivity : ComponentActivity() {
                     settingsViewModel = settingsViewModel,
                     onboardingViewModel = onboardingViewModel,
                     customFoodViewModel = customFoodViewModel,
+                    authViewModel = authViewModel,
                     cameraResultLauncher = cameraResultLauncher
                 )
             }
@@ -150,14 +156,22 @@ fun AppContent(
     settingsViewModel: SettingsViewModel,
     onboardingViewModel: OnboardingViewModel,
     customFoodViewModel: CustomFoodViewModel,
+    authViewModel: AuthViewModel,
     cameraResultLauncher: ActivityResultLauncher<Intent>
 ) {
     val navController = rememberNavController()
     val context = LocalContext.current
+
+    val startDestination: Any = when {
+        !AppPreferencesManager.onboardingCompleted.value -> OnboardingRoute
+        FirebaseAuth.getInstance().currentUser == null -> LoginRoute
+        else -> DefaultRoute
+    }
+
     ResponsiveProvider {
     NavHost(
         navController = navController,
-        startDestination = OnboardingRoute
+        startDestination = startDestination
     ) {
         composable<OnboardingRoute> {
             OnboardingPage(
@@ -180,6 +194,19 @@ fun AppContent(
                             result.targetCalories
                         )
                     }
+                    AppPreferencesManager.setOnboardingCompleted(true)
+                    navController.navigate(LoginRoute) {
+                        popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+
+        composable<LoginRoute> {
+            LoginPage(
+                authViewModel = authViewModel,
+                onSignInSuccess = {
                     navController.navigate(DefaultRoute) {
                         popUpTo(navController.graph.startDestinationId) { inclusive = true }
                         launchSingleTop = true
@@ -197,6 +224,7 @@ fun AppContent(
                 analyticsViewModel = analyticsViewModel,
                 settingsViewModel = settingsViewModel,
                 customFoodViewModel = customFoodViewModel,
+                authViewModel = authViewModel,
                 onCameraClick = {
                     cameraResultLauncher.launch(
                         Intent(context, CameraActivity::class.java)
@@ -322,6 +350,7 @@ fun MainScaffold(
     analyticsViewModel: AnalyticsViewModel,
     settingsViewModel: SettingsViewModel,
     customFoodViewModel: CustomFoodViewModel,
+    authViewModel: AuthViewModel,
     onCameraClick: () -> Unit,
     navController: NavController
 ) {
@@ -395,7 +424,14 @@ fun MainScaffold(
                     3 -> SettingsPage(
                         modifier = Modifier.fillMaxSize(),
                         onTermsClick = { navController.navigate(TermsRoute) },
-                        onPrivacyClick = { navController.navigate(PrivacyPolicyRoute) }
+                        onPrivacyClick = { navController.navigate(PrivacyPolicyRoute) },
+                        onSignOutClick = {
+                            authViewModel.signOut()
+                            navController.navigate(LoginRoute) {
+                                popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                                launchSingleTop = true
+                            }
+                        }
                     )
                 }
             }

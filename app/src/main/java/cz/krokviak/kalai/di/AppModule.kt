@@ -1,6 +1,10 @@
 package cz.krokviak.kalai.di
 
 import cz.krokviak.kalai.analytics.AnalyticsViewModel
+import cz.krokviak.kalai.auth.AuthStateProvider
+import cz.krokviak.kalai.auth.AuthTokenProvider
+import cz.krokviak.kalai.auth.AuthViewModel
+import cz.krokviak.kalai.auth.FirebaseAuthTokenProvider
 import cz.krokviak.kalai.barcode.BarcodeScannerViewModel
 import cz.krokviak.kalai.camera.CameraViewModel
 import cz.krokviak.kalai.common.AndroidImageStorage
@@ -20,6 +24,11 @@ val appModule = module {
     single { DriverFactory(get()) }
     single<ImageStorage> { AndroidImageStorage(get()) }
 
+    // Auth
+    single { FirebaseAuthTokenProvider() }
+    single<AuthTokenProvider> { get<FirebaseAuthTokenProvider>() }
+    single<AuthStateProvider> { get<FirebaseAuthTokenProvider>() }
+
     // ViewModels
     viewModel { MainViewModel(get(), get(), get(), get(), get()) }
     viewModel { FoodDetailViewModel(get(), get(), get()) }
@@ -30,4 +39,5 @@ val appModule = module {
     viewModel { BarcodeScannerViewModel(get()) }
     viewModel { CameraViewModel(get()) }
     viewModel { CustomFoodViewModel(get(), get()) }
+    viewModel { AuthViewModel(get(), get()) }
 }
