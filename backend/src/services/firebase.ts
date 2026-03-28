@@ -1,4 +1,5 @@
 import { initializeApp, cert, getApps } from "firebase-admin/app";
+import { getAppCheck } from "firebase-admin/app-check";
 import { getAuth, type DecodedIdToken } from "firebase-admin/auth";
 
 function ensureInitialized() {
@@ -27,4 +28,9 @@ export async function verifyIdToken(token: string): Promise<VerifiedToken> {
     name: decoded.name,
     picture: decoded.picture,
   };
+}
+
+export async function verifyAppCheckToken(token: string): Promise<void> {
+  ensureInitialized();
+  await getAppCheck().verifyToken(token);
 }

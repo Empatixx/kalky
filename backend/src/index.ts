@@ -3,7 +3,7 @@ import { handleBarcode } from "./routes/barcode";
 import { handleSearch } from "./routes/search";
 import { handleAnalyze } from "./routes/analyze";
 import { handleAdminImport } from "./routes/admin";
-import { requireAdmin, requireAuth } from "./middleware/auth";
+import { requireAdmin, requireAppCheck, requireAuth } from "./middleware/auth";
 import { handleAuthMe } from "./routes/auth";
 import { handleFcmToken } from "./routes/fcm";
 
@@ -13,7 +13,7 @@ function corsHeaders(): HeadersInit {
   return {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Firebase-AppCheck",
   };
 }
 
@@ -69,6 +69,8 @@ Bun.serve({
 
       // POST /cal
       if (url.pathname === "/cal" && req.method === "POST") {
+        const appCheckError = await requireAppCheck(req);
+        if (appCheckError) return withCors(appCheckError);
         return withCors(await handleAnalyze(req));
       }
 

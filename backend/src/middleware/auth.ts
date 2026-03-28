@@ -1,4 +1,4 @@
-import { verifyIdToken, type VerifiedToken } from "../services/firebase";
+import { verifyIdToken, verifyAppCheckToken, type VerifiedToken } from "../services/firebase";
 
 export async function requireAuth(req: Request): Promise<VerifiedToken | Response> {
   const authHeader = req.headers.get("Authorization");
@@ -16,6 +16,27 @@ export async function requireAuth(req: Request): Promise<VerifiedToken | Respons
     console.error("Firebase token verification failed:", err);
     return Response.json(
       { error: "Invalid or expired token" },
+      { status: 401 }
+    );
+  }
+}
+
+export async function requireAppCheck(req: Request): Promise<Response | null> {
+  const token = req.headers.get("X-Firebase-AppCheck");
+  if (!token) {
+    return Response.json(
+      { error: "Missing App Check token" },
+      { status: 401 }
+    );
+  }
+
+  try {
+    await verifyAppCheckToken(token);
+    return null;
+  } catch (err) {
+    console.error("App Check verification failed:", err);
+    return Response.json(
+      { error: "Invalid App Check token" },
       { status: 401 }
     );
   }

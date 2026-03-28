@@ -1,6 +1,8 @@
 package cz.krokviak.kalai
 
 import android.app.Application
+import com.google.firebase.appcheck.FirebaseAppCheck
+import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
 import cz.krokviak.kalai.config.RemoteConfigManager
 import cz.krokviak.kalai.di.appModule
 import cz.krokviak.kalai.di.sharedModule
@@ -14,6 +16,10 @@ class KalaiApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         AppPreferencesManager.initialize(this)
+
+        FirebaseAppCheck.getInstance().installAppCheckProviderFactory(
+            PlayIntegrityAppCheckProviderFactory.getInstance()
+        )
 
         startKoin {
             androidContext(this@KalaiApplication)

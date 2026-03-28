@@ -1,9 +1,11 @@
 package cz.krokviak.kalai.di
 
 import cz.krokviak.kalai.analytics.AnalyticsViewModel
+import cz.krokviak.kalai.auth.AppCheckTokenProvider
 import cz.krokviak.kalai.auth.AuthStateProvider
 import cz.krokviak.kalai.auth.AuthTokenProvider
 import cz.krokviak.kalai.auth.AuthViewModel
+import cz.krokviak.kalai.auth.FirebaseAppCheckTokenProvider
 import cz.krokviak.kalai.auth.FirebaseAuthTokenProvider
 import cz.krokviak.kalai.barcode.BarcodeScannerViewModel
 import cz.krokviak.kalai.camera.CameraViewModel
@@ -33,6 +35,7 @@ val appModule = module {
     single { FirebaseAuthTokenProvider() }
     single<AuthTokenProvider> { get<FirebaseAuthTokenProvider>() }
     single<AuthStateProvider> { get<FirebaseAuthTokenProvider>() }
+    single<AppCheckTokenProvider> { FirebaseAppCheckTokenProvider() }
 
     // ViewModels
     viewModel { MainViewModel(get(), get(), get(), get(), get()) }
