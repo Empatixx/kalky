@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1071491178207",
+    "project_id": "kalky-17eb8",
+    "storage_bucket": "kalky-17eb8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1071491178207:android:dcba3905e0d9d0a1a5536a",
+        "android_client_info": {
+          "package_name": "cz.krokviak.kalai"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1071491178207-togt8ulorqbmlaat0v8s0o7m7hso993l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "cz.krokviak.kalai",
+            "certificate_hash": "152b382e0f6322eb418e27ef57064f376c2e9327"
+          }
+        },
+        {
+          "client_id": "1071491178207-hl52n9mjv94p7u8pko7bnb2f50m7lp0e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAyAGhdh-3I5NifT8266Mv_1WoixSkjoks"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1071491178207-hl52n9mjv94p7u8pko7bnb2f50m7lp0e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
