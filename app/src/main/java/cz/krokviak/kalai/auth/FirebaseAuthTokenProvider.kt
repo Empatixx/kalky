@@ -2,6 +2,8 @@ package cz.krokviak.kalai.auth
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.tasks.await
@@ -22,6 +24,8 @@ class FirebaseAuthTokenProvider : AuthTokenProvider, AuthStateProvider {
 
     init {
         firebaseAuth.addAuthStateListener(authStateListener)
+        // Set Crashlytics user ID for returning users
+        firebaseAuth.currentUser?.uid?.let { Firebase.crashlytics.setUserId(it) }
     }
 
     override suspend fun getIdToken(): String? {

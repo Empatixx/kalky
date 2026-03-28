@@ -1,85 +1,64 @@
-# Kalai - Food Tracking App
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
 Czech-language food/nutrition tracking app built with Kotlin Multiplatform (KMP). Business logic (ViewModels, repos, network, DB) is in the shared module. UI Compose screens remain in the Android app module. iOS app skeleton is set up.
-
-## Architecture
-- **Pattern**: MVVM + Compose
-- **DI**: Koin
-- **UI**: Compose with Material3 + custom Kalai components (`ui/components/`)
-- **Database**: SQLDelight (shared module, multiplatform)
-- **HTTP**: Ktor + kotlinx-serialization (shared module)
-- **Date/Time**: kotlinx-datetime (shared module)
-
-## Project Structure
-```
-kalai/
-├── app/                          # Android app module
-│   └── src/main/java/cz/krokviak/kalai/
-│       ├── home/                 # MainActivity, HomeScene, UI components
-│       ├── analytics/            # AnalyticsScene, chart components
-│       ├── settings/             # SettingsPage UI
-│       ├── detail/               # FoodDetailScene, UI components
-│       ├── nutrientedit/         # NutrientEditScene, UI components
-│       ├── camera/               # CameraX (Activity, ViewModel, Screen)
-│       ├── barcode/              # ML Kit scanner (Activity, Screen)
-│       ├── ui/components/         # KalaiCard, KalaiButton, KalaiSegmentedControl
-│       ├── common/               # AndroidImageStorage
-│       └── di/                   # appModule (platform DI + ViewModels)
-├── shared/                       # KMP shared module
-│   └── src/
-│       ├── commonMain/           # ViewModels, repos, network, entities, DB, DI
-│       ├── androidMain/          # DriverFactory, Platform
-│       └── iosMain/              # DriverFactory, KoinHelper, Platform
-├── iosApp/                       # iOS app (SwiftUI entry point)
-│   └── iosApp/
-```
-
-## KMP Migration Status
-- [x] Phase 0: Gradle setup (KMP plugins, new dependencies)
-- [x] Phase 1: Shared module skeleton
-- [x] Phase 2: ThreeTenABP → kotlinx-datetime
-- [x] Phase 3: Retrofit + Jackson → Ktor + kotlinx-serialization
-- [x] Phase 4: Room → SQLDelight
-- [x] Phase 5: Koin → Koin Multiplatform (sharedModule + appModule split)
-- [x] Phase 6: ViewModels & state classes moved to shared/commonMain
-- [x] Phase 7: Camera/Barcode abstraction (stays platform-specific, shared VMs handle results)
-- [x] Phase 8: MainActivity thin wrapper (Activity handles camera/barcode intents, delegates to shared VMs)
-- [x] Phase 9: iOS app module skeleton (iosApp/, KoinHelper, SwiftUI entry point)
 
 ## Build
 - **Requires JDK 21** (JDK 25 is NOT compatible with AGP 8.7.2)
 - Set `JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64` or configure in Android Studio
 - Build: `JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64 ./gradlew :app:compileDebugKotlin`
+- Shared module only: `JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64 ./gradlew :shared:compileDebugKotlinAndroid`
+- Backend: `cd backend && bun install && bun run src/index.ts`
+- Backend typecheck: `cd backend && bun run tsc --noEmit`
+
+## Architecture
+- **Pattern**: MVVM + Compose
+- **DI**: Koin (sharedModule in commonMain + appModule in Android app)
+- **UI**: Compose with Material3 + custom Kalai components (`ui/components/`)
+- **Database**: SQLDelight (shared module, multiplatform)
+- **HTTP**: Ktor + kotlinx-serialization (shared module)
+- **Auth**: Firebase Auth (Google/Apple/Email) — client SDK in app module, Firebase Admin SDK on backend
+- **Date/Time**: kotlinx-datetime (shared module)
+
+### KMP Boundary
+- **shared/commonMain**: ViewModels, repositories, network clients, entities, DB, DI, interfaces (AuthTokenProvider, AuthStateProvider, ImageStorage)
+- **app module (Android)**: All Compose UI screens, platform implementations (FirebaseAuthTokenProvider, AndroidImageStorage, CameraX, ML Kit), Activity classes, AppModule DI
+- **Rule**: `commonMain` must be platform-independent. Firebase SDK, Android SDK, CameraX etc. stay in app module. Shared module defines interfaces, app module implements them.
+
+### Auth Flow
+- Firebase Auth on Android (Credential Manager for Google, OAuthProvider for Apple, email/password)
+- `FirebaseAuthTokenProvider` implements shared `AuthTokenProvider` interface
+- Ktor HttpClient auto-attaches Firebase ID token via interceptor in `HttpClientFactory.kt` (only for non-OpenFoodFacts URLs)
+- Backend verifies tokens via `firebase-admin` in `requireAuth()` middleware
+- Navigation: Onboarding → LoginRoute → DefaultRoute. Returning users skip to DefaultRoute if Firebase session persists
+- `POST /api/auth/me` — idempotent user registration/lookup (called after sign-in)
+
+### Navigation
+- Type-safe routes with `@Serializable` objects/data classes in `NavRoutes.kt`
+- NavHost in `MainActivity.kt` → `AppContent` composable
+- Start destination determined by: onboarding completed? → authenticated? → DefaultRoute
+- MainScaffold uses HorizontalPager with 4 pages (Home, Analytics, Profile, Settings)
 
 ## Key Conventions
-- UI language: Czech
-- **UI style**: Use custom Kalai components from `ui/components/` — `KalaiCard` (card container), `KalaiButton` (filled button), `KalaiSegmentedControl` (tab selector). For text/icons use Material3 `Text` and `Icon`. For pickers, build custom iOS-style pickers using `LazyColumn` + `rememberSnapFlingBehavior` (see `analytics/components/WheelDatePicker.kt`).
+- UI language: Czech (i18n system in `i18n/Strings.kt` with `CzechStrings`/`EnglishStrings`, `LocalStrings.current`)
+- **UI style**: iOS-inspired design. Use custom Kalai components — `KalaiButton`, `KalaiCard`, `KalaiSegmentedControl`, `KalaiGradientBackground`. Colors via `AppTheme.colors`. Responsive sizing via `LocalDimensions.current`. For pickers, build custom iOS-style wheel pickers using `LazyColumn` + `rememberSnapFlingBehavior` (see `analytics/components/WheelDatePicker.kt`). Prefer iOS UX patterns (smooth transitions, bottom sheets, minimal chrome) over Material defaults.
+- **Domain logic belongs in ViewModels**, not in composables. Composables are pure UI — they call ViewModel methods.
 - Feature structure: `FeatureName/` with `FeatureScene.kt`, `FeatureViewModel.kt`, `FeatureUiState.kt`, `components/`
 - Colors: Black/White/Gray theme via `AppTheme.colors`
-- Navigation: Type-safe routes with `@Serializable` objects/data classes in `NavRoutes.kt`
-- Bottom nav: 3 tabs (Domov, Analýza, Nastavení) + FABs (camera + barcode scanner)
 
 ## APIs
 - **Backend** (`backend/`): Bun + SQLite server, default port 3000
-  - **Food analysis**: `POST http://<host>:3000/cal` (sends raw image bytes, returns nutrition JSON via OpenAI GPT-4o vision)
-  - **Barcode lookup**: `GET http://<host>:3000/api/barcode/:code` (local SQLite product DB)
-  - **Product search**: `GET http://<host>:3000/api/search?q=...` (text search, max 20 results)
+  - `POST /cal` — food image analysis (raw image bytes → nutrition JSON via OpenAI vision)
+  - `GET /api/barcode/:code` — product lookup by barcode
+  - `GET /api/search?q=...` — text search, max 20 results
+  - `POST /api/auth/me` — authenticated user registration/profile (requires Firebase ID token)
+  - `POST /api/admin/import` — bulk product import (requires ADMIN_KEY)
 - **Open Food Facts** (fallback): `GET https://world.openfoodfacts.org/api/v2/product/{barcode}.json`
 
-## Platform-specific code (stays in app module)
-- CameraX (CameraActivity, CameraViewModel, CameraScreen)
-- ML Kit barcode scanning (BarcodeScannerActivity, BarcodeScannerScreen)
-- AndroidImageStorage (implements shared ImageStorage interface)
-- All Compose UI screens (HomeScene, AnalyticsScene, SettingsPage, FoodDetailScene, NutrientEditScene)
-- AndroidManifest.xml, KalaiApplication.kt, MainActivity.kt
-- AppModule (DriverFactory, AndroidImageStorage, ViewModel registrations)
-
-## Shared module contents (commonMain)
-- All ViewModels (MainViewModel, FoodDetailViewModel, NutrientEditViewModel, AnalyticsViewModel, SettingsViewModel, BarcodeScannerViewModel)
-- All UI state classes (MainUiState, FoodDetailState, NutrientEditState, AnalyticsUiState, SettingsUiState)
-- Repositories (FoodRepository, PersonalInfoRepo, NutrientSettingRepo)
-- Network clients (FoodAnalysisClient, OpenFoodFactsClient)
-- SQLDelight database (KalaiDatabase, .sq files)
-- ImageStorage interface, NavRoutes, DateTimeUtils
-- SharedModule (Koin DI)
+## Backend Details
+- Runtime: Bun with `bun:sqlite`, no framework (raw `Bun.serve` routing)
+- Auth middleware: `requireAuth()` (Firebase Admin SDK) and `requireAdmin()` (static ADMIN_KEY)
+- Database: `products` table + FTS5 for Czech text search, `users` table (firebase_uid, email, display_name)
+- Environment: `OPENAI_API_KEY`, `ADMIN_KEY`, `GOOGLE_APPLICATION_CREDENTIALS` (Firebase service account JSON)
