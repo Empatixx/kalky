@@ -17,6 +17,14 @@ export function getUserByFirebaseUid(uid: string): User | null {
   ).get(uid);
 }
 
+export function updateFcmToken(firebaseUid: string, fcmToken: string): void {
+    const db = getDb();
+    db.run(
+        `UPDATE users SET fcm_token = ?, updated_at = datetime('now') WHERE firebase_uid = ?`,
+        [fcmToken, firebaseUid]
+    );
+}
+
 export function getOrCreateUser(
   firebaseUid: string,
   email?: string,

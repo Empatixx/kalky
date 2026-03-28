@@ -46,11 +46,19 @@ export async function initDb(): Promise<Database> {
       email TEXT,
       display_name TEXT,
       photo_url TEXT,
+      fcm_token TEXT,
       created_at TEXT DEFAULT (datetime('now')),
       updated_at TEXT DEFAULT (datetime('now'))
     );
   `);
   db.exec(`CREATE INDEX IF NOT EXISTS idx_users_firebase_uid ON users(firebase_uid)`);
+
+  // Add fcm_token column to existing users table if missing
+  try {
+    db.exec(`ALTER TABLE users ADD COLUMN fcm_token TEXT`);
+  } catch (_) {
+    // Column already exists — safe to ignore
+  }
 
   // FTS5 virtual table: indexes product name, strips Czech diacritics
   db.exec(`

@@ -5,6 +5,7 @@ import { handleAnalyze } from "./routes/analyze";
 import { handleAdminImport } from "./routes/admin";
 import { requireAdmin, requireAuth } from "./middleware/auth";
 import { handleAuthMe } from "./routes/auth";
+import { handleFcmToken } from "./routes/fcm";
 
 const PORT = Number(process.env.PORT) || 3000;
 
@@ -46,6 +47,13 @@ Bun.serve({
         const authResult = await requireAuth(req);
         if (authResult instanceof Response) return withCors(authResult);
         return withCors(await handleAuthMe(authResult));
+      }
+
+      // POST /api/auth/fcm-token
+      if (url.pathname === "/api/auth/fcm-token" && req.method === "POST") {
+        const authResult = await requireAuth(req);
+        if (authResult instanceof Response) return withCors(authResult);
+        return withCors(await handleFcmToken(req, authResult));
       }
 
       // GET /api/barcode/:code
