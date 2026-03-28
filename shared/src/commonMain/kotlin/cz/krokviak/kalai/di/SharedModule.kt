@@ -15,7 +15,7 @@ import org.koin.dsl.module
 
 val sharedModule = module {
     // Network
-    single<HttpClient> { createHttpClient() }
+    single<HttpClient> { createHttpClient(getOrNull()) }
     single { FoodAnalysisClient(get()) }
     single { OpenFoodFactsClient(get()) }
 

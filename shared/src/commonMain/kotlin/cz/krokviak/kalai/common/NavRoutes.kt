@@ -27,3 +27,6 @@ object TermsRoute
 
 @Serializable
 object PrivacyPolicyRoute
+
+@Serializable
+object LoginRoute
