@@ -11,12 +11,18 @@ import cz.krokviak.kalai.network.OpenFoodFactsClient
 import cz.krokviak.kalai.network.createHttpClient
 import io.ktor.client.HttpClient
 import org.koin.core.module.Module
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val sharedModule = module {
     // Network
     single<HttpClient> { createHttpClient(getOrNull()) }
-    single { FoodAnalysisClient(get()) }
+    single {
+        FoodAnalysisClient(
+            httpClient = get(),
+            baseUrl = getOrNull<String>(named("backendBaseUrl")) ?: FoodAnalysisClient.DEFAULT_BASE_URL
+        )
+    }
     single { OpenFoodFactsClient(get()) }
 
     // Database

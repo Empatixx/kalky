@@ -16,13 +16,18 @@ import cz.krokviak.kalai.home.MainViewModel
 import cz.krokviak.kalai.nutrientedit.NutrientEditViewModel
 import cz.krokviak.kalai.onboarding.OnboardingViewModel
 import cz.krokviak.kalai.settings.SettingsViewModel
+import cz.krokviak.kalai.config.RemoteConfigManager
 import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val appModule = module {
     // Platform-specific
     single { DriverFactory(get()) }
     single<ImageStorage> { AndroidImageStorage(get()) }
+
+    // Remote Config - provides backend URL override for shared module
+    single(named("backendBaseUrl")) { RemoteConfigManager.getBackendBaseUrl() }
 
     // Auth
     single { FirebaseAuthTokenProvider() }

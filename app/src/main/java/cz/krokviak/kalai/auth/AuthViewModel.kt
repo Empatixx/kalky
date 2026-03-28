@@ -13,6 +13,7 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.OAuthProvider
 import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.ktx.Firebase
+import cz.krokviak.kalai.config.RemoteConfigManager
 import io.ktor.client.HttpClient
 import io.ktor.client.request.post
 import io.ktor.http.ContentType
@@ -37,6 +38,8 @@ class AuthViewModel(
 
     private val _uiState = MutableStateFlow(AuthUiState())
     val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
+
+    val authUser: StateFlow<AuthUser?> = authTokenProvider.currentUser
 
     init {
         viewModelScope.launch {
@@ -100,7 +103,7 @@ class AuthViewModel(
 
     private suspend fun onAuthSuccess(result: AuthResult) {
         try {
-            httpClient.post("http://192.168.0.115:3000/api/auth/me") {
+            httpClient.post(RemoteConfigManager.getBackendBaseUrl() + "/api/auth/me") {
                 contentType(ContentType.Application.Json)
             }
         } catch (_: Exception) {

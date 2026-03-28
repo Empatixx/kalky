@@ -1,6 +1,7 @@
 package cz.krokviak.kalai
 
 import android.app.Application
+import cz.krokviak.kalai.config.RemoteConfigManager
 import cz.krokviak.kalai.di.appModule
 import cz.krokviak.kalai.di.sharedModule
 import cz.krokviak.kalai.notifications.MealReminderScheduler
@@ -18,6 +19,8 @@ class KalaiApplication : Application() {
             androidContext(this@KalaiApplication)
             modules(sharedModule, appModule)
         }
+
+        RemoteConfigManager.init()
 
         NotificationHelper.createNotificationChannel(this)
         if (AppPreferencesManager.notificationsEnabled.value) {
