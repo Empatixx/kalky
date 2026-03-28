@@ -5,8 +5,10 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,10 +16,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
@@ -34,8 +42,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import cz.krokviak.kalai.auth.AuthUser
 import cz.krokviak.kalai.notifications.MealReminderScheduler
 import cz.krokviak.kalai.theme.AppTheme
+import cz.krokviak.kalai.ui.components.KalaiCard
 import cz.krokviak.kalai.theme.ThemeManager
 import cz.krokviak.kalai.theme.ThemeMode
 import cz.krokviak.kalai.i18n.LocalStrings
@@ -45,6 +55,7 @@ import cz.krokviak.kalai.ui.components.KalaiSegmentedControl
 @Composable
 fun SettingsPage(
     modifier: Modifier = Modifier,
+    authUser: AuthUser? = null,
     onTermsClick: () -> Unit = {},
     onPrivacyClick: () -> Unit = {},
     onSignOutClick: () -> Unit = {}
@@ -90,6 +101,96 @@ fun SettingsPage(
             fontWeight = FontWeight.ExtraBold,
             color = AppTheme.colors.onBackground
         )
+
+        // Account card
+        if (authUser != null) {
+            KalaiCard(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(14.dp),
+                color = AppTheme.colors.surface
+            ) {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 14.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(44.dp)
+                                .background(AppTheme.colors.surfaceSecondary, CircleShape),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            val initials = authUser.displayName
+                                ?.split(" ")
+                                ?.take(2)
+                                ?.mapNotNull { it.firstOrNull()?.uppercase() }
+                                ?.joinToString("")
+                            if (!initials.isNullOrEmpty()) {
+                                Text(
+                                    text = initials,
+                                    color = AppTheme.colors.onBackground,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            } else {
+                                Icon(
+                                    imageVector = Icons.Filled.Person,
+                                    contentDescription = null,
+                                    tint = AppTheme.colors.onBackgroundSecondary,
+                                    modifier = Modifier.size(22.dp)
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = authUser.displayName ?: authUser.email ?: "",
+                                color = AppTheme.colors.onBackground,
+                                fontSize = dims.fontBody,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                            if (authUser.email != null && authUser.displayName != null) {
+                                Text(
+                                    text = authUser.email!!,
+                                    color = AppTheme.colors.onBackgroundSecondary,
+                                    fontSize = dims.fontSmall
+                                )
+                            }
+                        }
+                    }
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 12.dp)
+                            .height(1.dp)
+                            .background(AppTheme.colors.border)
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onSignOutClick() }
+                            .padding(horizontal = 16.dp, vertical = 14.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.Logout,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Text(
+                            text = s.auth.signOut,
+                            color = MaterialTheme.colorScheme.error,
+                            fontSize = dims.fontBody,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                }
+            }
+        }
 
         // Theme section
         SectionHeader(s.settings.appearance)
@@ -177,26 +278,6 @@ fun SettingsPage(
 
         LegalRow(label = s.legal.termsTitle, onClick = onTermsClick)
         LegalRow(label = s.legal.privacyTitle, onClick = onPrivacyClick)
-
-        Spacer(modifier = Modifier.height(dims.halfSpacing))
-
-        // Sign out section
-        SectionHeader(s.settings.account)
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { onSignOutClick() }
-                .padding(horizontal = 4.dp, vertical = 12.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = s.auth.signOut,
-                color = MaterialTheme.colorScheme.error,
-                fontSize = dims.fontBody,
-                fontWeight = FontWeight.SemiBold
-            )
-        }
 
         Spacer(modifier = Modifier.weight(1f))
 

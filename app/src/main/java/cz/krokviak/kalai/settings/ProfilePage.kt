@@ -19,6 +19,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -94,9 +95,9 @@ fun ProfilePage(
     ) {
         Text(
             text = s.profile.title,
-            color = AppTheme.colors.onBackground,
-            fontSize = 44.sp,
-            fontWeight = FontWeight.ExtraBold
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.ExtraBold,
+            color = AppTheme.colors.onBackground
         )
 
         Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {

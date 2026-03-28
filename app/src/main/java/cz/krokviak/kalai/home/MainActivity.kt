@@ -421,8 +421,11 @@ fun MainScaffold(
                             modifier = Modifier.fillMaxSize()
                         )
                     }
-                    3 -> SettingsPage(
+                    3 -> {
+                        val authUser by authViewModel.authUser.collectAsState()
+                        SettingsPage(
                         modifier = Modifier.fillMaxSize(),
+                        authUser = authUser,
                         onTermsClick = { navController.navigate(TermsRoute) },
                         onPrivacyClick = { navController.navigate(PrivacyPolicyRoute) },
                         onSignOutClick = {
@@ -433,6 +436,7 @@ fun MainScaffold(
                             }
                         }
                     )
+                    }
                 }
             }
         }
