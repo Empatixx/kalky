@@ -10,7 +10,6 @@ import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.auth.OAuthProvider
 import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.ktx.Firebase
 import cz.krokviak.kalai.config.RemoteConfigManager
@@ -65,38 +64,6 @@ class AuthViewModel(
                 onAuthSuccess(authResult)
             } catch (e: Exception) {
                 _uiState.update { it.copy(isLoading = false, error = e.localizedMessage ?: "Google sign-in failed") }
-            }
-        }
-    }
-
-    fun signInWithApple(activity: Activity) {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, error = null) }
-            try {
-                val provider = OAuthProvider.newBuilder("apple.com")
-                val authResult = FirebaseAuth.getInstance()
-                    .startActivityForSignInWithProvider(activity, provider.build())
-                    .await()
-                onAuthSuccess(authResult)
-            } catch (e: Exception) {
-                _uiState.update { it.copy(isLoading = false, error = e.localizedMessage ?: "Apple sign-in failed") }
-            }
-        }
-    }
-
-    fun signInWithEmail(email: String, password: String, isRegister: Boolean) {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, error = null) }
-            try {
-                val firebaseAuth = FirebaseAuth.getInstance()
-                val authResult = if (isRegister) {
-                    firebaseAuth.createUserWithEmailAndPassword(email.trim(), password).await()
-                } else {
-                    firebaseAuth.signInWithEmailAndPassword(email.trim(), password).await()
-                }
-                onAuthSuccess(authResult)
-            } catch (e: Exception) {
-                _uiState.update { it.copy(isLoading = false, error = e.localizedMessage ?: "Authentication failed") }
             }
         }
     }

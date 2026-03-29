@@ -44,7 +44,7 @@ class KalaiFcmService : FirebaseMessagingService() {
         return try {
             cz.krokviak.kalai.config.RemoteConfigManager.getBackendBaseUrl()
         } catch (_: Exception) {
-            "http://192.168.0.115:3000"
+            "http://178.104.95.213"
         }
     }
 }

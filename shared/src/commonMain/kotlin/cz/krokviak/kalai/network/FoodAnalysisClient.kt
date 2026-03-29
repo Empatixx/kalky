@@ -13,7 +13,7 @@ class FoodAnalysisClient(
     private val baseUrl: String = DEFAULT_BASE_URL
 ) {
     companion object {
-        const val DEFAULT_BASE_URL = "http://192.168.0.115:3000"
+        const val DEFAULT_BASE_URL = "http://178.104.95.213"
     }
 
     suspend fun getAnalysis(imageBytes: ByteArray): FoodAnalysisDto? {

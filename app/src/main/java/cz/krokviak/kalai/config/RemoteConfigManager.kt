@@ -5,7 +5,7 @@ import com.google.firebase.remoteconfig.remoteConfigSettings
 
 object RemoteConfigManager {
     private const val KEY_BACKEND_BASE_URL = "backend_base_url"
-    private const val DEFAULT_BACKEND_BASE_URL = "http://192.168.0.115:3000"
+    private const val DEFAULT_BACKEND_BASE_URL = "http://178.104.95.213"
 
     private val remoteConfig: FirebaseRemoteConfig = FirebaseRemoteConfig.getInstance()
 
