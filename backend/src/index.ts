@@ -44,6 +44,8 @@ Bun.serve({
     try {
       // POST /api/auth/me
       if (url.pathname === "/api/auth/me" && req.method === "POST") {
+        const appCheckError = await requireAppCheck(req);
+        if (appCheckError) return withCors(appCheckError);
         const authResult = await requireAuth(req);
         if (authResult instanceof Response) return withCors(authResult);
         return withCors(await handleAuthMe(authResult));
@@ -51,6 +53,8 @@ Bun.serve({
 
       // POST /api/auth/fcm-token
       if (url.pathname === "/api/auth/fcm-token" && req.method === "POST") {
+        const appCheckError = await requireAppCheck(req);
+        if (appCheckError) return withCors(appCheckError);
         const authResult = await requireAuth(req);
         if (authResult instanceof Response) return withCors(authResult);
         return withCors(await handleFcmToken(req, authResult));
@@ -59,6 +63,8 @@ Bun.serve({
       // GET /api/barcode/:code
       const barcodeMatch = url.pathname.match(/^\/api\/barcode\/(.+)$/);
       if (barcodeMatch && req.method === "GET") {
+        const appCheckError = await requireAppCheck(req);
+        if (appCheckError) return withCors(appCheckError);
         const authResult = await requireAuth(req);
         if (authResult instanceof Response) return withCors(authResult);
         return withCors(handleBarcode(barcodeMatch[1]));
@@ -66,6 +72,8 @@ Bun.serve({
 
       // GET /api/search?q=...
       if (url.pathname === "/api/search" && req.method === "GET") {
+        const appCheckError = await requireAppCheck(req);
+        if (appCheckError) return withCors(appCheckError);
         const authResult = await requireAuth(req);
         if (authResult instanceof Response) return withCors(authResult);
         return withCors(handleSearch(url));
@@ -73,10 +81,10 @@ Bun.serve({
 
       // POST /cal
       if (url.pathname === "/cal" && req.method === "POST") {
-        const authResult = await requireAuth(req);
-        if (authResult instanceof Response) return withCors(authResult);
         const appCheckError = await requireAppCheck(req);
         if (appCheckError) return withCors(appCheckError);
+        const authResult = await requireAuth(req);
+        if (authResult instanceof Response) return withCors(authResult);
         return withCors(await handleAnalyze(req));
       }
 
