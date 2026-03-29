@@ -59,16 +59,22 @@ Bun.serve({
       // GET /api/barcode/:code
       const barcodeMatch = url.pathname.match(/^\/api\/barcode\/(.+)$/);
       if (barcodeMatch && req.method === "GET") {
+        const authResult = await requireAuth(req);
+        if (authResult instanceof Response) return withCors(authResult);
         return withCors(handleBarcode(barcodeMatch[1]));
       }
 
       // GET /api/search?q=...
       if (url.pathname === "/api/search" && req.method === "GET") {
+        const authResult = await requireAuth(req);
+        if (authResult instanceof Response) return withCors(authResult);
         return withCors(handleSearch(url));
       }
 
       // POST /cal
       if (url.pathname === "/cal" && req.method === "POST") {
+        const authResult = await requireAuth(req);
+        if (authResult instanceof Response) return withCors(authResult);
         const appCheckError = await requireAppCheck(req);
         if (appCheckError) return withCors(appCheckError);
         return withCors(await handleAnalyze(req));
