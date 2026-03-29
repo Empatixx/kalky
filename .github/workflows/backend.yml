@@ -5,9 +5,11 @@ on:
     branches: [main, master]
     paths:
       - 'backend/**'
+      - '.github/workflows/backend.yml'
   pull_request:
     paths:
       - 'backend/**'
+      - '.github/workflows/backend.yml'
 
 jobs:
   ci:
@@ -43,4 +45,12 @@ jobs:
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           script: |
-            cd /opt/kalai && git pull && cd backend && docker compose up -d --build
+            cd /opt/kalai && git pull
+            cat > backend/.env << ENVEOF
+            OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+            PORT=3000
+            ADMIN_KEY=${{ secrets.ADMIN_KEY }}
+            GOOGLE_APPLICATION_CREDENTIALS=./firebase-service-account.json
+            ENVEOF
+            echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > backend/firebase-service-account.json
+            cd backend && docker compose up -d --build
