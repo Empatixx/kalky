@@ -31,7 +31,7 @@ struct ComposeView: UIViewControllerRepresentable {
                 showCamera = true
             },
             onRequestNotificationPermission: {
-                UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { _, _ in }
+                NotificationManager.shared.requestPermission()
             },
             onShareImage: { path in
                 guard let image = UIImage(contentsOfFile: path) else { return }
@@ -42,14 +42,34 @@ struct ComposeView: UIViewControllerRepresentable {
                 }
             },
             onSignInWithGoogle: {
-                // TODO: SP3 - Google Sign-In
+                guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                      let rootVC = windowScene.windows.first?.rootViewController else { return }
+                Task {
+                    do {
+                        try await GoogleSignInHelper.signIn(presenting: rootVC)
+                        let authVM: AuthViewModelInterface = KoinHelper.resolve()
+                        authVM.onAuthSuccess()
+                    } catch {
+                        let authVM: AuthViewModelInterface = KoinHelper.resolve()
+                        authVM.onAuthError(message: error.localizedDescription)
+                    }
+                }
             },
             onSignInWithApple: {
-                // TODO: SP3 - Apple Sign-In
+                Task {
+                    do {
+                        let helper = AppleSignInHelper()
+                        try await helper.signIn()
+                        let authVM: AuthViewModelInterface = KoinHelper.resolve()
+                        authVM.onAuthSuccess()
+                    } catch {
+                        let authVM: AuthViewModelInterface = KoinHelper.resolve()
+                        authVM.onAuthError(message: error.localizedDescription)
+                    }
+                }
             },
             onCheckNotificationPermission: {
-                // Synchronous check not possible; return cached value
-                return false
+                return NotificationManager.shared.isAuthorized
             }
         )
     }
