@@ -3,32 +3,48 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
-Czech-language food/nutrition tracking app built with Kotlin Multiplatform (KMP). Business logic (ViewModels, repos, network, DB) is in the shared module. UI Compose screens remain in the Android app module. iOS app skeleton is set up.
+Czech-language food/nutrition tracking app built with Kotlin Multiplatform (KMP) and Compose Multiplatform. All UI screens, ViewModels, repos, network, and DB are in the shared module. The Android app module is a thin shell (MainActivity + platform implementations). iOS app uses ComposeUIViewController to render the same shared UI.
 
 ## Build
 - **Requires JDK 21** (JDK 25 is NOT compatible with AGP 8.7.2)
 - Set `JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64` or configure in Android Studio
-- Build: `JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64 ./gradlew :app:compileDebugKotlin`
-- Shared module only: `JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64 ./gradlew :shared:compileDebugKotlinAndroid`
+- Android: `JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64 ./gradlew :app:compileDebugKotlin`
+- Shared module (Android): `JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64 ./gradlew :shared:compileDebugKotlinAndroid`
+- Shared module (iOS): `./gradlew :shared:compileKotlinIosSimulatorArm64` (requires macOS)
+- iOS framework: `./gradlew :shared:linkDebugFrameworkIosSimulatorArm64` (requires macOS)
 - Backend: `cd backend && bun install && bun run src/index.ts`
 - Backend typecheck: `cd backend && bun run tsc --noEmit`
 
+## CI
+- **Android CI** (`.github/workflows/android.yml`): Compiles shared + app, runs unit tests on `ubuntu-latest`
+- **iOS CI** (`.github/workflows/ios.yml`): Compiles shared for iOS + links framework on `macos-latest`
+- **Backend CI** (`.github/workflows/backend.yml`): Typecheck + Docker build + auto-deploy on `ubuntu-latest`
+
 ## Architecture
-- **Pattern**: MVVM + Compose
-- **DI**: Koin (sharedModule in commonMain + appModule in Android app)
-- **UI**: Compose with Material3 + custom Kalky components (`ui/components/`)
+- **Pattern**: MVVM + Compose Multiplatform
+- **DI**: Koin (sharedModule in commonMain + appModule in Android app + iosModule in iosMain)
+- **UI**: Compose Multiplatform with Material3 + custom Kalky components (`shared/.../ui/components/`)
 - **Database**: SQLDelight (shared module, multiplatform)
 - **HTTP**: Ktor + kotlinx-serialization (shared module)
-- **Auth**: Firebase Auth (Google/Apple/Email) — client SDK in app module, Firebase Admin SDK on backend
+- **Auth**: Firebase Auth (Google/Apple) — platform-specific implementations behind shared interfaces
 - **Date/Time**: kotlinx-datetime (shared module)
+- **Preferences**: multiplatform-settings (`AppPreferences` in shared commonMain)
 
 ### KMP Boundary
-- **shared/commonMain**: ViewModels, repositories, network clients, entities, DB, DI, interfaces (AuthTokenProvider, AuthStateProvider, ImageStorage)
-- **app module (Android)**: All Compose UI screens, platform implementations (FirebaseAuthTokenProvider, AndroidImageStorage, CameraX, ML Kit), Activity classes, AppModule DI
-- **Rule**: `commonMain` must be platform-independent. Firebase SDK, Android SDK, CameraX etc. stay in app module. Shared module defines interfaces, app module implements them.
+- **shared/commonMain**: ALL Compose UI screens, ViewModels, repositories, network clients, entities, DB, DI, navigation (`AppContent`, `MainScaffold`), theme, i18n, platform interfaces (`PlatformActions`, `AuthTokenProvider`, `AuthStateProvider`, `ImageStorage`, `AppPreferences`)
+- **shared/iosMain**: iOS platform implementations (`IosImageStorage`, `IosPlatformActions`, `DriverFactory.ios`, `MainViewController`, `KoinHelper`, stub auth providers)
+- **app module (Android)**: Thin shell — `MainActivity.kt` (provides `PlatformActions`), `CameraActivity` (CameraX), `BarcodeScannerActivity` (ML Kit), Firebase implementations (`FirebaseAuthTokenProvider`, `AuthViewModel`), `AppModule` DI
+- **iosApp (Swift)**: SwiftUI entry point, `ComposeView` wrapper, `KalkyCameraViewController` (AVFoundation camera + barcode scanning)
+- **Rule**: `commonMain` must be platform-independent. Firebase SDK, Android SDK, CameraX, AVFoundation etc. stay in platform-specific modules. Shared module defines interfaces, platform modules implement them.
+
+### Platform Abstractions
+- **`PlatformActions`** (`shared/.../common/PlatformActions.kt`): Interface for platform-specific UI actions — `launchCamera()`, `launchBarcodeScanner()`, `signInWithGoogle()`, `signInWithApple()`, `shareImage()`, `requestNotificationPermission()`. Provided via `LocalPlatformActions` CompositionLocal.
+- **`AppPreferences`** (`shared/.../common/AppPreferences.kt`): Multiplatform settings (via `russhwolf/multiplatform-settings`). Stores onboarding state, language, unit system, notification prefs. Replaces the old Android-only `AppPreferencesManager`.
+- **`AuthViewModelInterface`** (`shared/.../auth/AuthUiState.kt`): Shared auth contract. Android's `AuthViewModel` implements it with Firebase. iOS has `StubAuthViewModel` (to be replaced with real Firebase iOS impl).
+- **`ImageStorage`** (`shared/.../common/ImageStorage.kt`): File-based image storage. Android uses external files dir, iOS uses NSDocumentDirectory.
 
 ### Auth Flow
-- Firebase Auth on Android (Credential Manager for Google, OAuthProvider for Apple, email/password)
+- Firebase Auth on Android (Credential Manager for Google), platform callbacks via `PlatformActions`
 - `FirebaseAuthTokenProvider` implements shared `AuthTokenProvider` interface
 - Ktor HttpClient auto-attaches Firebase ID token via interceptor in `HttpClientFactory.kt` (only for non-OpenFoodFacts URLs)
 - Backend verifies tokens via `firebase-admin` in `requireAuth()` middleware
@@ -36,17 +52,22 @@ Czech-language food/nutrition tracking app built with Kotlin Multiplatform (KMP)
 - `POST /api/auth/me` — idempotent user registration/lookup (called after sign-in)
 
 ### Navigation
-- Type-safe routes with `@Serializable` objects/data classes in `NavRoutes.kt`
-- NavHost in `MainActivity.kt` → `AppContent` composable
-- Start destination determined by: onboarding completed? → authenticated? → DefaultRoute
+- Type-safe routes with `@Serializable` objects/data classes in `NavRoutes.kt` (shared commonMain)
+- `AppContent` composable in `shared/.../app/AppContent.kt` — contains full NavHost
+- `MainActivity.kt` provides `PlatformActions` via CompositionLocal, then calls shared `AppContent`
+- iOS `MainViewController.kt` does the same via `ComposeUIViewController`
+- Start destination determined by: `AppPreferences.onboardingCompleted` → `AuthStateProvider.isAuthenticated` → DefaultRoute
 - MainScaffold uses HorizontalPager with 4 pages (Home, Analytics, Profile, Settings)
 
 ## Key Conventions
-- UI language: Czech (i18n system in `i18n/Strings.kt` with `CzechStrings`/`EnglishStrings`, `LocalStrings.current`)
-- **UI style**: iOS-inspired design. Use custom Kalky components — `KalkyButton`, `KalkyCard`, `KalkySegmentedControl`, `KalkyGradientBackground`. Colors via `AppTheme.colors`. Responsive sizing via `LocalDimensions.current`. For pickers, build custom iOS-style wheel pickers using `LazyColumn` + `rememberSnapFlingBehavior` (see `analytics/components/WheelDatePicker.kt`). Prefer iOS UX patterns (smooth transitions, bottom sheets, minimal chrome) over Material defaults.
+- UI language: Czech (i18n system in `shared/.../i18n/Strings.kt` with `CzechStrings`/`EnglishStrings`, `LocalStrings.current`)
+- **UI style**: iOS-inspired design. Use custom Kalky components — `KalkyButton`, `KalkyCard`, `KalkySegmentedControl`, `KalkyGradientBackground` (all in `shared/.../ui/components/`). Colors via `AppTheme.colors`. Macro colors via `MacroColors` (`shared/.../theme/MacroColors.kt`). Responsive sizing via `LocalDimensions.current`. Prefer iOS UX patterns (smooth transitions, bottom sheets, minimal chrome) over Material defaults.
 - **Domain logic belongs in ViewModels**, not in composables. Composables are pure UI — they call ViewModel methods.
 - Feature structure: `FeatureName/` with `FeatureScene.kt`, `FeatureViewModel.kt`, `FeatureUiState.kt`, `components/`
 - Colors: Black/White/Gray theme via `AppTheme.colors`
+- **No `java.util.*` in commonMain** — use `formatFloat1()` from `common/FormatUtils.kt` instead of `String.format(Locale.US, ...)`
+- **No Android resources in commonMain** — use Material Icons instead of `R.drawable.*`, `MacroColors` instead of `R.color.*`
+- **Koin injection in composables**: use `koinInject<T>()` from `shared/.../di/KoinInject.kt` (uses `KoinPlatformTools.defaultContext()`)
 
 ## APIs
 - **Backend** (`backend/`): Bun + SQLite server, default port 3000
