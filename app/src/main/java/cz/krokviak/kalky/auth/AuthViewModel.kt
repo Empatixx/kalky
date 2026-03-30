@@ -24,21 +24,15 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
-data class AuthUiState(
-    val isLoading: Boolean = false,
-    val isSignedIn: Boolean = false,
-    val error: String? = null
-)
-
 class AuthViewModel(
     private val authTokenProvider: FirebaseAuthTokenProvider,
     private val httpClient: HttpClient
-) : ViewModel() {
+) : ViewModel(), AuthViewModelInterface {
 
     private val _uiState = MutableStateFlow(AuthUiState())
-    val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
+    override val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
 
-    val authUser: StateFlow<AuthUser?> = authTokenProvider.currentUser
+    override val authUser: StateFlow<AuthUser?> = authTokenProvider.currentUser
 
     init {
         viewModelScope.launch {
@@ -80,12 +74,20 @@ class AuthViewModel(
         _uiState.update { it.copy(isLoading = false, isSignedIn = true) }
     }
 
-    fun clearError() {
+    override fun clearError() {
         _uiState.update { it.copy(error = null) }
     }
 
-    fun signOut() {
+    override fun signOut() {
         Firebase.crashlytics.setUserId("")
         authTokenProvider.signOut()
+    }
+
+    override fun onAuthSuccess() {
+        _uiState.update { it.copy(isLoading = false, isSignedIn = true) }
+    }
+
+    override fun onAuthError(message: String) {
+        _uiState.update { it.copy(isLoading = false, error = message) }
     }
 }

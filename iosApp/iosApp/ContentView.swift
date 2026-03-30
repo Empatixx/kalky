@@ -1,9 +1,17 @@
 import SwiftUI
 import shared
 
+struct ComposeView: UIViewControllerRepresentable {
+    func makeUIViewController(context: Context) -> UIViewController {
+        MainViewControllerKt.MainViewController(platformActions: IosPlatformActions())
+    }
+
+    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
+}
+
 struct ContentView: View {
     var body: some View {
-        Text("Kalky")
-            .font(.largeTitle)
+        ComposeView()
+            .ignoresSafeArea(.all)
     }
 }

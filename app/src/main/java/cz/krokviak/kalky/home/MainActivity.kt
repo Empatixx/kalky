@@ -8,68 +8,24 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.Scaffold
-import androidx.compose.ui.graphics.Color
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
-import cz.krokviak.kalky.analytics.AnalyticsPage
+import androidx.compose.runtime.CompositionLocalProvider
 import cz.krokviak.kalky.analytics.AnalyticsViewModel
+import cz.krokviak.kalky.app.AppContent
 import cz.krokviak.kalky.camera.CameraActivity
 import cz.krokviak.kalky.auth.AuthViewModel
-import cz.krokviak.kalky.auth.LoginPage
-import cz.krokviak.kalky.common.ShareImageHelper
-import cz.krokviak.kalky.common.CustomFoodRoute
-import cz.krokviak.kalky.common.DefaultRoute
-import cz.krokviak.kalky.common.FoodDetailRoute
-import cz.krokviak.kalky.common.LoginRoute
-import cz.krokviak.kalky.common.ManualFoodEntryRoute
-import cz.krokviak.kalky.common.NutrientEditRoute
-import cz.krokviak.kalky.common.OnboardingRoute
-import cz.krokviak.kalky.common.PrivacyPolicyRoute
-import cz.krokviak.kalky.common.TermsRoute
-import com.google.firebase.auth.FirebaseAuth
-import cz.krokviak.kalky.customfood.CustomFoodScene
+import cz.krokviak.kalky.common.LocalPlatformActions
+import cz.krokviak.kalky.common.PlatformActions
 import cz.krokviak.kalky.customfood.CustomFoodViewModel
-import cz.krokviak.kalky.customfood.ManualFoodEntryScene
-import cz.krokviak.kalky.detail.FoodDetailScene
 import cz.krokviak.kalky.detail.FoodDetailViewModel
-import cz.krokviak.kalky.home.components.BottomNavBar
-import cz.krokviak.kalky.nutrientedit.NutrientEditScene
-import cz.krokviak.kalky.nutrientedit.NutrientEditViewModel
-import cz.krokviak.kalky.onboarding.OnboardingPage
-import cz.krokviak.kalky.onboarding.OnboardingViewModel
-import cz.krokviak.kalky.settings.ProfilePage
-import cz.krokviak.kalky.settings.PrivacyPolicyPage
-import cz.krokviak.kalky.settings.SettingsPage
-import cz.krokviak.kalky.settings.TermsPage
-import cz.krokviak.kalky.settings.SettingsViewModel
-import cz.krokviak.kalky.theme.AppTheme
 import cz.krokviak.kalky.i18n.CzechStrings
 import cz.krokviak.kalky.i18n.EnglishStrings
-import cz.krokviak.kalky.i18n.LocalStrings
-import cz.krokviak.kalky.settings.AppLanguage
-import cz.krokviak.kalky.settings.AppPreferencesManager
+import cz.krokviak.kalky.common.AppLanguage
+import cz.krokviak.kalky.common.AppPreferences
+import cz.krokviak.kalky.nutrientedit.NutrientEditViewModel
+import cz.krokviak.kalky.onboarding.OnboardingViewModel
+import cz.krokviak.kalky.settings.SettingsViewModel
 import cz.krokviak.kalky.theme.KalkyTheme
-import cz.krokviak.kalky.ui.components.KalkyGradientBackground
-import cz.krokviak.kalky.ui.components.ResponsiveProvider
-import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
 
@@ -82,10 +38,8 @@ class MainActivity : ComponentActivity() {
     private val onboardingViewModel: OnboardingViewModel by viewModel()
     private val customFoodViewModel: CustomFoodViewModel by viewModel()
     private val authViewModel: AuthViewModel by viewModel()
+    private val appPreferences: AppPreferences by inject()
 
-    /**
-     * Launcher for the camera Activity, handles the result of taking a picture.
-     */
     private val cameraResultLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             handleCameraResult(result)
@@ -95,28 +49,81 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val platformActions = createAndroidPlatformActions()
             KalkyTheme {
-                AppContent(
-                    mainViewModel = mainViewModel,
-                    foodDetailViewModel = foodDetailViewModel,
-                    nutrientEditViewModel = nutrientEditViewModel,
-                    analyticsViewModel = analyticsViewModel,
-                    settingsViewModel = settingsViewModel,
-                    onboardingViewModel = onboardingViewModel,
-                    customFoodViewModel = customFoodViewModel,
-                    authViewModel = authViewModel,
-                    cameraResultLauncher = cameraResultLauncher
-                )
+                CompositionLocalProvider(LocalPlatformActions provides platformActions) {
+                    AppContent(
+                        mainViewModel = mainViewModel,
+                        foodDetailViewModel = foodDetailViewModel,
+                        nutrientEditViewModel = nutrientEditViewModel,
+                        analyticsViewModel = analyticsViewModel,
+                        settingsViewModel = settingsViewModel,
+                        onboardingViewModel = onboardingViewModel,
+                        customFoodViewModel = customFoodViewModel,
+                        authViewModel = authViewModel,
+                    )
+                }
             }
         }
     }
 
-    /**
-     * Handle the result from the camera activity.
-     */
+    private fun createAndroidPlatformActions(): PlatformActions {
+        return object : PlatformActions {
+            override fun launchCamera() {
+                cameraResultLauncher.launch(
+                    Intent(this@MainActivity, CameraActivity::class.java)
+                )
+            }
+
+            override fun launchBarcodeScanner() {
+                cameraResultLauncher.launch(
+                    Intent(this@MainActivity, CameraActivity::class.java)
+                )
+            }
+
+            override fun requestNotificationPermission() {
+                // Handled by SettingsPage via rememberLauncherForActivityResult on Android
+            }
+
+            override fun shareImage(imagePath: String) {
+                val file = File(imagePath)
+                if (file.exists()) {
+                    val uri = androidx.core.content.FileProvider.getUriForFile(
+                        this@MainActivity,
+                        "${packageName}.fileprovider",
+                        file
+                    )
+                    val sendIntent = Intent(Intent.ACTION_SEND).apply {
+                        putExtra(Intent.EXTRA_STREAM, uri)
+                        type = "image/jpeg"
+                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    }
+                    startActivity(Intent.createChooser(sendIntent, null))
+                }
+            }
+
+            override fun signInWithGoogle() {
+                val webClientId = getString(cz.krokviak.kalky.R.string.default_web_client_id)
+                authViewModel.signInWithGoogle(this@MainActivity, webClientId)
+            }
+
+            override fun signInWithApple() {
+                // Not supported on Android
+            }
+
+            override fun isNotificationPermissionGranted(): Boolean {
+                return if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                    checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) ==
+                        android.content.pm.PackageManager.PERMISSION_GRANTED
+                } else {
+                    true
+                }
+            }
+        }
+    }
+
     private fun handleCameraResult(result: ActivityResult) {
         if (result.resultCode != RESULT_OK) return
-
         val data = result.data ?: return
         when (data.getStringExtra(CameraActivity.EXTRA_RESULT_TYPE)) {
             CameraActivity.RESULT_TYPE_PHOTO -> handlePhotoResult(data)
@@ -133,312 +140,14 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun handleBarcodeResult(data: Intent) {
+        val language = appPreferences.language.value
         mainViewModel.addFoodItemFromBarcode(
             name = data.getStringExtra(CameraActivity.EXTRA_NAME)
-                ?: (if (AppPreferencesManager.language.value == AppLanguage.EN) EnglishStrings else CzechStrings).common.unknownProduct,
+                ?: (if (language == AppLanguage.EN) EnglishStrings else CzechStrings).common.unknownProduct,
             calories = data.getIntExtra(CameraActivity.EXTRA_CALORIES, 0),
             protein = data.getIntExtra(CameraActivity.EXTRA_PROTEIN, 0),
             fat = data.getIntExtra(CameraActivity.EXTRA_FAT, 0),
             carbs = data.getIntExtra(CameraActivity.EXTRA_CARBS, 0)
         )
-    }
-}
-
-/**
- * Top-level content of the app which sets up the NavController and the NavHost.
- */
-@Composable
-fun AppContent(
-    mainViewModel: MainViewModel,
-    foodDetailViewModel: FoodDetailViewModel,
-    nutrientEditViewModel: NutrientEditViewModel,
-    analyticsViewModel: AnalyticsViewModel,
-    settingsViewModel: SettingsViewModel,
-    onboardingViewModel: OnboardingViewModel,
-    customFoodViewModel: CustomFoodViewModel,
-    authViewModel: AuthViewModel,
-    cameraResultLauncher: ActivityResultLauncher<Intent>
-) {
-    val navController = rememberNavController()
-    val context = LocalContext.current
-
-    val startDestination: Any = when {
-        !AppPreferencesManager.onboardingCompleted.value -> OnboardingRoute
-        FirebaseAuth.getInstance().currentUser == null -> LoginRoute
-        else -> DefaultRoute
-    }
-
-    ResponsiveProvider {
-    NavHost(
-        navController = navController,
-        startDestination = startDestination
-    ) {
-        composable<OnboardingRoute> {
-            OnboardingPage(
-                onboardingViewModel = onboardingViewModel,
-                onFinish = { result ->
-                    settingsViewModel.onGenderChange(result.gender)
-                    settingsViewModel.onWeightChange(result.weight)
-                    settingsViewModel.onHeightChange(result.height)
-                    settingsViewModel.onAgeChange(result.age)
-                    settingsViewModel.onActivityLevelChange(result.activityLevel)
-                    settingsViewModel.save()
-                    if (result.targetCalories > 0) {
-                        nutrientEditViewModel.onProteinChange(result.targetProtein)
-                        nutrientEditViewModel.onCarbsChange(result.targetCarbs)
-                        nutrientEditViewModel.onFatChange(result.targetFat)
-                        mainViewModel.updateNutrientSettings(
-                            result.targetProtein,
-                            result.targetCarbs,
-                            result.targetFat,
-                            result.targetCalories
-                        )
-                    }
-                    AppPreferencesManager.setOnboardingCompleted(true)
-                    navController.navigate(LoginRoute) {
-                        popUpTo(navController.graph.startDestinationId) { inclusive = true }
-                        launchSingleTop = true
-                    }
-                }
-            )
-        }
-
-        composable<LoginRoute> {
-            LoginPage(
-                authViewModel = authViewModel,
-                onSignInSuccess = {
-                    navController.navigate(DefaultRoute) {
-                        popUpTo(navController.graph.startDestinationId) { inclusive = true }
-                        launchSingleTop = true
-                    }
-                }
-            )
-        }
-
-        /**
-         * The default (home) composable which uses our main scaffold layout.
-         */
-        composable<DefaultRoute> {
-            MainScaffold(
-                mainViewModel = mainViewModel,
-                analyticsViewModel = analyticsViewModel,
-                settingsViewModel = settingsViewModel,
-                customFoodViewModel = customFoodViewModel,
-                authViewModel = authViewModel,
-                onCameraClick = {
-                    cameraResultLauncher.launch(
-                        Intent(context, CameraActivity::class.java)
-                    )
-                },
-                navController = navController
-            )
-        }
-
-        /**
-         * Food Detail route.
-         */
-        composable<FoodDetailRoute> { backStackEntry ->
-            val food: FoodDetailRoute = backStackEntry.toRoute()
-            val uiState by foodDetailViewModel.uiState.collectAsState()
-            LaunchedEffect(food.id) {
-                foodDetailViewModel.loadFood(food.id)
-            }
-            FoodDetailScene(
-                foodDetailViewModel = foodDetailViewModel,
-                uiState = uiState,
-                foodId = food.id,
-                onExitClick = { navController.popBackStack() },
-                onShareClick = {
-                    val imagePath = uiState.localImagePath
-                    if (imagePath != null) {
-                        val uri = ShareImageHelper.createShareImage(
-                            context, imagePath,
-                            uiState.name, uiState.calories, uiState.protein, uiState.carbs, uiState.fat
-                        )
-                        if (uri != null) {
-                            val sendIntent = Intent(Intent.ACTION_SEND).apply {
-                                putExtra(Intent.EXTRA_STREAM, uri)
-                                type = "image/jpeg"
-                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                            }
-                            context.startActivity(Intent.createChooser(sendIntent, null))
-                        }
-                    } else {
-                        val text = "${uiState.name}\n" +
-                            "${uiState.calories} kcal\n" +
-                            "${uiState.protein}g protein, ${uiState.carbs}g carbs, ${uiState.fat}g fat"
-                        val sendIntent = Intent(Intent.ACTION_SEND).apply {
-                            putExtra(Intent.EXTRA_TEXT, text)
-                            type = "text/plain"
-                        }
-                        context.startActivity(Intent.createChooser(sendIntent, null))
-                    }
-                },
-                onDeleteClick = {
-                    foodDetailViewModel.deleteFood()
-                    navController.popBackStack()
-                }
-            )
-        }
-
-        /**
-         * Nutrient Edit route.
-         */
-        composable<NutrientEditRoute> { backStackEntry ->
-            val uiState by nutrientEditViewModel.uiState.collectAsState()
-            NutrientEditScene(
-                nutrientEditViewModel = nutrientEditViewModel,
-                uiState = uiState,
-                onBackClick = {
-                    navController.popBackStack()
-                    mainViewModel.updateNutrientSettings(
-                        uiState.protein,
-                        uiState.carbs,
-                        uiState.fat,
-                        uiState.calories
-                    )
-                }
-            )
-        }
-
-        composable<CustomFoodRoute> {
-            CustomFoodScene(
-                viewModel = customFoodViewModel,
-                onBackClick = { navController.popBackStack() },
-                onAddNewClick = {
-                    customFoodViewModel.resetManualEntry()
-                    navController.navigate(ManualFoodEntryRoute)
-                },
-                onFoodAdded = {
-                    mainViewModel.loadFoodItemsForDate(mainViewModel.uiState.value.currentDate)
-                    navController.popBackStack()
-                }
-            )
-        }
-
-        composable<ManualFoodEntryRoute> {
-            ManualFoodEntryScene(
-                viewModel = customFoodViewModel,
-                onBackClick = { navController.popBackStack() },
-                onFoodAdded = {
-                    mainViewModel.loadFoodItemsForDate(mainViewModel.uiState.value.currentDate)
-                    navController.navigate(DefaultRoute) {
-                        popUpTo(DefaultRoute) { inclusive = false }
-                        launchSingleTop = true
-                    }
-                }
-            )
-        }
-
-        composable<TermsRoute> {
-            TermsPage(onBackClick = { navController.popBackStack() })
-        }
-
-        composable<PrivacyPolicyRoute> {
-            PrivacyPolicyPage(onBackClick = { navController.popBackStack() })
-        }
-    }
-    } // end ResponsiveProvider
-}
-
-/**
- * This Composable sets up the Scaffold that contains a pager and bottom navigation.
- */
-@Composable
-fun MainScaffold(
-    mainViewModel: MainViewModel,
-    analyticsViewModel: AnalyticsViewModel,
-    settingsViewModel: SettingsViewModel,
-    customFoodViewModel: CustomFoodViewModel,
-    authViewModel: AuthViewModel,
-    onCameraClick: () -> Unit,
-    navController: NavController
-) {
-    val pagerState = rememberPagerState(
-        initialPage = 0,
-        pageCount = { 4 }
-    )
-    val scope = rememberCoroutineScope()
-    val uiState by mainViewModel.uiState.collectAsState()
-    val analyticsUiState by analyticsViewModel.uiState.collectAsState()
-
-    val currentPage by remember { derivedStateOf { pagerState.currentPage } }
-
-    LaunchedEffect(Unit) {
-        mainViewModel.loadFoodItemsForDate(uiState.currentDate)
-    }
-
-    KalkyGradientBackground {
-        Scaffold(
-            containerColor = Color.Transparent,
-            bottomBar = {
-                BottomNavBar(
-                    currentPage = currentPage,
-                    onSceneSelected = { page ->
-                        scope.launch { pagerState.animateScrollToPage(page) }
-                    },
-                    onCameraClick = onCameraClick
-                )
-            },
-        ) { innerPadding ->
-            HorizontalPager(
-                beyondViewportPageCount = 4,
-                state = pagerState,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-            ) { page ->
-                when (page) {
-                    0 -> HomeScene(
-                        uiState = uiState,
-                        model = mainViewModel,
-                        navController = navController,
-                        modifier = Modifier.fillMaxSize(),
-                        onSaveAsCustom = { items ->
-                            val totalProtein = items.sumOf { it.protein }
-                            val totalCarbs = items.sumOf { it.carbs }
-                            val totalFat = items.sumOf { it.fat }
-                            val name = items.joinToString(" + ") { it.name }
-                            customFoodViewModel.resetManualEntry()
-                            customFoodViewModel.onNameChange(name)
-                            customFoodViewModel.onManualProteinChange(totalProtein)
-                            customFoodViewModel.onManualCarbsChange(totalCarbs)
-                            customFoodViewModel.onManualFatChange(totalFat)
-                            customFoodViewModel.setSourceFoods(items)
-                            navController.navigate(ManualFoodEntryRoute)
-                        }
-                    )
-                    1 -> AnalyticsPage(
-                        uiState = analyticsUiState,
-                        analyticsViewModel = analyticsViewModel,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                    2 -> {
-                        val settingsUiState by settingsViewModel.uiState.collectAsState()
-                        ProfilePage(
-                            uiState = settingsUiState,
-                            viewModel = settingsViewModel,
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
-                    3 -> {
-                        val authUser by authViewModel.authUser.collectAsState()
-                        SettingsPage(
-                        modifier = Modifier.fillMaxSize(),
-                        authUser = authUser,
-                        onTermsClick = { navController.navigate(TermsRoute) },
-                        onPrivacyClick = { navController.navigate(PrivacyPolicyRoute) },
-                        onSignOutClick = {
-                            authViewModel.signOut()
-                            navController.navigate(LoginRoute) {
-                                popUpTo(navController.graph.startDestinationId) { inclusive = true }
-                                launchSingleTop = true
-                            }
-                        }
-                    )
-                    }
-                }
-            }
-        }
     }
 }

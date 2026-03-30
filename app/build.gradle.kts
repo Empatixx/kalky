@@ -71,8 +71,6 @@ dependencies {
     implementation(libs.coil.compose)
 
     // UI libraries
-    implementation(libs.haze)
-    implementation(libs.haze.materials)
     implementation(libs.compose.charts)
     implementation(libs.vico.multiplatform)
 

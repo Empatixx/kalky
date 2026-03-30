@@ -63,10 +63,15 @@ kotlin {
             // DI
             implementation(libs.insert.koin.koin.core)
 
+            // Settings (multiplatform SharedPreferences/NSUserDefaults)
+            implementation(libs.multiplatform.settings)
+            implementation(libs.multiplatform.settings.no.arg)
+
             // UI libraries (already multiplatform)
             implementation(libs.coil.compose)
             implementation(libs.compose.charts)
             implementation(libs.vico.multiplatform)
+            implementation(compose.materialIconsExtended)
         }
 
         androidMain.dependencies {

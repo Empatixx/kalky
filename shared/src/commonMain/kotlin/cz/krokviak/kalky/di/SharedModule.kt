@@ -1,5 +1,6 @@
 package cz.krokviak.kalky.di
 
+import cz.krokviak.kalky.common.AppPreferences
 import cz.krokviak.kalky.common.StreakCalculator
 import cz.krokviak.kalky.common.repo.FoodRepository
 import cz.krokviak.kalky.common.repo.NutrientSettingRepo
@@ -15,6 +16,9 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val sharedModule = module {
+    // Preferences
+    single { AppPreferences() }
+
     // Network
     single<HttpClient> { createHttpClient(getOrNull(), getOrNull()) }
     single {
