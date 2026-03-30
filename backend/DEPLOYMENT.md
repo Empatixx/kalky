@@ -1,6 +1,6 @@
-# Kalai Backend — Hetzner VPS Deployment
+# Kalky Backend — Hetzner VPS Deployment
 
-Deploy the Kalai backend on a Hetzner Cloud CAX11 (2 vCPU ARM64, 4 GB RAM, 40 GB disk, ~€3.85/mo).
+Deploy the Kalky backend on a Hetzner Cloud CAX11 (2 vCPU ARM64, 4 GB RAM, 40 GB disk, ~€3.85/mo).
 
 ---
 
@@ -63,8 +63,8 @@ docker compose version
 # As deploy user
 su - deploy
 
-git clone https://github.com/YOUR_USER/kalai.git /opt/kalai
-cd /opt/kalai/backend
+git clone https://github.com/YOUR_USER/kalky.git /opt/kalky
+cd /opt/kalky/backend
 
 # Create .env from example
 cp .env.example .env
@@ -84,7 +84,7 @@ ADMIN_KEY=generate-a-random-string-here
 Edit `backend/Caddyfile` — replace `your-domain.com` with your actual domain:
 
 ```
-api.kalai.cz {
+api.kalky.cz {
     reverse_proxy backend:3000
 }
 ```
@@ -94,7 +94,7 @@ Point your domain's DNS A record to the server IP.
 ## 7. Start Services
 
 ```bash
-cd /opt/kalai/backend
+cd /opt/kalky/backend
 docker compose up -d --build
 ```
 
@@ -137,7 +137,7 @@ curl -X POST https://your-domain.com/api/admin/import \
 Pull latest code and rebuild:
 
 ```bash
-cd /opt/kalai/backend
+cd /opt/kalky/backend
 git pull
 docker compose up -d --build
 ```
@@ -189,7 +189,7 @@ The GitHub Actions workflow (`.github/workflows/backend.yml`) includes a deploy 
 4. Push to `main`/`master` — the deploy job will SSH in and run:
 
    ```bash
-   cd /opt/kalai/backend && git pull && docker compose up -d --build
+   cd /opt/kalky/backend && git pull && docker compose up -d --build
    ```
 
 ### Troubleshooting

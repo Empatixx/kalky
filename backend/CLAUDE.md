@@ -1,7 +1,7 @@
-# Kalai Backend
+# Kalky Backend
 
 ## Project Overview
-Bun + SQLite backend for the Kalai food tracking app. Provides food image analysis (via OpenAI GPT-5-mini vision), barcode product lookup, and text search. No framework — raw `Bun.serve` API with minimal dependencies.
+Bun + SQLite backend for the Kalky food tracking app. Provides food image analysis (via OpenAI GPT-5-mini vision), barcode product lookup, and text search. No framework — raw `Bun.serve` API with minimal dependencies.
 
 ## Architecture
 - **Runtime**: Bun (built-in SQLite via `bun:sqlite`)

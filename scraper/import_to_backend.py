@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Import scraped Kaufland products into the Kalai backend.
+Import scraped Kaufland products into the Kalky backend.
 
 Usage:
     python3 import_to_backend.py                          # uses products.json
@@ -15,7 +15,7 @@ from urllib.error import HTTPError, URLError
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Import scraped products to Kalai backend")
+    parser = argparse.ArgumentParser(description="Import scraped products to Kalky backend")
     parser.add_argument("--file", default="products.json", help="JSON file to import")
     parser.add_argument("--host", default="http://localhost:3000", help="Backend URL")
     parser.add_argument("--key", default="admin", help="Admin API key")

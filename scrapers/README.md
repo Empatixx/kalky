@@ -1,6 +1,6 @@
-# Kalai Product Scrapers
+# Kalky Product Scrapers
 
-Standalone Python scrapers that collect Czech food product data and import it into the Kalai backend via the admin API.
+Standalone Python scrapers that collect Czech food product data and import it into the Kalky backend via the admin API.
 
 ## Setup
 
@@ -55,5 +55,5 @@ python kaloricke_tabulky_scraper.py
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `API_URL` | `http://localhost:3000` | Kalai backend URL |
+| `API_URL` | `http://localhost:3000` | Kalky backend URL |
 | `ADMIN_KEY` | (required) | Admin API authentication key |

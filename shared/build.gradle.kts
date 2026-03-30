@@ -91,7 +91,7 @@ kotlin {
 }
 
 android {
-    namespace = "cz.krokviak.kalai.shared"
+    namespace = "cz.krokviak.kalky.shared"
     compileSdk = 35
 
     defaultConfig {
@@ -106,8 +106,8 @@ android {
 
 sqldelight {
     databases {
-        create("KalaiDatabase") {
-            packageName.set("cz.krokviak.kalai.db")
+        create("KalkyDatabase") {
+            packageName.set("cz.krokviak.kalky.db")
         }
     }
 }

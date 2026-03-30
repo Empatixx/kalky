@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Scrape Czech food data from kaloricketabulky.cz and import into Kalai backend.
+"""Scrape Czech food data from kaloricketabulky.cz and import into Kalky backend.
 
 Crawls paginated food listing to discover food URLs, then fetches detail pages
 for JSON-LD nutritional data.
@@ -18,7 +18,7 @@ from common import get_config, import_batch
 
 BASE_URL = "https://www.kaloricketabulky.cz"
 LISTING_URL = f"{BASE_URL}/tabulka-potravin"
-HEADERS = {"User-Agent": "KalaiScraper/1.0"}
+HEADERS = {"User-Agent": "KalkyScraper/1.0"}
 
 
 def generate_synthetic_barcode(name: str) -> str:

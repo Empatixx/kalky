@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:1071491178207:android:dcba3905e0d9d0a1a5536a",
         "android_client_info": {
-          "package_name": "cz.krokviak.kalai"
+          "package_name": "cz.krokviak.kalky"
         }
       },
       "oauth_client": [
@@ -17,7 +17,7 @@
           "client_id": "1071491178207-togt8ulorqbmlaat0v8s0o7m7hso993l.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "cz.krokviak.kalai",
+            "package_name": "cz.krokviak.kalky",
             "certificate_hash": "152b382e0f6322eb418e27ef57064f376c2e9327"
           }
         },

@@ -1,7 +1,7 @@
 {
-  "name": "kalai-backend",
+  "name": "kalky-backend",
   "version": "2.0.0",
-  "description": "Kalai food tracking backend — Bun + SQLite",
+  "description": "Kalky food tracking backend — Bun + SQLite",
   "scripts": {
     "start": "bun run src/index.ts",
     "dev": "bun --watch run src/index.ts",

@@ -20,6 +20,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "kalai"
+rootProject.name = "kalky"
 include(":app")
 include(":shared")

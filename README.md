@@ -1,6 +1,6 @@
-# Kalai - Roadmap
+# Kalky - Roadmap
 
-Feature ideas and TODO list for the Kalai food tracking app.
+Feature ideas and TODO list for the Kalky food tracking app.
 
 ## Meal Planning & Recipes
 - **Meal Templates** - Save frequently eaten meals as templates for quick re-logging

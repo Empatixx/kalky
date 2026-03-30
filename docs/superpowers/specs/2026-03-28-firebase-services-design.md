@@ -2,7 +2,7 @@
 
 ## Context
 
-Kalai uses Firebase for Crashlytics, Analytics, and Auth. The backend runs on Hetzner (Bun + SQLite). Four additional free Firebase services will improve the app: Remote Config for dynamic backend URL, FCM for server-pushed notifications, Performance Monitoring for automatic instrumentation, and App Check to protect the backend from unauthorized callers.
+Kalky uses Firebase for Crashlytics, Analytics, and Auth. The backend runs on Hetzner (Bun + SQLite). Four additional free Firebase services will improve the app: Remote Config for dynamic backend URL, FCM for server-pushed notifications, Performance Monitoring for automatic instrumentation, and App Check to protect the backend from unauthorized callers.
 
 ## Current State
 
@@ -28,24 +28,24 @@ Store the backend base URL remotely so it can be changed without app updates (de
 implementation("com.google.firebase:firebase-config")
 ```
 
-**New file**: `app/src/main/java/cz/krokviak/kalai/config/RemoteConfigManager.kt`
-- Singleton object, initialized in `KalaiApplication.onCreate()`
+**New file**: `app/src/main/java/cz/krokviak/kalky/config/RemoteConfigManager.kt`
+- Singleton object, initialized in `KalkyApplication.onCreate()`
 - Sets default: `backend_base_url` = `"http://192.168.0.115:3000"`
 - Calls `fetchAndActivate()` on init
 - Exposes `fun getBackendBaseUrl(): String` reading from Remote Config
 - Minimum fetch interval: 3600s (1 hour) in production, 0s in debug
 
-**Modify**: `shared/src/commonMain/kotlin/cz/krokviak/kalai/network/FoodAnalysisClient.kt`
+**Modify**: `shared/src/commonMain/kotlin/cz/krokviak/kalky/network/FoodAnalysisClient.kt`
 - Change `DEFAULT_BASE_URL` from hardcoded string to constructor parameter `baseUrl: String`
 - Already accepts `baseUrl` parameter — just need DI to pass Remote Config value
 
-**Modify**: `app/src/main/java/cz/krokviak/kalai/auth/AuthViewModel.kt`
+**Modify**: `app/src/main/java/cz/krokviak/kalky/auth/AuthViewModel.kt`
 - Replace hardcoded `"http://192.168.0.115:3000/api/auth/me"` with `RemoteConfigManager.getBackendBaseUrl() + "/api/auth/me"`
 
-**Modify**: `shared/src/commonMain/kotlin/cz/krokviak/kalai/di/SharedModule.kt`
+**Modify**: `shared/src/commonMain/kotlin/cz/krokviak/kalky/di/SharedModule.kt`
 - `FoodAnalysisClient` already receives `baseUrl` in constructor — pass it from DI
 
-**Modify**: `app/src/main/java/cz/krokviak/kalai/di/AppModule.kt`
+**Modify**: `app/src/main/java/cz/krokviak/kalky/di/AppModule.kt`
 - Provide `backend_base_url` string from `RemoteConfigManager` to the shared module's `FoodAnalysisClient`
 
 **Firebase Console**: Create Remote Config parameter `backend_base_url` with default value.
@@ -64,15 +64,15 @@ Enable server-triggered push notifications (e.g., daily reminders, weekly summar
 implementation("com.google.firebase:firebase-messaging")
 ```
 
-**New file**: `app/src/main/java/cz/krokviak/kalai/notifications/KalaiFcmService.kt`
+**New file**: `app/src/main/java/cz/krokviak/kalky/notifications/KalkyFcmService.kt`
 - Extends `FirebaseMessagingService`
 - `onNewToken(token)`: sends token to backend via `POST /api/auth/fcm-token`
 - `onMessageReceived(message)`: shows notification using existing `NotificationHelper`
 
 **Modify**: `app/src/main/AndroidManifest.xml`
-- Register `KalaiFcmService` with intent filter for `com.google.firebase.MESSAGING_EVENT`
+- Register `KalkyFcmService` with intent filter for `com.google.firebase.MESSAGING_EVENT`
 
-**Modify**: `app/src/main/java/cz/krokviak/kalai/KalaiApplication.kt`
+**Modify**: `app/src/main/java/cz/krokviak/kalky/KalkyApplication.kt`
 - After auth state confirmed, retrieve current FCM token via `FirebaseMessaging.getInstance().token` and send to backend
 
 ### Backend Changes
@@ -131,7 +131,7 @@ No Kotlin code changes required.
 ## 4. App Check
 
 ### Purpose
-Verify that API requests come from the genuine Kalai app, not scrapers or unauthorized clients. Protects the `/cal` endpoint (which costs money via OpenAI).
+Verify that API requests come from the genuine Kalky app, not scrapers or unauthorized clients. Protects the `/cal` endpoint (which costs money via OpenAI).
 
 ### Android Changes
 
@@ -141,7 +141,7 @@ implementation("com.google.firebase:firebase-appcheck")
 implementation("com.google.firebase:firebase-appcheck-playintegrity")
 ```
 
-**Modify**: `app/src/main/java/cz/krokviak/kalai/KalaiApplication.kt`
+**Modify**: `app/src/main/java/cz/krokviak/kalky/KalkyApplication.kt`
 - Initialize App Check with Play Integrity provider:
 ```kotlin
 FirebaseAppCheck.getInstance().installAppCheckProviderFactory(
@@ -149,7 +149,7 @@ FirebaseAppCheck.getInstance().installAppCheckProviderFactory(
 )
 ```
 
-**Modify**: `shared/src/commonMain/kotlin/cz/krokviak/kalai/network/HttpClientFactory.kt`
+**Modify**: `shared/src/commonMain/kotlin/cz/krokviak/kalky/network/HttpClientFactory.kt`
 - Add App Check token to requests (alongside auth token) via the interceptor
 - New interface `AppCheckTokenProvider` in shared module with `suspend fun getToken(): String?`
 - Android implementation wraps `FirebaseAppCheck.getInstance().getAppCheckToken()`
@@ -177,8 +177,8 @@ FirebaseAppCheck.getInstance().installAppCheckProviderFactory(
 | `build.gradle.kts` | Modify — add perf plugin | Perf |
 | `gradle/libs.versions.toml` | Modify — add perf plugin version | Perf |
 | `app/.../config/RemoteConfigManager.kt` | New | Remote Config |
-| `app/.../notifications/KalaiFcmService.kt` | New | FCM |
-| `app/.../KalaiApplication.kt` | Modify — init Remote Config, App Check, FCM token | RC, AppCheck, FCM |
+| `app/.../notifications/KalkyFcmService.kt` | New | FCM |
+| `app/.../KalkyApplication.kt` | Modify — init Remote Config, App Check, FCM token | RC, AppCheck, FCM |
 | `app/.../auth/AuthViewModel.kt` | Modify — use Remote Config URL | Remote Config |
 | `app/.../di/AppModule.kt` | Modify — provide base URL from RC | Remote Config |
 | `shared/.../network/HttpClientFactory.kt` | Modify — add App Check header | App Check |

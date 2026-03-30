@@ -1,4 +1,4 @@
-"""Shared helpers for Kalai product scrapers."""
+"""Shared helpers for Kalky product scrapers."""
 
 import os
 import requests

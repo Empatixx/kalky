@@ -45,7 +45,7 @@ jobs:
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           script: |
-            cd /opt/kalai && git pull
+            cd /opt/kalky && git pull
             cat > backend/.env << ENVEOF
             OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
             PORT=3000

@@ -9,11 +9,11 @@ plugins {
 }
 
 android {
-    namespace = "cz.krokviak.kalai"
+    namespace = "cz.krokviak.kalky"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "cz.krokviak.kalai"
+        applicationId = "cz.krokviak.kalky"
         minSdk = 24
         targetSdk = 35
         versionCode = 1

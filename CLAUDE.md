@@ -16,7 +16,7 @@ Czech-language food/nutrition tracking app built with Kotlin Multiplatform (KMP)
 ## Architecture
 - **Pattern**: MVVM + Compose
 - **DI**: Koin (sharedModule in commonMain + appModule in Android app)
-- **UI**: Compose with Material3 + custom Kalai components (`ui/components/`)
+- **UI**: Compose with Material3 + custom Kalky components (`ui/components/`)
 - **Database**: SQLDelight (shared module, multiplatform)
 - **HTTP**: Ktor + kotlinx-serialization (shared module)
 - **Auth**: Firebase Auth (Google/Apple/Email) — client SDK in app module, Firebase Admin SDK on backend
@@ -43,7 +43,7 @@ Czech-language food/nutrition tracking app built with Kotlin Multiplatform (KMP)
 
 ## Key Conventions
 - UI language: Czech (i18n system in `i18n/Strings.kt` with `CzechStrings`/`EnglishStrings`, `LocalStrings.current`)
-- **UI style**: iOS-inspired design. Use custom Kalai components — `KalaiButton`, `KalaiCard`, `KalaiSegmentedControl`, `KalaiGradientBackground`. Colors via `AppTheme.colors`. Responsive sizing via `LocalDimensions.current`. For pickers, build custom iOS-style wheel pickers using `LazyColumn` + `rememberSnapFlingBehavior` (see `analytics/components/WheelDatePicker.kt`). Prefer iOS UX patterns (smooth transitions, bottom sheets, minimal chrome) over Material defaults.
+- **UI style**: iOS-inspired design. Use custom Kalky components — `KalkyButton`, `KalkyCard`, `KalkySegmentedControl`, `KalkyGradientBackground`. Colors via `AppTheme.colors`. Responsive sizing via `LocalDimensions.current`. For pickers, build custom iOS-style wheel pickers using `LazyColumn` + `rememberSnapFlingBehavior` (see `analytics/components/WheelDatePicker.kt`). Prefer iOS UX patterns (smooth transitions, bottom sheets, minimal chrome) over Material defaults.
 - **Domain logic belongs in ViewModels**, not in composables. Composables are pure UI — they call ViewModel methods.
 - Feature structure: `FeatureName/` with `FeatureScene.kt`, `FeatureViewModel.kt`, `FeatureUiState.kt`, `components/`
 - Colors: Black/White/Gray theme via `AppTheme.colors`

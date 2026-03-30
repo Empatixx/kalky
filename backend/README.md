@@ -1,8 +1,8 @@
-# Kalai Backend
+# Kalky Backend
 
-[![Backend CI](https://github.com/Empatixx/kalai/actions/workflows/backend.yml/badge.svg)](https://github.com/Empatixx/kalai/actions/workflows/backend.yml)
+[![Backend CI](https://github.com/Empatixx/kalky/actions/workflows/backend.yml/badge.svg)](https://github.com/Empatixx/kalky/actions/workflows/backend.yml)
 
-Food analysis and product lookup backend for the Kalai nutrition tracking app. Analyzes food images using OpenAI GPT-5-mini vision and provides barcode/search lookups against a local SQLite product database.
+Food analysis and product lookup backend for the Kalky nutrition tracking app. Analyzes food images using OpenAI GPT-5-mini vision and provides barcode/search lookups against a local SQLite product database.
 
 ## Prerequisites
 
@@ -168,17 +168,17 @@ Expected JSON format:
 
 ```bash
 # Build
-docker build -t kalai-backend .
+docker build -t kalky-backend .
 
 # Run
 docker run -d \
   -p 3000:3000 \
   -e OPENAI_API_KEY=sk-... \
-  -v kalai-data:/data \
-  kalai-backend
+  -v kalky-data:/data \
+  kalky-backend
 ```
 
-The `-v kalai-data:/data` volume persists the SQLite database across container restarts.
+The `-v kalky-data:/data` volume persists the SQLite database across container restarts.
 
 ## Project Structure
 

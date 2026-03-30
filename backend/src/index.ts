@@ -110,4 +110,4 @@ Bun.serve({
   },
 });
 
-console.log(`Kalai backend running on http://0.0.0.0:${PORT}`);
+console.log(`Kalky backend running on http://0.0.0.0:${PORT}`);

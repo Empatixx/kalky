@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Import Czech food products from Open Food Facts CSV dump into Kalai backend."""
+"""Import Czech food products from Open Food Facts CSV dump into Kalky backend."""
 
 import argparse
 
