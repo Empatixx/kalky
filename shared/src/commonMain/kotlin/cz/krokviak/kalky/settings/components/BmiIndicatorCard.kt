@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import cz.krokviak.kalky.common.formatFloat1
 import cz.krokviak.kalky.theme.AppTheme
 import cz.krokviak.kalky.ui.components.KalkyCard
 
@@ -56,7 +57,7 @@ fun BmiIndicatorCard(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Text(
-                        text = "%.1f".format(bmi),
+                        text = formatFloat1(bmi),
                         color = AppTheme.colors.onBackground,
                         fontSize = textSize,
                         fontWeight = FontWeight.SemiBold

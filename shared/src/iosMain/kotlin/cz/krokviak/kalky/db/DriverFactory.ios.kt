@@ -1,3 +1,5 @@
+@file:OptIn(kotlinx.cinterop.ExperimentalForeignApi::class)
+
 package cz.krokviak.kalky.db
 
 import app.cash.sqldelight.db.SqlDriver

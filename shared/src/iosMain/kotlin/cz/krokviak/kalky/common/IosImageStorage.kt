@@ -1,5 +1,11 @@
+@file:OptIn(kotlinx.cinterop.ExperimentalForeignApi::class, kotlinx.cinterop.BetaInteropApi::class)
+
 package cz.krokviak.kalky.common
 
+import kotlinx.cinterop.addressOf
+import kotlinx.cinterop.allocArrayOf
+import kotlinx.cinterop.memScoped
+import kotlinx.cinterop.usePinned
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
@@ -11,6 +17,7 @@ import platform.Foundation.NSUserDomainMask
 import platform.Foundation.NSUUID
 import platform.Foundation.create
 import platform.Foundation.writeToFile
+import platform.posix.memcpy
 
 class IosImageStorage : ImageStorage {
     override suspend fun storeImageFile(imageBytes: ByteArray): String = withContext(Dispatchers.IO) {
@@ -33,28 +40,22 @@ class IosImageStorage : ImageStorage {
     }
 
     override suspend fun getImageBytes(imagePath: String): ByteArray = withContext(Dispatchers.IO) {
-        val nsData = NSData.create(contentsOfFile = imagePath) ?: ByteArray(0).let { return@withContext it }
+        val nsData = NSData.create(contentsOfFile = imagePath)
+            ?: return@withContext ByteArray(0)
         nsData.toByteArray()
     }
 }
 
-@Suppress("UNCHECKED_CAST")
-private fun ByteArray.toNSData(): NSData {
-    return kotlinx.cinterop.memScoped {
-        NSData.create(bytes = kotlinx.cinterop.allocArrayOf(this@toNSData), length = this@toNSData.size.toULong())
-    }
+private fun ByteArray.toNSData(): NSData = memScoped {
+    NSData.create(bytes = allocArrayOf(this@toNSData), length = this@toNSData.size.toULong())
 }
 
-@Suppress("UNCHECKED_CAST")
 private fun NSData.toByteArray(): ByteArray {
     val size = this.length.toInt()
+    if (size == 0) return ByteArray(0)
     val bytes = ByteArray(size)
-    if (size > 0) {
-        kotlinx.cinterop.memScoped {
-            bytes.usePinned { pinned ->
-                platform.posix.memcpy(pinned.addressOf(0), this@toByteArray.bytes, this@toByteArray.length)
-            }
-        }
+    bytes.usePinned { pinned ->
+        memcpy(pinned.addressOf(0), this@toByteArray.bytes, this@toByteArray.length)
     }
     return bytes
 }

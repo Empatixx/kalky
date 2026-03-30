@@ -6,7 +6,6 @@ import cz.krokviak.kalky.auth.AuthStateProvider
 import cz.krokviak.kalky.auth.AuthTokenProvider
 import cz.krokviak.kalky.auth.AuthViewModelInterface
 import cz.krokviak.kalky.auth.StubAppCheckTokenProvider
-import cz.krokviak.kalky.auth.StubAuthProviders
 import cz.krokviak.kalky.auth.StubAuthStateProvider
 import cz.krokviak.kalky.auth.StubAuthTokenProvider
 import cz.krokviak.kalky.auth.StubAuthViewModel

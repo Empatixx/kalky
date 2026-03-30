@@ -2,7 +2,7 @@ package cz.krokviak.kalky.di
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import org.koin.core.context.GlobalContext
+import org.koin.mp.KoinPlatformTools
 
 /**
  * Simple koinInject() for Compose Multiplatform, compatible with Koin 3.2.x.
@@ -10,5 +10,5 @@ import org.koin.core.context.GlobalContext
  */
 @Composable
 inline fun <reified T : Any> koinInject(): T {
-    return remember { GlobalContext.get().get<T>() }
+    return remember { KoinPlatformTools.defaultContext().get().get<T>() }
 }

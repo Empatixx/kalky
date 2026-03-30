@@ -37,6 +37,7 @@ import com.patrykandpatrick.vico.multiplatform.cartesian.data.CartesianLayerRang
 import com.patrykandpatrick.vico.multiplatform.common.component.rememberTextComponent
 import com.patrykandpatrick.vico.multiplatform.common.data.ExtraStore
 import com.patrykandpatrick.vico.multiplatform.common.fill
+import cz.krokviak.kalky.common.formatFloat1
 import cz.krokviak.kalky.common.repo.WeightEntry
 import cz.krokviak.kalky.theme.AppTheme
 import cz.krokviak.kalky.ui.LocalDimensions
@@ -117,7 +118,7 @@ private fun WeightLineChartInternal(weights: List<WeightEntry>) {
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = "%.1f kg".format(currentWeight),
+                text = "${formatFloat1(currentWeight.toFloat())} kg",
                 color = AppTheme.colors.onBackground,
                 fontWeight = FontWeight.ExtraBold,
                 fontSize = dims.fontTitle
@@ -131,7 +132,7 @@ private fun WeightLineChartInternal(weights: List<WeightEntry>) {
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = "%.1f kg".format(avgWeight),
+                text = "${formatFloat1(avgWeight.toFloat())} kg",
                 color = AppTheme.colors.onBackground,
                 fontWeight = FontWeight.ExtraBold,
                 fontSize = dims.fontTitle
@@ -190,7 +191,7 @@ private fun WeightLineChartInternal(weights: List<WeightEntry>) {
                 startAxis = VerticalAxis.rememberStart(
                     label = axisLabel,
                     valueFormatter = CartesianValueFormatter { _, value, _ ->
-                        "${"%.1f".format(value)} kg"
+                        "${formatFloat1(value.toFloat())} kg"
                     },
                     itemPlacer = VerticalAxis.ItemPlacer.count({ 5 }),
                     guideline = null,

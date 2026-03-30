@@ -47,14 +47,11 @@ import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import cz.krokviak.kalky.theme.MacroColors
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
-import coil3.request.CachePolicy
-import coil3.request.ImageRequest
 import cz.krokviak.kalky.common.entities.FoodItemEntity
 import cz.krokviak.kalky.theme.AppTheme
 import cz.krokviak.kalky.ui.LocalDimensions
@@ -156,12 +153,7 @@ fun FoodItemImage(foodItem: FoodItemEntity, showBadge: Boolean = true) {
     ) {
         if (foodItem.localImagePath.isNotEmpty()) {
             AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(foodItem.localImagePath)
-                    .memoryCachePolicy(CachePolicy.ENABLED)
-                    .diskCachePolicy(CachePolicy.ENABLED)
-                    .size(200)
-                    .build(),
+                model = foodItem.localImagePath,
                 contentDescription = "Food image",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.matchParentSize(),
