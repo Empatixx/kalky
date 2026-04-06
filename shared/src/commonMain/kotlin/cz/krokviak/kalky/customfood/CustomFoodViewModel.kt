@@ -105,7 +105,7 @@ class CustomFoodViewModel(
                 loading = false
             )
             val newId = foodRepository.insertFoodItem(item)
-            _uiState.update { it.copy(selectedApiProduct = null) }
+            _uiState.update { it.copy(selectedApiProduct = null, searchQuery = "", apiResults = emptyList()) }
             _foodAdded.emit(newId)
         }
     }
@@ -137,7 +137,7 @@ class CustomFoodViewModel(
                 )
                 foodRepository.insertFoodItem(newItem)
             }
-            _uiState.update { it.copy(selectedItems = emptySet()) }
+            _uiState.update { it.copy(selectedItems = emptySet(), searchQuery = "", apiResults = emptyList()) }
             _foodAdded.emit(0)
             loadHistory()
         }

@@ -29,6 +29,7 @@ fun NutrientEditRow(
     activeColor: Color,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
 ) {
     val dims = LocalDimensions.current
     Row(
@@ -36,7 +37,7 @@ fun NutrientEditRow(
             .fillMaxWidth()
             .height(dims.rowHeight)
             .clip(RoundedCornerShape(10.dp))
-            .clickable(onClick = onClick)
+            .then(if (enabled) Modifier.clickable(onClick = onClick) else Modifier)
             .padding(horizontal = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -76,11 +77,15 @@ fun NutrientEditRow(
             fontSize = dims.fontBody,
             fontWeight = FontWeight.SemiBold
         )
-        Spacer(modifier = Modifier.width(2.dp))
-        Icon(
-            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-            contentDescription = null,
-            tint = AppTheme.colors.onBackgroundSecondary
-        )
+        if (enabled) {
+            Spacer(modifier = Modifier.width(2.dp))
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = null,
+                tint = AppTheme.colors.onBackgroundSecondary
+            )
+        } else {
+            Spacer(modifier = Modifier.width(26.dp))
+        }
     }
 }

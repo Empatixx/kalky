@@ -139,7 +139,11 @@ fun FoodItemLoadedCard(
 }
 
 @Composable
-fun FoodItemImage(foodItem: FoodItemEntity, showBadge: Boolean = true) {
+fun FoodItemImage(
+    foodItem: FoodItemEntity,
+    showBadge: Boolean = true,
+    fallbackTint: Color = AppTheme.colors.onBackgroundSecondary
+) {
     val dims = LocalDimensions.current
     // Compute the badge time only when foodItem.createdAt changes
     val badgeTime = remember(foodItem.createdAt) {
@@ -170,7 +174,7 @@ fun FoodItemImage(foodItem: FoodItemEntity, showBadge: Boolean = true) {
                     imageVector = Icons.Default.RestaurantMenu,
                     contentDescription = null,
                     modifier = Modifier.size(dims.iconCircleSize),
-                    tint = AppTheme.colors.onBackgroundSecondary
+                    tint = fallbackTint
                 )
             }
         }

@@ -23,7 +23,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Eco
+import androidx.compose.material.icons.filled.LocalFireDepartment
+import androidx.compose.material.icons.filled.Restaurant
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Spa
+import androidx.compose.material.icons.filled.RestaurantMenu
+import androidx.compose.material.icons.filled.Storage
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -56,7 +63,9 @@ import cz.krokviak.kalky.home.components.CaloriesRow
 import cz.krokviak.kalky.home.components.FoodItemImage
 import cz.krokviak.kalky.home.components.NutrientsRow
 import cz.krokviak.kalky.i18n.LocalStrings
+import cz.krokviak.kalky.nutrientedit.components.NutrientEditRow
 import cz.krokviak.kalky.theme.AppTheme
+import cz.krokviak.kalky.theme.MacroColors
 import cz.krokviak.kalky.ui.LocalDimensions
 import cz.krokviak.kalky.ui.components.KalkyButton
 import cz.krokviak.kalky.ui.components.KalkyCard
@@ -158,7 +167,7 @@ fun CustomFoodScene(
                 )
 
                 val hasAnyResults = when (selectedTab) {
-                    1 -> uiState.customFoods.isNotEmpty()
+                    1 -> true // Always show list so Add button is visible
                     2 -> uiState.historyItems.isNotEmpty()
                     else -> uiState.customFoods.isNotEmpty() || uiState.historyItems.isNotEmpty() || uiState.apiResults.isNotEmpty()
                 }
@@ -185,27 +194,45 @@ fun CustomFoodScene(
                     ) {
                         if (selectedTab == 1) {
                             item {
-                                Row(
+                                KalkyCard(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .clip(RoundedCornerShape(12.dp))
-                                        .clickable(onClick = onAddNewClick)
-                                        .padding(vertical = 12.dp),
-                                    horizontalArrangement = Arrangement.Center,
-                                    verticalAlignment = Alignment.CenterVertically
+                                        .clip(RoundedCornerShape(16.dp))
+                                        .clickable(onClick = onAddNewClick),
+                                    shape = RoundedCornerShape(16.dp),
+                                    color = AppTheme.colors.surfaceSecondary
                                 ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Add,
-                                        contentDescription = null,
-                                        tint = AppTheme.colors.onBackgroundSecondary,
-                                        modifier = Modifier.size(18.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(6.dp))
-                                    Text(
-                                        text = s.customFood.addManually,
-                                        fontSize = 14.sp,
-                                        color = AppTheme.colors.onBackgroundSecondary
-                                    )
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 16.dp, vertical = 14.dp),
+                                        horizontalArrangement = Arrangement.Center,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Box(
+                                            modifier = Modifier
+                                                .size(32.dp)
+                                                .background(
+                                                    color = AppTheme.colors.onBackground,
+                                                    shape = CircleShape
+                                                ),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.Add,
+                                                contentDescription = null,
+                                                tint = AppTheme.colors.background,
+                                                modifier = Modifier.size(20.dp)
+                                            )
+                                        }
+                                        Spacer(modifier = Modifier.width(10.dp))
+                                        Text(
+                                            text = s.customFood.addManually,
+                                            fontSize = dims.fontBody,
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = AppTheme.colors.onBackground
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -228,29 +255,28 @@ fun CustomFoodScene(
                         }
                         if (uiState.historyItems.isNotEmpty() && selectedTab != 1) {
                             item {
-                                Text(
+                                SectionHeader(
                                     text = s.customFood.recentlyUsed,
-                                    fontSize = dims.fontBody,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = AppTheme.colors.onBackgroundSecondary
+                                    icon = Icons.Default.History,
+                                    iconColor = Color(0xFF4A90D9)
                                 )
                             }
-                            items(uiState.historyItems, key = { it.id }) { item ->
+                            items(uiState.historyItems.take(5), key = { it.id }) { item ->
                                 HistoryFoodItem(
                                     item = item,
                                     isSelected = item.id in uiState.selectedItems,
-                                    onClick = { viewModel.toggleSelection(item.id) }
+                                    onClick = { viewModel.toggleSelection(item.id) },
+                                    fallbackTint = Color(0xFF4A90D9)
                                 )
                             }
                         }
                         if (uiState.apiResults.isNotEmpty() && selectedTab == 0) {
                             item {
                                 Spacer(modifier = Modifier.height(8.dp))
-                                Text(
+                                SectionHeader(
                                     text = s.customFood.onlineResults,
-                                    fontSize = dims.fontBody,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = AppTheme.colors.onBackgroundSecondary
+                                    icon = Icons.Default.Storage,
+                                    iconColor = AppTheme.colors.onBackgroundSecondary
                                 )
                             }
                             items(uiState.apiResults.size, key = { "api_$it" }) { index ->
@@ -298,7 +324,8 @@ fun CustomFoodScene(
 private fun HistoryFoodItem(
     item: FoodItemEntity,
     isSelected: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    fallbackTint: Color = AppTheme.colors.onBackgroundSecondary
 ) {
     val dims = LocalDimensions.current
     KalkyCard(
@@ -323,7 +350,7 @@ private fun HistoryFoodItem(
     ) {
         Box {
             Row(modifier = Modifier.fillMaxWidth()) {
-                FoodItemImage(foodItem = item, showBadge = false)
+                FoodItemImage(foodItem = item, showBadge = false, fallbackTint = fallbackTint)
 
                 Column(
                     modifier = Modifier
@@ -392,37 +419,56 @@ private fun ApiResultItem(
             .clip(RoundedCornerShape(16.dp))
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
+        contentPadding = PaddingValues(0.dp),
         color = AppTheme.colors.surfaceSecondary
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 14.dp, vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                Text(
-                    text = name,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = dims.fontBody,
-                    color = AppTheme.colors.onBackground,
-                    maxLines = 2
-                )
-                Text(
-                    text = "$calories kcal  |  ${s.common.protein}: ${protein}g  ${s.common.carbs}: ${carbs}g  ${s.common.fat}: ${fat}g",
-                    fontSize = dims.fontCaption,
-                    color = AppTheme.colors.onBackgroundSecondary
-                )
-                Text(
-                    text = s.customFood.per100g,
-                    fontSize = dims.fontCaption,
-                    color = AppTheme.colors.onBackgroundSecondary
-                )
+        Box {
+            Row(modifier = Modifier.fillMaxWidth()) {
+                // Fallback thumbnail with gray icon (no image for API results)
+                Box(
+                    modifier = Modifier
+                        .width(dims.thumbnailSize)
+                        .height(dims.thumbnailSize)
+                        .clip(RoundedCornerShape(topStart = 16.dp, bottomStart = 16.dp))
+                        .background(AppTheme.colors.border),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.RestaurantMenu,
+                        contentDescription = null,
+                        modifier = Modifier.size(dims.iconCircleSize),
+                        tint = AppTheme.colors.onBackgroundSecondary
+                    )
+                }
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp)
+                        .align(Alignment.CenterVertically)
+                ) {
+                    Text(
+                        text = name,
+                        fontSize = dims.fontBody,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = AppTheme.colors.onBackground,
+                        maxLines = 2
+                    )
+                    Spacer(modifier = Modifier.height(dims.halfSpacing))
+                    CaloriesRow(calories = calories)
+                    Spacer(modifier = Modifier.height(dims.halfSpacing))
+                    NutrientsRow(
+                        protein = protein,
+                        carbs = carbs,
+                        fat = fat
+                    )
+                    Text(
+                        text = s.customFood.per100g,
+                        fontSize = dims.fontCaption,
+                        color = AppTheme.colors.onBackgroundSecondary
+                    )
+                }
             }
-            AddButton()
         }
     }
 }
@@ -522,55 +568,109 @@ private fun PortionPickerSheet(
                 }
             }
 
-            // Scaled macros display
+            // Calories card
+            val dims = LocalDimensions.current
             KalkyCard(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(14.dp),
                 color = AppTheme.colors.surface
             ) {
-                Column(
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(14.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                        .height(dims.rowHeight)
+                        .padding(horizontal = 14.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                    Box(
+                        modifier = Modifier
+                            .size(dims.iconCircleSize)
+                            .background(
+                                color = Color.Black,
+                                shape = CircleShape
+                            ),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            text = s.common.calories,
-                            fontSize = 16.sp,
-                            color = AppTheme.colors.onBackground
+                        Icon(
+                            imageVector = Icons.Default.LocalFireDepartment,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(dims.iconSize)
                         )
-                        Text(
-                            text = "$calories kcal",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = AppTheme.colors.onBackground
-                        )
                     }
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(text = s.common.protein, fontSize = 14.sp, color = AppTheme.colors.onBackgroundSecondary)
-                        Text(text = "${protein}g", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = AppTheme.colors.onBackground)
-                    }
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(text = s.common.carbs, fontSize = 14.sp, color = AppTheme.colors.onBackgroundSecondary)
-                        Text(text = "${carbs}g", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = AppTheme.colors.onBackground)
-                    }
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(text = s.common.fat, fontSize = 14.sp, color = AppTheme.colors.onBackgroundSecondary)
-                        Text(text = "${fat}g", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = AppTheme.colors.onBackground)
-                    }
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text(
+                        text = s.common.calories,
+                        color = AppTheme.colors.onBackground,
+                        fontSize = dims.fontBody,
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Text(
+                        text = calories.toString(),
+                        color = AppTheme.colors.onBackground,
+                        fontSize = dims.fontBody,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = "kcal",
+                        color = AppTheme.colors.onBackgroundSecondary,
+                        fontSize = dims.fontBody,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Spacer(modifier = Modifier.width(26.dp))
+                }
+            }
+
+            // Macros card with icons
+            KalkyCard(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                color = AppTheme.colors.surface
+            ) {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    NutrientEditRow(
+                        label = s.common.protein,
+                        value = protein,
+                        valueUnit = "g",
+                        icon = Icons.Default.Restaurant,
+                        activeColor = MacroColors.protein,
+                        onClick = {},
+                        enabled = false
+                    )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(1.dp)
+                            .padding(start = 56.dp, end = 14.dp)
+                            .background(AppTheme.colors.border)
+                    )
+                    NutrientEditRow(
+                        label = s.common.carbs,
+                        value = carbs,
+                        valueUnit = "g",
+                        icon = Icons.Default.Spa,
+                        activeColor = MacroColors.carbs,
+                        onClick = {},
+                        enabled = false
+                    )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(1.dp)
+                            .padding(start = 56.dp, end = 14.dp)
+                            .background(AppTheme.colors.border)
+                    )
+                    NutrientEditRow(
+                        label = s.common.fat,
+                        value = fat,
+                        valueUnit = "g",
+                        icon = Icons.Default.Eco,
+                        activeColor = MacroColors.fat,
+                        onClick = {},
+                        enabled = false
+                    )
                 }
             }
 
@@ -585,6 +685,32 @@ private fun PortionPickerSheet(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun SectionHeader(
+    text: String,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    iconColor: Color
+) {
+    val dims = LocalDimensions.current
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = iconColor,
+            modifier = Modifier.size(18.dp)
+        )
+        Text(
+            text = text,
+            fontSize = dims.fontBody,
+            fontWeight = FontWeight.SemiBold,
+            color = AppTheme.colors.onBackgroundSecondary
+        )
     }
 }
 

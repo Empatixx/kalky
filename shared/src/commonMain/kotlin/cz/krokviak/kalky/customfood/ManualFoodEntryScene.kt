@@ -1,8 +1,6 @@
 package cz.krokviak.kalky.customfood
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,8 +18,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Eco
 import androidx.compose.material.icons.filled.LocalFireDepartment
 import androidx.compose.material.icons.filled.Restaurant
@@ -31,7 +27,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -45,11 +40,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import cz.krokviak.kalky.theme.MacroColors
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cz.krokviak.kalky.i18n.LocalStrings
@@ -59,7 +52,6 @@ import cz.krokviak.kalky.theme.AppTheme
 import cz.krokviak.kalky.ui.LocalDimensions
 import cz.krokviak.kalky.ui.components.KalkyButton
 import cz.krokviak.kalky.ui.components.KalkyCard
-import kotlin.math.roundToInt
 
 private enum class ManualMacroPickerField { PROTEIN, CARBS, FAT }
 
@@ -87,11 +79,6 @@ fun ManualFoodEntryScene(
     LaunchedEffect(state.fat) {
         selectedFatIndex = state.fat.coerceIn(0, macroValues.lastIndex)
     }
-
-    val ingredientResults by viewModel.ingredientResults.collectAsState()
-    val ingredientApiResults by viewModel.ingredientApiResults.collectAsState()
-    var ingredientQuery by remember { mutableStateOf("") }
-    var showIngredientSearch by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.foodAdded.collect {
@@ -155,217 +142,6 @@ fun ManualFoodEntryScene(
                 ),
                 singleLine = true
             )
-
-            // Add ingredient search
-            if (!showIngredientSearch) {
-                Surface(
-                    onClick = { showIngredientSearch = true },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(10.dp),
-                    color = AppTheme.colors.surface
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = null,
-                            tint = AppTheme.colors.onBackground,
-                            modifier = Modifier.size(22.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = s.customFood.addIngredient,
-                            fontSize = 17.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = AppTheme.colors.onBackground
-                        )
-                    }
-                }
-            } else {
-                OutlinedTextField(
-                    value = ingredientQuery,
-                    onValueChange = {
-                        ingredientQuery = it
-                        viewModel.searchIngredients(it)
-                    },
-                    placeholder = {
-                        Text(
-                            text = s.customFood.searchPlaceholder,
-                            color = AppTheme.colors.onBackgroundSecondary
-                        )
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    singleLine = true,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = AppTheme.colors.onBackgroundSecondary,
-                        unfocusedBorderColor = AppTheme.colors.border,
-                        focusedContainerColor = AppTheme.colors.surface,
-                        unfocusedContainerColor = AppTheme.colors.surface,
-                        focusedTextColor = AppTheme.colors.onBackground,
-                        unfocusedTextColor = AppTheme.colors.onBackground
-                    )
-                )
-                if (ingredientResults.isNotEmpty() || ingredientApiResults.isNotEmpty()) {
-                    KalkyCard(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(14.dp),
-                        color = AppTheme.colors.surface
-                    ) {
-                        Column(modifier = Modifier.fillMaxWidth()) {
-                            ingredientResults.take(5).forEach { food ->
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable {
-                                            viewModel.addSourceFood(food)
-                                            ingredientQuery = ""
-                                            viewModel.searchIngredients("")
-                                            showIngredientSearch = false
-                                        }
-                                        .padding(horizontal = 14.dp, vertical = 10.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Column(modifier = Modifier.weight(1f)) {
-                                        Text(
-                                            text = food.name,
-                                            fontSize = 14.sp,
-                                            fontWeight = FontWeight.Medium,
-                                            color = AppTheme.colors.onBackground
-                                        )
-                                        Text(
-                                            text = "${food.calories} kcal",
-                                            fontSize = 12.sp,
-                                            color = AppTheme.colors.onBackgroundSecondary
-                                        )
-                                    }
-                                    Icon(
-                                        imageVector = Icons.Default.Add,
-                                        contentDescription = null,
-                                        tint = AppTheme.colors.onBackgroundSecondary,
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                }
-                            }
-                            ingredientApiResults.take(5).forEach { product ->
-                                val name = product.productName ?: return@forEach
-                                val kcal = product.nutriments?.energyKcal100g?.roundToInt() ?: 0
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable {
-                                            viewModel.addSourceFoodFromApi(product)
-                                            ingredientQuery = ""
-                                            viewModel.searchIngredients("")
-                                            showIngredientSearch = false
-                                        }
-                                        .padding(horizontal = 14.dp, vertical = 10.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Column(modifier = Modifier.weight(1f)) {
-                                        Text(
-                                            text = name,
-                                            fontSize = 14.sp,
-                                            fontWeight = FontWeight.Medium,
-                                            color = AppTheme.colors.onBackground,
-                                            maxLines = 1
-                                        )
-                                        Text(
-                                            text = "$kcal kcal · ${s.customFood.per100g}",
-                                            fontSize = 12.sp,
-                                            color = AppTheme.colors.onBackgroundSecondary
-                                        )
-                                    }
-                                    Icon(
-                                        imageVector = Icons.Default.Add,
-                                        contentDescription = null,
-                                        tint = AppTheme.colors.onBackgroundSecondary,
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (state.sourceFoods.isNotEmpty()) {
-                KalkyCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(14.dp),
-                    color = AppTheme.colors.surface
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(14.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        state.sourceFoods.forEach { food ->
-                            val portion = state.sourcePortionGrams[food.id] ?: 100
-                            val scaledCal = (food.calories * portion / 100.0).roundToInt()
-                            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(
-                                        text = food.name,
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.SemiBold,
-                                        color = AppTheme.colors.onBackground,
-                                        modifier = Modifier.weight(1f),
-                                        maxLines = 1
-                                    )
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text(
-                                        text = "$scaledCal kcal",
-                                        fontSize = 13.sp,
-                                        color = AppTheme.colors.onBackgroundSecondary
-                                    )
-                                    IconButton(
-                                        onClick = { viewModel.removeSourceFood(food.id) },
-                                        modifier = Modifier.size(28.dp)
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.Close,
-                                            contentDescription = s.common.close,
-                                            tint = AppTheme.colors.onBackgroundSecondary,
-                                            modifier = Modifier.size(16.dp)
-                                        )
-                                    }
-                                }
-                                OutlinedTextField(
-                                    value = portion.toString(),
-                                    onValueChange = { text ->
-                                        val grams = text.filter { it.isDigit() }.toIntOrNull() ?: 0
-                                        viewModel.updateSourcePortion(food.id, grams)
-                                    },
-                                    suffix = { Text("g", color = AppTheme.colors.onBackgroundSecondary, fontSize = 14.sp) },
-                                    modifier = Modifier.fillMaxWidth().height(48.dp),
-                                    shape = RoundedCornerShape(8.dp),
-                                    textStyle = androidx.compose.ui.text.TextStyle(fontSize = 14.sp),
-                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                    singleLine = true,
-                                    colors = OutlinedTextFieldDefaults.colors(
-                                        focusedBorderColor = AppTheme.colors.onBackgroundSecondary,
-                                        unfocusedBorderColor = AppTheme.colors.border,
-                                        focusedContainerColor = AppTheme.colors.background,
-                                        unfocusedContainerColor = AppTheme.colors.background,
-                                        focusedTextColor = AppTheme.colors.onBackground,
-                                        unfocusedTextColor = AppTheme.colors.onBackground
-                                    )
-                                )
-                            }
-                        }
-                    }
-                }
-            }
 
             // Calories summary card (read-only, auto-calculated)
             KalkyCard(
