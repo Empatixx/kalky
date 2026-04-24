@@ -1,0 +1,42 @@
+package cz.krokviak.kalky.common.domain
+
+import cz.krokviak.kalky.analytics.CaloriesBar
+import cz.krokviak.kalky.common.repo.FoodRepository
+import cz.krokviak.kalky.common.toCzechShortName
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.toPersistentList
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.plus
+
+class BuildCaloriesBarsUseCase(
+    private val foodRepository: FoodRepository,
+) {
+    suspend operator fun invoke(start: LocalDate, end: LocalDate): PersistentList<CaloriesBar> {
+        val days = daysBetween(start, end)
+        val dailyTotals = foodRepository.getDailyMacroTotalsInRange(
+            start.toString(),
+            end.toString(),
+        )
+        val totalsByDate = dailyTotals.associateBy { it.day }
+
+        return (0 until days).map { i ->
+            val date = start.plus(i, DateTimeUnit.DAY)
+            val label = if (days <= 14) {
+                date.dayOfWeek.toCzechShortName()
+            } else {
+                "${date.dayOfMonth}.${date.monthNumber}."
+            }
+            val dayTotals = totalsByDate[date]
+            CaloriesBar(
+                label = label,
+                protein = dayTotals?.totalProtein ?: 0,
+                carbs = dayTotals?.totalCarbs ?: 0,
+                fat = dayTotals?.totalFat ?: 0,
+            )
+        }.toPersistentList()
+    }
+
+    private fun daysBetween(start: LocalDate, end: LocalDate): Int =
+        (end.toEpochDays() - start.toEpochDays() + 1).coerceAtLeast(1)
+}

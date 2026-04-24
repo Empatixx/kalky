@@ -3,6 +3,9 @@ package cz.krokviak.kalky.di
 import cz.krokviak.kalky.common.AppPreferences
 import cz.krokviak.kalky.common.FoodPhotoAnalyzer
 import cz.krokviak.kalky.common.StreakCalculator
+import cz.krokviak.kalky.common.domain.BuildCaloriesBarsUseCase
+import cz.krokviak.kalky.common.domain.GetDailyMacrosUseCase
+import cz.krokviak.kalky.common.domain.GetStreakUseCase
 import cz.krokviak.kalky.common.repo.FoodRepository
 import cz.krokviak.kalky.common.repo.NutrientSettingRepo
 import cz.krokviak.kalky.common.repo.PersonalInfoRepo
@@ -45,6 +48,11 @@ val sharedModule = module {
 
     // Food photo pipeline
     single { FoodPhotoAnalyzer(get(), get(), get()) }
+
+    // Domain use cases
+    factory { GetDailyMacrosUseCase(get()) }
+    factory { GetStreakUseCase(get()) }
+    factory { BuildCaloriesBarsUseCase(get()) }
 
     // Notifications
     single { MealReminderChecker(get(), get()) }

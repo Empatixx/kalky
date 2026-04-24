@@ -40,7 +40,7 @@ val appModule = module {
     single<AppCheckTokenProvider> { FirebaseAppCheckTokenProvider() }
 
     // ViewModels
-    viewModel { MainViewModel(get(), get(), get(), get(), get(), seedMockData = BuildConfig.DEBUG) }
+    viewModel { MainViewModel(get(), get(), get(), get(), get(), get(), seedMockData = BuildConfig.DEBUG) }
     viewModel { FoodDetailViewModel(get(), get(), get()) }
     viewModel { NutrientEditViewModel(get()) }
     viewModel { AnalyticsViewModel(get(), get()) }

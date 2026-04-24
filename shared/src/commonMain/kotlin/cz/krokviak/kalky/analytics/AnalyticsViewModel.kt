@@ -2,28 +2,25 @@ package cz.krokviak.kalky.analytics
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import cz.krokviak.kalky.common.currentLocalDate
-import cz.krokviak.kalky.common.repo.FoodRepository
+import cz.krokviak.kalky.common.domain.BuildCaloriesBarsUseCase
 import cz.krokviak.kalky.common.repo.PersonalInfoRepo
-import cz.krokviak.kalky.common.toCzechShortName
-import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.minus
-import kotlinx.datetime.plus
 
 class AnalyticsViewModel(
-    private val foodRepository: FoodRepository,
-    private val personalInfoRepo: PersonalInfoRepo
+    private val buildCaloriesBars: BuildCaloriesBarsUseCase,
+    private val personalInfoRepo: PersonalInfoRepo,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AnalyticsUiState())
     val uiState: StateFlow<AnalyticsUiState> = _uiState
+
+    private var loadJob: Job? = null
 
     init {
         loadData()
@@ -43,50 +40,17 @@ class AnalyticsViewModel(
         val state = _uiState.value
         val start = state.startDate
         val end = state.endDate
-        val days = daysBetween(start, end)
 
-        viewModelScope.launch {
-            val bars = getBarsForRange(start, end, days)
+        loadJob?.cancel()
+        loadJob = viewModelScope.launch {
+            val bars = buildCaloriesBars(start, end)
             val weights = personalInfoRepo.getWeightsInRange(start, end)
-
             _uiState.update {
                 it.copy(
                     weights = weights.toPersistentList(),
-                    caloriesBars = bars
+                    caloriesBars = bars,
                 )
             }
         }
-    }
-
-    private suspend fun getBarsForRange(
-        start: LocalDate,
-        end: LocalDate,
-        days: Int
-    ): PersistentList<CaloriesBar> {
-        val dailyTotals = foodRepository.getDailyMacroTotalsInRange(
-            start.toString(),
-            end.toString()
-        )
-        val totalsByDate = dailyTotals.associateBy { it.day }
-
-        return (0 until days).map { i ->
-            val date = start.plus(i, DateTimeUnit.DAY)
-            val label = if (days <= 14) {
-                date.dayOfWeek.toCzechShortName()
-            } else {
-                "${date.dayOfMonth}.${date.monthNumber}."
-            }
-            val dayTotals = totalsByDate[date]
-            CaloriesBar(
-                label = label,
-                protein = dayTotals?.totalProtein ?: 0,
-                carbs = dayTotals?.totalCarbs ?: 0,
-                fat = dayTotals?.totalFat ?: 0
-            )
-        }.toPersistentList()
-    }
-
-    private fun daysBetween(start: LocalDate, end: LocalDate): Int {
-        return (end.toEpochDays() - start.toEpochDays() + 1).coerceAtLeast(1)
     }
 }

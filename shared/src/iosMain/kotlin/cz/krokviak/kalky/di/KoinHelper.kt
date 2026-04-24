@@ -47,7 +47,7 @@ fun initKoinIos(
                 }
 
                 // ViewModels
-                single { MainViewModel(get(), get(), get(), get(), get()) }
+                single { MainViewModel(get(), get(), get(), get(), get(), get()) }
                 single { FoodDetailViewModel(get(), get(), get()) }
                 single { NutrientEditViewModel(get()) }
                 single { AnalyticsViewModel(get(), get()) }

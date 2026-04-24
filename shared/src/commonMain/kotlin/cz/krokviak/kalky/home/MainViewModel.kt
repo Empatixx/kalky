@@ -3,13 +3,14 @@ package cz.krokviak.kalky.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cz.krokviak.kalky.common.FoodPhotoAnalyzer
-import cz.krokviak.kalky.common.StreakCalculator
+import cz.krokviak.kalky.common.domain.GetDailyMacrosUseCase
+import cz.krokviak.kalky.common.domain.GetStreakUseCase
 import cz.krokviak.kalky.common.entities.FoodItemEntity
 import cz.krokviak.kalky.common.repo.FoodRepository
 import cz.krokviak.kalky.common.repo.NutrientSettingRepo
 import cz.krokviak.kalky.db.DatabaseSeeder
+import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.mutate
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Dispatchers
@@ -26,14 +27,15 @@ class MainViewModel(
     private val foodRepository: FoodRepository,
     private val nutrientSettingRepo: NutrientSettingRepo,
     private val foodPhotoAnalyzer: FoodPhotoAnalyzer,
-    private val streakCalculator: StreakCalculator,
+    private val getDailyMacros: GetDailyMacrosUseCase,
+    private val getStreak: GetStreakUseCase,
     private val databaseSeeder: DatabaseSeeder,
-    private val seedMockData: Boolean = false
+    private val seedMockData: Boolean = false,
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(MainUiState(
-        dailyStats = generateFakeDailyStats(7)
-    ))
+    private val _uiState = MutableStateFlow(
+        MainUiState(dailyStats = generateFakeDailyStats(7))
+    )
     val uiState: StateFlow<MainUiState> = _uiState
 
     init {
@@ -47,7 +49,7 @@ class MainViewModel(
                     maxProtein = latestSettings?.targetProtein ?: 0,
                     maxCarbs = latestSettings?.targetCarbs ?: 0,
                     maxFats = latestSettings?.targetFat ?: 0,
-                    maxCalories = latestSettings?.targetCalories ?: 0
+                    maxCalories = latestSettings?.targetCalories ?: 0,
                 )
             }
             refreshStreak()
@@ -55,7 +57,7 @@ class MainViewModel(
     }
 
     private suspend fun refreshStreak() {
-        val streak = streakCalculator.getCurrentStreak()
+        val streak = getStreak()
         _uiState.update { it.copy(currentStreak = streak) }
     }
 
@@ -67,15 +69,15 @@ class MainViewModel(
                 _uiState.update { current ->
                     current.copy(
                         recentlyAddedItems = current.recentlyAddedItems.mutate { it.add(0, placeholder) },
-                        loadingItems = current.loadingItems.add(placeholder.id)
+                        loadingItems = current.loadingItems.add(placeholder.id),
                     )
                 }
-                recalculateMacros()
+                recalculateMacrosFromState()
             },
             onAnalysisComplete = { analyzed ->
                 _uiState.update { current ->
                     current.copy(
-                        recentlyAddedItems = current.recentlyAddedItems.replaceById(analyzed.id, analyzed)
+                        recentlyAddedItems = current.recentlyAddedItems.replaceById(analyzed.id, analyzed),
                     )
                 }
             },
@@ -83,10 +85,10 @@ class MainViewModel(
                 _uiState.update { current ->
                     current.copy(
                         loadingItems = current.loadingItems.remove(finalItem.id),
-                        recentlyAddedItems = current.recentlyAddedItems.replaceById(finalItem.id, finalItem)
+                        recentlyAddedItems = current.recentlyAddedItems.replaceById(finalItem.id, finalItem),
                     )
                 }
-                recalculateMacros()
+                recalculateMacrosFromState()
             }
         )
     }
@@ -96,7 +98,7 @@ class MainViewModel(
         calories: Int,
         protein: Int,
         fat: Int,
-        carbs: Int
+        carbs: Int,
     ) {
         viewModelScope.launch {
             val now = Clock.System.now()
@@ -110,33 +112,27 @@ class MainViewModel(
                 createdAt = now,
                 updatedAt = now,
                 localImagePath = "",
-                loading = false
+                loading = false,
             )
-
             val newId = foodRepository.insertFoodItem(item)
             val insertedItem = item.copy(id = newId)
-
             _uiState.update { current ->
                 current.copy(
-                    recentlyAddedItems = current.recentlyAddedItems.mutate { it.add(0, insertedItem) }
+                    recentlyAddedItems = current.recentlyAddedItems.mutate { it.add(0, insertedItem) },
                 )
             }
-            recalculateMacros()
+            recalculateMacrosFromState()
         }
     }
 
-    fun recalculateMacros() {
+    /** Recomputes totals from the in-memory list (used while items are mid-analysis). */
+    private fun recalculateMacrosFromState() {
         _uiState.update { current ->
-            val totalCalories = current.recentlyAddedItems.sumOf { it.calories }
-            val totalProtein = current.recentlyAddedItems.sumOf { it.protein }
-            val totalFats = current.recentlyAddedItems.sumOf { it.fat }
-            val totalCarbs = current.recentlyAddedItems.sumOf { it.carbs }
-
             current.copy(
-                currentCalories = totalCalories,
-                currentProtein = totalProtein,
-                currentFats = totalFats,
-                currentCarbs = totalCarbs
+                currentCalories = current.recentlyAddedItems.sumOf { it.calories },
+                currentProtein = current.recentlyAddedItems.sumOf { it.protein },
+                currentFats = current.recentlyAddedItems.sumOf { it.fat },
+                currentCarbs = current.recentlyAddedItems.sumOf { it.carbs },
             )
         }
         viewModelScope.launch { refreshStreak() }
@@ -144,27 +140,20 @@ class MainViewModel(
 
     fun loadFoodItemsForDate(date: LocalDate) {
         viewModelScope.launch {
-            val dateStr = date.toString()
-
-            val itemsForDate = foodRepository.getFoodItemsForDate(dateStr)
-            val totalCalories = foodRepository.getTotalCaloriesForDate(dateStr)
-            val totalFats = foodRepository.getTotalFatsForDate(dateStr)
-            val totalCarbs = foodRepository.getTotalCarbsForDate(dateStr)
-            val totalProtein = foodRepository.getTotalProteinForDate(dateStr)
-
+            val macros = getDailyMacros(date)
             _uiState.update { current ->
                 current.copy(
-                    recentlyAddedItems = itemsForDate.toPersistentList(),
-                    currentCalories = totalCalories,
-                    currentFats = totalFats,
-                    currentCarbs = totalCarbs,
-                    currentProtein = totalProtein
+                    recentlyAddedItems = macros.items,
+                    currentCalories = macros.totalCalories,
+                    currentProtein = macros.totalProtein,
+                    currentCarbs = macros.totalCarbs,
+                    currentFats = macros.totalFat,
                 )
             }
         }
     }
 
-    private fun generateFakeDailyStats(days: Int): kotlinx.collections.immutable.PersistentList<DailyStats> {
+    private fun generateFakeDailyStats(days: Int): PersistentList<DailyStats> {
         val labels = listOf("Po", "Út", "St", "Čt", "Pá", "So", "Ne")
         return (0 until days).map { i ->
             val label = if (days == 7) labels[i % 7] else "Den ${i + 1}"
@@ -172,19 +161,15 @@ class MainViewModel(
                 dayLabel = label,
                 protein = (20..100).random(),
                 carbs = (50..200).random(),
-                fat = (10..80).random()
+                fat = (10..80).random(),
             )
         }.toPersistentList()
     }
 
-    fun resetToToday() {
-        onDateSelected(cz.krokviak.kalky.common.currentLocalDate())
-    }
+    fun resetToToday() = onDateSelected(cz.krokviak.kalky.common.currentLocalDate())
 
     fun onDateSelected(date: LocalDate) {
-        _uiState.update { current ->
-            current.copy(currentDate = date)
-        }
+        _uiState.update { current -> current.copy(currentDate = date) }
         loadFoodItemsForDate(date)
     }
 
@@ -213,10 +198,10 @@ class MainViewModel(
                 current.copy(
                     recentlyAddedItems = current.recentlyAddedItems
                         .mutate { list -> list.removeAll { it.id in ids } },
-                    selectedFoodIds = persistentSetOf()
+                    selectedFoodIds = persistentSetOf(),
                 )
             }
-            recalculateMacros()
+            recalculateMacrosFromState()
         }
     }
 
@@ -231,16 +216,16 @@ class MainViewModel(
                 maxProtein = protein,
                 maxCarbs = carbs,
                 maxFats = fat,
-                maxCalories = calories
+                maxCalories = calories,
             )
         }
     }
 }
 
-private fun kotlinx.collections.immutable.PersistentList<FoodItemEntity>.replaceById(
+private fun PersistentList<FoodItemEntity>.replaceById(
     id: Long,
-    replacement: FoodItemEntity
-): kotlinx.collections.immutable.PersistentList<FoodItemEntity> {
+    replacement: FoodItemEntity,
+): PersistentList<FoodItemEntity> {
     val idx = indexOfFirst { it.id == id }
     return if (idx < 0) this else mutate { it[idx] = replacement }
 }
