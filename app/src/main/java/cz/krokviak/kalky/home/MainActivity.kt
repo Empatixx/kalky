@@ -18,7 +18,8 @@ import cz.krokviak.kalky.auth.AuthViewModel
 import cz.krokviak.kalky.common.LocalPlatformActions
 import cz.krokviak.kalky.common.PlatformActions
 import cz.krokviak.kalky.config.RemoteConfigManager
-import cz.krokviak.kalky.customfood.CustomFoodViewModel
+import cz.krokviak.kalky.customfood.CustomFoodSearchViewModel
+import cz.krokviak.kalky.customfood.ManualFoodEntryViewModel
 import cz.krokviak.kalky.detail.FoodDetailViewModel
 import cz.krokviak.kalky.i18n.CzechStrings
 import cz.krokviak.kalky.i18n.EnglishStrings
@@ -42,7 +43,8 @@ class MainActivity : ComponentActivity() {
     private val analyticsViewModel: AnalyticsViewModel by viewModel()
     private val settingsViewModel: SettingsViewModel by viewModel()
     private val onboardingViewModel: OnboardingViewModel by viewModel()
-    private val customFoodViewModel: CustomFoodViewModel by viewModel()
+    private val customFoodSearchViewModel: CustomFoodSearchViewModel by viewModel()
+    private val manualEntryViewModel: ManualFoodEntryViewModel by viewModel()
     private val authViewModel: AuthViewModel by viewModel()
     private val appPreferences: AppPreferences by inject()
 
@@ -65,7 +67,8 @@ class MainActivity : ComponentActivity() {
                         analyticsViewModel = analyticsViewModel,
                         settingsViewModel = settingsViewModel,
                         onboardingViewModel = onboardingViewModel,
-                        customFoodViewModel = customFoodViewModel,
+                        customFoodSearchViewModel = customFoodSearchViewModel,
+                        manualEntryViewModel = manualEntryViewModel,
                         authViewModel = authViewModel,
                     )
                 }

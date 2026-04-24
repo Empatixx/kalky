@@ -17,6 +17,10 @@ CREATE TABLE food_items (
     isCustom INTEGER AS Boolean NOT NULL DEFAULT 0
 );
 
+CREATE INDEX IF NOT EXISTS idx_food_items_created_at ON food_items(createdAt);
+CREATE INDEX IF NOT EXISTS idx_food_items_updated_at ON food_items(updatedAt);
+CREATE INDEX IF NOT EXISTS idx_food_items_is_custom ON food_items(isCustom);
+
 getAllFoodItems:
 SELECT * FROM food_items ORDER BY createdAt DESC;
 

@@ -21,7 +21,8 @@ import cz.krokviak.kalky.common.NutrientEditRoute
 import cz.krokviak.kalky.common.OnboardingRoute
 import cz.krokviak.kalky.common.PrivacyPolicyRoute
 import cz.krokviak.kalky.common.TermsRoute
-import cz.krokviak.kalky.customfood.CustomFoodViewModel
+import cz.krokviak.kalky.customfood.CustomFoodSearchViewModel
+import cz.krokviak.kalky.customfood.ManualFoodEntryViewModel
 import cz.krokviak.kalky.detail.FoodDetailViewModel
 import cz.krokviak.kalky.di.koinInject
 import cz.krokviak.kalky.home.MainViewModel
@@ -40,7 +41,8 @@ fun AppContent(
     analyticsViewModel: AnalyticsViewModel,
     settingsViewModel: SettingsViewModel,
     onboardingViewModel: OnboardingViewModel,
-    customFoodViewModel: CustomFoodViewModel,
+    customFoodSearchViewModel: CustomFoodSearchViewModel,
+    manualEntryViewModel: ManualFoodEntryViewModel,
     authViewModel: AuthViewModelInterface,
 ) {
     val navController = rememberNavController()
@@ -111,7 +113,7 @@ fun AppContent(
                     mainViewModel = mainViewModel,
                     analyticsViewModel = analyticsViewModel,
                     settingsViewModel = settingsViewModel,
-                    customFoodViewModel = customFoodViewModel,
+                    manualEntryViewModel = manualEntryViewModel,
                     authViewModel = authViewModel,
                     onCameraClick = { platformActions.launchCamera() },
                     navController = navController
@@ -139,7 +141,8 @@ fun AppContent(
 
             composable<CustomFoodRoute> {
                 CustomFoodDestination(
-                    customFoodViewModel = customFoodViewModel,
+                    searchViewModel = customFoodSearchViewModel,
+                    manualEntryViewModel = manualEntryViewModel,
                     onBack = { navController.popBackStack() },
                     onAddNew = { navController.navigate(ManualFoodEntryRoute) },
                     onFoodAdded = {
@@ -151,7 +154,7 @@ fun AppContent(
 
             composable<ManualFoodEntryRoute> {
                 ManualFoodEntryDestination(
-                    customFoodViewModel = customFoodViewModel,
+                    manualEntryViewModel = manualEntryViewModel,
                     onBack = { navController.popBackStack() },
                     onFoodAdded = {
                         mainViewModel.loadFoodItemsForDate(mainViewModel.uiState.value.currentDate)

@@ -9,7 +9,8 @@ import cz.krokviak.kalky.auth.StubAuthViewModel
 import cz.krokviak.kalky.common.IosPlatformActions
 import cz.krokviak.kalky.common.LocalPlatformActions
 import cz.krokviak.kalky.common.PlatformActions
-import cz.krokviak.kalky.customfood.CustomFoodViewModel
+import cz.krokviak.kalky.customfood.CustomFoodSearchViewModel
+import cz.krokviak.kalky.customfood.ManualFoodEntryViewModel
 import cz.krokviak.kalky.detail.FoodDetailViewModel
 import cz.krokviak.kalky.di.koinInject
 import cz.krokviak.kalky.home.MainViewModel
@@ -30,7 +31,8 @@ fun MainViewController(
             val analyticsViewModel: AnalyticsViewModel = koinInject()
             val settingsViewModel: SettingsViewModel = koinInject()
             val onboardingViewModel: OnboardingViewModel = koinInject()
-            val customFoodViewModel: CustomFoodViewModel = koinInject()
+            val customFoodSearchViewModel: CustomFoodSearchViewModel = koinInject()
+            val manualEntryViewModel: ManualFoodEntryViewModel = koinInject()
             val authViewModel: AuthViewModelInterface = koinInject()
 
             AppContent(
@@ -40,7 +42,8 @@ fun MainViewController(
                 analyticsViewModel = analyticsViewModel,
                 settingsViewModel = settingsViewModel,
                 onboardingViewModel = onboardingViewModel,
-                customFoodViewModel = customFoodViewModel,
+                customFoodSearchViewModel = customFoodSearchViewModel,
+                manualEntryViewModel = manualEntryViewModel,
                 authViewModel = authViewModel,
             )
         }

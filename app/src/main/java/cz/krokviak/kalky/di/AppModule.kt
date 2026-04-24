@@ -11,7 +11,8 @@ import cz.krokviak.kalky.barcode.BarcodeScannerViewModel
 import cz.krokviak.kalky.camera.CameraViewModel
 import cz.krokviak.kalky.common.AndroidImageStorage
 import cz.krokviak.kalky.common.ImageStorage
-import cz.krokviak.kalky.customfood.CustomFoodViewModel
+import cz.krokviak.kalky.customfood.CustomFoodSearchViewModel
+import cz.krokviak.kalky.customfood.ManualFoodEntryViewModel
 import cz.krokviak.kalky.db.DriverFactory
 import cz.krokviak.kalky.detail.FoodDetailViewModel
 import cz.krokviak.kalky.home.MainViewModel
@@ -47,6 +48,7 @@ val appModule = module {
     viewModel { OnboardingViewModel(get()) }
     viewModel { BarcodeScannerViewModel(get()) }
     viewModel { CameraViewModel(get()) }
-    viewModel { CustomFoodViewModel(get(), get()) }
+    viewModel { CustomFoodSearchViewModel(get(), get()) }
+    viewModel { ManualFoodEntryViewModel(get(), get()) }
     viewModel { AuthViewModel(get(), get()) }
 }

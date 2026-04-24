@@ -1,0 +1,180 @@
+package cz.krokviak.kalky.customfood
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import cz.krokviak.kalky.barcode.data.OpenFoodFactsProduct
+import cz.krokviak.kalky.common.entities.FoodItemEntity
+import cz.krokviak.kalky.common.repo.FoodRepository
+import cz.krokviak.kalky.network.OpenFoodFactsClient
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
+import kotlin.math.roundToInt
+
+class CustomFoodSearchViewModel(
+    private val foodRepository: FoodRepository,
+    private val openFoodFactsClient: OpenFoodFactsClient,
+) : ViewModel() {
+
+    private val _uiState = MutableStateFlow(CustomFoodUiState())
+    val uiState: StateFlow<CustomFoodUiState> = _uiState
+
+    private val _foodAdded = MutableSharedFlow<Long>(extraBufferCapacity = 1)
+    val foodAdded: SharedFlow<Long> = _foodAdded
+
+    private var searchJob: Job? = null
+
+    init {
+        loadHistory()
+    }
+
+    fun loadHistory() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            val custom = foodRepository.getCustomFoods()
+            val items = foodRepository.getDistinctFoodsByName()
+            _uiState.update {
+                it.copy(
+                    customFoods = custom.toPersistentList(),
+                    historyItems = items.toPersistentList(),
+                    isLoading = false,
+                )
+            }
+        }
+    }
+
+    fun onSearchQueryChange(query: String) {
+        _uiState.update { it.copy(searchQuery = query) }
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
+            delay(300)
+            _uiState.update { it.copy(isLoading = true) }
+            if (query.isBlank()) {
+                val custom = foodRepository.getCustomFoods()
+                val items = foodRepository.getDistinctFoodsByName()
+                _uiState.update {
+                    it.copy(
+                        customFoods = custom.toPersistentList(),
+                        historyItems = items.toPersistentList(),
+                        apiResults = persistentListOf(),
+                        isLoading = false,
+                    )
+                }
+            } else {
+                val customDeferred = async { foodRepository.searchCustomFoods(query) }
+                val localDeferred = async { foodRepository.searchDistinctFoodsByName(query) }
+                val apiDeferred = async {
+                    runCatching { openFoodFactsClient.searchProducts(query) }.getOrDefault(emptyList())
+                }
+                _uiState.update {
+                    it.copy(
+                        customFoods = customDeferred.await().toPersistentList(),
+                        historyItems = localDeferred.await().toPersistentList(),
+                        apiResults = apiDeferred.await().toPersistentList(),
+                        isLoading = false,
+                    )
+                }
+            }
+        }
+    }
+
+    fun selectApiProduct(product: OpenFoodFactsProduct) {
+        _uiState.update { it.copy(selectedApiProduct = product, portionGrams = 100) }
+    }
+
+    fun dismissPortionPicker() {
+        _uiState.update { it.copy(selectedApiProduct = null) }
+    }
+
+    fun setPortionGrams(grams: Int) {
+        _uiState.update { it.copy(portionGrams = grams.coerceIn(1, 9999)) }
+    }
+
+    fun confirmAddApiProduct() {
+        val product = _uiState.value.selectedApiProduct ?: return
+        val grams = _uiState.value.portionGrams
+        viewModelScope.launch {
+            val nutrients = product.nutriments
+            val factor = grams / 100.0
+            val protein = ((nutrients?.proteins100g ?: 0.0) * factor).roundToInt()
+            val carbs = ((nutrients?.carbohydrates100g ?: 0.0) * factor).roundToInt()
+            val fat = ((nutrients?.fat100g ?: 0.0) * factor).roundToInt()
+            val calories = ((nutrients?.energyKcal100g ?: 0.0) * factor).roundToInt()
+            val now = Clock.System.now()
+            val item = FoodItemEntity(
+                name = product.productName ?: "",
+                calories = if (calories > 0) calories else (protein * 4 + carbs * 4 + fat * 9),
+                protein = protein,
+                carbs = carbs,
+                fat = fat,
+                portion = grams,
+                createdAt = now,
+                updatedAt = now,
+                localImagePath = "",
+                loading = false,
+            )
+            val newId = foodRepository.insertFoodItem(item)
+            _uiState.update {
+                it.copy(
+                    selectedApiProduct = null,
+                    searchQuery = "",
+                    apiResults = persistentListOf(),
+                )
+            }
+            _foodAdded.emit(newId)
+        }
+    }
+
+    fun toggleSelection(itemId: Long) {
+        _uiState.update { state ->
+            val newSelection = if (itemId in state.selectedItems) {
+                state.selectedItems.remove(itemId)
+            } else {
+                state.selectedItems.add(itemId)
+            }
+            state.copy(selectedItems = newSelection)
+        }
+    }
+
+    fun addSelectedFoods() {
+        viewModelScope.launch {
+            val state = _uiState.value
+            val now = Clock.System.now()
+            for (itemId in state.selectedItems) {
+                val allItems = state.customFoods + state.historyItems
+                val item = allItems.find { it.id == itemId } ?: continue
+                val newItem = item.copy(
+                    id = 0,
+                    createdAt = now,
+                    updatedAt = now,
+                    loading = false,
+                    localImagePath = "",
+                )
+                foodRepository.insertFoodItem(newItem)
+            }
+            _uiState.update {
+                it.copy(
+                    selectedItems = persistentSetOf(),
+                    searchQuery = "",
+                    apiResults = persistentListOf(),
+                )
+            }
+            _foodAdded.emit(0)
+            loadHistory()
+        }
+    }
+
+    fun clearSelection() {
+        _uiState.update { it.copy(selectedItems = persistentSetOf()) }
+    }
+}

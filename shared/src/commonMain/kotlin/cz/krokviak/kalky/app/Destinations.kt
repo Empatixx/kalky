@@ -29,8 +29,9 @@ import cz.krokviak.kalky.common.NutrientEditRoute
 import cz.krokviak.kalky.common.TermsRoute
 import cz.krokviak.kalky.common.PrivacyPolicyRoute
 import cz.krokviak.kalky.customfood.CustomFoodScene
-import cz.krokviak.kalky.customfood.CustomFoodViewModel
+import cz.krokviak.kalky.customfood.CustomFoodSearchViewModel
 import cz.krokviak.kalky.customfood.ManualFoodEntryScene
+import cz.krokviak.kalky.customfood.ManualFoodEntryViewModel
 import cz.krokviak.kalky.detail.FoodDetailScene
 import cz.krokviak.kalky.detail.FoodDetailViewModel
 import cz.krokviak.kalky.home.HomeScene
@@ -126,40 +127,41 @@ internal fun NutrientEditDestination(
 
 @Composable
 internal fun CustomFoodDestination(
-    customFoodViewModel: CustomFoodViewModel,
+    searchViewModel: CustomFoodSearchViewModel,
+    manualEntryViewModel: ManualFoodEntryViewModel,
     onBack: () -> Unit,
     onAddNew: () -> Unit,
     onFoodAdded: () -> Unit,
 ) {
-    val uiState by customFoodViewModel.uiState.collectAsState()
+    val uiState by searchViewModel.uiState.collectAsState()
     CustomFoodScene(
         uiState = uiState,
-        foodAdded = customFoodViewModel.foodAdded,
+        foodAdded = searchViewModel.foodAdded,
         onBackClick = onBack,
         onAddNewClick = {
-            customFoodViewModel.resetManualEntry()
+            manualEntryViewModel.reset()
             onAddNew()
         },
         onFoodAdded = onFoodAdded,
-        onLoadHistory = customFoodViewModel::loadHistory,
-        onSearchQueryChange = customFoodViewModel::onSearchQueryChange,
-        onToggleSelection = customFoodViewModel::toggleSelection,
-        onSelectApiProduct = customFoodViewModel::selectApiProduct,
-        onAddSelectedFoods = customFoodViewModel::addSelectedFoods,
-        onPortionChanged = customFoodViewModel::setPortionGrams,
-        onConfirmApiProduct = customFoodViewModel::confirmAddApiProduct,
-        onDismissPortionPicker = customFoodViewModel::dismissPortionPicker,
+        onLoadHistory = searchViewModel::loadHistory,
+        onSearchQueryChange = searchViewModel::onSearchQueryChange,
+        onToggleSelection = searchViewModel::toggleSelection,
+        onSelectApiProduct = searchViewModel::selectApiProduct,
+        onAddSelectedFoods = searchViewModel::addSelectedFoods,
+        onPortionChanged = searchViewModel::setPortionGrams,
+        onConfirmApiProduct = searchViewModel::confirmAddApiProduct,
+        onDismissPortionPicker = searchViewModel::dismissPortionPicker,
     )
 }
 
 @Composable
 internal fun ManualFoodEntryDestination(
-    customFoodViewModel: CustomFoodViewModel,
+    manualEntryViewModel: ManualFoodEntryViewModel,
     onBack: () -> Unit,
     onFoodAdded: () -> Unit,
 ) {
     ManualFoodEntryScene(
-        viewModel = customFoodViewModel,
+        viewModel = manualEntryViewModel,
         onBackClick = onBack,
         onFoodAdded = onFoodAdded
     )
@@ -170,7 +172,7 @@ internal fun MainScaffold(
     mainViewModel: MainViewModel,
     analyticsViewModel: AnalyticsViewModel,
     settingsViewModel: SettingsViewModel,
-    customFoodViewModel: CustomFoodViewModel,
+    manualEntryViewModel: ManualFoodEntryViewModel,
     authViewModel: AuthViewModelInterface,
     onCameraClick: () -> Unit,
     navController: NavController,
@@ -211,7 +213,7 @@ internal fun MainScaffold(
                     0 -> HomePage(
                         uiState = uiState,
                         mainViewModel = mainViewModel,
-                        customFoodViewModel = customFoodViewModel,
+                        manualEntryViewModel = manualEntryViewModel,
                         navController = navController,
                     )
                     1 -> AnalyticsPageDestination(analyticsViewModel = analyticsViewModel)
@@ -237,7 +239,7 @@ internal fun MainScaffold(
 private fun HomePage(
     uiState: cz.krokviak.kalky.home.MainUiState,
     mainViewModel: MainViewModel,
-    customFoodViewModel: CustomFoodViewModel,
+    manualEntryViewModel: ManualFoodEntryViewModel,
     navController: NavController,
 ) {
     HomeScene(
@@ -258,16 +260,10 @@ private fun HomePage(
         onSelectionClear = mainViewModel::clearSelection,
         onSaveSelectionAsCustom = {
             val items = mainViewModel.getSelectedFoodItems()
-            val totalProtein = items.sumOf { it.protein }
-            val totalCarbs = items.sumOf { it.carbs }
-            val totalFat = items.sumOf { it.fat }
             val name = items.joinToString(" + ") { it.name }
-            customFoodViewModel.resetManualEntry()
-            customFoodViewModel.onNameChange(name)
-            customFoodViewModel.onManualProteinChange(totalProtein)
-            customFoodViewModel.onManualCarbsChange(totalCarbs)
-            customFoodViewModel.onManualFatChange(totalFat)
-            customFoodViewModel.setSourceFoods(items)
+            manualEntryViewModel.reset()
+            manualEntryViewModel.onNameChange(name)
+            manualEntryViewModel.setSourceFoods(items)
             mainViewModel.clearSelection()
             navController.navigate(ManualFoodEntryRoute)
         },

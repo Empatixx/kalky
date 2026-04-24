@@ -58,11 +58,11 @@ private enum class ManualMacroPickerField { PROTEIN, CARBS, FAT }
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ManualFoodEntryScene(
-    viewModel: CustomFoodViewModel,
+    viewModel: ManualFoodEntryViewModel,
     onBackClick: () -> Unit,
     onFoodAdded: () -> Unit
 ) {
-    val state by viewModel.manualEntryState.collectAsState()
+    val state by viewModel.state.collectAsState()
     val s = LocalStrings.current
     val macroValues = remember { (0..500).map { it.toString() } }
     var activePickerField by remember { mutableStateOf<ManualMacroPickerField?>(null) }
@@ -222,7 +222,7 @@ fun ManualFoodEntryScene(
                             selectedIndex = selectedProteinIndex,
                             onIndexChanged = {
                                 selectedProteinIndex = it
-                                viewModel.onManualProteinChange(macroValues[it].toInt())
+                                viewModel.onProteinChange(macroValues[it].toInt())
                             },
                             unitSuffix = "g",
                             itemHeight = 28.dp,
@@ -252,7 +252,7 @@ fun ManualFoodEntryScene(
                             selectedIndex = selectedCarbsIndex,
                             onIndexChanged = {
                                 selectedCarbsIndex = it
-                                viewModel.onManualCarbsChange(macroValues[it].toInt())
+                                viewModel.onCarbsChange(macroValues[it].toInt())
                             },
                             unitSuffix = "g",
                             itemHeight = 28.dp,
@@ -282,7 +282,7 @@ fun ManualFoodEntryScene(
                             selectedIndex = selectedFatIndex,
                             onIndexChanged = {
                                 selectedFatIndex = it
-                                viewModel.onManualFatChange(macroValues[it].toInt())
+                                viewModel.onFatChange(macroValues[it].toInt())
                             },
                             unitSuffix = "g",
                             itemHeight = 28.dp,
@@ -298,7 +298,7 @@ fun ManualFoodEntryScene(
             Spacer(modifier = Modifier.height(8.dp))
 
             KalkyButton(
-                onClick = { viewModel.submitManualEntry() },
+                onClick = { viewModel.submit() },
                 modifier = Modifier.fillMaxWidth(),
                 containerColor = if (state.name.isBlank()) Color.Gray else Color.Black
             ) {

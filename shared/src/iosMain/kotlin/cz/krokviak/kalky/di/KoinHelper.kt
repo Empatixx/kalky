@@ -11,7 +11,8 @@ import cz.krokviak.kalky.auth.StubAuthTokenProvider
 import cz.krokviak.kalky.auth.StubAuthViewModel
 import cz.krokviak.kalky.common.IosImageStorage
 import cz.krokviak.kalky.common.ImageStorage
-import cz.krokviak.kalky.customfood.CustomFoodViewModel
+import cz.krokviak.kalky.customfood.CustomFoodSearchViewModel
+import cz.krokviak.kalky.customfood.ManualFoodEntryViewModel
 import cz.krokviak.kalky.db.DriverFactory
 import cz.krokviak.kalky.detail.FoodDetailViewModel
 import cz.krokviak.kalky.home.MainViewModel
@@ -52,7 +53,8 @@ fun initKoinIos(
                 single { AnalyticsViewModel(get(), get()) }
                 single { SettingsViewModel(get()) }
                 single { OnboardingViewModel(get()) }
-                single { CustomFoodViewModel(get(), get()) }
+                single { CustomFoodSearchViewModel(get(), get()) }
+                single { ManualFoodEntryViewModel(get(), get()) }
                 single { cz.krokviak.kalky.barcode.BarcodeScannerViewModel(get()) }
                 single<AuthViewModelInterface> { StubAuthViewModel() }
             }
