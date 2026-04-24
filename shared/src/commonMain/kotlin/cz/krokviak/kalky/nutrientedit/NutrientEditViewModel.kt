@@ -4,19 +4,22 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cz.krokviak.kalky.common.entities.NutrientSettingEntity
 import cz.krokviak.kalky.common.repo.NutrientSettingRepo
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+
+private const val SAVE_DEBOUNCE_MS = 300L
 
 class NutrientEditViewModel(
     private val nutrientSettingRepo: NutrientSettingRepo
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(NutrientEditState())
     val uiState: StateFlow<NutrientEditState> = _uiState
+
+    private var saveJob: Job? = null
 
     init {
         viewModelScope.launch {
@@ -34,47 +37,45 @@ class NutrientEditViewModel(
 
     fun onProteinChange(newValue: Int) {
         _uiState.update {
-            it.copy(protein = newValue, calories = caloriesFromNutrients(newValue, uiState.value.carbs, uiState.value.fat))
-        }
-        viewModelScope.launch {
-            nutrientSettingRepo.insertNutrientSettings(
-                NutrientSettingEntity(
-                    targetProtein = newValue,
-                    targetCarbs = uiState.value.carbs,
-                    targetFat = uiState.value.fat,
-                    targetCalories = caloriesFromNutrients(newValue, uiState.value.carbs, uiState.value.fat)
-                )
+            it.copy(
+                protein = newValue,
+                calories = caloriesFromNutrients(newValue, it.carbs, it.fat)
             )
         }
+        scheduleSave()
     }
 
     fun onCarbsChange(newValue: Int) {
         _uiState.update {
-            it.copy(carbs = newValue, calories = caloriesFromNutrients(uiState.value.protein, newValue, uiState.value.fat))
-        }
-        viewModelScope.launch {
-            nutrientSettingRepo.insertNutrientSettings(
-                NutrientSettingEntity(
-                    targetProtein = uiState.value.protein,
-                    targetCarbs = newValue,
-                    targetFat = uiState.value.fat,
-                    targetCalories = caloriesFromNutrients(uiState.value.protein, newValue, uiState.value.fat)
-                )
+            it.copy(
+                carbs = newValue,
+                calories = caloriesFromNutrients(it.protein, newValue, it.fat)
             )
         }
+        scheduleSave()
     }
 
     fun onFatChange(newValue: Int) {
         _uiState.update {
-            it.copy(fat = newValue, calories = caloriesFromNutrients(uiState.value.protein, uiState.value.carbs, newValue))
+            it.copy(
+                fat = newValue,
+                calories = caloriesFromNutrients(it.protein, it.carbs, newValue)
+            )
         }
-        viewModelScope.launch {
+        scheduleSave()
+    }
+
+    private fun scheduleSave() {
+        saveJob?.cancel()
+        saveJob = viewModelScope.launch {
+            delay(SAVE_DEBOUNCE_MS)
+            val state = _uiState.value
             nutrientSettingRepo.insertNutrientSettings(
                 NutrientSettingEntity(
-                    targetProtein = uiState.value.protein,
-                    targetCarbs = uiState.value.carbs,
-                    targetFat = newValue,
-                    targetCalories = caloriesFromNutrients(uiState.value.protein, uiState.value.carbs, newValue)
+                    targetProtein = state.protein,
+                    targetCarbs = state.carbs,
+                    targetFat = state.fat,
+                    targetCalories = state.calories
                 )
             )
         }

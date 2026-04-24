@@ -7,6 +7,11 @@ plugins {
     alias(libs.plugins.sqldelight)
 }
 
+composeCompiler {
+    reportsDestination = layout.buildDirectory.dir("compose_compiler")
+    metricsDestination = layout.buildDirectory.dir("compose_compiler")
+}
+
 kotlin {
     androidTarget {
         compilations.all {
@@ -41,6 +46,9 @@ kotlin {
 
             // Serialization
             implementation(libs.kotlinx.serialization.json)
+
+            // Immutable collections (Compose stability)
+            implementation(libs.kotlinx.collections.immutable)
 
             // DateTime
             implementation(libs.kotlinx.datetime)

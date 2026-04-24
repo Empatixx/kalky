@@ -9,22 +9,28 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.CompositionLocalProvider
+import android.os.Handler
+import android.os.Looper
 import cz.krokviak.kalky.analytics.AnalyticsViewModel
 import cz.krokviak.kalky.app.AppContent
 import cz.krokviak.kalky.camera.CameraActivity
 import cz.krokviak.kalky.auth.AuthViewModel
 import cz.krokviak.kalky.common.LocalPlatformActions
 import cz.krokviak.kalky.common.PlatformActions
+import cz.krokviak.kalky.config.RemoteConfigManager
 import cz.krokviak.kalky.customfood.CustomFoodViewModel
 import cz.krokviak.kalky.detail.FoodDetailViewModel
 import cz.krokviak.kalky.i18n.CzechStrings
 import cz.krokviak.kalky.i18n.EnglishStrings
 import cz.krokviak.kalky.common.AppLanguage
 import cz.krokviak.kalky.common.AppPreferences
+import cz.krokviak.kalky.notifications.MealReminderScheduler
 import cz.krokviak.kalky.nutrientedit.NutrientEditViewModel
 import cz.krokviak.kalky.onboarding.OnboardingViewModel
 import cz.krokviak.kalky.settings.SettingsViewModel
 import cz.krokviak.kalky.theme.KalkyTheme
+import com.google.firebase.appcheck.FirebaseAppCheck
+import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
@@ -63,6 +69,16 @@ class MainActivity : ComponentActivity() {
                         authViewModel = authViewModel,
                     )
                 }
+            }
+        }
+
+        Handler(Looper.getMainLooper()).post {
+            FirebaseAppCheck.getInstance().installAppCheckProviderFactory(
+                PlayIntegrityAppCheckProviderFactory.getInstance()
+            )
+            RemoteConfigManager.refresh()
+            if (appPreferences.notificationsEnabled.value) {
+                MealReminderScheduler.schedule(applicationContext)
             }
         }
     }

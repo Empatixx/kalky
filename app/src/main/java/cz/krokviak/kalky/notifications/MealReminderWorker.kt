@@ -3,7 +3,7 @@ package cz.krokviak.kalky.notifications
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import cz.krokviak.kalky.settings.AppPreferencesManager
+import cz.krokviak.kalky.common.AppPreferences
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -16,7 +16,8 @@ class MealReminderWorker(
 ) : CoroutineWorker(appContext, params), KoinComponent {
 
     override suspend fun doWork(): Result {
-        if (!AppPreferencesManager.notificationsEnabled.value) {
+        val appPreferences: AppPreferences = get()
+        if (!appPreferences.notificationsEnabled.value) {
             return Result.success()
         }
 
@@ -24,13 +25,11 @@ class MealReminderWorker(
             .toLocalDateTime(TimeZone.currentSystemDefault())
         val currentHour = now.hour
 
-        // Time gate
         if (currentHour < 7 || currentHour >= 21) {
             return Result.success()
         }
 
-        // Cooldown: no repeat within 3 hours
-        val lastNotificationTime = AppPreferencesManager.getLastNotificationTime()
+        val lastNotificationTime = appPreferences.lastNotificationTime
         val threeHoursMillis = 3 * 60 * 60 * 1000L
         if (lastNotificationTime > 0 &&
             System.currentTimeMillis() - lastNotificationTime < threeHoursMillis
@@ -47,7 +46,7 @@ class MealReminderWorker(
                     "Zapomnel/a jsi jist?",
                     "Dnes jsi jeste nic nezaznamenal/a. Pridej si jidlo!"
                 )
-                AppPreferencesManager.setLastNotificationTime(System.currentTimeMillis())
+                appPreferences.lastNotificationTime = System.currentTimeMillis()
             }
             is ReminderResult.RemindBehindOnMacros -> {
                 NotificationHelper.showMealReminder(
@@ -55,7 +54,7 @@ class MealReminderWorker(
                     "Jsi pozadu s jidlem",
                     "Mas za sebou jen ${result.percentComplete}% kalorii. Nezapomen jist!"
                 )
-                AppPreferencesManager.setLastNotificationTime(System.currentTimeMillis())
+                appPreferences.lastNotificationTime = System.currentTimeMillis()
             }
         }
 

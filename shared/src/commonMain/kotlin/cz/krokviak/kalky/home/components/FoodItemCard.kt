@@ -1,15 +1,16 @@
 package cz.krokviak.kalky.home.components
 
-import androidx.compose.animation.animateColor
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -50,7 +51,6 @@ import androidx.compose.ui.layout.ContentScale
 import cz.krokviak.kalky.theme.MacroColors
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import cz.krokviak.kalky.common.entities.FoodItemEntity
 import cz.krokviak.kalky.theme.AppTheme
@@ -61,13 +61,12 @@ import cz.krokviak.kalky.common.formatTime
 @Composable
 fun FoodItemCard(
     foodItem: FoodItemEntity,
-    progress: Int,
     isSelected: Boolean = false,
     onClick: () -> Unit,
     onLongClick: (() -> Unit)? = null
 ) {
     if (foodItem.loading) {
-        FoodItemLoadingCard(foodItem, progress)
+        FoodItemLoadingCard(foodItem)
     } else {
         FoodItemLoadedCard(
             foodItem,
@@ -145,7 +144,6 @@ fun FoodItemImage(
     fallbackTint: Color = AppTheme.colors.onBackgroundSecondary
 ) {
     val dims = LocalDimensions.current
-    // Compute the badge time only when foodItem.createdAt changes
     val badgeTime = remember(foodItem.createdAt) {
         foodItem.createdAt.formatTime()
     }
@@ -291,12 +289,30 @@ fun NutrientItem(
     }
 }
 
+private const val LOADING_ANIMATION_DURATION_MS = 6000
 
 @Composable
-fun FoodItemLoadingCard(
-    foodItem: FoodItemEntity,
-    progress: Int
-) {
+fun FoodItemLoadingCard(foodItem: FoodItemEntity) {
+    val progress = remember(foodItem.id) { Animatable(0f) }
+    LaunchedEffect(foodItem.id) {
+        progress.animateTo(
+            targetValue = 1f,
+            animationSpec = tween(
+                durationMillis = LOADING_ANIMATION_DURATION_MS,
+                easing = LinearEasing
+            )
+        )
+    }
+    val infiniteTransition = rememberInfiniteTransition(label = "skeleton")
+    val skeletonAlpha by infiniteTransition.animateFloat(
+        initialValue = 0.3f,
+        targetValue = 0.7f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 1200, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "skeletonAlpha"
+    )
     KalkyCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
@@ -304,8 +320,8 @@ fun FoodItemLoadingCard(
         color = AppTheme.colors.surfaceSecondary
     ) {
         Row(modifier = Modifier.fillMaxWidth()) {
-            FoodItemLoadingImage(foodItem = foodItem, progress = progress)
-            FoodItemLoadingInfo()
+            FoodItemLoadingImage(foodItem = foodItem, progress = (progress.value * 100).toInt())
+            FoodItemLoadingInfo(skeletonAlpha = skeletonAlpha)
         }
     }
 }
@@ -327,7 +343,6 @@ fun FoodItemLoadingImage(
             .height(dims.thumbnailSize)
             .clip(RoundedCornerShape(topStart = 16.dp, bottomStart = 16.dp))
     ) {
-        // The underlying food image
         AsyncImage(
             model = foodItem.localImagePath,
             contentDescription = "Food image",
@@ -335,13 +350,11 @@ fun FoodItemLoadingImage(
             modifier = Modifier.matchParentSize(),
             filterQuality = FilterQuality.Low
         )
-        // Dark overlay to indicate loading
         Box(
             modifier = Modifier
                 .matchParentSize()
                 .background(Color.Black.copy(alpha = loadingOverlayAlpha))
         )
-        // Centered progress indicator
         Box(
             modifier = Modifier.matchParentSize(),
             contentAlignment = Alignment.Center
@@ -356,9 +369,8 @@ fun FoodItemLoadingImage(
     }
 }
 
-
 @Composable
-fun RowScope.FoodItemLoadingInfo() {
+fun RowScope.FoodItemLoadingInfo(skeletonAlpha: Float) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -372,29 +384,31 @@ fun RowScope.FoodItemLoadingInfo() {
             color = AppTheme.colors.onBackground
         )
         Spacer(modifier = Modifier.height(8.dp))
-        // Skeleton placeholder for the calorie row
         SkeletonPlaceholder(
+            alpha = skeletonAlpha,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(16.dp)
         )
         Spacer(modifier = Modifier.height(8.dp))
-        // Skeleton placeholders for the Protein/Carbs/Fat row
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             SkeletonPlaceholder(
+                alpha = skeletonAlpha,
                 modifier = Modifier
                     .weight(1f)
                     .height(16.dp)
             )
             SkeletonPlaceholder(
+                alpha = skeletonAlpha,
                 modifier = Modifier
                     .weight(1f)
                     .height(16.dp)
             )
             SkeletonPlaceholder(
+                alpha = skeletonAlpha,
                 modifier = Modifier
                     .weight(1f)
                     .height(16.dp)
@@ -403,23 +417,16 @@ fun RowScope.FoodItemLoadingInfo() {
     }
 }
 
+private val SkeletonBaseColor = Color.Gray
+
 @Composable
 fun SkeletonPlaceholder(
+    alpha: Float,
     modifier: Modifier = Modifier
 ) {
-    val infiniteTransition = rememberInfiniteTransition()
-    val animatedColor by infiniteTransition.animateColor(
-        initialValue = Color.Gray.copy(alpha = 0.3f),
-        targetValue = Color.Gray.copy(alpha = 0.7f),
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 1200, easing = LinearEasing),
-            repeatMode = RepeatMode.Reverse
-        )
-    )
-
     Box(
         modifier = modifier.background(
-            animatedColor,
+            SkeletonBaseColor.copy(alpha = alpha),
             shape = RoundedCornerShape(4.dp)
         )
     )

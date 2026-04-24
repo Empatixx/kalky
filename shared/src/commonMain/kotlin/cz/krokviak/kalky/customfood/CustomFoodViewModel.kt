@@ -6,6 +6,12 @@ import cz.krokviak.kalky.barcode.data.OpenFoodFactsProduct
 import cz.krokviak.kalky.common.entities.FoodItemEntity
 import cz.krokviak.kalky.common.repo.FoodRepository
 import cz.krokviak.kalky.network.OpenFoodFactsClient
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.mutate
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.collections.immutable.toPersistentList
+import kotlinx.collections.immutable.toPersistentMap
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
@@ -43,7 +49,13 @@ class CustomFoodViewModel(
             _uiState.update { it.copy(isLoading = true) }
             val custom = foodRepository.getCustomFoods()
             val items = foodRepository.getDistinctFoodsByName()
-            _uiState.update { it.copy(customFoods = custom, historyItems = items, isLoading = false) }
+            _uiState.update {
+                it.copy(
+                    customFoods = custom.toPersistentList(),
+                    historyItems = items.toPersistentList(),
+                    isLoading = false
+                )
+            }
         }
     }
 
@@ -56,7 +68,14 @@ class CustomFoodViewModel(
             if (query.isBlank()) {
                 val custom = foodRepository.getCustomFoods()
                 val items = foodRepository.getDistinctFoodsByName()
-                _uiState.update { it.copy(customFoods = custom, historyItems = items, apiResults = emptyList(), isLoading = false) }
+                _uiState.update {
+                    it.copy(
+                        customFoods = custom.toPersistentList(),
+                        historyItems = items.toPersistentList(),
+                        apiResults = persistentListOf(),
+                        isLoading = false
+                    )
+                }
             } else {
                 val customDeferred = async { foodRepository.searchCustomFoods(query) }
                 val localDeferred = async { foodRepository.searchDistinctFoodsByName(query) }
@@ -64,7 +83,14 @@ class CustomFoodViewModel(
                 val customItems = customDeferred.await()
                 val localItems = localDeferred.await()
                 val apiItems = apiDeferred.await()
-                _uiState.update { it.copy(customFoods = customItems, historyItems = localItems, apiResults = apiItems, isLoading = false) }
+                _uiState.update {
+                    it.copy(
+                        customFoods = customItems.toPersistentList(),
+                        historyItems = localItems.toPersistentList(),
+                        apiResults = apiItems.toPersistentList(),
+                        isLoading = false
+                    )
+                }
             }
         }
     }
@@ -105,7 +131,13 @@ class CustomFoodViewModel(
                 loading = false
             )
             val newId = foodRepository.insertFoodItem(item)
-            _uiState.update { it.copy(selectedApiProduct = null, searchQuery = "", apiResults = emptyList()) }
+            _uiState.update {
+                it.copy(
+                    selectedApiProduct = null,
+                    searchQuery = "",
+                    apiResults = persistentListOf()
+                )
+            }
             _foodAdded.emit(newId)
         }
     }
@@ -113,9 +145,9 @@ class CustomFoodViewModel(
     fun toggleSelection(itemId: Long) {
         _uiState.update { state ->
             val newSelection = if (itemId in state.selectedItems) {
-                state.selectedItems - itemId
+                state.selectedItems.remove(itemId)
             } else {
-                state.selectedItems + itemId
+                state.selectedItems.add(itemId)
             }
             state.copy(selectedItems = newSelection)
         }
@@ -137,14 +169,20 @@ class CustomFoodViewModel(
                 )
                 foodRepository.insertFoodItem(newItem)
             }
-            _uiState.update { it.copy(selectedItems = emptySet(), searchQuery = "", apiResults = emptyList()) }
+            _uiState.update {
+                it.copy(
+                    selectedItems = persistentSetOf(),
+                    searchQuery = "",
+                    apiResults = persistentListOf()
+                )
+            }
             _foodAdded.emit(0)
             loadHistory()
         }
     }
 
     fun clearSelection() {
-        _uiState.update { it.copy(selectedItems = emptySet()) }
+        _uiState.update { it.copy(selectedItems = persistentSetOf()) }
     }
 
     fun onNameChange(name: String) {
@@ -201,15 +239,20 @@ class CustomFoodViewModel(
     }
 
     fun setSourceFoods(items: List<FoodItemEntity>) {
-        val defaultPortions = items.associate { it.id to 100 }
-        _manualEntryState.update { it.copy(sourceFoods = items, sourcePortionGrams = defaultPortions) }
+        val defaultPortions = items.associate { it.id to 100 }.toPersistentMap()
+        _manualEntryState.update {
+            it.copy(
+                sourceFoods = items.toPersistentList(),
+                sourcePortionGrams = defaultPortions
+            )
+        }
     }
 
     fun addSourceFood(item: FoodItemEntity) {
         _manualEntryState.update { state ->
             if (state.sourceFoods.any { it.id == item.id }) return@update state
-            val newFoods = state.sourceFoods + item
-            val newPortions = state.sourcePortionGrams + (item.id to 100)
+            val newFoods = state.sourceFoods.add(item)
+            val newPortions = state.sourcePortionGrams.put(item.id, 100)
             val totalProtein = newFoods.sumOf { f -> ((f.protein * (newPortions[f.id] ?: 100)) / 100.0).roundToInt() }
             val totalCarbs = newFoods.sumOf { f -> ((f.carbs * (newPortions[f.id] ?: 100)) / 100.0).roundToInt() }
             val totalFat = newFoods.sumOf { f -> ((f.fat * (newPortions[f.id] ?: 100)) / 100.0).roundToInt() }
@@ -226,8 +269,8 @@ class CustomFoodViewModel(
 
     fun removeSourceFood(foodId: Long) {
         _manualEntryState.update { state ->
-            val newFoods = state.sourceFoods.filter { it.id != foodId }
-            val newPortions = state.sourcePortionGrams - foodId
+            val newFoods = state.sourceFoods.mutate { list -> list.removeAll { it.id == foodId } }
+            val newPortions = state.sourcePortionGrams.remove(foodId)
             val totalProtein = newFoods.sumOf { f -> ((f.protein * (newPortions[f.id] ?: 100)) / 100.0).roundToInt() }
             val totalCarbs = newFoods.sumOf { f -> ((f.carbs * (newPortions[f.id] ?: 100)) / 100.0).roundToInt() }
             val totalFat = newFoods.sumOf { f -> ((f.fat * (newPortions[f.id] ?: 100)) / 100.0).roundToInt() }
@@ -243,25 +286,25 @@ class CustomFoodViewModel(
     }
 
     private var ingredientSearchJob: Job? = null
-    private val _ingredientResults = MutableStateFlow<List<FoodItemEntity>>(emptyList())
-    val ingredientResults: StateFlow<List<FoodItemEntity>> = _ingredientResults
+    private val _ingredientResults = MutableStateFlow<PersistentList<FoodItemEntity>>(persistentListOf())
+    val ingredientResults: StateFlow<PersistentList<FoodItemEntity>> = _ingredientResults
 
-    private val _ingredientApiResults = MutableStateFlow<List<OpenFoodFactsProduct>>(emptyList())
-    val ingredientApiResults: StateFlow<List<OpenFoodFactsProduct>> = _ingredientApiResults
+    private val _ingredientApiResults = MutableStateFlow<PersistentList<OpenFoodFactsProduct>>(persistentListOf())
+    val ingredientApiResults: StateFlow<PersistentList<OpenFoodFactsProduct>> = _ingredientApiResults
 
     fun searchIngredients(query: String) {
         ingredientSearchJob?.cancel()
         if (query.isBlank()) {
-            _ingredientResults.value = emptyList()
-            _ingredientApiResults.value = emptyList()
+            _ingredientResults.value = persistentListOf()
+            _ingredientApiResults.value = persistentListOf()
             return
         }
         ingredientSearchJob = viewModelScope.launch {
             delay(300)
             val localDeferred = async { foodRepository.searchDistinctFoodsByName(query) }
             val apiDeferred = async { openFoodFactsClient.searchProducts(query, 10) }
-            _ingredientResults.value = localDeferred.await()
-            _ingredientApiResults.value = apiDeferred.await()
+            _ingredientResults.value = localDeferred.await().toPersistentList()
+            _ingredientApiResults.value = apiDeferred.await().toPersistentList()
         }
     }
 
@@ -284,7 +327,7 @@ class CustomFoodViewModel(
 
     fun updateSourcePortion(foodId: Long, grams: Int) {
         _manualEntryState.update { state ->
-            val newPortions = state.sourcePortionGrams + (foodId to grams.coerceAtLeast(0))
+            val newPortions = state.sourcePortionGrams.put(foodId, grams.coerceAtLeast(0))
             val totalProtein = state.sourceFoods.sumOf { food ->
                 val portion = newPortions[food.id] ?: 100
                 (food.protein * portion / 100.0).roundToInt()
@@ -311,3 +354,4 @@ class CustomFoodViewModel(
         _manualEntryState.value = ManualFoodEntryState()
     }
 }
+

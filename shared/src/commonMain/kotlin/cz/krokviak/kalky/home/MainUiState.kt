@@ -1,11 +1,17 @@
 package cz.krokviak.kalky.home
 
+import androidx.compose.runtime.Immutable
 import cz.krokviak.kalky.common.entities.FoodItemEntity
 import cz.krokviak.kalky.common.currentLocalDate
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.PersistentSet
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.datetime.LocalDate
 
+@Immutable
 data class MainUiState(
-    val dailyStats: List<DailyStats> = emptyList(),
+    val dailyStats: PersistentList<DailyStats> = persistentListOf(),
     val selectedBottomNavItem: Int = 0,
     val maxCalories: Int = 0,
     val currentCalories: Int = 0,
@@ -15,11 +21,11 @@ data class MainUiState(
     val currentCarbs: Int = 0,
     val maxFats: Int = 0,
     val currentFats: Int = 0,
-    val recentlyAddedItems: List<FoodItemEntity> = emptyList(),
-    val loadingProgressForItems: Map<Long, Int> = emptyMap(),
+    val recentlyAddedItems: PersistentList<FoodItemEntity> = persistentListOf(),
+    val loadingItems: PersistentSet<Long> = persistentSetOf(),
     val currentDate: LocalDate = currentLocalDate(),
     val currentStreak: Int = 0,
-    val selectedFoodIds: Set<Long> = emptySet()
+    val selectedFoodIds: PersistentSet<Long> = persistentSetOf()
 ) {
     val isSelectionMode: Boolean get() = selectedFoodIds.isNotEmpty()
     val isToday: Boolean get() = currentDate == currentLocalDate()
@@ -33,6 +39,7 @@ data class MainUiState(
     }
 }
 
+@Immutable
 data class DailyStats(
     val dayLabel: String,
     val protein: Int,

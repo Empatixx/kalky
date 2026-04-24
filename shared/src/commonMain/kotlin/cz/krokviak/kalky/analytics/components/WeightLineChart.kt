@@ -100,8 +100,8 @@ private fun EmptyWeightLineChart() {
 @Composable
 private fun WeightLineChartInternal(weights: List<WeightEntry>) {
     val dims = LocalDimensions.current
-    val currentWeight = weights.last().weight
-    val avgWeight = weights.map { it.weight }.average()
+    val currentWeight = remember(weights) { weights.last().weight }
+    val avgWeight = remember(weights) { weights.map { it.weight }.average() }
 
     Row(
         modifier = Modifier
@@ -140,8 +140,10 @@ private fun WeightLineChartInternal(weights: List<WeightEntry>) {
         }
     }
 
-    val dateLabels = weights.map { entry ->
-        "${entry.date.dayOfMonth}.${entry.date.monthNumber}."
+    val dateLabels = remember(weights) {
+        weights.map { entry ->
+            "${entry.date.dayOfMonth}.${entry.date.monthNumber}."
+        }
     }
 
     val modelProducer = remember { CartesianChartModelProducer() }

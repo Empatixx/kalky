@@ -7,7 +7,12 @@ import cz.krokviak.kalky.common.StreakCalculator
 import cz.krokviak.kalky.common.entities.FoodItemEntity
 import cz.krokviak.kalky.common.repo.FoodRepository
 import cz.krokviak.kalky.common.repo.NutrientSettingRepo
+import cz.krokviak.kalky.db.DatabaseSeeder
 import cz.krokviak.kalky.network.FoodAnalysisClient
+import kotlinx.collections.immutable.mutate
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.delay
@@ -16,15 +21,20 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
+
+private const val LOADING_ANIMATION_DURATION_MS = 6000L
 
 class MainViewModel(
     private val foodRepository: FoodRepository,
     private val nutrientSettingRepo: NutrientSettingRepo,
     private val foodAnalysisClient: FoodAnalysisClient,
     private val imageStorage: ImageStorage,
-    private val streakCalculator: StreakCalculator
+    private val streakCalculator: StreakCalculator,
+    private val databaseSeeder: DatabaseSeeder,
+    private val seedMockData: Boolean = false
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MainUiState(
@@ -34,6 +44,9 @@ class MainViewModel(
 
     init {
         viewModelScope.launch {
+            if (seedMockData) {
+                withContext(Dispatchers.IO) { databaseSeeder.seedIfEmpty() }
+            }
             val latestSettings = nutrientSettingRepo.getLatestNutrientSettings()
             _uiState.update {
                 it.copy(
@@ -69,33 +82,17 @@ class MainViewModel(
 
             _uiState.update { current ->
                 current.copy(
-                    recentlyAddedItems = listOf(insertedItem) + current.recentlyAddedItems,
-                    loadingProgressForItems = current.loadingProgressForItems + (newId to 0)
+                    recentlyAddedItems = current.recentlyAddedItems.mutate { it.add(0, insertedItem) },
+                    loadingItems = current.loadingItems.add(newId)
                 )
             }
             recalculateMacros()
 
-            val animationJob = viewModelScope.launch {
-                val startTime = kotlinx.datetime.Clock.System.now().toEpochMilliseconds()
-                val duration = 6000L
-                while (true) {
-                    val elapsed = kotlinx.datetime.Clock.System.now().toEpochMilliseconds() - startTime
-                    val fraction = (elapsed.toFloat() / duration).coerceIn(0f, 1f)
-                    val progress = (fraction * 100).toInt()
-
-                    _uiState.update { current ->
-                        current.copy(
-                            loadingProgressForItems = current.loadingProgressForItems + (newId to progress)
-                        )
-                    }
-
-                    if (fraction >= 1f) break
-                    delay(50)
+            val animationJob = launch { delay(LOADING_ANIMATION_DURATION_MS) }
+            val analysisJob = launch {
+                val analysis = withContext(Dispatchers.IO) {
+                    foodAnalysisClient.getAnalysis(imageBytes)
                 }
-            }
-
-            val analysisJob = viewModelScope.launch(Dispatchers.IO) {
-                val analysis = foodAnalysisClient.getAnalysis(imageBytes)
                 if (analysis != null) {
                     val updated = insertedItem.copy(
                         name = analysis.title ?: "Neznámé jídlo",
@@ -108,12 +105,9 @@ class MainViewModel(
                         updatedAt = Clock.System.now()
                     )
                     foodRepository.updateFoodItem(updated)
-
                     _uiState.update { current ->
                         current.copy(
-                            recentlyAddedItems = current.recentlyAddedItems.map { existing ->
-                                if (existing.id == updated.id) updated else existing
-                            }
+                            recentlyAddedItems = current.recentlyAddedItems.replaceById(newId, updated)
                         )
                     }
                 }
@@ -123,17 +117,15 @@ class MainViewModel(
 
             val finalItem = _uiState.value.recentlyAddedItems
                 .firstOrNull { it.id == newId }
-                ?.copy(loading = false)
+                ?.copy(loading = false, updatedAt = Clock.System.now())
                 ?: return@launch
 
             foodRepository.updateFoodItem(finalItem)
 
             _uiState.update { current ->
                 current.copy(
-                    loadingProgressForItems = current.loadingProgressForItems - newId,
-                    recentlyAddedItems = current.recentlyAddedItems.map { existing ->
-                        if (existing.id == newId) finalItem else existing
-                    }
+                    loadingItems = current.loadingItems.remove(newId),
+                    recentlyAddedItems = current.recentlyAddedItems.replaceById(newId, finalItem)
                 )
             }
 
@@ -168,7 +160,7 @@ class MainViewModel(
 
             _uiState.update { current ->
                 current.copy(
-                    recentlyAddedItems = listOf(insertedItem) + current.recentlyAddedItems
+                    recentlyAddedItems = current.recentlyAddedItems.mutate { it.add(0, insertedItem) }
                 )
             }
             recalculateMacros()
@@ -204,7 +196,7 @@ class MainViewModel(
 
             _uiState.update { current ->
                 current.copy(
-                    recentlyAddedItems = itemsForDate,
+                    recentlyAddedItems = itemsForDate.toPersistentList(),
                     currentCalories = totalCalories,
                     currentFats = totalFats,
                     currentCarbs = totalCarbs,
@@ -214,17 +206,17 @@ class MainViewModel(
         }
     }
 
-    private fun generateFakeDailyStats(days: Int): List<DailyStats> {
+    private fun generateFakeDailyStats(days: Int): kotlinx.collections.immutable.PersistentList<DailyStats> {
         val labels = listOf("Po", "Út", "St", "Čt", "Pá", "So", "Ne")
         return (0 until days).map { i ->
-            val label = if (days == 7) labels[i % 7] else "Den ${i+1}"
+            val label = if (days == 7) labels[i % 7] else "Den ${i + 1}"
             DailyStats(
                 dayLabel = label,
                 protein = (20..100).random(),
                 carbs = (50..200).random(),
                 fat = (10..80).random()
             )
-        }
+        }.toPersistentList()
     }
 
     fun resetToToday() {
@@ -241,16 +233,16 @@ class MainViewModel(
     fun toggleFoodSelection(id: Long) {
         _uiState.update { current ->
             val newSelection = if (id in current.selectedFoodIds) {
-                current.selectedFoodIds - id
+                current.selectedFoodIds.remove(id)
             } else {
-                current.selectedFoodIds + id
+                current.selectedFoodIds.add(id)
             }
             current.copy(selectedFoodIds = newSelection)
         }
     }
 
     fun clearSelection() {
-        _uiState.update { it.copy(selectedFoodIds = emptySet()) }
+        _uiState.update { it.copy(selectedFoodIds = persistentSetOf()) }
     }
 
     fun deleteSelectedFoods() {
@@ -261,8 +253,9 @@ class MainViewModel(
             }
             _uiState.update { current ->
                 current.copy(
-                    recentlyAddedItems = current.recentlyAddedItems.filter { it.id !in ids },
-                    selectedFoodIds = emptySet()
+                    recentlyAddedItems = current.recentlyAddedItems
+                        .mutate { list -> list.removeAll { it.id in ids } },
+                    selectedFoodIds = persistentSetOf()
                 )
             }
             recalculateMacros()
@@ -284,4 +277,12 @@ class MainViewModel(
             )
         }
     }
+}
+
+private fun kotlinx.collections.immutable.PersistentList<FoodItemEntity>.replaceById(
+    id: Long,
+    replacement: FoodItemEntity
+): kotlinx.collections.immutable.PersistentList<FoodItemEntity> {
+    val idx = indexOfFirst { it.id == id }
+    return if (idx < 0) this else mutate { it[idx] = replacement }
 }

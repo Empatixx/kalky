@@ -163,7 +163,6 @@ fun HomeScene(
         }) { item ->
             FoodItemCard(
                 foodItem = item,
-                progress = uiState.loadingProgressForItems[item.id] ?: 0,
                 isSelected = item.id in uiState.selectedFoodIds,
                 onClick = {
                     if (uiState.isSelectionMode) {

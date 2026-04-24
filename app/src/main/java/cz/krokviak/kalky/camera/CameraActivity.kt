@@ -12,11 +12,12 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cz.krokviak.kalky.barcode.data.OpenFoodFactsProduct
+import cz.krokviak.kalky.common.AppLanguage
+import cz.krokviak.kalky.common.AppPreferences
 import cz.krokviak.kalky.i18n.CzechStrings
 import cz.krokviak.kalky.i18n.EnglishStrings
-import cz.krokviak.kalky.settings.AppLanguage
-import cz.krokviak.kalky.settings.AppPreferencesManager
 import cz.krokviak.kalky.theme.KalkyTheme
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
 import java.io.FileOutputStream
@@ -24,17 +25,17 @@ import java.io.FileOutputStream
 class CameraActivity : AppCompatActivity() {
 
     private val cameraViewModel: CameraViewModel by viewModel()
+    private val appPreferences: AppPreferences by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Ask for camera permission
         val requestPermissionLauncher =
             registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
                 if (isGranted) {
                     initCameraAndSetContent()
                 } else {
-                    val strings = if (AppPreferencesManager.language.value == AppLanguage.EN) EnglishStrings else CzechStrings
+                    val strings = if (appPreferences.language.value == AppLanguage.EN) EnglishStrings else CzechStrings
                     Toast.makeText(this, strings.camera.permissionDenied, Toast.LENGTH_LONG).show()
                     finish()
                 }
@@ -50,15 +51,12 @@ class CameraActivity : AppCompatActivity() {
     }
 
     private fun initCameraAndSetContent() {
-        // Initialize camera provider
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
         cameraProviderFuture.addListener({
             val cameraProvider = cameraProviderFuture.get()
-            // Pass the Activity (LifecycleOwner) to your ViewModel
             cameraViewModel.onCameraProviderReady(cameraProvider, this)
         }, ContextCompat.getMainExecutor(this))
 
-        // Set Compose content
         setContent {
             KalkyTheme {
                 val uiState = cameraViewModel.uiState.collectAsStateWithLifecycle()
@@ -96,7 +94,7 @@ class CameraActivity : AppCompatActivity() {
             RESULT_OK,
             Intent().apply {
                 putExtra(EXTRA_RESULT_TYPE, RESULT_TYPE_BARCODE)
-                val strings = if (AppPreferencesManager.language.value == AppLanguage.EN) EnglishStrings else CzechStrings
+                val strings = if (appPreferences.language.value == AppLanguage.EN) EnglishStrings else CzechStrings
                 putExtra(EXTRA_NAME, product.productName ?: strings.common.unknownProduct)
                 putExtra(EXTRA_CALORIES, ((nutriments?.energyKcal100g ?: 0.0) * multiplier).toInt())
                 putExtra(EXTRA_PROTEIN, ((nutriments?.proteins100g ?: 0.0) * multiplier).toInt())

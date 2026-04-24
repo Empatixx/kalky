@@ -9,12 +9,15 @@ object RemoteConfigManager {
 
     private val remoteConfig: FirebaseRemoteConfig = FirebaseRemoteConfig.getInstance()
 
-    fun init() {
+    fun configure() {
         val configSettings = remoteConfigSettings {
             minimumFetchIntervalInSeconds = if (cz.krokviak.kalky.BuildConfig.DEBUG) 0 else 3600
         }
         remoteConfig.setConfigSettingsAsync(configSettings)
         remoteConfig.setDefaultsAsync(mapOf(KEY_BACKEND_BASE_URL to DEFAULT_BACKEND_BASE_URL))
+    }
+
+    fun refresh() {
         remoteConfig.fetchAndActivate()
     }
 

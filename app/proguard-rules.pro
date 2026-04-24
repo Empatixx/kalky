@@ -1,21 +1,87 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# Keep line numbers in stack traces
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# ==== kotlinx.serialization ====
+-keepattributes *Annotation*, InnerClasses
+-dontnote kotlinx.serialization.AnnotationsKt
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# Keep serialization @Serializable metadata for app data classes
+-keepclassmembers class kotlinx.serialization.json.** {
+    *** Companion;
+}
+-keepclasseswithmembers class kotlinx.serialization.json.** {
+    kotlinx.serialization.KSerializer serializer(...);
+}
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+-keep,includedescriptorclasses class cz.krokviak.kalky.**$$serializer { *; }
+-keepclassmembers class cz.krokviak.kalky.** {
+    *** Companion;
+}
+-keepclasseswithmembers class cz.krokviak.kalky.** {
+    kotlinx.serialization.KSerializer serializer(...);
+}
+
+# ==== Ktor ====
+-keep class io.ktor.** { *; }
+-keep class kotlinx.coroutines.** { *; }
+-dontwarn io.ktor.**
+-dontwarn org.slf4j.**
+
+# ==== SQLDelight ====
+-keep class app.cash.sqldelight.** { *; }
+-keep class cz.krokviak.kalky.db.** { *; }
+-keep class cz.krokviak.kalky.Food_items { *; }
+-keep class cz.krokviak.kalky.Food_items$* { *; }
+-keep class cz.krokviak.kalky.Personal_info { *; }
+-keep class cz.krokviak.kalky.Personal_info$* { *; }
+-keep class cz.krokviak.kalky.Nutrient_settings { *; }
+-keep class cz.krokviak.kalky.Nutrient_settings$* { *; }
+
+# ==== Koin ====
+-keep class org.koin.** { *; }
+-keep class * extends org.koin.core.module.Module
+-keepclassmembers class ** {
+    public <init>();
+}
+
+# ==== Firebase ====
+-keepattributes Signature, *Annotation*
+-keep class com.google.firebase.** { *; }
+-keep class com.google.android.gms.** { *; }
+-keep class com.google.android.play.** { *; }
+-dontwarn com.google.firebase.**
+-dontwarn com.google.android.gms.**
+-dontwarn com.google.android.play.**
+
+# Firebase Crashlytics
+-keep class com.google.firebase.crashlytics.** { *; }
+-keep class com.google.firebase.components.** { *; }
+
+# ==== CameraX ====
+-keep class androidx.camera.** { *; }
+-dontwarn androidx.camera.**
+
+# ==== ML Kit Barcode ====
+-keep class com.google.mlkit.** { *; }
+-keep class com.google.android.gms.internal.mlkit_vision_barcode.** { *; }
+-dontwarn com.google.mlkit.**
+
+# ==== Compose Multiplatform / Vico / Coil ====
+-keep class com.patrykandpatrick.vico.** { *; }
+-dontwarn com.patrykandpatrick.vico.**
+-keep class coil3.** { *; }
+-dontwarn coil3.**
+
+# ==== Data classes used via Intent extras / reflection ====
+-keep class cz.krokviak.kalky.barcode.data.** { *; }
+-keep class cz.krokviak.kalky.common.entities.** { *; }
+
+# ==== Kotlin reflection ====
+-keep class kotlin.Metadata { *; }
+-keep class kotlin.reflect.** { *; }
+-dontwarn kotlin.reflect.jvm.internal.**
+
+# ==== Compose runtime ====
+-keep class androidx.compose.runtime.** { *; }
+-keep class androidx.compose.ui.platform.** { *; }

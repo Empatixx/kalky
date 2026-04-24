@@ -18,6 +18,7 @@ import cz.krokviak.kalky.home.MainViewModel
 import cz.krokviak.kalky.nutrientedit.NutrientEditViewModel
 import cz.krokviak.kalky.onboarding.OnboardingViewModel
 import cz.krokviak.kalky.settings.SettingsViewModel
+import cz.krokviak.kalky.BuildConfig
 import cz.krokviak.kalky.config.RemoteConfigManager
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.qualifier.named
@@ -38,7 +39,7 @@ val appModule = module {
     single<AppCheckTokenProvider> { FirebaseAppCheckTokenProvider() }
 
     // ViewModels
-    viewModel { MainViewModel(get(), get(), get(), get(), get()) }
+    viewModel { MainViewModel(get(), get(), get(), get(), get(), get(), seedMockData = BuildConfig.DEBUG) }
     viewModel { FoodDetailViewModel(get(), get(), get()) }
     viewModel { NutrientEditViewModel(get()) }
     viewModel { AnalyticsViewModel(get(), get()) }

@@ -244,7 +244,6 @@ fun MainScaffold(
     )
     val scope = rememberCoroutineScope()
     val uiState by mainViewModel.uiState.collectAsState()
-    val analyticsUiState by analyticsViewModel.uiState.collectAsState()
 
     val currentPage by remember { derivedStateOf { pagerState.currentPage } }
 
@@ -266,7 +265,6 @@ fun MainScaffold(
             },
         ) { innerPadding ->
             HorizontalPager(
-                beyondViewportPageCount = 4,
                 state = pagerState,
                 modifier = Modifier
                     .fillMaxSize()
@@ -292,11 +290,14 @@ fun MainScaffold(
                             navController.navigate(ManualFoodEntryRoute)
                         }
                     )
-                    1 -> AnalyticsPage(
-                        uiState = analyticsUiState,
-                        analyticsViewModel = analyticsViewModel,
-                        modifier = Modifier.fillMaxSize()
-                    )
+                    1 -> {
+                        val analyticsUiState by analyticsViewModel.uiState.collectAsState()
+                        AnalyticsPage(
+                            uiState = analyticsUiState,
+                            analyticsViewModel = analyticsViewModel,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
                     2 -> {
                         val settingsUiState by settingsViewModel.uiState.collectAsState()
                         ProfilePage(

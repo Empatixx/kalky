@@ -137,7 +137,7 @@ private fun EmptyNutrientCard() {
 @Composable
 private fun StackedCaloriesChart(bars: List<CaloriesBar>) {
     val dims = LocalDimensions.current
-    val avgCalories = bars.sumOf { it.totalCalories } / bars.size
+    val avgCalories = remember(bars) { bars.sumOf { it.totalCalories } / bars.size }
 
     Row(
         modifier = Modifier.fillMaxWidth().padding(dims.cardPadding),
@@ -152,18 +152,22 @@ private fun StackedCaloriesChart(bars: List<CaloriesBar>) {
     val carbColor = MacroColors.carbs
     val fatColor = MacroColors.fat
 
-    val days = bars.map { it.label }
+    val days = remember(bars) { bars.map { it.label } }
     val dayFormatter = CartesianValueFormatter { _, value, _ ->
         days.getOrNull(value.toInt()) ?: " "
     }
 
     val modelProducer = remember { CartesianChartModelProducer() }
     LaunchedEffect(bars) {
+        val indices = bars.indices.toList()
+        val carbSeries = bars.map { it.carbs.toDouble() * 4 }
+        val fatSeries = bars.map { it.fat.toDouble() * 9 }
+        val proteinSeries = bars.map { it.protein.toDouble() * 4 }
         modelProducer.runTransaction {
             columnSeries {
-                series(days.indices.toList(), bars.map { it.carbs.toDouble() * 4 })
-                series(days.indices.toList(), bars.map { it.fat.toDouble() * 9 })
-                series(days.indices.toList(), bars.map { it.protein.toDouble() * 4 })
+                series(indices, carbSeries)
+                series(indices, fatSeries)
+                series(indices, proteinSeries)
             }
         }
     }
@@ -227,15 +231,17 @@ private fun StackedCaloriesChart(bars: List<CaloriesBar>) {
 @Composable
 private fun SingleNutrientChart(bars: List<CaloriesBar>, tab: NutrientTab) {
     val dims = LocalDimensions.current
-    val values = bars.map { bar ->
-        when (tab) {
-            NutrientTab.PROTEIN -> bar.protein.toDouble()
-            NutrientTab.CARBS -> bar.carbs.toDouble()
-            NutrientTab.FAT -> bar.fat.toDouble()
-            else -> 0.0
+    val values = remember(bars, tab) {
+        bars.map { bar ->
+            when (tab) {
+                NutrientTab.PROTEIN -> bar.protein.toDouble()
+                NutrientTab.CARBS -> bar.carbs.toDouble()
+                NutrientTab.FAT -> bar.fat.toDouble()
+                else -> 0.0
+            }
         }
     }
-    val avg = if (values.isNotEmpty()) values.average().toInt() else 0
+    val avg = remember(values) { if (values.isNotEmpty()) values.average().toInt() else 0 }
 
     val barColor = when (tab) {
         NutrientTab.PROTEIN -> MacroColors.protein
@@ -260,16 +266,17 @@ private fun SingleNutrientChart(bars: List<CaloriesBar>, tab: NutrientTab) {
         Text(text = "$avg g", color = AppTheme.colors.onBackground, fontSize = dims.fontSubtitle, fontWeight = FontWeight.ExtraBold)
     }
 
-    val days = bars.map { it.label }
+    val days = remember(bars) { bars.map { it.label } }
     val dayFormatter = CartesianValueFormatter { _, value, _ ->
         days.getOrNull(value.toInt()) ?: " "
     }
 
     val modelProducer = remember { CartesianChartModelProducer() }
     LaunchedEffect(bars, tab) {
+        val indices = days.indices.toList()
         modelProducer.runTransaction {
             columnSeries {
-                series(days.indices.toList(), values)
+                series(indices, values)
             }
         }
     }

@@ -130,12 +130,14 @@ class CameraViewModel(
                 override fun onCaptureSuccess(imageProxy: ImageProxy) {
                     val bitmap = imageProxy.toBitmap()
                     val rotatedBitmap = rotateBitmap(bitmap, imageProxy.imageInfo.rotationDegrees.toFloat())
+                    val downscaled = downscaleBitmap(rotatedBitmap, maxEdge = 1280)
 
-                    // Convert to bytes
-                    val bytes = rotatedBitmap.toBytes()
+                    val bytes = downscaled.toBytes()
                     imageProxy.close()
+                    if (downscaled !== rotatedBitmap) rotatedBitmap.recycle()
+                    if (downscaled !== bitmap) downscaled.recycle()
+                    if (rotatedBitmap !== bitmap) bitmap.recycle()
 
-                    // Pass bytes back to the Activity
                     onImageCaptured(bytes)
                 }
 
@@ -149,12 +151,25 @@ class CameraViewModel(
     private fun rotateBitmap(source: Bitmap, rotationDegrees: Float): Bitmap {
         if (rotationDegrees == 0f) return source
         val matrix = Matrix().apply { postRotate(rotationDegrees) }
-        return Bitmap.createBitmap(source, 0, 0, source.width, source.height, matrix, true)
+        val rotated = Bitmap.createBitmap(source, 0, 0, source.width, source.height, matrix, true)
+        if (rotated !== source) source.recycle()
+        return rotated
+    }
+
+    private fun downscaleBitmap(source: Bitmap, maxEdge: Int): Bitmap {
+        val longest = maxOf(source.width, source.height)
+        if (longest <= maxEdge) return source
+        val scale = maxEdge.toFloat() / longest.toFloat()
+        val targetWidth = (source.width * scale).toInt().coerceAtLeast(1)
+        val targetHeight = (source.height * scale).toInt().coerceAtLeast(1)
+        val scaled = Bitmap.createScaledBitmap(source, targetWidth, targetHeight, true)
+        if (scaled !== source) source.recycle()
+        return scaled
     }
 
     private fun Bitmap.toBytes(): ByteArray {
         val outStream = java.io.ByteArrayOutputStream()
-        this.compress(Bitmap.CompressFormat.JPEG, 100, outStream)
+        this.compress(Bitmap.CompressFormat.JPEG, 85, outStream)
         return outStream.toByteArray()
     }
 

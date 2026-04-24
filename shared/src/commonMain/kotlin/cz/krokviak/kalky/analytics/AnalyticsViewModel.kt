@@ -6,6 +6,8 @@ import cz.krokviak.kalky.common.currentLocalDate
 import cz.krokviak.kalky.common.repo.FoodRepository
 import cz.krokviak.kalky.common.repo.PersonalInfoRepo
 import cz.krokviak.kalky.common.toCzechShortName
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -49,7 +51,7 @@ class AnalyticsViewModel(
 
             _uiState.update {
                 it.copy(
-                    weights = weights,
+                    weights = weights.toPersistentList(),
                     caloriesBars = bars
                 )
             }
@@ -60,7 +62,7 @@ class AnalyticsViewModel(
         start: LocalDate,
         end: LocalDate,
         days: Int
-    ): List<CaloriesBar> {
+    ): PersistentList<CaloriesBar> {
         val dailyTotals = foodRepository.getDailyMacroTotalsInRange(
             start.toString(),
             end.toString()
@@ -81,7 +83,7 @@ class AnalyticsViewModel(
                 carbs = dayTotals?.totalCarbs ?: 0,
                 fat = dayTotals?.totalFat ?: 0
             )
-        }
+        }.toPersistentList()
     }
 
     private fun daysBetween(start: LocalDate, end: LocalDate): Int {

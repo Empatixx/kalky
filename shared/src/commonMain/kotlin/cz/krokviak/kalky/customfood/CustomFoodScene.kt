@@ -70,7 +70,10 @@ import cz.krokviak.kalky.ui.LocalDimensions
 import cz.krokviak.kalky.ui.components.KalkyButton
 import cz.krokviak.kalky.ui.components.KalkyCard
 import cz.krokviak.kalky.ui.components.KalkySegmentedControl
+import kotlinx.collections.immutable.persistentListOf
 import kotlin.math.roundToInt
+
+private val PORTION_PRESETS = persistentListOf(50, 100, 150, 200, 250)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -186,6 +189,9 @@ fun CustomFoodScene(
                         )
                     }
                 } else {
+                    val historyTop5 = remember(uiState.historyItems) {
+                        uiState.historyItems.take(5)
+                    }
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                         contentPadding = PaddingValues(
@@ -261,7 +267,7 @@ fun CustomFoodScene(
                                     iconColor = Color(0xFF4A90D9)
                                 )
                             }
-                            items(uiState.historyItems.take(5), key = { it.id }) { item ->
+                            items(historyTop5, key = { it.id }) { item ->
                                 HistoryFoodItem(
                                     item = item,
                                     isSelected = item.id in uiState.selectedItems,
@@ -279,8 +285,10 @@ fun CustomFoodScene(
                                     iconColor = AppTheme.colors.onBackgroundSecondary
                                 )
                             }
-                            items(uiState.apiResults.size, key = { "api_$it" }) { index ->
-                                val product = uiState.apiResults[index]
+                            items(
+                                items = uiState.apiResults,
+                                key = { product -> "api_${product.productName ?: product.hashCode()}" }
+                            ) { product ->
                                 ApiResultItem(
                                     product = product,
                                     onClick = { viewModel.selectApiProduct(product) }
@@ -542,7 +550,7 @@ private fun PortionPickerSheet(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                listOf(50, 100, 150, 200, 250).forEach { grams ->
+                PORTION_PRESETS.forEach { grams ->
                     KalkyCard(
                         modifier = Modifier
                             .weight(1f)

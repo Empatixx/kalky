@@ -1,8 +1,10 @@
 package cz.krokviak.kalky.detail
 
+import androidx.compose.runtime.Immutable
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 
+@Immutable
 data class FoodDetailState(
     val id: Long = 0,
     val name: String = "",

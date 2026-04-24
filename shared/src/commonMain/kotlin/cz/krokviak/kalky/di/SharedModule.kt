@@ -6,6 +6,7 @@ import cz.krokviak.kalky.common.repo.FoodRepository
 import cz.krokviak.kalky.common.repo.NutrientSettingRepo
 import cz.krokviak.kalky.common.repo.PersonalInfoRepo
 import cz.krokviak.kalky.notifications.MealReminderChecker
+import cz.krokviak.kalky.db.DatabaseSeeder
 import cz.krokviak.kalky.db.createDatabase
 import cz.krokviak.kalky.network.FoodAnalysisClient
 import cz.krokviak.kalky.network.OpenFoodFactsClient
@@ -31,6 +32,7 @@ val sharedModule = module {
 
     // Database
     single { createDatabase(get()) }
+    single { DatabaseSeeder(get()) }
 
     // Repositories
     single { FoodRepository(get()) }
