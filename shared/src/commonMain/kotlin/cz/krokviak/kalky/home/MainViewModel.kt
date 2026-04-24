@@ -2,36 +2,30 @@ package cz.krokviak.kalky.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import cz.krokviak.kalky.common.ImageStorage
+import cz.krokviak.kalky.common.FoodPhotoAnalyzer
 import cz.krokviak.kalky.common.StreakCalculator
 import cz.krokviak.kalky.common.entities.FoodItemEntity
 import cz.krokviak.kalky.common.repo.FoodRepository
 import cz.krokviak.kalky.common.repo.NutrientSettingRepo
 import cz.krokviak.kalky.db.DatabaseSeeder
-import cz.krokviak.kalky.network.FoodAnalysisClient
 import kotlinx.collections.immutable.mutate
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 
-private const val LOADING_ANIMATION_DURATION_MS = 6000L
-
 class MainViewModel(
     private val foodRepository: FoodRepository,
     private val nutrientSettingRepo: NutrientSettingRepo,
-    private val foodAnalysisClient: FoodAnalysisClient,
-    private val imageStorage: ImageStorage,
+    private val foodPhotoAnalyzer: FoodPhotoAnalyzer,
     private val streakCalculator: StreakCalculator,
     private val databaseSeeder: DatabaseSeeder,
     private val seedMockData: Boolean = false
@@ -66,71 +60,35 @@ class MainViewModel(
     }
 
     fun addFoodItemFromBytes(imageBytes: ByteArray) {
-        viewModelScope.launch {
-            val imagePath = imageStorage.storeImageFile(imageBytes)
-
-            val now = Clock.System.now()
-            val placeholder = FoodItemEntity(
-                createdAt = now,
-                updatedAt = now,
-                localImagePath = imagePath,
-                loading = true
-            )
-
-            val newId = foodRepository.insertFoodItem(placeholder)
-            val insertedItem = placeholder.copy(id = newId)
-
-            _uiState.update { current ->
-                current.copy(
-                    recentlyAddedItems = current.recentlyAddedItems.mutate { it.add(0, insertedItem) },
-                    loadingItems = current.loadingItems.add(newId)
-                )
-            }
-            recalculateMacros()
-
-            val animationJob = launch { delay(LOADING_ANIMATION_DURATION_MS) }
-            val analysisJob = launch {
-                val analysis = withContext(Dispatchers.IO) {
-                    foodAnalysisClient.getAnalysis(imageBytes)
-                }
-                if (analysis != null) {
-                    val updated = insertedItem.copy(
-                        name = analysis.title ?: "Neznámé jídlo",
-                        calories = (analysis.protein * 4) + (analysis.carbs * 4) + (analysis.fat * 9),
-                        protein = analysis.protein,
-                        fat = analysis.fat,
-                        carbs = analysis.carbs,
-                        healthScore = analysis.healthScore,
-                        loading = true,
-                        updatedAt = Clock.System.now()
+        foodPhotoAnalyzer.analyze(
+            scope = viewModelScope,
+            imageBytes = imageBytes,
+            onPlaceholderInserted = { placeholder ->
+                _uiState.update { current ->
+                    current.copy(
+                        recentlyAddedItems = current.recentlyAddedItems.mutate { it.add(0, placeholder) },
+                        loadingItems = current.loadingItems.add(placeholder.id)
                     )
-                    foodRepository.updateFoodItem(updated)
-                    _uiState.update { current ->
-                        current.copy(
-                            recentlyAddedItems = current.recentlyAddedItems.replaceById(newId, updated)
-                        )
-                    }
                 }
+                recalculateMacros()
+            },
+            onAnalysisComplete = { analyzed ->
+                _uiState.update { current ->
+                    current.copy(
+                        recentlyAddedItems = current.recentlyAddedItems.replaceById(analyzed.id, analyzed)
+                    )
+                }
+            },
+            onFinalCommitted = { finalItem ->
+                _uiState.update { current ->
+                    current.copy(
+                        loadingItems = current.loadingItems.remove(finalItem.id),
+                        recentlyAddedItems = current.recentlyAddedItems.replaceById(finalItem.id, finalItem)
+                    )
+                }
+                recalculateMacros()
             }
-
-            joinAll(animationJob, analysisJob)
-
-            val finalItem = _uiState.value.recentlyAddedItems
-                .firstOrNull { it.id == newId }
-                ?.copy(loading = false, updatedAt = Clock.System.now())
-                ?: return@launch
-
-            foodRepository.updateFoodItem(finalItem)
-
-            _uiState.update { current ->
-                current.copy(
-                    loadingItems = current.loadingItems.remove(newId),
-                    recentlyAddedItems = current.recentlyAddedItems.replaceById(newId, finalItem)
-                )
-            }
-
-            recalculateMacros()
-        }
+        )
     }
 
     fun addFoodItemFromBarcode(

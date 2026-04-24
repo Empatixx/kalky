@@ -1,6 +1,7 @@
 package cz.krokviak.kalky.di
 
 import cz.krokviak.kalky.common.AppPreferences
+import cz.krokviak.kalky.common.FoodPhotoAnalyzer
 import cz.krokviak.kalky.common.StreakCalculator
 import cz.krokviak.kalky.common.repo.FoodRepository
 import cz.krokviak.kalky.common.repo.NutrientSettingRepo
@@ -41,6 +42,9 @@ val sharedModule = module {
 
     // Streak
     single { StreakCalculator(get()) }
+
+    // Food photo pipeline
+    single { FoodPhotoAnalyzer(get(), get(), get()) }
 
     // Notifications
     single { MealReminderChecker(get(), get()) }

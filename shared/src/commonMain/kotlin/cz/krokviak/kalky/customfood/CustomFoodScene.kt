@@ -78,23 +78,27 @@ private val PORTION_PRESETS = persistentListOf(50, 100, 150, 200, 250)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomFoodScene(
-    viewModel: CustomFoodViewModel,
+    uiState: CustomFoodUiState,
+    foodAdded: kotlinx.coroutines.flow.SharedFlow<Long>,
     onBackClick: () -> Unit,
     onAddNewClick: () -> Unit,
-    onFoodAdded: () -> Unit
+    onFoodAdded: () -> Unit,
+    onLoadHistory: () -> Unit,
+    onSearchQueryChange: (String) -> Unit,
+    onToggleSelection: (Long) -> Unit,
+    onSelectApiProduct: (OpenFoodFactsProduct) -> Unit,
+    onAddSelectedFoods: () -> Unit,
+    onPortionChanged: (Int) -> Unit,
+    onConfirmApiProduct: () -> Unit,
+    onDismissPortionPicker: () -> Unit,
 ) {
-    val uiState by viewModel.uiState.collectAsState()
     val s = LocalStrings.current
     var selectedTab by remember { mutableStateOf(0) } // 0=All, 1=My Foods, 2=Recently Used
 
-    LaunchedEffect(Unit) {
-        viewModel.loadHistory()
-    }
+    LaunchedEffect(Unit) { onLoadHistory() }
 
     LaunchedEffect(Unit) {
-        viewModel.foodAdded.collect {
-            onFoodAdded()
-        }
+        foodAdded.collect { onFoodAdded() }
     }
 
     Box(
@@ -134,7 +138,7 @@ fun CustomFoodScene(
             ) {
                 OutlinedTextField(
                     value = uiState.searchQuery,
-                    onValueChange = viewModel::onSearchQueryChange,
+                    onValueChange = onSearchQueryChange,
                     placeholder = {
                         Text(
                             text = s.customFood.searchPlaceholder,
@@ -255,7 +259,7 @@ fun CustomFoodScene(
                                 HistoryFoodItem(
                                     item = item,
                                     isSelected = item.id in uiState.selectedItems,
-                                    onClick = { viewModel.toggleSelection(item.id) }
+                                    onClick = { onToggleSelection(item.id) }
                                 )
                             }
                         }
@@ -271,8 +275,8 @@ fun CustomFoodScene(
                                 HistoryFoodItem(
                                     item = item,
                                     isSelected = item.id in uiState.selectedItems,
-                                    onClick = { viewModel.toggleSelection(item.id) },
-                                    fallbackTint = Color(0xFF4A90D9)
+                                    onClick = { onToggleSelection(item.id) },
+                                    fallbackTint = Color(0xFF4A90D9),
                                 )
                             }
                         }
@@ -291,7 +295,7 @@ fun CustomFoodScene(
                             ) { product ->
                                 ApiResultItem(
                                     product = product,
-                                    onClick = { viewModel.selectApiProduct(product) }
+                                    onClick = { onSelectApiProduct(product) }
                                 )
                             }
                         }
@@ -302,7 +306,7 @@ fun CustomFoodScene(
 
         if (uiState.selectedItems.isNotEmpty()) {
             KalkyButton(
-                onClick = { viewModel.addSelectedFoods() },
+                onClick = onAddSelectedFoods,
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
@@ -321,9 +325,9 @@ fun CustomFoodScene(
         PortionPickerSheet(
             product = product,
             portionGrams = uiState.portionGrams,
-            onPortionChanged = viewModel::setPortionGrams,
-            onConfirm = viewModel::confirmAddApiProduct,
-            onDismiss = viewModel::dismissPortionPicker
+            onPortionChanged = onPortionChanged,
+            onConfirm = onConfirmApiProduct,
+            onDismiss = onDismissPortionPicker
         )
     }
 }

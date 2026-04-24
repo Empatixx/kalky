@@ -39,11 +39,6 @@ import cz.krokviak.kalky.theme.MacroColors
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import cz.krokviak.kalky.common.entities.FoodItemEntity
-import cz.krokviak.kalky.common.CustomFoodRoute
-import cz.krokviak.kalky.common.FoodDetailRoute
-import cz.krokviak.kalky.common.NutrientEditRoute
 import cz.krokviak.kalky.home.components.CalorieCard
 import cz.krokviak.kalky.home.components.FoodItemCard
 import cz.krokviak.kalky.home.components.MacroNutrientCard
@@ -52,187 +47,175 @@ import cz.krokviak.kalky.theme.AppTheme
 import cz.krokviak.kalky.i18n.LocalStrings
 import cz.krokviak.kalky.ui.LocalDimensions
 import cz.krokviak.kalky.ui.components.KalkyCard
+import kotlinx.datetime.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScene(
-    modifier: Modifier = Modifier,
     uiState: MainUiState,
-    navController: NavController,
-    model: MainViewModel,
-    onSaveAsCustom: (List<FoodItemEntity>) -> Unit = {}
+    onFoodClick: (Long) -> Unit,
+    onFoodLongClick: (Long) -> Unit,
+    onDateChange: (LocalDate) -> Unit,
+    onTodayClick: () -> Unit,
+    onAddCustomClick: () -> Unit,
+    onEditTargetsClick: () -> Unit,
+    onSelectionClear: () -> Unit,
+    onSaveSelectionAsCustom: () -> Unit,
+    onDeleteSelection: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val dims = LocalDimensions.current
     Box(modifier = modifier.fillMaxSize()) {
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(dims.itemSpacing),
-        contentPadding = PaddingValues(dims.screenPadding)
-    ) {
-        item {
-            val s = LocalStrings.current
-            Column(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                WeekDatePicker(
-                    currentDate = uiState.currentDate,
-                    isToday = uiState.isToday,
-                    onDateChange = model::onDateSelected,
-                    onTodayClick = model::resetToToday
-                )
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable(
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null
-                        ) {
-                            navController.navigate(NutrientEditRoute)
-                        }
-                ) {
-                    CalorieCard(
-                        uiState.currentCalories,
-                        uiState.maxCalories,
-                        uiState.calorieRatio(),
-                        currentStreak = uiState.currentStreak,
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(dims.itemSpacing),
+            contentPadding = PaddingValues(dims.screenPadding)
+        ) {
+            item {
+                val s = LocalStrings.current
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    WeekDatePicker(
+                        currentDate = uiState.currentDate,
+                        isToday = uiState.isToday,
+                        onDateChange = onDateChange,
+                        onTodayClick = onTodayClick
                     )
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null,
+                                onClick = onEditTargetsClick
+                            )
+                    ) {
+                        CalorieCard(
+                            uiState.currentCalories,
+                            uiState.maxCalories,
+                            uiState.calorieRatio(),
+                            currentStreak = uiState.currentStreak,
+                        )
 
-                    Spacer(modifier = Modifier.height(dims.itemSpacing))
+                        Spacer(modifier = Modifier.height(dims.itemSpacing))
 
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            MacroNutrientCard(
+                                amount = "${uiState.currentProtein}g",
+                                maxAmount = "${uiState.maxProtein}g",
+                                title = s.common.protein,
+                                icon = Icons.Default.Restaurant,
+                                donutColor = MacroColors.protein,
+                                percentage = uiState.proteinRatio(),
+                            )
+                            Spacer(modifier = Modifier.width(dims.halfSpacing))
+                            MacroNutrientCard(
+                                amount = "${uiState.currentCarbs}g",
+                                maxAmount = "${uiState.maxCarbs}g",
+                                title = s.common.carbs,
+                                icon = Icons.Default.Spa,
+                                donutColor = MacroColors.carbs,
+                                percentage = uiState.carbsRatio(),
+                            )
+                            Spacer(modifier = Modifier.width(dims.halfSpacing))
+                            MacroNutrientCard(
+                                amount = "${uiState.currentFats}g",
+                                maxAmount = "${uiState.maxFats}g",
+                                title = s.common.fat,
+                                icon = Icons.Default.Eco,
+                                donutColor = MacroColors.fat,
+                                percentage = uiState.fatsRatio(),
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(dims.halfSpacing))
                     Row(
                         modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        MacroNutrientCard(
-                            amount = "${uiState.currentProtein}g",
-                            maxAmount = "${uiState.maxProtein}g",
-                            title = s.common.protein,
-                            icon = Icons.Default.Restaurant,
-                            donutColor = MacroColors.protein,
-                            percentage = uiState.proteinRatio(),
+                        Text(
+                            text = s.home.addedToday,
+                            fontSize = dims.fontTitle,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = AppTheme.colors.onBackground
                         )
-                        Spacer(modifier = Modifier.width(dims.halfSpacing))
-                        MacroNutrientCard(
-                            amount = "${uiState.currentCarbs}g",
-                            maxAmount = "${uiState.maxCarbs}g",
-                            title = s.common.carbs,
-                            icon = Icons.Default.Spa,
-                            donutColor = MacroColors.carbs,
-                            percentage = uiState.carbsRatio(),
-                        )
-                        Spacer(modifier = Modifier.width(dims.halfSpacing))
-                        MacroNutrientCard(
-                            amount = "${uiState.currentFats}g",
-                            maxAmount = "${uiState.maxFats}g",
-                            title = s.common.fat,
-                            icon = Icons.Default.Eco,
-                            donutColor = MacroColors.fat,
-                            percentage = uiState.fatsRatio(),
-                        )
+                        IconButton(onClick = onAddCustomClick) {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = s.common.add,
+                                tint = AppTheme.colors.onBackground
+                            )
+                        }
+                    }
+                    if (uiState.recentlyAddedItems.isEmpty()) {
+                        Spacer(modifier = Modifier.height(12.dp))
+                        EmptyRecentlyAddedList()
                     }
                 }
-                Spacer(modifier = Modifier.height(dims.halfSpacing))
+            }
+            items(uiState.recentlyAddedItems, key = { it.id }) { item ->
+                FoodItemCard(
+                    foodItem = item,
+                    isSelected = item.id in uiState.selectedFoodIds,
+                    onClick = { onFoodClick(item.id) },
+                    onLongClick = { onFoodLongClick(item.id) }
+                )
+            }
+        }
+
+        if (uiState.isSelectionMode) {
+            val s = LocalStrings.current
+            KalkyCard(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .padding(dims.screenPadding),
+                shape = RoundedCornerShape(16.dp),
+                color = AppTheme.colors.surface
+            ) {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = s.home.addedToday,
-                        fontSize = dims.fontTitle,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = AppTheme.colors.onBackground
-                    )
-                    IconButton(onClick = { navController.navigate(CustomFoodRoute) }) {
+                    IconButton(onClick = onSelectionClear) {
                         Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = s.common.add,
+                            imageVector = Icons.Default.Close,
+                            contentDescription = s.common.close,
                             tint = AppTheme.colors.onBackground
                         )
                     }
-                }
-                if (uiState.recentlyAddedItems.isEmpty()) {
-                    Spacer(modifier = Modifier.height(12.dp))
-                    EmptyRecentlyAddedList()
-                }
-            }
-        }
-        items(uiState.recentlyAddedItems, key = {
-            it.id
-        }) { item ->
-            FoodItemCard(
-                foodItem = item,
-                isSelected = item.id in uiState.selectedFoodIds,
-                onClick = {
-                    if (uiState.isSelectionMode) {
-                        model.toggleFoodSelection(item.id)
-                    } else {
-                        navController.navigate(FoodDetailRoute(item.id))
+                    Text(
+                        text = "${s.home.selected}: ${uiState.selectedFoodIds.size}",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = AppTheme.colors.onBackground,
+                        modifier = Modifier.weight(1f)
+                    )
+                    IconButton(onClick = onSaveSelectionAsCustom) {
+                        Icon(
+                            imageVector = Icons.Outlined.NoteAdd,
+                            contentDescription = s.home.saveAsCustom,
+                            tint = AppTheme.colors.onBackground,
+                            modifier = Modifier.size(24.dp)
+                        )
                     }
-                },
-                onLongClick = {
-                    model.toggleFoodSelection(item.id)
-                }
-            )
-        }
-
-    }
-
-    // Selection action bar
-    if (uiState.isSelectionMode) {
-        val s = LocalStrings.current
-        KalkyCard(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .padding(dims.screenPadding),
-            shape = RoundedCornerShape(16.dp),
-            color = AppTheme.colors.surface
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = { model.clearSelection() }) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = s.common.close,
-                        tint = AppTheme.colors.onBackground
-                    )
-                }
-                Text(
-                    text = "${s.home.selected}: ${uiState.selectedFoodIds.size}",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = AppTheme.colors.onBackground,
-                    modifier = Modifier.weight(1f)
-                )
-                IconButton(onClick = {
-                    onSaveAsCustom(model.getSelectedFoodItems())
-                    model.clearSelection()
-                }) {
-                    Icon(
-                        imageVector = Icons.Outlined.NoteAdd,
-                        contentDescription = s.home.saveAsCustom,
-                        tint = AppTheme.colors.onBackground,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-                IconButton(onClick = { model.deleteSelectedFoods() }) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = s.home.deleteSelected,
-                        tint = Color.Red,
-                        modifier = Modifier.size(24.dp)
-                    )
+                    IconButton(onClick = onDeleteSelection) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = s.home.deleteSelected,
+                            tint = Color.Red,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
                 }
             }
         }
     }
-    } // end Box
 }
 
 @Composable
