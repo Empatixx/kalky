@@ -4,9 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cz.krokviak.kalky.barcode.data.OpenFoodFactsProduct
 import cz.krokviak.kalky.common.domain.AddFoodItemUseCase
+import cz.krokviak.kalky.common.domain.GetFoodLibraryUseCase
+import cz.krokviak.kalky.common.domain.SearchFoodsUseCase
 import cz.krokviak.kalky.common.entities.FoodItemEntity
 import cz.krokviak.kalky.common.error.UiError
-import cz.krokviak.kalky.common.repo.FoodRepository
 import cz.krokviak.kalky.network.OpenFoodFactsClient
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
@@ -23,7 +24,8 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 
 class CustomFoodSearchViewModel(
-    private val foodRepository: FoodRepository,
+    private val getFoodLibrary: GetFoodLibraryUseCase,
+    private val searchFoods: SearchFoodsUseCase,
     private val openFoodFactsClient: OpenFoodFactsClient,
     private val addFoodItem: AddFoodItemUseCase,
     private val clock: Clock,
@@ -44,12 +46,11 @@ class CustomFoodSearchViewModel(
     fun loadHistory() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-            val custom = foodRepository.getCustomFoods()
-            val items = foodRepository.getDistinctFoodsByName()
+            val library = getFoodLibrary()
             _uiState.update {
                 it.copy(
-                    customFoods = custom.toPersistentList(),
-                    historyItems = items.toPersistentList(),
+                    customFoods = library.custom.toPersistentList(),
+                    historyItems = library.history.toPersistentList(),
                     isLoading = false,
                 )
             }
@@ -63,25 +64,24 @@ class CustomFoodSearchViewModel(
             delay(300)
             _uiState.update { it.copy(isLoading = true) }
             if (query.isBlank()) {
-                val custom = foodRepository.getCustomFoods()
-                val items = foodRepository.getDistinctFoodsByName()
+                val library = getFoodLibrary()
                 _uiState.update {
                     it.copy(
-                        customFoods = custom.toPersistentList(),
-                        historyItems = items.toPersistentList(),
+                        customFoods = library.custom.toPersistentList(),
+                        historyItems = library.history.toPersistentList(),
                         apiResults = persistentListOf(),
                         isLoading = false,
                     )
                 }
             } else {
-                val customDeferred = async { foodRepository.searchCustomFoods(query) }
-                val localDeferred = async { foodRepository.searchDistinctFoodsByName(query) }
+                val localDeferred = async { searchFoods(query) }
                 val apiDeferred = async { runCatching { openFoodFactsClient.searchProducts(query) } }
+                val localResult = localDeferred.await()
                 val apiResult = apiDeferred.await()
                 _uiState.update {
                     it.copy(
-                        customFoods = customDeferred.await().toPersistentList(),
-                        historyItems = localDeferred.await().toPersistentList(),
+                        customFoods = localResult.custom.toPersistentList(),
+                        historyItems = localResult.history.toPersistentList(),
                         apiResults = apiResult.getOrDefault(emptyList()).toPersistentList(),
                         isLoading = false,
                         error = if (apiResult.isFailure) UiError.ProductSearch else it.error,

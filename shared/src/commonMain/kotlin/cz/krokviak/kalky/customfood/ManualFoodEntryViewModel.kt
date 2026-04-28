@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cz.krokviak.kalky.barcode.data.OpenFoodFactsProduct
 import cz.krokviak.kalky.common.domain.AddFoodItemUseCase
+import cz.krokviak.kalky.common.domain.SearchHistoryFoodsUseCase
 import cz.krokviak.kalky.common.entities.FoodItemEntity
-import cz.krokviak.kalky.common.repo.FoodRepository
 import cz.krokviak.kalky.common.utils.caloriesFromMacros
 import cz.krokviak.kalky.network.OpenFoodFactsClient
 import cz.krokviak.kalky.nutrientedit.MacroField
@@ -27,7 +27,7 @@ import kotlinx.datetime.Clock
 import kotlin.math.roundToInt
 
 class ManualFoodEntryViewModel(
-    private val foodRepository: FoodRepository,
+    private val searchHistoryFoods: SearchHistoryFoodsUseCase,
     private val openFoodFactsClient: OpenFoodFactsClient,
     private val addFoodItem: AddFoodItemUseCase,
     private val clock: Clock,
@@ -152,7 +152,7 @@ class ManualFoodEntryViewModel(
         }
         ingredientSearchJob = viewModelScope.launch {
             delay(300)
-            val localDeferred = async { foodRepository.searchDistinctFoodsByName(query) }
+            val localDeferred = async { searchHistoryFoods(query) }
             val apiDeferred = async {
                 runCatching { openFoodFactsClient.searchProducts(query, 10) }.getOrDefault(emptyList())
             }

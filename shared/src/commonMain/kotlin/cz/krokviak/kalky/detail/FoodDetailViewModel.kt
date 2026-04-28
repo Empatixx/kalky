@@ -3,8 +3,10 @@ package cz.krokviak.kalky.detail
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cz.krokviak.kalky.common.ImageStorage
+import cz.krokviak.kalky.common.domain.DeleteFoodItemUseCase
+import cz.krokviak.kalky.common.domain.GetFoodItemUseCase
+import cz.krokviak.kalky.common.domain.UpdateFoodItemUseCase
 import cz.krokviak.kalky.common.entities.FoodItemEntity
-import cz.krokviak.kalky.common.repo.FoodRepository
 import cz.krokviak.kalky.common.utils.caloriesFromMacros
 import cz.krokviak.kalky.network.FoodAnalysisClient
 import cz.krokviak.kalky.nutrientedit.MacroField
@@ -19,7 +21,9 @@ import kotlinx.datetime.Clock
 
 class FoodDetailViewModel(
     private val foodAnalysisClient: FoodAnalysisClient,
-    private val foodRepository: FoodRepository,
+    private val getFoodItem: GetFoodItemUseCase,
+    private val updateFoodItem: UpdateFoodItemUseCase,
+    private val deleteFoodItem: DeleteFoodItemUseCase,
     private val imageStorage: ImageStorage,
     private val clock: Clock,
 ) : ViewModel() {
@@ -28,7 +32,7 @@ class FoodDetailViewModel(
 
     fun loadFood(foodId: Long) {
         viewModelScope.launch {
-            val food = foodRepository.getFoodItem(foodId)
+            val food = getFoodItem(foodId)
             _uiState.value = FoodDetailState(
                 id = food?.id ?: 0,
                 name = food?.name ?: "",
@@ -53,7 +57,7 @@ class FoodDetailViewModel(
 
     fun deleteFood() {
         viewModelScope.launch {
-            foodRepository.deleteFoodItem(_uiState.value.id)
+            deleteFoodItem(_uiState.value.id)
         }
     }
 
@@ -124,7 +128,7 @@ class FoodDetailViewModel(
             val updated = _uiState.value.copy(
                 updatedAt = clock.now()
             )
-            foodRepository.updateFoodItem(
+            updateFoodItem(
                 FoodItemEntity(
                     id = _uiState.value.id,
                     name = updated.name,

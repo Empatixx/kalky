@@ -3,7 +3,7 @@ package cz.krokviak.kalky.analytics
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cz.krokviak.kalky.common.domain.BuildCaloriesBarsUseCase
-import cz.krokviak.kalky.common.repo.PersonalInfoRepo
+import cz.krokviak.kalky.common.domain.GetWeightsInRangeUseCase
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +14,7 @@ import kotlinx.datetime.LocalDate
 
 class AnalyticsViewModel(
     private val buildCaloriesBars: BuildCaloriesBarsUseCase,
-    private val personalInfoRepo: PersonalInfoRepo,
+    private val getWeightsInRange: GetWeightsInRangeUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AnalyticsUiState())
@@ -44,7 +44,7 @@ class AnalyticsViewModel(
         loadJob?.cancel()
         loadJob = viewModelScope.launch {
             val bars = buildCaloriesBars(start, end)
-            val weights = personalInfoRepo.getWeightsInRange(start, end)
+            val weights = getWeightsInRange(start, end)
             _uiState.update {
                 it.copy(
                     weights = weights.toPersistentList(),
