@@ -71,6 +71,7 @@ import cz.krokviak.kalky.ui.LocalDimensions
 import cz.krokviak.kalky.ui.components.KalkyButton
 import cz.krokviak.kalky.ui.components.KalkyCard
 import cz.krokviak.kalky.ui.components.KalkySegmentedControl
+import cz.krokviak.kalky.ui.components.states.EmptyState
 import kotlinx.collections.immutable.persistentListOf
 import kotlin.math.roundToInt
 
@@ -182,18 +183,7 @@ fun CustomFoodScene(
                 }
 
                 if (!hasAnyResults && !uiState.isLoading) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 32.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = s.customFood.noResults,
-                            color = AppTheme.colors.onBackgroundSecondary,
-                            fontSize = dims.fontBody
-                        )
-                    }
+                    EmptyState(title = s.customFood.noResults)
                 } else {
                     val historyTop5 = remember(uiState.historyItems) {
                         uiState.historyItems.take(5)

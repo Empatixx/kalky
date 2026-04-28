@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import cz.krokviak.kalky.common.ImageStorage
 import cz.krokviak.kalky.common.entities.FoodItemEntity
 import cz.krokviak.kalky.common.repo.FoodRepository
+import cz.krokviak.kalky.common.utils.caloriesFromMacros
 import cz.krokviak.kalky.network.FoodAnalysisClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -96,7 +97,7 @@ class FoodDetailViewModel(
                         _uiState.update {
                             it.copy(
                                 name = analysis.title ?: "",
-                                calories = (analysis.protein * 4) + (analysis.carbs * 4) + (analysis.fat * 9),
+                                calories = caloriesFromMacros(analysis.protein, analysis.carbs, analysis.fat),
                                 protein = analysis.protein,
                                 fat = analysis.fat,
                                 carbs = analysis.carbs,
@@ -152,7 +153,6 @@ class FoodDetailViewModel(
         }
     }
 
-    private fun caloriesFromNutrients(protein: Int, carbs: Int, fat: Int): Int {
-        return (protein * 4) + (carbs * 4) + (fat * 9)
-    }
+    private fun caloriesFromNutrients(protein: Int, carbs: Int, fat: Int): Int =
+        caloriesFromMacros(protein, carbs, fat)
 }

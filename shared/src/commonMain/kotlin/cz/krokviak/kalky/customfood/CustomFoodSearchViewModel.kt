@@ -6,6 +6,7 @@ import cz.krokviak.kalky.barcode.data.OpenFoodFactsProduct
 import cz.krokviak.kalky.common.entities.FoodItemEntity
 import cz.krokviak.kalky.common.error.UiError
 import cz.krokviak.kalky.common.repo.FoodRepository
+import cz.krokviak.kalky.common.utils.caloriesFromMacros
 import cz.krokviak.kalky.network.OpenFoodFactsClient
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
@@ -114,7 +115,7 @@ class CustomFoodSearchViewModel(
             val now = Clock.System.now()
             val item = FoodItemEntity(
                 name = product.productName ?: "",
-                calories = if (calories > 0) calories else (protein * 4 + carbs * 4 + fat * 9),
+                calories = if (calories > 0) calories else caloriesFromMacros(protein, carbs, fat),
                 protein = protein,
                 carbs = carbs,
                 fat = fat,

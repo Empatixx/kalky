@@ -3,6 +3,7 @@ package cz.krokviak.kalky.analytics
 import androidx.compose.runtime.Immutable
 import cz.krokviak.kalky.common.currentLocalDate
 import cz.krokviak.kalky.common.repo.WeightEntry
+import cz.krokviak.kalky.common.utils.caloriesFromMacros
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.DateTimeUnit
@@ -24,5 +25,5 @@ data class CaloriesBar(
     val carbs: Int,
     val fat: Int
 ) {
-    val totalCalories: Int get() = protein * 4 + carbs * 4 + fat * 9
+    val totalCalories: Int get() = caloriesFromMacros(protein, carbs, fat)
 }

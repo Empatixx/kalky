@@ -35,6 +35,10 @@ data class Dimensions(
     val thumbnailSize: Dp,
     val donutChartSize: Dp,
     val halfSpacing: Dp,
+    val cardCornerRadius: Dp,
+    val spacingS: Dp,
+    val spacingM: Dp,
+    val spacingL: Dp,
 )
 
 val compactDimensions = Dimensions(
@@ -60,6 +64,10 @@ val compactDimensions = Dimensions(
     thumbnailSize = 100.dp,
     donutChartSize = 90.dp,
     halfSpacing = 4.dp,
+    cardCornerRadius = 12.dp,
+    spacingS = 4.dp,
+    spacingM = 8.dp,
+    spacingL = 12.dp,
 )
 
 val normalDimensions = Dimensions(
@@ -85,6 +93,10 @@ val normalDimensions = Dimensions(
     thumbnailSize = 125.dp,
     donutChartSize = 105.dp,
     halfSpacing = 8.dp,
+    cardCornerRadius = 16.dp,
+    spacingS = 8.dp,
+    spacingM = 12.dp,
+    spacingL = 16.dp,
 )
 
 val largeDimensions = Dimensions(
@@ -110,6 +122,10 @@ val largeDimensions = Dimensions(
     thumbnailSize = 140.dp,
     donutChartSize = 140.dp,
     halfSpacing = 10.dp,
+    cardCornerRadius = 20.dp,
+    spacingS = 10.dp,
+    spacingM = 16.dp,
+    spacingL = 20.dp,
 )
 
 val LocalDimensions = compositionLocalOf { normalDimensions }

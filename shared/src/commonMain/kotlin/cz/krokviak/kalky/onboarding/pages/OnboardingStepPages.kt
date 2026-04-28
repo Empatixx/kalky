@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.Eco
 import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.filled.Spa
 import androidx.compose.ui.graphics.vector.ImageVector
+import cz.krokviak.kalky.common.utils.caloriesFromMacros
 import cz.krokviak.kalky.theme.MacroColors
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -195,7 +196,7 @@ fun MacrosOnboardingPage(
     var selectedProteinIndex by remember { mutableIntStateOf(protein.coerceIn(0, 500)) }
     var selectedCarbsIndex by remember { mutableIntStateOf(carbs.coerceIn(0, 500)) }
     var selectedFatIndex by remember { mutableIntStateOf(fat.coerceIn(0, 500)) }
-    val calories = protein * 4 + carbs * 4 + fat * 9
+    val calories = caloriesFromMacros(protein, carbs, fat)
 
     val dims = LocalDimensions.current
     Column(

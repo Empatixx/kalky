@@ -148,7 +148,9 @@ data class AnalyticsStrings(
     val avgCarbs: String,
     val avgFat: String,
     val noCaloriesTitle: String,
-    val noCaloriesSubtitle: String
+    val noCaloriesSubtitle: String,
+    val dateStart: String,
+    val dateEnd: String
 )
 
 data class NutrientEditStrings(
@@ -196,7 +198,10 @@ data class CommonStrings(
     val close: String,
     val done: String,
     val continueText: String,
-    val years: String
+    val years: String,
+    val cdBack: String,
+    val cdMore: String,
+    val cdExit: String
 )
 
 val CzechStrings = AppStrings(
@@ -264,7 +269,9 @@ val CzechStrings = AppStrings(
         avgCarbs = "Pr\u016Fm\u011Br sacharid\u016F",
         avgFat = "Pr\u016Fm\u011Br tuk\u016F",
         noCaloriesTitle = "Chyb\u00ED informace o va\u0161\u00EDch kalori\u00EDch",
-        noCaloriesSubtitle = "P\u0159idejte sv\u00E9 kalorie v \u00FAvodu"
+        noCaloriesSubtitle = "P\u0159idejte sv\u00E9 kalorie v \u00FAvodu",
+        dateStart = "Za\u010D\u00E1tek",
+        dateEnd = "Konec"
     ),
     nutrientEdit = NutrientEditStrings(
         title = "\u00DAprava makro\u017Eivin",
@@ -308,7 +315,10 @@ val CzechStrings = AppStrings(
         close = "Zav\u0159\u00EDt",
         done = "Dokon\u010Dit",
         continueText = "Pokra\u010Dovat",
-        years = "let"
+        years = "let",
+        cdBack = "Zp\u011Bt",
+        cdMore = "V\u00EDce",
+        cdExit = "Zav\u0159\u00EDt"
     ),
     customFood = CustomFoodStrings(
         title = "P\u0159idat j\u00EDdlo",
@@ -425,7 +435,9 @@ val EnglishStrings = AppStrings(
         avgCarbs = "Average carbs",
         avgFat = "Average fat",
         noCaloriesTitle = "No calorie data available",
-        noCaloriesSubtitle = "Add your calories on the home screen"
+        noCaloriesSubtitle = "Add your calories on the home screen",
+        dateStart = "Start",
+        dateEnd = "End"
     ),
     nutrientEdit = NutrientEditStrings(
         title = "Edit macronutrients",
@@ -469,7 +481,10 @@ val EnglishStrings = AppStrings(
         close = "Close",
         done = "Done",
         continueText = "Continue",
-        years = "yrs"
+        years = "yrs",
+        cdBack = "Back",
+        cdMore = "More",
+        cdExit = "Exit"
     ),
     customFood = CustomFoodStrings(
         title = "Add food",

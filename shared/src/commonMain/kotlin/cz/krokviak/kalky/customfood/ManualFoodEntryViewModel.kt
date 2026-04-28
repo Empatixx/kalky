@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import cz.krokviak.kalky.barcode.data.OpenFoodFactsProduct
 import cz.krokviak.kalky.common.entities.FoodItemEntity
 import cz.krokviak.kalky.common.repo.FoodRepository
+import cz.krokviak.kalky.common.utils.caloriesFromMacros
 import cz.krokviak.kalky.network.OpenFoodFactsClient
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.mutate
@@ -158,7 +159,7 @@ class ManualFoodEntryViewModel(
 }
 
 private fun caloriesFor(protein: Int, carbs: Int, fat: Int): Int =
-    protein * 4 + carbs * 4 + fat * 9
+    caloriesFromMacros(protein, carbs, fat)
 
 private fun recalcTotals(
     state: ManualFoodEntryState,

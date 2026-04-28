@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cz.krokviak.kalky.common.entities.NutrientSettingEntity
 import cz.krokviak.kalky.common.repo.NutrientSettingRepo
+import cz.krokviak.kalky.common.utils.caloriesFromMacros
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -81,7 +82,6 @@ class NutrientEditViewModel(
         }
     }
 
-    private fun caloriesFromNutrients(protein: Int, carbs: Int, fat: Int): Int {
-        return (protein * 4) + (carbs * 4) + (fat * 9)
-    }
+    private fun caloriesFromNutrients(protein: Int, carbs: Int, fat: Int): Int =
+        caloriesFromMacros(protein, carbs, fat)
 }

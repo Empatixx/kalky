@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import cz.krokviak.kalky.analytics.components.NutrientCalorieCard
 import cz.krokviak.kalky.analytics.components.WeightLineChart
 import cz.krokviak.kalky.analytics.components.WheelDatePickerInline
+import cz.krokviak.kalky.i18n.LocalStrings
 import cz.krokviak.kalky.theme.AppTheme
 import cz.krokviak.kalky.ui.LocalDimensions
 import cz.krokviak.kalky.ui.components.KalkyCard
@@ -44,6 +45,7 @@ fun AnalyticsPage(
     modifier: Modifier = Modifier
 ) {
     val dims = LocalDimensions.current
+    val strings = LocalStrings.current
     var activeDateField by remember { mutableStateOf<DateField?>(null) }
     val startDateLabel = remember(uiState.startDate) { formatDate(uiState.startDate) }
     val endDateLabel = remember(uiState.endDate) { formatDate(uiState.endDate) }
@@ -77,7 +79,7 @@ fun AnalyticsPage(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Začátek",
+                            text = strings.analytics.dateStart,
                             color = AppTheme.colors.onBackground,
                             fontSize = dims.fontBody,
                         )
@@ -117,7 +119,7 @@ fun AnalyticsPage(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Konec",
+                            text = strings.analytics.dateEnd,
                             color = AppTheme.colors.onBackground,
                             fontSize = dims.fontBody,
                         )

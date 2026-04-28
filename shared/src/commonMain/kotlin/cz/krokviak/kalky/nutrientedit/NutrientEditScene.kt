@@ -23,7 +23,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -34,11 +33,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import cz.krokviak.kalky.nutrientedit.components.NutrientEditRow
 import cz.krokviak.kalky.theme.AppTheme
 import cz.krokviak.kalky.nutrientedit.components.VerticalCalorieCard
-import cz.krokviak.kalky.settings.components.IosInlineValuePicker
 import cz.krokviak.kalky.ui.components.KalkyCard
+import cz.krokviak.kalky.ui.components.MacroPickerRow
 import cz.krokviak.kalky.i18n.LocalStrings
 import cz.krokviak.kalky.ui.LocalDimensions
 import cz.krokviak.kalky.ui.components.KalkyGradientBackground
@@ -51,13 +49,10 @@ fun NutrientEditScene(
     nutrientEditViewModel: NutrientEditViewModel,
     uiState: NutrientEditState
 ) {
-    val macroValues = remember { (0..500).map { it.toString() } }
     var activePickerField by remember { mutableStateOf<MacroPickerField?>(null) }
-    var selectedProteinIndex by remember { mutableIntStateOf(resolveMacroIndex(uiState.protein, macroValues.lastIndex)) }
-    var selectedCarbsIndex by remember { mutableIntStateOf(resolveMacroIndex(uiState.carbs, macroValues.lastIndex)) }
-    var selectedFatIndex by remember { mutableIntStateOf(resolveMacroIndex(uiState.fat, macroValues.lastIndex)) }
-
     val dims = LocalDimensions.current
+    val strings = LocalStrings.current
+
     KalkyGradientBackground {
         Column(
             modifier = Modifier
@@ -68,7 +63,7 @@ fun NutrientEditScene(
         ) {
             NutrientEditTopBar(
                 onBackClick = onBackClick,
-                title = LocalStrings.current.nutrientEdit.title
+                title = strings.nutrientEdit.title
             )
             VerticalCalorieCard(
                 currentCalories = uiState.calories,
@@ -78,7 +73,7 @@ fun NutrientEditScene(
 
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
-                    text = LocalStrings.current.nutrientEdit.macronutrients,
+                    text = strings.nutrientEdit.macronutrients,
                     color = AppTheme.colors.onBackgroundSecondary,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
@@ -92,97 +87,59 @@ fun NutrientEditScene(
                     color = AppTheme.colors.surface
                 ) {
                     Column {
-                        NutrientEditRow(
-                            label = LocalStrings.current.common.protein,
+                        MacroPickerRow(
+                            label = strings.common.protein,
                             value = uiState.protein,
-                            valueUnit = "g",
-                            modifier = Modifier.fillMaxWidth(),
-                            onClick = {
-                                if (activePickerField == MacroPickerField.PROTEIN) {
-                                    activePickerField = null
-                                } else {
-                                    selectedProteinIndex = resolveMacroIndex(uiState.protein, macroValues.lastIndex)
-                                    activePickerField = MacroPickerField.PROTEIN
-                                }
-                            },
                             icon = Icons.Default.Restaurant,
-                            activeColor = MacroColors.protein
+                            activeColor = MacroColors.protein,
+                            expanded = activePickerField == MacroPickerField.PROTEIN,
+                            onClick = {
+                                activePickerField = if (activePickerField == MacroPickerField.PROTEIN) {
+                                    null
+                                } else {
+                                    MacroPickerField.PROTEIN
+                                }
+                            },
+                            onValueChange = nutrientEditViewModel::onProteinChange
                         )
-                        if (activePickerField == MacroPickerField.PROTEIN) {
-                            IosInlineValuePicker(
-                                values = macroValues,
-                                selectedIndex = selectedProteinIndex,
-                                onIndexChanged = {
-                                    selectedProteinIndex = it
-                                    nutrientEditViewModel.onProteinChange(macroValues[it].toInt())
-                                },
-                                unitSuffix = "g"
-                            )
-                        }
                         GroupDivider()
-                        NutrientEditRow(
-                            label = LocalStrings.current.common.carbs,
+                        MacroPickerRow(
+                            label = strings.common.carbs,
                             value = uiState.carbs,
-                            valueUnit = "g",
-                            modifier = Modifier.fillMaxWidth(),
-                            onClick = {
-                                if (activePickerField == MacroPickerField.CARBS) {
-                                    activePickerField = null
-                                } else {
-                                    selectedCarbsIndex = resolveMacroIndex(uiState.carbs, macroValues.lastIndex)
-                                    activePickerField = MacroPickerField.CARBS
-                                }
-                            },
                             icon = Icons.Default.Spa,
-                            activeColor = MacroColors.carbs
-                        )
-                        if (activePickerField == MacroPickerField.CARBS) {
-                            IosInlineValuePicker(
-                                values = macroValues,
-                                selectedIndex = selectedCarbsIndex,
-                                onIndexChanged = {
-                                    selectedCarbsIndex = it
-                                    nutrientEditViewModel.onCarbsChange(macroValues[it].toInt())
-                                },
-                                unitSuffix = "g"
-                            )
-                        }
-                        GroupDivider()
-                        NutrientEditRow(
-                            label = LocalStrings.current.common.fat,
-                            value = uiState.fat,
-                            valueUnit = "g",
-                            modifier = Modifier.fillMaxWidth(),
+                            activeColor = MacroColors.carbs,
+                            expanded = activePickerField == MacroPickerField.CARBS,
                             onClick = {
-                                if (activePickerField == MacroPickerField.FAT) {
-                                    activePickerField = null
+                                activePickerField = if (activePickerField == MacroPickerField.CARBS) {
+                                    null
                                 } else {
-                                    selectedFatIndex = resolveMacroIndex(uiState.fat, macroValues.lastIndex)
-                                    activePickerField = MacroPickerField.FAT
+                                    MacroPickerField.CARBS
                                 }
                             },
-                            icon = Icons.Default.Eco,
-                            activeColor = MacroColors.fat
+                            onValueChange = nutrientEditViewModel::onCarbsChange
                         )
-                        if (activePickerField == MacroPickerField.FAT) {
-                            IosInlineValuePicker(
-                                values = macroValues,
-                                selectedIndex = selectedFatIndex,
-                                onIndexChanged = {
-                                    selectedFatIndex = it
-                                    nutrientEditViewModel.onFatChange(macroValues[it].toInt())
-                                },
-                                unitSuffix = "g"
-                            )
-                        }
+                        GroupDivider()
+                        MacroPickerRow(
+                            label = strings.common.fat,
+                            value = uiState.fat,
+                            icon = Icons.Default.Eco,
+                            activeColor = MacroColors.fat,
+                            expanded = activePickerField == MacroPickerField.FAT,
+                            onClick = {
+                                activePickerField = if (activePickerField == MacroPickerField.FAT) {
+                                    null
+                                } else {
+                                    MacroPickerField.FAT
+                                }
+                            },
+                            onValueChange = nutrientEditViewModel::onFatChange
+                        )
                     }
                 }
             }
-        }        
+        }
     }
 }
-
-private fun resolveMacroIndex(value: Int, maxIndex: Int): Int = value.coerceIn(0, maxIndex)
 
 @Composable
 fun NutrientEditTopBar(
@@ -205,7 +162,7 @@ fun NutrientEditTopBar(
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Go Back",
+                contentDescription = LocalStrings.current.common.cdBack,
                 tint = AppTheme.colors.onBackground
             )
             Text(

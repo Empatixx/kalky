@@ -1,5 +1,6 @@
 package cz.krokviak.kalky.camera.data
 
+import cz.krokviak.kalky.common.utils.caloriesFromMacros
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -12,5 +13,5 @@ data class FoodAnalysisDto(
     val carbs: Int = 0,
     val healthScore: Int = 0
 ) {
-    val calories: Int get() = protein * 4 + fat * 9 + carbs * 4
+    val calories: Int get() = caloriesFromMacros(protein, carbs, fat)
 }

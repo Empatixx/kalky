@@ -2,6 +2,7 @@ package cz.krokviak.kalky.common
 
 import cz.krokviak.kalky.common.entities.FoodItemEntity
 import cz.krokviak.kalky.common.repo.FoodRepository
+import cz.krokviak.kalky.common.utils.caloriesFromMacros
 import cz.krokviak.kalky.network.FoodAnalysisClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -67,7 +68,7 @@ class FoodPhotoAnalyzer(
             if (analysis != null) {
                 val updated = insertedItem.copy(
                     name = analysis.title ?: insertedItem.name,
-                    calories = (analysis.protein * 4) + (analysis.carbs * 4) + (analysis.fat * 9),
+                    calories = caloriesFromMacros(analysis.protein, analysis.carbs, analysis.fat),
                     protein = analysis.protein,
                     fat = analysis.fat,
                     carbs = analysis.carbs,

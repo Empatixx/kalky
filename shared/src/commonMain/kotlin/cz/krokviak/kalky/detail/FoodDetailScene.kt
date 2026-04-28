@@ -115,7 +115,7 @@ fun FoodDetailTopIcons(
         ) {
             Icon(
                 imageVector = Icons.Default.ArrowBack,
-                contentDescription = "Exit",
+                contentDescription = strings.common.cdExit,
                 tint = Color.White
             )
         }
@@ -133,7 +133,7 @@ fun FoodDetailTopIcons(
             ) {
                 Icon(
                     imageVector = Icons.Default.MoreVert,
-                    contentDescription = "More",
+                    contentDescription = strings.common.cdMore,
                     tint = Color.White
                 )
             }

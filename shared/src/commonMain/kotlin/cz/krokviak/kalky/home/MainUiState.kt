@@ -4,6 +4,7 @@ import androidx.compose.runtime.Immutable
 import cz.krokviak.kalky.common.entities.FoodItemEntity
 import cz.krokviak.kalky.common.currentLocalDate
 import cz.krokviak.kalky.common.error.UiError
+import cz.krokviak.kalky.common.utils.caloriesFromMacros
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentListOf
@@ -48,5 +49,5 @@ data class DailyStats(
     val carbs: Int,
     val fat: Int
 ) {
-    val totalCalories: Int get() = protein * 4 + carbs * 4 + fat * 9
+    val totalCalories: Int get() = caloriesFromMacros(protein, carbs, fat)
 }
