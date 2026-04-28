@@ -92,10 +92,14 @@ fun HomeScene(
                                 onClick = onEditTargetsClick
                             )
                     ) {
+                        val calorieRatio = uiState.calorieRatio()
+                        val proteinRatio = uiState.proteinRatio()
+                        val carbsRatio = uiState.carbsRatio()
+                        val fatsRatio = uiState.fatsRatio()
                         CalorieCard(
                             currentCalories = uiState.currentCalories,
                             maxCalories = uiState.maxCalories,
-                            calorieRatio = uiState.calorieRatio(),
+                            calorieRatio = calorieRatio,
                         )
 
                         Spacer(modifier = Modifier.height(dims.itemSpacing))
@@ -110,7 +114,7 @@ fun HomeScene(
                                 title = s.common.protein,
                                 icon = Icons.Default.Restaurant,
                                 donutColor = MacroColors.protein,
-                                percentage = uiState.proteinRatio(),
+                                percentage = proteinRatio,
                             )
                             Spacer(modifier = Modifier.width(dims.halfSpacing))
                             MacroNutrientCard(
@@ -119,7 +123,7 @@ fun HomeScene(
                                 title = s.common.carbs,
                                 icon = Icons.Default.Spa,
                                 donutColor = MacroColors.carbs,
-                                percentage = uiState.carbsRatio(),
+                                percentage = carbsRatio,
                             )
                             Spacer(modifier = Modifier.width(dims.halfSpacing))
                             MacroNutrientCard(
@@ -128,7 +132,7 @@ fun HomeScene(
                                 title = s.common.fat,
                                 icon = Icons.Default.Eco,
                                 donutColor = MacroColors.fat,
-                                percentage = uiState.fatsRatio(),
+                                percentage = fatsRatio,
                             )
                         }
                     }
