@@ -64,7 +64,7 @@ import cz.krokviak.kalky.home.components.CaloriesRow
 import cz.krokviak.kalky.home.components.FoodItemImage
 import cz.krokviak.kalky.home.components.NutrientsRow
 import cz.krokviak.kalky.i18n.LocalStrings
-import cz.krokviak.kalky.nutrientedit.components.NutrientEditRow
+import cz.krokviak.kalky.ui.components.MacroPickerRow
 import cz.krokviak.kalky.theme.AppTheme
 import cz.krokviak.kalky.theme.MacroColors
 import cz.krokviak.kalky.ui.LocalDimensions
@@ -635,45 +635,36 @@ private fun PortionPickerSheet(
                 color = AppTheme.colors.surface
             ) {
                 Column(modifier = Modifier.fillMaxWidth()) {
-                    NutrientEditRow(
+                    MacroPickerRow(
                         label = s.common.protein,
                         value = protein,
-                        valueUnit = "g",
                         icon = Icons.Default.Restaurant,
                         activeColor = MacroColors.protein,
+                        expanded = false,
                         onClick = {},
+                        onValueChange = {},
                         enabled = false
                     )
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(1.dp)
-                            .padding(start = 56.dp, end = 14.dp)
-                            .background(AppTheme.colors.border)
-                    )
-                    NutrientEditRow(
+                    PortionGroupDivider()
+                    MacroPickerRow(
                         label = s.common.carbs,
                         value = carbs,
-                        valueUnit = "g",
                         icon = Icons.Default.Spa,
                         activeColor = MacroColors.carbs,
+                        expanded = false,
                         onClick = {},
+                        onValueChange = {},
                         enabled = false
                     )
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(1.dp)
-                            .padding(start = 56.dp, end = 14.dp)
-                            .background(AppTheme.colors.border)
-                    )
-                    NutrientEditRow(
+                    PortionGroupDivider()
+                    MacroPickerRow(
                         label = s.common.fat,
                         value = fat,
-                        valueUnit = "g",
                         icon = Icons.Default.Eco,
                         activeColor = MacroColors.fat,
+                        expanded = false,
                         onClick = {},
+                        onValueChange = {},
                         enabled = false
                     )
                 }
@@ -738,4 +729,15 @@ private fun AddButton() {
             modifier = Modifier.size(20.dp)
         )
     }
+}
+
+@Composable
+private fun PortionGroupDivider() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(1.dp)
+            .padding(start = 56.dp, end = 14.dp)
+            .background(AppTheme.colors.border)
+    )
 }

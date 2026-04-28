@@ -34,7 +34,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -46,8 +45,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cz.krokviak.kalky.i18n.LocalStrings
-import cz.krokviak.kalky.nutrientedit.components.NutrientEditRow
-import cz.krokviak.kalky.settings.components.IosInlineValuePicker
+import cz.krokviak.kalky.ui.components.MacroPickerRow
 import cz.krokviak.kalky.theme.AppTheme
 import cz.krokviak.kalky.ui.LocalDimensions
 import cz.krokviak.kalky.ui.components.KalkyButton
@@ -64,21 +62,7 @@ fun ManualFoodEntryScene(
 ) {
     val state by viewModel.state.collectAsState()
     val s = LocalStrings.current
-    val macroValues = remember { (0..500).map { it.toString() } }
     var activePickerField by remember { mutableStateOf<ManualMacroPickerField?>(null) }
-    var selectedProteinIndex by remember { mutableIntStateOf(0) }
-    var selectedCarbsIndex by remember { mutableIntStateOf(0) }
-    var selectedFatIndex by remember { mutableIntStateOf(0) }
-
-    LaunchedEffect(state.protein) {
-        selectedProteinIndex = state.protein.coerceIn(0, macroValues.lastIndex)
-    }
-    LaunchedEffect(state.carbs) {
-        selectedCarbsIndex = state.carbs.coerceIn(0, macroValues.lastIndex)
-    }
-    LaunchedEffect(state.fat) {
-        selectedFatIndex = state.fat.coerceIn(0, macroValues.lastIndex)
-    }
 
     LaunchedEffect(Unit) {
         viewModel.foodAdded.collect {
@@ -204,94 +188,62 @@ fun ManualFoodEntryScene(
                 color = AppTheme.colors.surface
             ) {
                 Column(modifier = Modifier.fillMaxWidth()) {
-                    NutrientEditRow(
+                    MacroPickerRow(
                         label = s.common.protein,
                         value = state.protein,
-                        valueUnit = "g",
                         icon = Icons.Default.Restaurant,
                         activeColor = MacroColors.protein,
+                        expanded = activePickerField == ManualMacroPickerField.PROTEIN,
                         onClick = {
                             activePickerField =
                                 if (activePickerField == ManualMacroPickerField.PROTEIN) null
                                 else ManualMacroPickerField.PROTEIN
-                        }
+                        },
+                        onValueChange = viewModel::onProteinChange,
+                        pickerItemHeight = 28.dp,
+                        pickerVisibleItemsCount = 3,
+                        pickerTextSize = 17.sp,
+                        pickerHorizontalPadding = 8.dp,
+                        pickerBottomPadding = 2.dp
                     )
-                    if (activePickerField == ManualMacroPickerField.PROTEIN) {
-                        IosInlineValuePicker(
-                            values = macroValues,
-                            selectedIndex = selectedProteinIndex,
-                            onIndexChanged = {
-                                selectedProteinIndex = it
-                                viewModel.onProteinChange(macroValues[it].toInt())
-                            },
-                            unitSuffix = "g",
-                            itemHeight = 28.dp,
-                            visibleItemsCount = 3,
-                            textSize = 17.sp,
-                            horizontalPadding = 8.dp,
-                            bottomPadding = 2.dp
-                        )
-                    }
                     MacroDivider()
-
-                    NutrientEditRow(
+                    MacroPickerRow(
                         label = s.common.carbs,
                         value = state.carbs,
-                        valueUnit = "g",
                         icon = Icons.Default.Spa,
                         activeColor = MacroColors.carbs,
+                        expanded = activePickerField == ManualMacroPickerField.CARBS,
                         onClick = {
                             activePickerField =
                                 if (activePickerField == ManualMacroPickerField.CARBS) null
                                 else ManualMacroPickerField.CARBS
-                        }
+                        },
+                        onValueChange = viewModel::onCarbsChange,
+                        pickerItemHeight = 28.dp,
+                        pickerVisibleItemsCount = 3,
+                        pickerTextSize = 17.sp,
+                        pickerHorizontalPadding = 8.dp,
+                        pickerBottomPadding = 2.dp
                     )
-                    if (activePickerField == ManualMacroPickerField.CARBS) {
-                        IosInlineValuePicker(
-                            values = macroValues,
-                            selectedIndex = selectedCarbsIndex,
-                            onIndexChanged = {
-                                selectedCarbsIndex = it
-                                viewModel.onCarbsChange(macroValues[it].toInt())
-                            },
-                            unitSuffix = "g",
-                            itemHeight = 28.dp,
-                            visibleItemsCount = 3,
-                            textSize = 17.sp,
-                            horizontalPadding = 8.dp,
-                            bottomPadding = 2.dp
-                        )
-                    }
                     MacroDivider()
-
-                    NutrientEditRow(
+                    MacroPickerRow(
                         label = s.common.fat,
                         value = state.fat,
-                        valueUnit = "g",
                         icon = Icons.Default.Eco,
                         activeColor = MacroColors.fat,
+                        expanded = activePickerField == ManualMacroPickerField.FAT,
                         onClick = {
                             activePickerField =
                                 if (activePickerField == ManualMacroPickerField.FAT) null
                                 else ManualMacroPickerField.FAT
-                        }
+                        },
+                        onValueChange = viewModel::onFatChange,
+                        pickerItemHeight = 28.dp,
+                        pickerVisibleItemsCount = 3,
+                        pickerTextSize = 17.sp,
+                        pickerHorizontalPadding = 8.dp,
+                        pickerBottomPadding = 2.dp
                     )
-                    if (activePickerField == ManualMacroPickerField.FAT) {
-                        IosInlineValuePicker(
-                            values = macroValues,
-                            selectedIndex = selectedFatIndex,
-                            onIndexChanged = {
-                                selectedFatIndex = it
-                                viewModel.onFatChange(macroValues[it].toInt())
-                            },
-                            unitSuffix = "g",
-                            itemHeight = 28.dp,
-                            visibleItemsCount = 3,
-                            textSize = 17.sp,
-                            horizontalPadding = 8.dp,
-                            bottomPadding = 2.dp
-                        )
-                    }
                 }
             }
 

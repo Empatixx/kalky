@@ -6,6 +6,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import cz.krokviak.kalky.nutrientedit.components.NutrientEditRow
 import cz.krokviak.kalky.settings.components.IosInlineValuePicker
 
@@ -29,7 +33,12 @@ fun MacroPickerRow(
     valueUnit: String = "g",
     minValue: Int = 0,
     maxValue: Int = 500,
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    pickerItemHeight: Dp = 36.dp,
+    pickerVisibleItemsCount: Int = 5,
+    pickerTextSize: TextUnit = 20.sp,
+    pickerHorizontalPadding: Dp = 12.dp,
+    pickerBottomPadding: Dp = 8.dp
 ) {
     val values = remember(minValue, maxValue) {
         (minValue..maxValue).map { it.toString() }
@@ -51,7 +60,12 @@ fun MacroPickerRow(
             values = values,
             selectedIndex = selectedIndex,
             onIndexChanged = { onValueChange(it + minValue) },
-            unitSuffix = valueUnit
+            unitSuffix = valueUnit,
+            itemHeight = pickerItemHeight,
+            visibleItemsCount = pickerVisibleItemsCount,
+            textSize = pickerTextSize,
+            horizontalPadding = pickerHorizontalPadding,
+            bottomPadding = pickerBottomPadding
         )
     }
 }

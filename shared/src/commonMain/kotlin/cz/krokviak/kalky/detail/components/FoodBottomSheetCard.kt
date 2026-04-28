@@ -26,9 +26,7 @@ import androidx.compose.material.icons.filled.Spa
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -41,12 +39,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import cz.krokviak.kalky.nutrientedit.components.NutrientEditRow
-import cz.krokviak.kalky.settings.components.IosInlineValuePicker
 import cz.krokviak.kalky.theme.AppTheme
 import cz.krokviak.kalky.i18n.LocalStrings
 import cz.krokviak.kalky.ui.LocalDimensions
 import cz.krokviak.kalky.ui.components.KalkyCard
+import cz.krokviak.kalky.ui.components.MacroPickerRow
 
 private enum class DetailMacroPickerField { PROTEIN, CARBS, FAT }
 
@@ -64,22 +61,8 @@ fun BoxScope.FoodBottomSheetCard(
     onCarbsChange: (Int) -> Unit,
     onFatChange: (Int) -> Unit
 ) {
-    val macroValues = remember { (0..500).map { it.toString() } }
     val sheetShape = RoundedCornerShape(topStart = 22.dp, topEnd = 22.dp)
     var activePickerField by remember { mutableStateOf<DetailMacroPickerField?>(null) }
-    var selectedProteinIndex by remember { mutableIntStateOf(resolveMacroIndex(protein, macroValues.lastIndex)) }
-    var selectedCarbsIndex by remember { mutableIntStateOf(resolveMacroIndex(carbs, macroValues.lastIndex)) }
-    var selectedFatIndex by remember { mutableIntStateOf(resolveMacroIndex(fats, macroValues.lastIndex)) }
-
-    LaunchedEffect(protein) {
-        selectedProteinIndex = resolveMacroIndex(protein, macroValues.lastIndex)
-    }
-    LaunchedEffect(carbs) {
-        selectedCarbsIndex = resolveMacroIndex(carbs, macroValues.lastIndex)
-    }
-    LaunchedEffect(fats) {
-        selectedFatIndex = resolveMacroIndex(fats, macroValues.lastIndex)
-    }
 
     KalkyCard(
         modifier = modifier
@@ -112,94 +95,62 @@ fun BoxScope.FoodBottomSheetCard(
                 ) {
                     Column(modifier = Modifier.fillMaxWidth()) {
                         val s = LocalStrings.current
-                        NutrientEditRow(
+                        MacroPickerRow(
                             label = s.common.protein,
                             value = protein,
-                            valueUnit = "g",
                             icon = Icons.Default.Restaurant,
                             activeColor = MacroColors.protein,
+                            expanded = activePickerField == DetailMacroPickerField.PROTEIN,
                             onClick = {
                                 activePickerField =
                                     if (activePickerField == DetailMacroPickerField.PROTEIN) null
                                     else DetailMacroPickerField.PROTEIN
-                            }
+                            },
+                            onValueChange = onProteinChange,
+                            pickerItemHeight = 28.dp,
+                            pickerVisibleItemsCount = 3,
+                            pickerTextSize = 17.sp,
+                            pickerHorizontalPadding = 8.dp,
+                            pickerBottomPadding = 2.dp
                         )
-                        if (activePickerField == DetailMacroPickerField.PROTEIN) {
-                            IosInlineValuePicker(
-                                values = macroValues,
-                                selectedIndex = selectedProteinIndex,
-                                onIndexChanged = {
-                                    selectedProteinIndex = it
-                                    onProteinChange(macroValues[it].toInt())
-                                },
-                                unitSuffix = "g",
-                                itemHeight = 28.dp,
-                                visibleItemsCount = 3,
-                                textSize = 17.sp,
-                                horizontalPadding = 8.dp,
-                                bottomPadding = 2.dp
-                            )
-                        }
                         DetailGroupDivider()
-
-                        NutrientEditRow(
+                        MacroPickerRow(
                             label = s.common.carbs,
                             value = carbs,
-                            valueUnit = "g",
                             icon = Icons.Default.Spa,
                             activeColor = MacroColors.carbs,
+                            expanded = activePickerField == DetailMacroPickerField.CARBS,
                             onClick = {
                                 activePickerField =
                                     if (activePickerField == DetailMacroPickerField.CARBS) null
                                     else DetailMacroPickerField.CARBS
-                            }
+                            },
+                            onValueChange = onCarbsChange,
+                            pickerItemHeight = 28.dp,
+                            pickerVisibleItemsCount = 3,
+                            pickerTextSize = 17.sp,
+                            pickerHorizontalPadding = 8.dp,
+                            pickerBottomPadding = 2.dp
                         )
-                        if (activePickerField == DetailMacroPickerField.CARBS) {
-                            IosInlineValuePicker(
-                                values = macroValues,
-                                selectedIndex = selectedCarbsIndex,
-                                onIndexChanged = {
-                                    selectedCarbsIndex = it
-                                    onCarbsChange(macroValues[it].toInt())
-                                },
-                                unitSuffix = "g",
-                                itemHeight = 28.dp,
-                                visibleItemsCount = 3,
-                                textSize = 17.sp,
-                                horizontalPadding = 8.dp,
-                                bottomPadding = 2.dp
-                            )
-                        }
                         DetailGroupDivider()
-
-                        NutrientEditRow(
+                        MacroPickerRow(
                             label = s.common.fat,
                             value = fats,
-                            valueUnit = "g",
                             icon = Icons.Default.Eco,
                             activeColor = MacroColors.fat,
+                            expanded = activePickerField == DetailMacroPickerField.FAT,
                             onClick = {
                                 activePickerField =
                                     if (activePickerField == DetailMacroPickerField.FAT) null
                                     else DetailMacroPickerField.FAT
-                            }
+                            },
+                            onValueChange = onFatChange,
+                            pickerItemHeight = 28.dp,
+                            pickerVisibleItemsCount = 3,
+                            pickerTextSize = 17.sp,
+                            pickerHorizontalPadding = 8.dp,
+                            pickerBottomPadding = 2.dp
                         )
-                        if (activePickerField == DetailMacroPickerField.FAT) {
-                            IosInlineValuePicker(
-                                values = macroValues,
-                                selectedIndex = selectedFatIndex,
-                                onIndexChanged = {
-                                    selectedFatIndex = it
-                                    onFatChange(macroValues[it].toInt())
-                                },
-                                unitSuffix = "g",
-                                itemHeight = 28.dp,
-                                visibleItemsCount = 3,
-                                textSize = 17.sp,
-                                horizontalPadding = 8.dp,
-                                bottomPadding = 2.dp
-                            )
-                        }
                     }
                 }
             }
@@ -212,8 +163,6 @@ fun BoxScope.FoodBottomSheetCard(
         }
     }
 }
-
-private fun resolveMacroIndex(value: Int, maxIndex: Int): Int = value.coerceIn(0, maxIndex)
 
 @Composable
 private fun SheetHandle() {
