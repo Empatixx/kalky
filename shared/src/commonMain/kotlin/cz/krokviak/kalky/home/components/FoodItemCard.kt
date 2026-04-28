@@ -86,26 +86,22 @@ fun FoodItemLoadedCard(
     onClick: () -> Unit,
     onLongClick: (() -> Unit)? = null
 ) {
-    KalkyCard(
-        modifier = Modifier
+    val cornerShape = RoundedCornerShape(LocalDimensions.current.cardCornerRadius)
+    val cardModifier = if (isSelected) {
+        Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(LocalDimensions.current.cardCornerRadius))
-            .then(
-                if (isSelected) {
-                    Modifier.border(
-                        width = 2.dp,
-                        color = AppTheme.colors.onBackground,
-                        shape = RoundedCornerShape(LocalDimensions.current.cardCornerRadius)
-                    )
-                } else {
-                    Modifier
-                }
-            )
-            .combinedClickable(
-                onClick = onClick,
-                onLongClick = onLongClick
-            ),
-        shape = RoundedCornerShape(LocalDimensions.current.cardCornerRadius),
+            .clip(cornerShape)
+            .border(width = 2.dp, color = AppTheme.colors.onBackground, shape = cornerShape)
+            .combinedClickable(onClick = onClick, onLongClick = onLongClick)
+    } else {
+        Modifier
+            .fillMaxWidth()
+            .clip(cornerShape)
+            .combinedClickable(onClick = onClick, onLongClick = onLongClick)
+    }
+    KalkyCard(
+        modifier = cardModifier,
+        shape = cornerShape,
         contentPadding = PaddingValues(0.dp),
         color = AppTheme.colors.surfaceSecondary
     ) {

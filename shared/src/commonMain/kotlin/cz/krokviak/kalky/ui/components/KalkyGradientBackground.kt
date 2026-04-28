@@ -12,6 +12,18 @@ import androidx.compose.ui.graphics.Color
 import cz.krokviak.kalky.theme.AppTheme
 import cz.krokviak.kalky.theme.KalkyAccents
 
+// Pulled to top-level so Brush.radialGradient doesn't allocate a new color list per draw.
+// Brushes themselves still depend on size and must be created in DrawScope.
+private val LeftGradientColors = listOf(
+    KalkyAccents.brandSky.copy(alpha = 0.09f),
+    Color.Transparent,
+)
+private val RightGradientColors = listOf(
+    KalkyAccents.brandViolet.copy(alpha = 0.20f),
+    KalkyAccents.brandPink.copy(alpha = 0.15f),
+    Color.Transparent,
+)
+
 @Composable
 fun KalkyGradientBackground(
     modifier: Modifier = Modifier,
@@ -29,23 +41,16 @@ fun KalkyGradientBackground(
             val rightTopRadius = size.minDimension * 0.64f
             drawRect(
                 brush = Brush.radialGradient(
-                    colors = listOf(
-                        KalkyAccents.brandSky.copy(alpha = 0.09f),
-                        Color.Transparent
-                    ),
+                    colors = LeftGradientColors,
                     center = leftTopCenter,
-                    radius = leftTopRadius
+                    radius = leftTopRadius,
                 )
             )
             drawRect(
                 brush = Brush.radialGradient(
-                    colors = listOf(
-                        KalkyAccents.brandViolet.copy(alpha = 0.20f),
-                        KalkyAccents.brandPink.copy(alpha = 0.15f),
-                        Color.Transparent
-                    ),
+                    colors = RightGradientColors,
                     center = rightTopCenter,
-                    radius = rightTopRadius
+                    radius = rightTopRadius,
                 )
             )
         }
