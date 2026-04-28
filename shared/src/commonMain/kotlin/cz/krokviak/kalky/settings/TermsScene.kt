@@ -1,6 +1,7 @@
 package cz.krokviak.kalky.settings
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -27,7 +28,7 @@ import cz.krokviak.kalky.ui.LocalDimensions
 import cz.krokviak.kalky.ui.components.KalkyGradientBackground
 
 @Composable
-fun PrivacyPolicyPage(
+fun TermsScene(
     onBackClick: () -> Unit
 ) {
     val s = LocalStrings.current
@@ -53,7 +54,7 @@ fun PrivacyPolicyPage(
                         .clickable { onBackClick() }
                 )
                 Text(
-                    text = s.legal.privacyTitle,
+                    text = s.legal.termsTitle,
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.ExtraBold,
                     color = AppTheme.colors.onBackground,
@@ -63,33 +64,34 @@ fun PrivacyPolicyPage(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            LegalSectionHeader("1. Správce údajů")
+            LegalSectionHeader("1. Úvodní ustanovení")
             LegalBody(
-                "Správcem osobních údajů zpracovávaných prostřednictvím aplikace Kalky je její provozovatel."
+                "Tyto obchodní podmínky upravují práva a povinnosti uživatelů mobilní aplikace Kalky " +
+                "(dále jen \u201EAplikace\u201C). Používáním Aplikace souhlasíte s těmito podmínkami."
             )
 
-            LegalSectionHeader("2. Jaké údaje shromažďujeme")
+            LegalSectionHeader("2. Popis služby")
             LegalBody(
-                "Aplikace shromažďuje údaje, které zadáte: výška, váha, věk, pohlaví, úroveň aktivity " +
-                "a záznamy o stravování. Tyto údaje jsou ukládány výhradně lokálně na vašem zařízení."
+                "Aplikace Kalky slouží k sledování příjmu potravin a nutričních hodnot. " +
+                "Aplikace umožňuje zaznamenávat jídla pomocí fotografií, čárových kódů nebo ručního zadání."
             )
 
-            LegalSectionHeader("3. Účel zpracování")
+            LegalSectionHeader("3. Uživatelský účet")
             LegalBody(
-                "Vaše údaje jsou zpracovávány za účelem výpočtu doporučeného denního příjmu kalorií " +
-                "a makroživin a zobrazování statistik o vašem stravování."
+                "Pro používání Aplikace není vyžadována registrace. Veškerá data jsou ukládána lokálně " +
+                "na zařízení uživatele."
             )
 
-            LegalSectionHeader("4. Sdílení údajů")
+            LegalSectionHeader("4. Omezení odpovědnosti")
             LegalBody(
-                "Vaše osobní údaje nejsou sdíleny s třetími stranami. Fotografie jídel mohou být odeslány " +
-                "na server pro analýzu nutričních hodnot, ale nejsou trvale ukládány."
+                "Nutriční hodnoty zobrazené v Aplikaci mají informativní charakter a nenahrazují odborné " +
+                "poradenství. Provozovatel nenese odpovědnost za přesnost údajů získaných z externích databází."
             )
 
-            LegalSectionHeader("5. Vaše práva")
+            LegalSectionHeader("5. Změny podmínek")
             LegalBody(
-                "Máte právo na přístup k svým údajům, jejich opravu nebo vymazání. Veškerá data můžete " +
-                "smazat odinstalováním aplikace."
+                "Provozovatel si vyhrazuje právo tyto podmínky kdykoli změnit. O změnách bude uživatel " +
+                "informován prostřednictvím aktualizace Aplikace."
             )
 
             Spacer(modifier = Modifier.height(32.dp))

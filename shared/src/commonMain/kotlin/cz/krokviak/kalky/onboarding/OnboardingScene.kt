@@ -52,7 +52,7 @@ import cz.krokviak.kalky.i18n.LocalStrings
 import cz.krokviak.kalky.ui.components.KalkyGradientBackground
 
 @Composable
-fun OnboardingPage(
+fun OnboardingScene(
     onboardingViewModel: OnboardingViewModel,
     onFinish: (OnboardingResult) -> Unit,
     appPreferences: AppPreferences = koinInject()

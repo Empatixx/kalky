@@ -18,7 +18,7 @@ import androidx.navigation.NavController
 import cz.krokviak.kalky.analytics.AnalyticsPage
 import cz.krokviak.kalky.analytics.AnalyticsViewModel
 import cz.krokviak.kalky.auth.AuthViewModelInterface
-import cz.krokviak.kalky.auth.LoginPage
+import cz.krokviak.kalky.auth.LoginScene
 import cz.krokviak.kalky.common.AppPreferences
 import cz.krokviak.kalky.common.CustomFoodRoute
 import cz.krokviak.kalky.common.DefaultRoute
@@ -39,11 +39,11 @@ import cz.krokviak.kalky.home.MainViewModel
 import cz.krokviak.kalky.home.components.BottomNavBar
 import cz.krokviak.kalky.nutrientedit.NutrientEditScene
 import cz.krokviak.kalky.nutrientedit.NutrientEditViewModel
-import cz.krokviak.kalky.onboarding.OnboardingPage
+import cz.krokviak.kalky.onboarding.OnboardingScene
 import cz.krokviak.kalky.onboarding.OnboardingResult
 import cz.krokviak.kalky.onboarding.OnboardingViewModel
-import cz.krokviak.kalky.settings.ProfilePage
-import cz.krokviak.kalky.settings.SettingsPage
+import cz.krokviak.kalky.settings.ProfileScene
+import cz.krokviak.kalky.settings.SettingsScene
 import cz.krokviak.kalky.settings.SettingsViewModel
 import cz.krokviak.kalky.ui.components.KalkyGradientBackground
 import kotlinx.coroutines.launch
@@ -53,7 +53,7 @@ internal fun OnboardingDestination(
     onboardingViewModel: OnboardingViewModel,
     onFinish: (OnboardingResult) -> Unit,
 ) {
-    OnboardingPage(
+    OnboardingScene(
         onboardingViewModel = onboardingViewModel,
         onFinish = onFinish
     )
@@ -67,7 +67,7 @@ internal fun LoginDestination(
     onSignInSuccess: () -> Unit,
 ) {
     val uiState by authViewModel.uiState.collectAsState()
-    LoginPage(
+    LoginScene(
         onSignInWithGoogle = onSignInWithGoogle,
         onSignInWithApple = onSignInWithApple,
         onSignInSuccess = onSignInSuccess,
@@ -220,7 +220,7 @@ internal fun MainScaffold(
                     1 -> AnalyticsPageDestination(analyticsViewModel = analyticsViewModel)
                     2 -> {
                         val settingsUiState by settingsViewModel.uiState.collectAsState()
-                        ProfilePage(
+                        ProfileScene(
                             uiState = settingsUiState,
                             viewModel = settingsViewModel,
                             modifier = Modifier.fillMaxSize()
@@ -289,7 +289,7 @@ private fun AccountPage(
     navController: NavController,
 ) {
     val authUser by authViewModel.authUser.collectAsState()
-    SettingsPage(
+    SettingsScene(
         modifier = Modifier.fillMaxSize(),
         authUser = authUser,
         onTermsClick = { navController.navigate(TermsRoute) },

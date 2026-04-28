@@ -50,7 +50,7 @@ import cz.krokviak.kalky.ui.components.KalkySegmentedControl
 private enum class ProfilePickerField { WEIGHT, HEIGHT, AGE }
 
 @Composable
-fun ProfilePage(
+fun ProfileScene(
     uiState: SettingsUiState,
     viewModel: SettingsViewModel,
     modifier: Modifier = Modifier,

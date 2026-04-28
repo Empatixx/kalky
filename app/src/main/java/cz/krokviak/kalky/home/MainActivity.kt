@@ -101,7 +101,7 @@ class MainActivity : ComponentActivity() {
             }
 
             override fun requestNotificationPermission() {
-                // Handled by SettingsPage via rememberLauncherForActivityResult on Android
+                // Handled by SettingsScene via rememberLauncherForActivityResult on Android
             }
 
             override fun shareImage(imagePath: String) {

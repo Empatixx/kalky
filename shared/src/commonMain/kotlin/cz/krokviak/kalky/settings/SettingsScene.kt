@@ -50,7 +50,7 @@ import cz.krokviak.kalky.ui.LocalDimensions
 import cz.krokviak.kalky.ui.components.KalkySegmentedControl
 
 @Composable
-fun SettingsPage(
+fun SettingsScene(
     modifier: Modifier = Modifier,
     authUser: AuthUser? = null,
     onTermsClick: () -> Unit = {},

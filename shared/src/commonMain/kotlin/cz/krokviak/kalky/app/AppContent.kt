@@ -28,9 +28,9 @@ import cz.krokviak.kalky.di.koinInject
 import cz.krokviak.kalky.home.MainViewModel
 import cz.krokviak.kalky.nutrientedit.NutrientEditViewModel
 import cz.krokviak.kalky.onboarding.OnboardingViewModel
-import cz.krokviak.kalky.settings.PrivacyPolicyPage
+import cz.krokviak.kalky.settings.PrivacyPolicyScene
 import cz.krokviak.kalky.settings.SettingsViewModel
-import cz.krokviak.kalky.settings.TermsPage
+import cz.krokviak.kalky.settings.TermsScene
 import cz.krokviak.kalky.ui.components.ResponsiveProvider
 
 @Composable
@@ -167,11 +167,11 @@ fun AppContent(
             }
 
             composable<TermsRoute> {
-                TermsPage(onBackClick = { navController.popBackStack() })
+                TermsScene(onBackClick = { navController.popBackStack() })
             }
 
             composable<PrivacyPolicyRoute> {
-                PrivacyPolicyPage(onBackClick = { navController.popBackStack() })
+                PrivacyPolicyScene(onBackClick = { navController.popBackStack() })
             }
         }
     }

@@ -25,7 +25,7 @@ import cz.krokviak.kalky.ui.components.KalkyButton
 import cz.krokviak.kalky.ui.components.KalkyGradientBackground
 
 @Composable
-fun LoginPage(
+fun LoginScene(
     onSignInWithGoogle: () -> Unit,
     onSignInWithApple: () -> Unit = {},
     onSignInSuccess: () -> Unit,
