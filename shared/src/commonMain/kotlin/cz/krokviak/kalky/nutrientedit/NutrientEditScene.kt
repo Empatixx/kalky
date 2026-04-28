@@ -75,8 +75,8 @@ fun NutrientEditScene(
                 KalkyCard(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .border(1.dp, AppTheme.colors.border, RoundedCornerShape(16.dp)),
-                    shape = RoundedCornerShape(16.dp),
+                        .border(1.dp, AppTheme.colors.border, RoundedCornerShape(LocalDimensions.current.cardCornerRadius)),
+                    shape = RoundedCornerShape(LocalDimensions.current.cardCornerRadius),
                     color = AppTheme.colors.surface
                 ) {
                     Column {

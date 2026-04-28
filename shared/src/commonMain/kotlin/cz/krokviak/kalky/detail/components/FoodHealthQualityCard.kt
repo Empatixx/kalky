@@ -26,6 +26,7 @@ import cz.krokviak.kalky.theme.MacroColors
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import cz.krokviak.kalky.theme.AppTheme
+import cz.krokviak.kalky.ui.LocalDimensions
 import cz.krokviak.kalky.ui.components.KalkyCard
 
 
@@ -35,10 +36,10 @@ fun FoodHealthQualityCard(
     maxScore: Int = 10
 ){
     KalkyCard(
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(LocalDimensions.current.cardCornerRadius),
         contentPadding = PaddingValues(0.dp),
         modifier = Modifier
-            .border(width = 1.dp, color = AppTheme.colors.border, shape = RoundedCornerShape(16.dp)).fillMaxWidth(),
+            .border(width = 1.dp, color = AppTheme.colors.border, shape = RoundedCornerShape(LocalDimensions.current.cardCornerRadius)).fillMaxWidth(),
     ) {
         Row(
             modifier = Modifier.padding(12.dp),

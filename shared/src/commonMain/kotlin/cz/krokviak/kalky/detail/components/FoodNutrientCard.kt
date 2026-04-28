@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import cz.krokviak.kalky.ui.LocalDimensions
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.*
@@ -23,10 +24,10 @@ fun PhotoNutrientCard(
     modifier: Modifier = Modifier
 ) {
     KalkyCard(
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(LocalDimensions.current.cardCornerRadius),
         contentPadding = PaddingValues(0.dp),
         modifier = modifier
-            .border(width = 1.dp, color = AppTheme.colors.border, shape = RoundedCornerShape(16.dp)).fillMaxWidth(),
+            .border(width = 1.dp, color = AppTheme.colors.border, shape = RoundedCornerShape(LocalDimensions.current.cardCornerRadius)).fillMaxWidth(),
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -34,7 +35,7 @@ fun PhotoNutrientCard(
         ) {
             Box(
                 modifier = Modifier
-                    .background(AppTheme.colors.surfaceSecondary, RoundedCornerShape(16.dp))
+                    .background(AppTheme.colors.surfaceSecondary, RoundedCornerShape(LocalDimensions.current.cardCornerRadius))
                     .padding(8.dp)
             ) {
                 Icon(

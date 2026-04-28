@@ -89,13 +89,13 @@ fun FoodItemLoadedCard(
     KalkyCard(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(LocalDimensions.current.cardCornerRadius))
             .then(
                 if (isSelected) {
                     Modifier.border(
                         width = 2.dp,
                         color = AppTheme.colors.onBackground,
-                        shape = RoundedCornerShape(16.dp)
+                        shape = RoundedCornerShape(LocalDimensions.current.cardCornerRadius)
                     )
                 } else {
                     Modifier
@@ -105,7 +105,7 @@ fun FoodItemLoadedCard(
                 onClick = onClick,
                 onLongClick = onLongClick
             ),
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(LocalDimensions.current.cardCornerRadius),
         contentPadding = PaddingValues(0.dp),
         color = AppTheme.colors.surfaceSecondary
     ) {
@@ -316,7 +316,7 @@ fun FoodItemLoadingCard(foodItem: FoodItemEntity) {
     )
     KalkyCard(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(LocalDimensions.current.cardCornerRadius),
         contentPadding = PaddingValues(0.dp),
         color = AppTheme.colors.surfaceSecondary
     ) {

@@ -40,10 +40,10 @@ fun RowScope.MacroNutrientCard(
             .border(
                 width = 1.dp,
                 color = AppTheme.colors.border,
-                shape = RoundedCornerShape(16.dp)
+                shape = RoundedCornerShape(LocalDimensions.current.cardCornerRadius)
             )
             .weight(1f),
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(LocalDimensions.current.cardCornerRadius),
         contentPadding = PaddingValues(0.dp),
     ) {
         Column(

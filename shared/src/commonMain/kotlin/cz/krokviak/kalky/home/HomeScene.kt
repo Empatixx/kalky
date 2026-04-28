@@ -175,7 +175,7 @@ fun HomeScene(
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
                     .padding(dims.screenPadding),
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(LocalDimensions.current.cardCornerRadius),
                 color = AppTheme.colors.surface
             ) {
                 Row(
@@ -225,7 +225,7 @@ fun HomeScene(
 private fun EmptyRecentlyAddedList() {
     val s = LocalStrings.current
     KalkyCard(
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(LocalDimensions.current.cardCornerRadius),
         modifier = Modifier.fillMaxWidth(),
         contentPadding = PaddingValues(0.dp),
     ) {

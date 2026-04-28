@@ -196,9 +196,9 @@ fun CustomFoodScene(
                                 KalkyCard(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .clip(RoundedCornerShape(16.dp))
+                                        .clip(RoundedCornerShape(LocalDimensions.current.cardCornerRadius))
                                         .clickable(onClick = onAddNewClick),
-                                    shape = RoundedCornerShape(16.dp),
+                                    shape = RoundedCornerShape(LocalDimensions.current.cardCornerRadius),
                                     color = AppTheme.colors.surfaceSecondary
                                 ) {
                                     Row(
@@ -333,20 +333,20 @@ private fun HistoryFoodItem(
     KalkyCard(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(LocalDimensions.current.cardCornerRadius))
             .then(
                 if (isSelected) {
                     Modifier.border(
                         width = 2.dp,
                         color = AppTheme.colors.onBackground,
-                        shape = RoundedCornerShape(16.dp)
+                        shape = RoundedCornerShape(LocalDimensions.current.cardCornerRadius)
                     )
                 } else {
                     Modifier
                 }
             )
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(LocalDimensions.current.cardCornerRadius),
         contentPadding = PaddingValues(0.dp),
         color = AppTheme.colors.surfaceSecondary
     ) {
@@ -418,9 +418,9 @@ private fun ApiResultItem(
     KalkyCard(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(LocalDimensions.current.cardCornerRadius))
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(LocalDimensions.current.cardCornerRadius),
         contentPadding = PaddingValues(0.dp),
         color = AppTheme.colors.surfaceSecondary
     ) {

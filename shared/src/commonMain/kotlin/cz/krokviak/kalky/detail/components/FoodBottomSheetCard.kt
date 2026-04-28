@@ -86,7 +86,7 @@ fun BoxScope.FoodBottomSheetCard(
 
                 KalkyCard(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(LocalDimensions.current.cardCornerRadius),
                     color = AppTheme.colors.surface
                 ) {
                     Column(modifier = Modifier.fillMaxWidth()) {
