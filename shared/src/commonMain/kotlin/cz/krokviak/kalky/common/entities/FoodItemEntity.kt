@@ -5,7 +5,7 @@ import kotlinx.datetime.Instant
 
 data class FoodItemEntity(
     val id: Long = 0,
-    val name: String = "Neznámé jídlo",
+    val name: String = "",
     val calories: Int = 0,
     val protein: Int = 0,
     val fat: Int = 0,

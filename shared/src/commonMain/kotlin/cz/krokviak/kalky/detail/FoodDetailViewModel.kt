@@ -95,7 +95,7 @@ class FoodDetailViewModel(
                     if (analysis != null) {
                         _uiState.update {
                             it.copy(
-                                name = analysis.title ?: "Neznámé jídlo",
+                                name = analysis.title ?: "",
                                 calories = (analysis.protein * 4) + (analysis.carbs * 4) + (analysis.fat * 9),
                                 protein = analysis.protein,
                                 fat = analysis.fat,

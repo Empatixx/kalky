@@ -93,7 +93,9 @@ data class HomeStrings(
     val streakDays: String,
     val selected: String,
     val deleteSelected: String,
-    val saveAsCustom: String
+    val saveAsCustom: String,
+    val unknownFood: String,
+    val computingMacros: String
 )
 
 data class SettingsStrings(
@@ -212,7 +214,9 @@ val CzechStrings = AppStrings(
         streakDays = "%d dn\u00ED v \u0159ad\u011B",
         selected = "Vybr\u00E1no",
         deleteSelected = "Smazat",
-        saveAsCustom = "Ulo\u017Eit jako j\u00EDdlo"
+        saveAsCustom = "Ulo\u017Eit jako j\u00EDdlo",
+        unknownFood = "Nezn\u00E1m\u00E9 j\u00EDdlo",
+        computingMacros = "Po\u010D\u00EDt\u00E1m makro\u017Eiviny..."
     ),
     settings = SettingsStrings(
         title = "Nastaven\u00ED",
@@ -371,7 +375,9 @@ val EnglishStrings = AppStrings(
         streakDays = "%d day streak",
         selected = "Selected",
         deleteSelected = "Delete",
-        saveAsCustom = "Save as food"
+        saveAsCustom = "Save as food",
+        unknownFood = "Unknown food",
+        computingMacros = "Calculating macros..."
     ),
     settings = SettingsStrings(
         title = "Settings",

@@ -53,6 +53,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import cz.krokviak.kalky.common.entities.FoodItemEntity
+import cz.krokviak.kalky.i18n.LocalStrings
 import cz.krokviak.kalky.theme.AppTheme
 import cz.krokviak.kalky.ui.LocalDimensions
 import cz.krokviak.kalky.ui.components.KalkyCard
@@ -212,7 +213,7 @@ fun RowScope.FoodItemInfo(foodItem: FoodItemEntity) {
             .align(Alignment.CenterVertically)
     ) {
         Text(
-            text = foodItem.name ?: "Neznámé jídlo",
+            text = foodItem.name.ifBlank { LocalStrings.current.home.unknownFood },
             fontSize = dims.fontBody,
             fontWeight = FontWeight.ExtraBold,
             color = AppTheme.colors.onBackground
@@ -378,7 +379,7 @@ fun RowScope.FoodItemLoadingInfo(skeletonAlpha: Float) {
             .align(Alignment.CenterVertically)
     ) {
         Text(
-            text = "Počítám makroživiny...",
+            text = LocalStrings.current.home.computingMacros,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             color = AppTheme.colors.onBackground
