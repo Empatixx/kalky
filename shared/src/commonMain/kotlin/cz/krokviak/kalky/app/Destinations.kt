@@ -151,6 +151,7 @@ internal fun CustomFoodDestination(
         onPortionChanged = searchViewModel::setPortionGrams,
         onConfirmApiProduct = searchViewModel::confirmAddApiProduct,
         onDismissPortionPicker = searchViewModel::dismissPortionPicker,
+        onDismissError = searchViewModel::dismissError,
     )
 }
 
@@ -268,6 +269,7 @@ private fun HomePage(
             navController.navigate(ManualFoodEntryRoute)
         },
         onDeleteSelection = mainViewModel::deleteSelectedFoods,
+        onDismissError = mainViewModel::dismissError,
     )
 }
 

@@ -43,6 +43,7 @@ import cz.krokviak.kalky.home.components.CalorieCard
 import cz.krokviak.kalky.home.components.FoodItemCard
 import cz.krokviak.kalky.home.components.MacroNutrientCard
 import cz.krokviak.kalky.home.components.WeekDatePicker
+import cz.krokviak.kalky.common.error.ErrorSnackbarHost
 import cz.krokviak.kalky.theme.AppTheme
 import cz.krokviak.kalky.i18n.LocalStrings
 import cz.krokviak.kalky.ui.LocalDimensions
@@ -62,6 +63,7 @@ fun HomeScene(
     onSelectionClear: () -> Unit,
     onSaveSelectionAsCustom: () -> Unit,
     onDeleteSelection: () -> Unit,
+    onDismissError: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val dims = LocalDimensions.current
@@ -215,6 +217,7 @@ fun HomeScene(
                 }
             }
         }
+        ErrorSnackbarHost(error = uiState.error, onDismiss = onDismissError)
     }
 }
 

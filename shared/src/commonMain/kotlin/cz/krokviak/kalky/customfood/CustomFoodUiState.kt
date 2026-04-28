@@ -3,6 +3,7 @@ package cz.krokviak.kalky.customfood
 import androidx.compose.runtime.Immutable
 import cz.krokviak.kalky.barcode.data.OpenFoodFactsProduct
 import cz.krokviak.kalky.common.entities.FoodItemEntity
+import cz.krokviak.kalky.common.error.UiError
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.PersistentSet
@@ -19,7 +20,8 @@ data class CustomFoodUiState(
     val isLoading: Boolean = false,
     val selectedItems: PersistentSet<Long> = persistentSetOf(),
     val selectedApiProduct: OpenFoodFactsProduct? = null,
-    val portionGrams: Int = 100
+    val portionGrams: Int = 100,
+    val error: UiError? = null
 )
 
 @Immutable

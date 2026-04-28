@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cz.krokviak.kalky.barcode.data.OpenFoodFactsProduct
 import cz.krokviak.kalky.common.entities.FoodItemEntity
+import cz.krokviak.kalky.common.error.UiError
 import cz.krokviak.kalky.common.repo.FoodRepository
 import cz.krokviak.kalky.network.OpenFoodFactsClient
 import kotlinx.collections.immutable.persistentListOf
@@ -73,15 +74,15 @@ class CustomFoodSearchViewModel(
             } else {
                 val customDeferred = async { foodRepository.searchCustomFoods(query) }
                 val localDeferred = async { foodRepository.searchDistinctFoodsByName(query) }
-                val apiDeferred = async {
-                    runCatching { openFoodFactsClient.searchProducts(query) }.getOrDefault(emptyList())
-                }
+                val apiDeferred = async { runCatching { openFoodFactsClient.searchProducts(query) } }
+                val apiResult = apiDeferred.await()
                 _uiState.update {
                     it.copy(
                         customFoods = customDeferred.await().toPersistentList(),
                         historyItems = localDeferred.await().toPersistentList(),
-                        apiResults = apiDeferred.await().toPersistentList(),
+                        apiResults = apiResult.getOrDefault(emptyList()).toPersistentList(),
                         isLoading = false,
+                        error = if (apiResult.isFailure) UiError.ProductSearch else it.error,
                     )
                 }
             }
@@ -176,5 +177,9 @@ class CustomFoodSearchViewModel(
 
     fun clearSelection() {
         _uiState.update { it.copy(selectedItems = persistentSetOf()) }
+    }
+
+    fun dismissError() {
+        _uiState.update { it.copy(error = null) }
     }
 }

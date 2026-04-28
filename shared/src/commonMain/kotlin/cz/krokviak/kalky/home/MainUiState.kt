@@ -3,6 +3,7 @@ package cz.krokviak.kalky.home
 import androidx.compose.runtime.Immutable
 import cz.krokviak.kalky.common.entities.FoodItemEntity
 import cz.krokviak.kalky.common.currentLocalDate
+import cz.krokviak.kalky.common.error.UiError
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentListOf
@@ -25,7 +26,8 @@ data class MainUiState(
     val loadingItems: PersistentSet<Long> = persistentSetOf(),
     val currentDate: LocalDate = currentLocalDate(),
     val currentStreak: Int = 0,
-    val selectedFoodIds: PersistentSet<Long> = persistentSetOf()
+    val selectedFoodIds: PersistentSet<Long> = persistentSetOf(),
+    val error: UiError? = null
 ) {
     val isSelectionMode: Boolean get() = selectedFoodIds.isNotEmpty()
     val isToday: Boolean get() = currentDate == currentLocalDate()

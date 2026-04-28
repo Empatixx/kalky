@@ -6,6 +6,8 @@ import cz.krokviak.kalky.common.FoodPhotoAnalyzer
 import cz.krokviak.kalky.common.domain.GetDailyMacrosUseCase
 import cz.krokviak.kalky.common.domain.GetStreakUseCase
 import cz.krokviak.kalky.common.entities.FoodItemEntity
+import cz.krokviak.kalky.common.error.UiError
+import cz.krokviak.kalky.common.error.toUiError
 import cz.krokviak.kalky.common.repo.FoodRepository
 import cz.krokviak.kalky.common.repo.NutrientSettingRepo
 import cz.krokviak.kalky.db.DatabaseSeeder
@@ -89,8 +91,15 @@ class MainViewModel(
                     )
                 }
                 recalculateMacrosFromState()
+            },
+            onAnalysisFailed = {
+                _uiState.update { it.copy(error = UiError.PhotoAnalysis) }
             }
         )
+    }
+
+    fun dismissError() {
+        _uiState.update { it.copy(error = null) }
     }
 
     fun addFoodItemFromBarcode(
@@ -140,16 +149,21 @@ class MainViewModel(
 
     fun loadFoodItemsForDate(date: LocalDate) {
         viewModelScope.launch {
-            val macros = getDailyMacros(date)
-            _uiState.update { current ->
-                current.copy(
-                    recentlyAddedItems = macros.items,
-                    currentCalories = macros.totalCalories,
-                    currentProtein = macros.totalProtein,
-                    currentCarbs = macros.totalCarbs,
-                    currentFats = macros.totalFat,
-                )
-            }
+            runCatching { getDailyMacros(date) }
+                .onSuccess { macros ->
+                    _uiState.update { current ->
+                        current.copy(
+                            recentlyAddedItems = macros.items,
+                            currentCalories = macros.totalCalories,
+                            currentProtein = macros.totalProtein,
+                            currentCarbs = macros.totalCarbs,
+                            currentFats = macros.totalFat,
+                        )
+                    }
+                }
+                .onFailure { e ->
+                    _uiState.update { it.copy(error = e.toUiError()) }
+                }
         }
     }
 

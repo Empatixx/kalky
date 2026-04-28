@@ -59,6 +59,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cz.krokviak.kalky.barcode.data.OpenFoodFactsProduct
 import cz.krokviak.kalky.common.entities.FoodItemEntity
+import cz.krokviak.kalky.common.error.ErrorSnackbarHost
 import cz.krokviak.kalky.home.components.CaloriesRow
 import cz.krokviak.kalky.home.components.FoodItemImage
 import cz.krokviak.kalky.home.components.NutrientsRow
@@ -91,6 +92,7 @@ fun CustomFoodScene(
     onPortionChanged: (Int) -> Unit,
     onConfirmApiProduct: () -> Unit,
     onDismissPortionPicker: () -> Unit,
+    onDismissError: () -> Unit,
 ) {
     val s = LocalStrings.current
     var selectedTab by remember { mutableStateOf(0) } // 0=All, 1=My Foods, 2=Recently Used
@@ -319,6 +321,7 @@ fun CustomFoodScene(
                 )
             }
         }
+        ErrorSnackbarHost(error = uiState.error, onDismiss = onDismissError)
     }
 
     uiState.selectedApiProduct?.let { product ->

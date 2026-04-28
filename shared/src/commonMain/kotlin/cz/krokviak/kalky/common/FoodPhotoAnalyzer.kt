@@ -42,6 +42,7 @@ class FoodPhotoAnalyzer(
         onPlaceholderInserted: (FoodItemEntity) -> Unit,
         onAnalysisComplete: (FoodItemEntity) -> Unit,
         onFinalCommitted: (FoodItemEntity) -> Unit,
+        onAnalysisFailed: () -> Unit = {},
     ): Job = scope.launch {
         val imagePath = imageStorage.storeImageFile(imageBytes)
 
@@ -59,9 +60,10 @@ class FoodPhotoAnalyzer(
 
         val animationJob = launch { delay(LOADING_ANIMATION_DURATION_MS) }
         val analysisJob = launch {
-            val analysis = withContext(Dispatchers.IO) {
-                runCatching { foodAnalysisClient.getAnalysis(imageBytes) }.getOrNull()
+            val result = withContext(Dispatchers.IO) {
+                runCatching { foodAnalysisClient.getAnalysis(imageBytes) }
             }
+            val analysis = result.getOrNull()
             if (analysis != null) {
                 val updated = insertedItem.copy(
                     name = analysis.title ?: insertedItem.name,
@@ -75,6 +77,8 @@ class FoodPhotoAnalyzer(
                 )
                 foodRepository.updateFoodItem(updated)
                 onAnalysisComplete(updated)
+            } else {
+                onAnalysisFailed()
             }
         }
 
