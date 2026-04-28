@@ -7,6 +7,7 @@ import cz.krokviak.kalky.common.entities.FoodItemEntity
 import cz.krokviak.kalky.common.repo.FoodRepository
 import cz.krokviak.kalky.common.utils.caloriesFromMacros
 import cz.krokviak.kalky.network.FoodAnalysisClient
+import cz.krokviak.kalky.nutrientedit.MacroField
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,6 +42,12 @@ class FoodDetailViewModel(
                 createdAt = food?.createdAt ?: clock.now(),
                 updatedAt = food?.updatedAt ?: clock.now()
             )
+        }
+    }
+
+    fun toggleField(field: MacroField) {
+        _uiState.update {
+            it.copy(activeField = if (it.activeField == field) null else field)
         }
     }
 

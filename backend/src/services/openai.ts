@@ -31,25 +31,28 @@ const SYSTEM_PROMPT = `You are a food nutrition analyst. Analyze the food in the
 Return ONLY the JSON object, no markdown, no code blocks, no explanation.`;
 
 export async function analyzeImage(imageBase64: string): Promise<FoodAnalysis> {
-  const response = await getClient().chat.completions.create({
-    model: "gpt-5-mini",
-    messages: [
-      { role: "system", content: SYSTEM_PROMPT },
-      {
-        role: "user",
-        content: [
-          {
-            type: "image_url",
-            image_url: {
-              url: `data:image/jpeg;base64,${imageBase64}`,
-              detail: "low",
+  const response = await getClient().chat.completions.create(
+    {
+      model: "gpt-5-mini",
+      messages: [
+        { role: "system", content: SYSTEM_PROMPT },
+        {
+          role: "user",
+          content: [
+            {
+              type: "image_url",
+              image_url: {
+                url: `data:image/jpeg;base64,${imageBase64}`,
+                detail: "low",
+              },
             },
-          },
-        ],
-      },
-    ],
-    max_tokens: 300,
-  });
+          ],
+        },
+      ],
+      max_tokens: 300,
+    },
+    { signal: AbortSignal.timeout(30_000) }
+  );
 
   const text = response.choices[0]?.message?.content?.trim();
   if (!text) {

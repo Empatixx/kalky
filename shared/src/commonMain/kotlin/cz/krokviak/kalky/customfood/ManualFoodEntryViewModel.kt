@@ -7,6 +7,7 @@ import cz.krokviak.kalky.common.entities.FoodItemEntity
 import cz.krokviak.kalky.common.repo.FoodRepository
 import cz.krokviak.kalky.common.utils.caloriesFromMacros
 import cz.krokviak.kalky.network.OpenFoodFactsClient
+import cz.krokviak.kalky.nutrientedit.MacroField
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.mutate
 import kotlinx.collections.immutable.persistentListOf
@@ -46,6 +47,12 @@ class ManualFoodEntryViewModel(
 
     fun onNameChange(name: String) {
         _state.update { it.copy(name = name) }
+    }
+
+    fun toggleField(field: MacroField) {
+        _state.update {
+            it.copy(activeField = if (it.activeField == field) null else field)
+        }
     }
 
     fun onProteinChange(value: Int) {

@@ -15,6 +15,15 @@ export async function handleAnalyze(req: Request): Promise<Response> {
   }
 
   const base64 = Buffer.from(imageBytes).toString("base64");
-  const analysis = await analyzeImage(base64);
-  return Response.json(analysis);
+  try {
+    const analysis = await analyzeImage(base64);
+    return Response.json(analysis);
+  } catch (err) {
+    const isTimeout = err instanceof Error && err.name === "TimeoutError";
+    if (isTimeout) {
+      return Response.json({ error: "Analysis timed out" }, { status: 504 });
+    }
+    console.error("analyzeImage failed:", err);
+    return Response.json({ error: "Analysis failed" }, { status: 502 });
+  }
 }

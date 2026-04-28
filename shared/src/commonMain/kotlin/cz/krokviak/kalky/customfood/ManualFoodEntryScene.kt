@@ -34,9 +34,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -45,13 +42,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cz.krokviak.kalky.i18n.LocalStrings
+import cz.krokviak.kalky.nutrientedit.MacroField
 import cz.krokviak.kalky.ui.components.MacroPickerRow
 import cz.krokviak.kalky.theme.AppTheme
 import cz.krokviak.kalky.ui.LocalDimensions
 import cz.krokviak.kalky.ui.components.KalkyButton
 import cz.krokviak.kalky.ui.components.KalkyCard
-
-private enum class ManualMacroPickerField { PROTEIN, CARBS, FAT }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,7 +58,6 @@ fun ManualFoodEntryScene(
 ) {
     val state by viewModel.state.collectAsState()
     val s = LocalStrings.current
-    var activePickerField by remember { mutableStateOf<ManualMacroPickerField?>(null) }
 
     LaunchedEffect(Unit) {
         viewModel.foodAdded.collect {
@@ -193,12 +188,8 @@ fun ManualFoodEntryScene(
                         value = state.protein,
                         icon = Icons.Default.Restaurant,
                         activeColor = MacroColors.protein,
-                        expanded = activePickerField == ManualMacroPickerField.PROTEIN,
-                        onClick = {
-                            activePickerField =
-                                if (activePickerField == ManualMacroPickerField.PROTEIN) null
-                                else ManualMacroPickerField.PROTEIN
-                        },
+                        expanded = state.activeField == MacroField.PROTEIN,
+                        onClick = { viewModel.toggleField(MacroField.PROTEIN) },
                         onValueChange = viewModel::onProteinChange,
                         pickerItemHeight = 28.dp,
                         pickerVisibleItemsCount = 3,
@@ -212,12 +203,8 @@ fun ManualFoodEntryScene(
                         value = state.carbs,
                         icon = Icons.Default.Spa,
                         activeColor = MacroColors.carbs,
-                        expanded = activePickerField == ManualMacroPickerField.CARBS,
-                        onClick = {
-                            activePickerField =
-                                if (activePickerField == ManualMacroPickerField.CARBS) null
-                                else ManualMacroPickerField.CARBS
-                        },
+                        expanded = state.activeField == MacroField.CARBS,
+                        onClick = { viewModel.toggleField(MacroField.CARBS) },
                         onValueChange = viewModel::onCarbsChange,
                         pickerItemHeight = 28.dp,
                         pickerVisibleItemsCount = 3,
@@ -231,12 +218,8 @@ fun ManualFoodEntryScene(
                         value = state.fat,
                         icon = Icons.Default.Eco,
                         activeColor = MacroColors.fat,
-                        expanded = activePickerField == ManualMacroPickerField.FAT,
-                        onClick = {
-                            activePickerField =
-                                if (activePickerField == ManualMacroPickerField.FAT) null
-                                else ManualMacroPickerField.FAT
-                        },
+                        expanded = state.activeField == MacroField.FAT,
+                        onClick = { viewModel.toggleField(MacroField.FAT) },
                         onValueChange = viewModel::onFatChange,
                         pickerItemHeight = 28.dp,
                         pickerVisibleItemsCount = 3,

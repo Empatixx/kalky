@@ -73,9 +73,11 @@ fun FoodDetailScene(
             protein = uiState.protein,
             fats = uiState.fat,
             carbs = uiState.carbs,
+            activeField = uiState.activeField,
             onProteinChange = foodDetailViewModel::onProteinChange,
             onCarbsChange = foodDetailViewModel::onCarbsChange,
             onFatChange = foodDetailViewModel::onFatChange,
+            onToggleField = foodDetailViewModel::toggleField,
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight(0.5f)

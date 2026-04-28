@@ -2,6 +2,7 @@ package cz.krokviak.kalky.customfood
 
 import androidx.compose.runtime.Immutable
 import cz.krokviak.kalky.barcode.data.OpenFoodFactsProduct
+import cz.krokviak.kalky.nutrientedit.MacroField
 import cz.krokviak.kalky.common.entities.FoodItemEntity
 import cz.krokviak.kalky.common.error.UiError
 import kotlinx.collections.immutable.PersistentList
@@ -32,5 +33,6 @@ data class ManualFoodEntryState(
     val carbs: Int = 0,
     val fat: Int = 0,
     val sourceFoods: PersistentList<FoodItemEntity> = persistentListOf(),
-    val sourcePortionGrams: PersistentMap<Long, Int> = persistentMapOf()
+    val sourcePortionGrams: PersistentMap<Long, Int> = persistentMapOf(),
+    val activeField: MacroField? = null,
 )

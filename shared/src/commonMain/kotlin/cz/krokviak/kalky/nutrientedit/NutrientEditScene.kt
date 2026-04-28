@@ -22,10 +22,6 @@ import androidx.compose.material.icons.filled.Spa
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import cz.krokviak.kalky.theme.MacroColors
@@ -41,15 +37,12 @@ import cz.krokviak.kalky.i18n.LocalStrings
 import cz.krokviak.kalky.ui.LocalDimensions
 import cz.krokviak.kalky.ui.components.KalkyGradientBackground
 
-private enum class MacroPickerField { PROTEIN, CARBS, FAT }
-
 @Composable
 fun NutrientEditScene(
     onBackClick: () -> Unit,
     nutrientEditViewModel: NutrientEditViewModel,
     uiState: NutrientEditState
 ) {
-    var activePickerField by remember { mutableStateOf<MacroPickerField?>(null) }
     val dims = LocalDimensions.current
     val strings = LocalStrings.current
 
@@ -92,14 +85,8 @@ fun NutrientEditScene(
                             value = uiState.protein,
                             icon = Icons.Default.Restaurant,
                             activeColor = MacroColors.protein,
-                            expanded = activePickerField == MacroPickerField.PROTEIN,
-                            onClick = {
-                                activePickerField = if (activePickerField == MacroPickerField.PROTEIN) {
-                                    null
-                                } else {
-                                    MacroPickerField.PROTEIN
-                                }
-                            },
+                            expanded = uiState.activeField == MacroField.PROTEIN,
+                            onClick = { nutrientEditViewModel.toggleField(MacroField.PROTEIN) },
                             onValueChange = nutrientEditViewModel::onProteinChange
                         )
                         GroupDivider()
@@ -108,14 +95,8 @@ fun NutrientEditScene(
                             value = uiState.carbs,
                             icon = Icons.Default.Spa,
                             activeColor = MacroColors.carbs,
-                            expanded = activePickerField == MacroPickerField.CARBS,
-                            onClick = {
-                                activePickerField = if (activePickerField == MacroPickerField.CARBS) {
-                                    null
-                                } else {
-                                    MacroPickerField.CARBS
-                                }
-                            },
+                            expanded = uiState.activeField == MacroField.CARBS,
+                            onClick = { nutrientEditViewModel.toggleField(MacroField.CARBS) },
                             onValueChange = nutrientEditViewModel::onCarbsChange
                         )
                         GroupDivider()
@@ -124,14 +105,8 @@ fun NutrientEditScene(
                             value = uiState.fat,
                             icon = Icons.Default.Eco,
                             activeColor = MacroColors.fat,
-                            expanded = activePickerField == MacroPickerField.FAT,
-                            onClick = {
-                                activePickerField = if (activePickerField == MacroPickerField.FAT) {
-                                    null
-                                } else {
-                                    MacroPickerField.FAT
-                                }
-                            },
+                            expanded = uiState.activeField == MacroField.FAT,
+                            onClick = { nutrientEditViewModel.toggleField(MacroField.FAT) },
                             onValueChange = nutrientEditViewModel::onFatChange
                         )
                     }

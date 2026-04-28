@@ -1,6 +1,7 @@
 package cz.krokviak.kalky.detail
 
 import androidx.compose.runtime.Immutable
+import cz.krokviak.kalky.nutrientedit.MacroField
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 
@@ -17,4 +18,5 @@ data class FoodDetailState(
     val createdAt: Instant = Clock.System.now(),
     val updatedAt: Instant = Clock.System.now(),
     val localImagePath: String? = null,
+    val activeField: MacroField? = null,
 )

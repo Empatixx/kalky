@@ -36,6 +36,12 @@ class NutrientEditViewModel(
         }
     }
 
+    fun toggleField(field: MacroField) {
+        _uiState.update {
+            it.copy(activeField = if (it.activeField == field) null else field)
+        }
+    }
+
     fun onProteinChange(newValue: Int) {
         _uiState.update {
             it.copy(

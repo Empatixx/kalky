@@ -26,10 +26,6 @@ import androidx.compose.material.icons.filled.Spa
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,13 +35,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import cz.krokviak.kalky.nutrientedit.MacroField
 import cz.krokviak.kalky.theme.AppTheme
 import cz.krokviak.kalky.i18n.LocalStrings
 import cz.krokviak.kalky.ui.LocalDimensions
 import cz.krokviak.kalky.ui.components.KalkyCard
 import cz.krokviak.kalky.ui.components.MacroPickerRow
-
-private enum class DetailMacroPickerField { PROTEIN, CARBS, FAT }
 
 @Composable
 fun BoxScope.FoodBottomSheetCard(
@@ -54,15 +49,16 @@ fun BoxScope.FoodBottomSheetCard(
     protein: Int,
     fats: Int,
     carbs: Int,
+    activeField: MacroField?,
     modifier: Modifier = Modifier,
     onFixResult: () -> Unit,
     onFinish: () -> Unit,
     onProteinChange: (Int) -> Unit,
     onCarbsChange: (Int) -> Unit,
-    onFatChange: (Int) -> Unit
+    onFatChange: (Int) -> Unit,
+    onToggleField: (MacroField) -> Unit,
 ) {
     val sheetShape = RoundedCornerShape(topStart = 22.dp, topEnd = 22.dp)
-    var activePickerField by remember { mutableStateOf<DetailMacroPickerField?>(null) }
 
     KalkyCard(
         modifier = modifier
@@ -100,12 +96,8 @@ fun BoxScope.FoodBottomSheetCard(
                             value = protein,
                             icon = Icons.Default.Restaurant,
                             activeColor = MacroColors.protein,
-                            expanded = activePickerField == DetailMacroPickerField.PROTEIN,
-                            onClick = {
-                                activePickerField =
-                                    if (activePickerField == DetailMacroPickerField.PROTEIN) null
-                                    else DetailMacroPickerField.PROTEIN
-                            },
+                            expanded = activeField == MacroField.PROTEIN,
+                            onClick = { onToggleField(MacroField.PROTEIN) },
                             onValueChange = onProteinChange,
                             pickerItemHeight = 28.dp,
                             pickerVisibleItemsCount = 3,
@@ -119,12 +111,8 @@ fun BoxScope.FoodBottomSheetCard(
                             value = carbs,
                             icon = Icons.Default.Spa,
                             activeColor = MacroColors.carbs,
-                            expanded = activePickerField == DetailMacroPickerField.CARBS,
-                            onClick = {
-                                activePickerField =
-                                    if (activePickerField == DetailMacroPickerField.CARBS) null
-                                    else DetailMacroPickerField.CARBS
-                            },
+                            expanded = activeField == MacroField.CARBS,
+                            onClick = { onToggleField(MacroField.CARBS) },
                             onValueChange = onCarbsChange,
                             pickerItemHeight = 28.dp,
                             pickerVisibleItemsCount = 3,
@@ -138,12 +126,8 @@ fun BoxScope.FoodBottomSheetCard(
                             value = fats,
                             icon = Icons.Default.Eco,
                             activeColor = MacroColors.fat,
-                            expanded = activePickerField == DetailMacroPickerField.FAT,
-                            onClick = {
-                                activePickerField =
-                                    if (activePickerField == DetailMacroPickerField.FAT) null
-                                    else DetailMacroPickerField.FAT
-                            },
+                            expanded = activeField == MacroField.FAT,
+                            onClick = { onToggleField(MacroField.FAT) },
                             onValueChange = onFatChange,
                             pickerItemHeight = 28.dp,
                             pickerVisibleItemsCount = 3,
