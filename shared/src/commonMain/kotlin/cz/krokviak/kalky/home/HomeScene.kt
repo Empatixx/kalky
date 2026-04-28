@@ -48,6 +48,7 @@ import cz.krokviak.kalky.theme.AppTheme
 import cz.krokviak.kalky.i18n.LocalStrings
 import cz.krokviak.kalky.ui.LocalDimensions
 import cz.krokviak.kalky.ui.components.KalkyCard
+import cz.krokviak.kalky.ui.components.states.EmptyState
 import kotlinx.datetime.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -224,28 +225,8 @@ fun HomeScene(
 @Composable
 private fun EmptyRecentlyAddedList() {
     val s = LocalStrings.current
-    KalkyCard(
-        shape = RoundedCornerShape(LocalDimensions.current.cardCornerRadius),
-        modifier = Modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(0.dp),
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            Text(
-                text = s.home.emptyTitle,
-                style = MaterialTheme.typography.titleMedium,
-                color = AppTheme.colors.onBackground
-            )
-            Text(
-                text = s.home.emptySubtitle,
-                style = MaterialTheme.typography.bodyMedium,
-                color = AppTheme.colors.onBackgroundSecondary
-            )
-        }
-    }
+    EmptyState(
+        title = s.home.emptyTitle,
+        subtitle = s.home.emptySubtitle,
+    )
 }

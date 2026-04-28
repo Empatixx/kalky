@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,6 +22,7 @@ import cz.krokviak.kalky.theme.AppTheme
 import cz.krokviak.kalky.ui.LocalDimensions
 import cz.krokviak.kalky.ui.components.KalkyButton
 import cz.krokviak.kalky.ui.components.KalkyGradientBackground
+import cz.krokviak.kalky.ui.components.states.LoadingState
 
 @Composable
 fun LoginScene(
@@ -86,10 +86,7 @@ fun LoginScene(
                 }
 
                 if (isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(48.dp),
-                        color = AppTheme.colors.onBackground
-                    )
+                    LoadingState()
                     Spacer(modifier = Modifier.height(24.dp))
                 }
 
