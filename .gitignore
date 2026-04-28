@@ -21,3 +21,12 @@ build/
 
 # Backend
 backend/node_modules/
+
+# Claude Code workspace artifacts
+.claude/
+.idea/.name
+EMAIL.md
+
+# Python scraper artifacts
+scraper/**/__pycache__/
+*.pyc
