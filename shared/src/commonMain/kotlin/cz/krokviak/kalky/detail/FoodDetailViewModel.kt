@@ -103,29 +103,29 @@ class FoodDetailViewModel(
     fun fixResult() {
         viewModelScope.launch {
             val bytes = _uiState.value.localImagePath?.let { imageStorage.getImageBytes(it) }
-            if (bytes == null) {
-                _uiState.update { it.copy(error = UiError.PhotoAnalysis) }
-                return@launch
-            }
-            val analysisJob = viewModelScope.launch(Dispatchers.IO) {
-                val analysis = foodAnalysisClient.getAnalysis(bytes)
-                if (analysis != null) {
-                    _uiState.update {
-                        it.copy(
-                            name = analysis.title ?: "",
-                            calories = caloriesFromMacros(analysis.protein, analysis.carbs, analysis.fat),
-                            protein = analysis.protein,
-                            fat = analysis.fat,
-                            carbs = analysis.carbs,
-                            healthScore = analysis.healthScore,
-                        )
-                    }
-                } else {
-                    _uiState.update { it.copy(error = UiError.PhotoAnalysis) }
-                }
-            }
+                ?: return@launch markPhotoAnalysisError()
+            val analysisJob = viewModelScope.launch(Dispatchers.IO) { runAnalysis(bytes) }
             joinAll(analysisJob)
         }
+    }
+
+    private suspend fun runAnalysis(bytes: ByteArray) {
+        val analysis = foodAnalysisClient.getAnalysis(bytes)
+            ?: return markPhotoAnalysisError()
+        _uiState.update {
+            it.copy(
+                name = analysis.title ?: "",
+                calories = caloriesFromMacros(analysis.protein, analysis.carbs, analysis.fat),
+                protein = analysis.protein,
+                fat = analysis.fat,
+                carbs = analysis.carbs,
+                healthScore = analysis.healthScore,
+            )
+        }
+    }
+
+    private fun markPhotoAnalysisError() {
+        _uiState.update { it.copy(error = UiError.PhotoAnalysis) }
     }
 
     fun dismissError() {

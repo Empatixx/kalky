@@ -26,38 +26,31 @@ class MealReminderChecker(
             .toString()
 
         val foodItems = foodRepository.getFoodItemsForDate(today)
-
-        // Inactivity check: if food logged within last 90 minutes, skip
-        val now = Clock.System.now()
-        val ninetyMinutesAgo = now.minus(kotlin.time.Duration.parse("90m"))
-        val recentlyLogged = foodItems.any { it.createdAt >= ninetyMinutesAgo }
-        if (recentlyLogged) return ReminderResult.NoReminder
+        if (loggedRecently(foodItems)) return ReminderResult.NoReminder
 
         val totalCalories = foodRepository.getTotalCaloriesForDate(today)
+        if (noFoodAlert(totalCalories, currentHour)) return ReminderResult.RemindNoFood
+
         val settings = nutrientSettingRepo.getLatestNutrientSettings()
+        val targetCalories = settings?.targetCalories?.takeIf { it > 0 }
+            ?: return ReminderResult.NoReminder
 
-        // No targets set: only remind if 0 calories after 10:00
-        if (settings == null || settings.targetCalories <= 0) {
-            return if (totalCalories == 0 && currentHour >= 10) {
-                ReminderResult.RemindNoFood
-            } else {
-                ReminderResult.NoReminder
-            }
-        }
+        return progressReminder(totalCalories, targetCalories, currentHour)
+    }
 
-        // Special: 0 calories after 10:00 always remind
-        if (totalCalories == 0 && currentHour >= 10) {
-            return ReminderResult.RemindNoFood
-        }
+    private fun loggedRecently(foodItems: List<cz.krokviak.kalky.common.entities.FoodItemEntity>): Boolean {
+        val ninetyMinutesAgo = Clock.System.now().minus(kotlin.time.Duration.parse("90m"))
+        return foodItems.any { it.createdAt >= ninetyMinutesAgo }
+    }
 
-        // Progress check
+    private fun noFoodAlert(totalCalories: Int, currentHour: Int): Boolean =
+        totalCalories == 0 && currentHour >= 10
+
+    private fun progressReminder(totalCalories: Int, targetCalories: Int, currentHour: Int): ReminderResult {
         val expectedFraction = (currentHour - 7) / 14.0
-        val actualFraction = totalCalories.toDouble() / settings.targetCalories
-        if (actualFraction < expectedFraction * 0.6) {
-            val percentComplete = (actualFraction * 100).toInt()
-            return ReminderResult.RemindBehindOnMacros(percentComplete)
-        }
-
-        return ReminderResult.NoReminder
+        val actualFraction = totalCalories.toDouble() / targetCalories
+        if (actualFraction >= expectedFraction * 0.6) return ReminderResult.NoReminder
+        val percentComplete = (actualFraction * 100).toInt()
+        return ReminderResult.RemindBehindOnMacros(percentComplete)
     }
 }

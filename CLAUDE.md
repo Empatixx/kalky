@@ -59,6 +59,19 @@ Czech-language food/nutrition tracking app built with Kotlin Multiplatform (KMP)
 - Start destination determined by: `AppPreferences.onboardingCompleted` → `AuthStateProvider.isAuthenticated` → DefaultRoute
 - MainScaffold uses HorizontalPager with 4 pages (Home, Analytics, Profile, Settings)
 
+## Cognitive Complexity (business logic only)
+
+- **Max 1 level of nesting** inside any non-Composable function. **Composables are exempt** — Compose layout DSL (`Column { Row { Box { ... } } }`) is structural, not control flow.
+- The rule applies to: ViewModels, use cases (`common/domain/`), repositories (`common/repo/`), utilities (`common/utils/`, `common/`), domain helpers (`StreakCalculator`, `FoodPhotoAnalyzer`, `PhotoCaptureController`, etc.), and network layer.
+- "Nesting" means stacking **branching** control flow: `if`/`else`/`when` inside `if`/`when`, `for`/`while` inside a conditional, `try` inside a conditional, a `runCatching { }` lambda that itself contains `if`/`when`. **Scope openers do not count as a nesting level** — `viewModelScope.launch { }`, `coroutineScope { }`, `_uiState.update { }`, `withContext { }`, `?.let { }` are wrappers, not branches. A single `if/when/for` directly inside a `launch { }` is level 1, fine. Two stacked branching structures (e.g., `if` inside `if`, or `when` inside `for`) is level 2, forbidden.
+- Refactoring patterns:
+  - **Early return / guard clauses** (`x ?: return`, `if (!ok) return`) instead of `if (ok) { ... } else { ... }` with branches inside.
+  - **Extract method** when a branch contains another branch — pull it into a private helper.
+  - **`when` chain** instead of stacked `if/else if/else`.
+  - **Map/lookup** instead of conditional ladders matching discrete values.
+  - **Flatten lambdas**: prefer `flow.collect { handleX(it) }` over `flow.collect { if (...) ... else ... }`.
+- Applies to all new or refactored code in `shared/src/commonMain/` outside the `*Scene.kt`, `*Page.kt`, and `ui/components/` Compose layers.
+
 ## Key Conventions
 - UI language: Czech (i18n system in `shared/.../i18n/Strings.kt` with `CzechStrings`/`EnglishStrings`, `LocalStrings.current`)
 - **UI style**: iOS-inspired design. Use custom Kalky components — `KalkyButton`, `KalkyCard`, `KalkySegmentedControl`, `KalkyGradientBackground` (all in `shared/.../ui/components/`). Colors via `AppTheme.colors`. Macro colors via `MacroColors` (`shared/.../theme/MacroColors.kt`). Responsive sizing via `LocalDimensions.current`. Prefer iOS UX patterns (smooth transitions, bottom sheets, minimal chrome) over Material defaults.

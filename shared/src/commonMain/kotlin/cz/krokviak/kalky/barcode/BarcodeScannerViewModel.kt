@@ -32,18 +32,20 @@ class BarcodeScannerViewModel(
         _state.value = BarcodeScanState.Loading
 
         viewModelScope.launch {
-            try {
-                val product = openFoodFactsClient.getProduct(barcode)
-                if (product != null && product.productName != null) {
-                    _state.value = BarcodeScanState.ProductFound(product, barcode)
-                } else {
-                    _state.value = BarcodeScanState.NotFound
-                }
-            } catch (e: Exception) {
-                _state.value = BarcodeScanState.Error(e.message ?: "Neznámá chyba")
-            }
+            _state.value = lookupProduct(barcode)
         }
     }
+
+    private suspend fun lookupProduct(barcode: String): BarcodeScanState = runCatching {
+        openFoodFactsClient.getProduct(barcode)
+    }.fold(
+        onSuccess = { product -> productState(product, barcode) },
+        onFailure = { BarcodeScanState.Error(it.message ?: "Neznámá chyba") },
+    )
+
+    private fun productState(product: OpenFoodFactsProduct?, barcode: String): BarcodeScanState =
+        if (product?.productName != null) BarcodeScanState.ProductFound(product, barcode)
+        else BarcodeScanState.NotFound
 
     fun resetScan() {
         lastScannedBarcode = null

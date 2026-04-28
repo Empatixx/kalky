@@ -14,6 +14,7 @@ import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -63,31 +64,36 @@ class CustomFoodSearchViewModel(
         searchJob = viewModelScope.launch {
             delay(300)
             _uiState.update { it.copy(isLoading = true) }
-            if (query.isBlank()) {
-                val library = getFoodLibrary()
-                _uiState.update {
-                    it.copy(
-                        customFoods = library.custom.toPersistentList(),
-                        historyItems = library.history.toPersistentList(),
-                        apiResults = persistentListOf(),
-                        isLoading = false,
-                    )
-                }
-            } else {
-                val localDeferred = async { searchFoods(query) }
-                val apiDeferred = async { runCatching { openFoodFactsClient.searchProducts(query) } }
-                val localResult = localDeferred.await()
-                val apiResult = apiDeferred.await()
-                _uiState.update {
-                    it.copy(
-                        customFoods = localResult.custom.toPersistentList(),
-                        historyItems = localResult.history.toPersistentList(),
-                        apiResults = apiResult.getOrDefault(emptyList()).toPersistentList(),
-                        isLoading = false,
-                        error = if (apiResult.isFailure) UiError.ProductSearch else it.error,
-                    )
-                }
-            }
+            if (query.isBlank()) reloadLibrary() else runRemoteSearch(query)
+        }
+    }
+
+    private suspend fun reloadLibrary() {
+        val library = getFoodLibrary()
+        _uiState.update {
+            it.copy(
+                customFoods = library.custom.toPersistentList(),
+                historyItems = library.history.toPersistentList(),
+                apiResults = persistentListOf(),
+                isLoading = false,
+            )
+        }
+    }
+
+    private suspend fun runRemoteSearch(query: String) = coroutineScope {
+        val localDeferred = async { searchFoods(query) }
+        val apiDeferred = async { runCatching { openFoodFactsClient.searchProducts(query) } }
+        val localResult = localDeferred.await()
+        val apiResult = apiDeferred.await()
+        val apiError = if (apiResult.isFailure) UiError.ProductSearch else null
+        _uiState.update {
+            it.copy(
+                customFoods = localResult.custom.toPersistentList(),
+                historyItems = localResult.history.toPersistentList(),
+                apiResults = apiResult.getOrDefault(emptyList()).toPersistentList(),
+                isLoading = false,
+                error = apiError ?: it.error,
+            )
         }
     }
 
