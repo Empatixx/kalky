@@ -29,13 +29,14 @@ import cz.krokviak.kalky.theme.MacroColors
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import cz.krokviak.kalky.nutrientedit.components.NutrientEditRow
+import cz.krokviak.kalky.nutrientedit.MacroField
 import cz.krokviak.kalky.nutrientedit.components.VerticalCalorieCard
 import cz.krokviak.kalky.onboarding.GoalChoice
 import cz.krokviak.kalky.common.AppLanguage
 import cz.krokviak.kalky.common.UnitSystem
 import cz.krokviak.kalky.settings.components.IosInlineValuePicker
 import cz.krokviak.kalky.theme.AppTheme
+import cz.krokviak.kalky.ui.components.MacroPickerRow
 import cz.krokviak.kalky.theme.ThemeManager
 import cz.krokviak.kalky.theme.ThemeMode
 import cz.krokviak.kalky.i18n.LocalStrings
@@ -179,8 +180,6 @@ fun GoalOnboardingPage(
     )
 }
 
-private enum class MacroField { PROTEIN, CARBS, FAT }
-
 @Composable
 fun MacrosOnboardingPage(
     protein: Int,
@@ -191,11 +190,7 @@ fun MacrosOnboardingPage(
     onFatChanged: (Int) -> Unit
 ) {
     val s = LocalStrings.current
-    val macroValues = remember { (0..500).map { it.toString() } }
     var expandedField by remember { mutableStateOf<MacroField?>(null) }
-    var selectedProteinIndex by remember { mutableIntStateOf(protein.coerceIn(0, 500)) }
-    var selectedCarbsIndex by remember { mutableIntStateOf(carbs.coerceIn(0, 500)) }
-    var selectedFatIndex by remember { mutableIntStateOf(fat.coerceIn(0, 500)) }
     val calories = caloriesFromMacros(protein, carbs, fat)
 
     val dims = LocalDimensions.current
@@ -227,89 +222,41 @@ fun MacrosOnboardingPage(
             color = AppTheme.colors.surface
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
-                NutrientEditRow(
+                MacroPickerRow(
                     label = s.common.protein,
                     value = protein,
-                    valueUnit = "g",
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = {
-                        if (expandedField == MacroField.PROTEIN) {
-                            expandedField = null
-                        } else {
-                            selectedProteinIndex = protein.coerceIn(0, macroValues.lastIndex)
-                            expandedField = MacroField.PROTEIN
-                        }
-                    },
                     icon = Icons.Default.Restaurant,
-                    activeColor = MacroColors.protein
+                    activeColor = MacroColors.protein,
+                    expanded = expandedField == MacroField.PROTEIN,
+                    onClick = {
+                        expandedField = if (expandedField == MacroField.PROTEIN) null else MacroField.PROTEIN
+                    },
+                    onValueChange = onProteinChanged
                 )
-                if (expandedField == MacroField.PROTEIN) {
-                    IosInlineValuePicker(
-                        values = macroValues,
-                        selectedIndex = selectedProteinIndex,
-                        onIndexChanged = {
-                            selectedProteinIndex = it
-                            onProteinChanged(macroValues[it].toInt())
-                        },
-                        unitSuffix = "g"
-                    )
-                }
                 OnboardingGroupDivider()
-                NutrientEditRow(
+                MacroPickerRow(
                     label = s.common.carbs,
                     value = carbs,
-                    valueUnit = "g",
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = {
-                        if (expandedField == MacroField.CARBS) {
-                            expandedField = null
-                        } else {
-                            selectedCarbsIndex = carbs.coerceIn(0, macroValues.lastIndex)
-                            expandedField = MacroField.CARBS
-                        }
-                    },
                     icon = Icons.Default.Spa,
-                    activeColor = MacroColors.carbs
+                    activeColor = MacroColors.carbs,
+                    expanded = expandedField == MacroField.CARBS,
+                    onClick = {
+                        expandedField = if (expandedField == MacroField.CARBS) null else MacroField.CARBS
+                    },
+                    onValueChange = onCarbsChanged
                 )
-                if (expandedField == MacroField.CARBS) {
-                    IosInlineValuePicker(
-                        values = macroValues,
-                        selectedIndex = selectedCarbsIndex,
-                        onIndexChanged = {
-                            selectedCarbsIndex = it
-                            onCarbsChanged(macroValues[it].toInt())
-                        },
-                        unitSuffix = "g"
-                    )
-                }
                 OnboardingGroupDivider()
-                NutrientEditRow(
+                MacroPickerRow(
                     label = s.common.fat,
                     value = fat,
-                    valueUnit = "g",
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = {
-                        if (expandedField == MacroField.FAT) {
-                            expandedField = null
-                        } else {
-                            selectedFatIndex = fat.coerceIn(0, macroValues.lastIndex)
-                            expandedField = MacroField.FAT
-                        }
-                    },
                     icon = Icons.Default.Eco,
-                    activeColor = MacroColors.fat
+                    activeColor = MacroColors.fat,
+                    expanded = expandedField == MacroField.FAT,
+                    onClick = {
+                        expandedField = if (expandedField == MacroField.FAT) null else MacroField.FAT
+                    },
+                    onValueChange = onFatChanged
                 )
-                if (expandedField == MacroField.FAT) {
-                    IosInlineValuePicker(
-                        values = macroValues,
-                        selectedIndex = selectedFatIndex,
-                        onIndexChanged = {
-                            selectedFatIndex = it
-                            onFatChanged(macroValues[it].toInt())
-                        },
-                        unitSuffix = "g"
-                    )
-                }
             }
         }
     }
