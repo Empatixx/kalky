@@ -1,9 +1,9 @@
 package cz.krokviak.kalky.home
 
 import cz.krokviak.kalky.common.FoodPhotoAnalyzer
+import cz.krokviak.kalky.common.domain.AddFoodItemUseCase
 import cz.krokviak.kalky.common.entities.FoodItemEntity
 import cz.krokviak.kalky.common.error.UiError
-import cz.krokviak.kalky.common.repo.FoodRepository
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.mutate
 import kotlinx.coroutines.CoroutineScope
@@ -23,8 +23,8 @@ import kotlinx.datetime.Clock
 internal class PhotoCaptureController(
     private val scope: CoroutineScope,
     private val state: MutableStateFlow<MainUiState>,
-    private val foodRepository: FoodRepository,
     private val foodPhotoAnalyzer: FoodPhotoAnalyzer,
+    private val addFoodItem: AddFoodItemUseCase,
     private val clock: Clock,
     private val onMacrosChanged: () -> Unit,
     private val onAnalysisFailed: (UiError) -> Unit,
@@ -84,7 +84,7 @@ internal class PhotoCaptureController(
                 localImagePath = "",
                 loading = false,
             )
-            val newId = foodRepository.insertFoodItem(item)
+            val newId = addFoodItem(item)
             val insertedItem = item.copy(id = newId)
             state.update { current ->
                 current.copy(

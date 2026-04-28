@@ -3,6 +3,7 @@ package cz.krokviak.kalky.customfood
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cz.krokviak.kalky.barcode.data.OpenFoodFactsProduct
+import cz.krokviak.kalky.common.domain.AddFoodItemUseCase
 import cz.krokviak.kalky.common.entities.FoodItemEntity
 import cz.krokviak.kalky.common.repo.FoodRepository
 import cz.krokviak.kalky.common.utils.caloriesFromMacros
@@ -28,6 +29,7 @@ import kotlin.math.roundToInt
 class ManualFoodEntryViewModel(
     private val foodRepository: FoodRepository,
     private val openFoodFactsClient: OpenFoodFactsClient,
+    private val addFoodItem: AddFoodItemUseCase,
     private val clock: Clock,
 ) : ViewModel() {
 
@@ -89,7 +91,7 @@ class ManualFoodEntryViewModel(
                 loading = false,
                 isCustom = true,
             )
-            val newId = foodRepository.insertFoodItem(item)
+            val newId = addFoodItem(item)
             _foodAdded.emit(newId)
         }
     }

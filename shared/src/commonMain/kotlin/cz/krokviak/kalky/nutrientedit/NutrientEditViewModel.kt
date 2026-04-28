@@ -2,8 +2,9 @@ package cz.krokviak.kalky.nutrientedit
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import cz.krokviak.kalky.common.domain.GetLatestNutrientSettingsUseCase
+import cz.krokviak.kalky.common.domain.UpdateNutrientSettingsUseCase
 import cz.krokviak.kalky.common.entities.NutrientSettingEntity
-import cz.krokviak.kalky.common.repo.NutrientSettingRepo
 import cz.krokviak.kalky.common.utils.caloriesFromMacros
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -15,7 +16,8 @@ import kotlinx.coroutines.launch
 private const val SAVE_DEBOUNCE_MS = 300L
 
 class NutrientEditViewModel(
-    private val nutrientSettingRepo: NutrientSettingRepo
+    private val getLatestSettings: GetLatestNutrientSettingsUseCase,
+    private val updateSettings: UpdateNutrientSettingsUseCase,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(NutrientEditState())
     val uiState: StateFlow<NutrientEditState> = _uiState
@@ -24,7 +26,7 @@ class NutrientEditViewModel(
 
     init {
         viewModelScope.launch {
-            val latestSettings = nutrientSettingRepo.getLatestNutrientSettings()
+            val latestSettings = getLatestSettings()
             _uiState.update {
                 it.copy(
                     protein = latestSettings?.targetProtein ?: 0,
@@ -77,7 +79,7 @@ class NutrientEditViewModel(
         saveJob = viewModelScope.launch {
             delay(SAVE_DEBOUNCE_MS)
             val state = _uiState.value
-            nutrientSettingRepo.insertNutrientSettings(
+            updateSettings(
                 NutrientSettingEntity(
                     targetProtein = state.protein,
                     targetCarbs = state.carbs,

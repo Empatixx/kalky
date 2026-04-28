@@ -1,5 +1,7 @@
 package cz.krokviak.kalky.nutrientedit
 
+import cz.krokviak.kalky.common.domain.GetLatestNutrientSettingsUseCase
+import cz.krokviak.kalky.common.domain.UpdateNutrientSettingsUseCase
 import cz.krokviak.kalky.common.entities.NutrientSettingEntity
 import cz.krokviak.kalky.common.repo.NutrientSettingRepo
 import kotlinx.coroutines.Dispatchers
@@ -40,7 +42,10 @@ class NutrientEditViewModelTest {
                 targetCalories = 2200,
             )
         )
-        val viewModel = NutrientEditViewModel(repo)
+        val viewModel = NutrientEditViewModel(
+            getLatestSettings = GetLatestNutrientSettingsUseCase(repo),
+            updateSettings = UpdateNutrientSettingsUseCase(repo),
+        )
         advanceUntilIdle()
 
         val state = viewModel.uiState.value
@@ -53,7 +58,10 @@ class NutrientEditViewModelTest {
     @Test
     fun `onProteinChange updates state immediately and recomputes calories`() = runTest(dispatcher) {
         val repo = FakeNutrientSettingRepo()
-        val viewModel = NutrientEditViewModel(repo)
+        val viewModel = NutrientEditViewModel(
+            getLatestSettings = GetLatestNutrientSettingsUseCase(repo),
+            updateSettings = UpdateNutrientSettingsUseCase(repo),
+        )
         advanceUntilIdle()
 
         viewModel.onProteinChange(50)
@@ -67,7 +75,10 @@ class NutrientEditViewModelTest {
     @Test
     fun `save is debounced - only persisted after 300ms of inactivity`() = runTest(dispatcher) {
         val repo = FakeNutrientSettingRepo()
-        val viewModel = NutrientEditViewModel(repo)
+        val viewModel = NutrientEditViewModel(
+            getLatestSettings = GetLatestNutrientSettingsUseCase(repo),
+            updateSettings = UpdateNutrientSettingsUseCase(repo),
+        )
         advanceUntilIdle()
         repo.inserts.clear()
 

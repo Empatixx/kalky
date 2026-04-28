@@ -3,9 +3,13 @@ package cz.krokviak.kalky.di
 import cz.krokviak.kalky.common.AppPreferences
 import cz.krokviak.kalky.common.FoodPhotoAnalyzer
 import cz.krokviak.kalky.common.StreakCalculator
+import cz.krokviak.kalky.common.domain.AddFoodItemUseCase
 import cz.krokviak.kalky.common.domain.BuildCaloriesBarsUseCase
+import cz.krokviak.kalky.common.domain.DeleteFoodItemsUseCase
 import cz.krokviak.kalky.common.domain.GetDailyMacrosUseCase
+import cz.krokviak.kalky.common.domain.GetLatestNutrientSettingsUseCase
 import cz.krokviak.kalky.common.domain.GetStreakUseCase
+import cz.krokviak.kalky.common.domain.UpdateNutrientSettingsUseCase
 import cz.krokviak.kalky.common.repo.FoodRepository
 import cz.krokviak.kalky.common.repo.NutrientSettingRepo
 import cz.krokviak.kalky.common.repo.NutrientSettingRepoImpl
@@ -58,6 +62,10 @@ val sharedModule = module {
     factory { GetDailyMacrosUseCase(get()) }
     factory { GetStreakUseCase(get()) }
     factory { BuildCaloriesBarsUseCase(get()) }
+    factory { AddFoodItemUseCase(get()) }
+    factory { DeleteFoodItemsUseCase(get()) }
+    factory { UpdateNutrientSettingsUseCase(get()) }
+    factory { GetLatestNutrientSettingsUseCase(get()) }
 
     // Notifications
     single { MealReminderChecker(get(), get()) }

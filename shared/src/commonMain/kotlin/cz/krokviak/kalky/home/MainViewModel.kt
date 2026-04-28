@@ -3,12 +3,13 @@ package cz.krokviak.kalky.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cz.krokviak.kalky.common.FoodPhotoAnalyzer
+import cz.krokviak.kalky.common.domain.AddFoodItemUseCase
+import cz.krokviak.kalky.common.domain.DeleteFoodItemsUseCase
 import cz.krokviak.kalky.common.domain.GetDailyMacrosUseCase
+import cz.krokviak.kalky.common.domain.GetLatestNutrientSettingsUseCase
 import cz.krokviak.kalky.common.domain.GetStreakUseCase
 import cz.krokviak.kalky.common.entities.FoodItemEntity
 import cz.krokviak.kalky.common.error.toUiError
-import cz.krokviak.kalky.common.repo.FoodRepository
-import cz.krokviak.kalky.common.repo.NutrientSettingRepo
 import cz.krokviak.kalky.db.DatabaseSeeder
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.mutate
@@ -25,11 +26,12 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 
 class MainViewModel(
-    private val foodRepository: FoodRepository,
-    private val nutrientSettingRepo: NutrientSettingRepo,
+    private val getLatestSettings: GetLatestNutrientSettingsUseCase,
     foodPhotoAnalyzer: FoodPhotoAnalyzer,
     private val getDailyMacros: GetDailyMacrosUseCase,
     private val getStreak: GetStreakUseCase,
+    private val addFoodItem: AddFoodItemUseCase,
+    private val deleteFoodItems: DeleteFoodItemsUseCase,
     private val databaseSeeder: DatabaseSeeder,
     clock: Clock,
     private val seedMockData: Boolean = false,
@@ -43,8 +45,8 @@ class MainViewModel(
     private val photoCaptureController = PhotoCaptureController(
         scope = viewModelScope,
         state = _uiState,
-        foodRepository = foodRepository,
         foodPhotoAnalyzer = foodPhotoAnalyzer,
+        addFoodItem = addFoodItem,
         clock = clock,
         onMacrosChanged = ::recalculateMacrosFromState,
         onAnalysisFailed = { error -> _uiState.update { it.copy(error = error) } },
@@ -55,7 +57,7 @@ class MainViewModel(
             if (seedMockData) {
                 withContext(Dispatchers.IO) { databaseSeeder.seedIfEmpty() }
             }
-            val latestSettings = nutrientSettingRepo.getLatestNutrientSettings()
+            val latestSettings = getLatestSettings()
             _uiState.update {
                 it.copy(
                     maxProtein = latestSettings?.targetProtein ?: 0,
@@ -159,9 +161,7 @@ class MainViewModel(
     fun deleteSelectedFoods() {
         viewModelScope.launch {
             val ids = _uiState.value.selectedFoodIds
-            for (id in ids) {
-                foodRepository.deleteFoodItem(id)
-            }
+            deleteFoodItems(ids)
             _uiState.update { current ->
                 current.copy(
                     recentlyAddedItems = current.recentlyAddedItems

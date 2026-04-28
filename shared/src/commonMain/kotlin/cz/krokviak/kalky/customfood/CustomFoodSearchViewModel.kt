@@ -3,6 +3,7 @@ package cz.krokviak.kalky.customfood
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cz.krokviak.kalky.barcode.data.OpenFoodFactsProduct
+import cz.krokviak.kalky.common.domain.AddFoodItemUseCase
 import cz.krokviak.kalky.common.entities.FoodItemEntity
 import cz.krokviak.kalky.common.error.UiError
 import cz.krokviak.kalky.common.repo.FoodRepository
@@ -24,6 +25,7 @@ import kotlinx.datetime.Clock
 class CustomFoodSearchViewModel(
     private val foodRepository: FoodRepository,
     private val openFoodFactsClient: OpenFoodFactsClient,
+    private val addFoodItem: AddFoodItemUseCase,
     private val clock: Clock,
 ) : ViewModel() {
 
@@ -119,7 +121,7 @@ class CustomFoodSearchViewModel(
                 localImagePath = "",
                 loading = false,
             )
-            val newId = foodRepository.insertFoodItem(item)
+            val newId = addFoodItem(item)
             _uiState.update {
                 it.copy(
                     selectedApiProduct = null,
@@ -156,7 +158,7 @@ class CustomFoodSearchViewModel(
                     loading = false,
                     localImagePath = "",
                 )
-                foodRepository.insertFoodItem(newItem)
+                addFoodItem(newItem)
             }
             _uiState.update {
                 it.copy(
