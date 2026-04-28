@@ -35,4 +35,6 @@ data class ManualFoodEntryState(
     val sourceFoods: PersistentList<FoodItemEntity> = persistentListOf(),
     val sourcePortionGrams: PersistentMap<Long, Int> = persistentMapOf(),
     val activeField: MacroField? = null,
+    val ingredientResults: PersistentList<FoodItemEntity> = persistentListOf(),
+    val ingredientApiResults: PersistentList<OpenFoodFactsProduct> = persistentListOf(),
 )

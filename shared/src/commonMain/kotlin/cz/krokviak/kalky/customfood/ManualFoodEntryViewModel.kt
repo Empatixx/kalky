@@ -39,12 +39,6 @@ class ManualFoodEntryViewModel(
     private val _foodAdded = MutableSharedFlow<Long>(extraBufferCapacity = 1)
     val foodAdded: SharedFlow<Long> = _foodAdded
 
-    private val _ingredientResults = MutableStateFlow<PersistentList<FoodItemEntity>>(persistentListOf())
-    val ingredientResults: StateFlow<PersistentList<FoodItemEntity>> = _ingredientResults
-
-    private val _ingredientApiResults = MutableStateFlow<PersistentList<OpenFoodFactsProduct>>(persistentListOf())
-    val ingredientApiResults: StateFlow<PersistentList<OpenFoodFactsProduct>> = _ingredientApiResults
-
     private var ingredientSearchJob: Job? = null
 
     fun onNameChange(name: String) {
@@ -146,8 +140,12 @@ class ManualFoodEntryViewModel(
     fun searchIngredients(query: String) {
         ingredientSearchJob?.cancel()
         if (query.isBlank()) {
-            _ingredientResults.value = persistentListOf()
-            _ingredientApiResults.value = persistentListOf()
+            _state.update {
+                it.copy(
+                    ingredientResults = persistentListOf(),
+                    ingredientApiResults = persistentListOf(),
+                )
+            }
             return
         }
         ingredientSearchJob = viewModelScope.launch {
@@ -156,15 +154,16 @@ class ManualFoodEntryViewModel(
             val apiDeferred = async {
                 runCatching { openFoodFactsClient.searchProducts(query, 10) }.getOrDefault(emptyList())
             }
-            _ingredientResults.value = localDeferred.await().toPersistentList()
-            _ingredientApiResults.value = apiDeferred.await().toPersistentList()
+            val local = localDeferred.await().toPersistentList()
+            val api = apiDeferred.await().toPersistentList()
+            _state.update {
+                it.copy(ingredientResults = local, ingredientApiResults = api)
+            }
         }
     }
 
     fun reset() {
         _state.value = ManualFoodEntryState()
-        _ingredientResults.value = persistentListOf()
-        _ingredientApiResults.value = persistentListOf()
     }
 }
 
