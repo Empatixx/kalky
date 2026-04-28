@@ -24,6 +24,7 @@ import kotlinx.datetime.Clock
 class CustomFoodSearchViewModel(
     private val foodRepository: FoodRepository,
     private val openFoodFactsClient: OpenFoodFactsClient,
+    private val clock: Clock,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CustomFoodUiState())
@@ -105,7 +106,7 @@ class CustomFoodSearchViewModel(
         val grams = _uiState.value.portionGrams
         viewModelScope.launch {
             val scaled = product.nutriments.scaledTo(grams)
-            val now = Clock.System.now()
+            val now = clock.now()
             val item = FoodItemEntity(
                 name = product.productName ?: "",
                 calories = scaled.calories,
@@ -144,7 +145,7 @@ class CustomFoodSearchViewModel(
     fun addSelectedFoods() {
         viewModelScope.launch {
             val state = _uiState.value
-            val now = Clock.System.now()
+            val now = clock.now()
             for (itemId in state.selectedItems) {
                 val allItems = state.customFoods + state.historyItems
                 val item = allItems.find { it.id == itemId } ?: continue

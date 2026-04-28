@@ -16,11 +16,15 @@ import cz.krokviak.kalky.network.FoodAnalysisClient
 import cz.krokviak.kalky.network.OpenFoodFactsClient
 import cz.krokviak.kalky.network.createHttpClient
 import io.ktor.client.HttpClient
+import kotlinx.datetime.Clock
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val sharedModule = module {
+    // Time source (injected so tests can swap in a TestClock)
+    single<Clock> { Clock.System }
+
     // Preferences
     single { AppPreferences() }
 
@@ -47,7 +51,7 @@ val sharedModule = module {
     single { StreakCalculator(get()) }
 
     // Food photo pipeline
-    single { FoodPhotoAnalyzer(get(), get(), get()) }
+    single { FoodPhotoAnalyzer(get(), get(), get(), get()) }
 
     // Domain use cases
     factory { GetDailyMacrosUseCase(get()) }

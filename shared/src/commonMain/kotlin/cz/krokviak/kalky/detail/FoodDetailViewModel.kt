@@ -19,7 +19,8 @@ import kotlinx.datetime.Clock
 class FoodDetailViewModel(
     private val foodAnalysisClient: FoodAnalysisClient,
     private val foodRepository: FoodRepository,
-    private val imageStorage: ImageStorage
+    private val imageStorage: ImageStorage,
+    private val clock: Clock,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(FoodDetailState())
     val uiState: StateFlow<FoodDetailState> = _uiState
@@ -37,8 +38,8 @@ class FoodDetailViewModel(
                 portion = food?.portion ?: 0,
                 healthScore = food?.healthScore ?: 0,
                 localImagePath = food?.localImagePath,
-                createdAt = food?.createdAt ?: Clock.System.now(),
-                updatedAt = food?.updatedAt ?: Clock.System.now()
+                createdAt = food?.createdAt ?: clock.now(),
+                updatedAt = food?.updatedAt ?: clock.now()
             )
         }
     }
@@ -114,7 +115,7 @@ class FoodDetailViewModel(
     fun finish() {
         viewModelScope.launch {
             val updated = _uiState.value.copy(
-                updatedAt = Clock.System.now()
+                updatedAt = clock.now()
             )
             foodRepository.updateFoodItem(
                 FoodItemEntity(

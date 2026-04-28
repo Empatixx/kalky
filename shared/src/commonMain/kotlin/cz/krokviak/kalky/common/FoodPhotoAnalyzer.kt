@@ -35,6 +35,7 @@ class FoodPhotoAnalyzer(
     private val foodRepository: FoodRepository,
     private val foodAnalysisClient: FoodAnalysisClient,
     private val imageStorage: ImageStorage,
+    private val clock: Clock,
 ) {
 
     fun analyze(
@@ -47,7 +48,7 @@ class FoodPhotoAnalyzer(
     ): Job = scope.launch {
         val imagePath = imageStorage.storeImageFile(imageBytes)
 
-        val now = Clock.System.now()
+        val now = clock.now()
         val placeholder = FoodItemEntity(
             createdAt = now,
             updatedAt = now,
@@ -74,7 +75,7 @@ class FoodPhotoAnalyzer(
                     carbs = analysis.carbs,
                     healthScore = analysis.healthScore,
                     loading = true,
-                    updatedAt = Clock.System.now()
+                    updatedAt = clock.now()
                 )
                 foodRepository.updateFoodItem(updated)
                 onAnalysisComplete(updated)
@@ -86,7 +87,7 @@ class FoodPhotoAnalyzer(
         joinAll(animationJob, analysisJob)
 
         val analyzed = foodRepository.getFoodItem(newId) ?: insertedItem
-        val finalItem = analyzed.copy(loading = false, updatedAt = Clock.System.now())
+        val finalItem = analyzed.copy(loading = false, updatedAt = clock.now())
         foodRepository.updateFoodItem(finalItem)
         onFinalCommitted(finalItem)
     }

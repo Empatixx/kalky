@@ -27,6 +27,7 @@ import kotlin.math.roundToInt
 class ManualFoodEntryViewModel(
     private val foodRepository: FoodRepository,
     private val openFoodFactsClient: OpenFoodFactsClient,
+    private val clock: Clock,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ManualFoodEntryState())
@@ -68,7 +69,7 @@ class ManualFoodEntryViewModel(
     fun submit() {
         viewModelScope.launch {
             val snapshot = _state.value
-            val now = Clock.System.now()
+            val now = clock.now()
             val item = FoodItemEntity(
                 name = snapshot.name,
                 calories = snapshot.calories,
@@ -118,7 +119,7 @@ class ManualFoodEntryViewModel(
 
     fun addSourceFoodFromApi(product: OpenFoodFactsProduct) {
         val nutrients = product.nutriments
-        val now = Clock.System.now()
+        val now = clock.now()
         val food = FoodItemEntity(
             id = now.toEpochMilliseconds(),
             name = product.productName ?: "",

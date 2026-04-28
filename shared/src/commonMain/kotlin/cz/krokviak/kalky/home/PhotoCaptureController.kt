@@ -25,6 +25,7 @@ internal class PhotoCaptureController(
     private val state: MutableStateFlow<MainUiState>,
     private val foodRepository: FoodRepository,
     private val foodPhotoAnalyzer: FoodPhotoAnalyzer,
+    private val clock: Clock,
     private val onMacrosChanged: () -> Unit,
     private val onAnalysisFailed: (UiError) -> Unit,
 ) {
@@ -70,7 +71,7 @@ internal class PhotoCaptureController(
         carbs: Int,
     ) {
         scope.launch {
-            val now = Clock.System.now()
+            val now = clock.now()
             val item = FoodItemEntity(
                 name = name,
                 calories = calories,

@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 
 class MainViewModel(
@@ -30,6 +31,7 @@ class MainViewModel(
     private val getDailyMacros: GetDailyMacrosUseCase,
     private val getStreak: GetStreakUseCase,
     private val databaseSeeder: DatabaseSeeder,
+    clock: Clock,
     private val seedMockData: Boolean = false,
 ) : ViewModel() {
 
@@ -43,6 +45,7 @@ class MainViewModel(
         state = _uiState,
         foodRepository = foodRepository,
         foodPhotoAnalyzer = foodPhotoAnalyzer,
+        clock = clock,
         onMacrosChanged = ::recalculateMacrosFromState,
         onAnalysisFailed = { error -> _uiState.update { it.copy(error = error) } },
     )
