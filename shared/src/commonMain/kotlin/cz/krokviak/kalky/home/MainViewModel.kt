@@ -6,7 +6,6 @@ import cz.krokviak.kalky.common.FoodPhotoAnalyzer
 import cz.krokviak.kalky.common.domain.GetDailyMacrosUseCase
 import cz.krokviak.kalky.common.domain.GetStreakUseCase
 import cz.krokviak.kalky.common.entities.FoodItemEntity
-import cz.krokviak.kalky.common.error.UiError
 import cz.krokviak.kalky.common.error.toUiError
 import cz.krokviak.kalky.common.repo.FoodRepository
 import cz.krokviak.kalky.common.repo.NutrientSettingRepo
@@ -22,13 +21,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 
 class MainViewModel(
     private val foodRepository: FoodRepository,
     private val nutrientSettingRepo: NutrientSettingRepo,
-    private val foodPhotoAnalyzer: FoodPhotoAnalyzer,
+    foodPhotoAnalyzer: FoodPhotoAnalyzer,
     private val getDailyMacros: GetDailyMacrosUseCase,
     private val getStreak: GetStreakUseCase,
     private val databaseSeeder: DatabaseSeeder,
@@ -39,6 +37,15 @@ class MainViewModel(
         MainUiState(dailyStats = generateFakeDailyStats(7))
     )
     val uiState: StateFlow<MainUiState> = _uiState
+
+    private val photoCaptureController = PhotoCaptureController(
+        scope = viewModelScope,
+        state = _uiState,
+        foodRepository = foodRepository,
+        foodPhotoAnalyzer = foodPhotoAnalyzer,
+        onMacrosChanged = ::recalculateMacrosFromState,
+        onAnalysisFailed = { error -> _uiState.update { it.copy(error = error) } },
+    )
 
     init {
         viewModelScope.launch {
@@ -63,44 +70,8 @@ class MainViewModel(
         _uiState.update { it.copy(currentStreak = streak) }
     }
 
-    fun addFoodItemFromBytes(imageBytes: ByteArray) {
-        foodPhotoAnalyzer.analyze(
-            scope = viewModelScope,
-            imageBytes = imageBytes,
-            onPlaceholderInserted = { placeholder ->
-                _uiState.update { current ->
-                    current.copy(
-                        recentlyAddedItems = current.recentlyAddedItems.mutate { it.add(0, placeholder) },
-                        loadingItems = current.loadingItems.add(placeholder.id),
-                    )
-                }
-                recalculateMacrosFromState()
-            },
-            onAnalysisComplete = { analyzed ->
-                _uiState.update { current ->
-                    current.copy(
-                        recentlyAddedItems = current.recentlyAddedItems.replaceById(analyzed.id, analyzed),
-                    )
-                }
-            },
-            onFinalCommitted = { finalItem ->
-                _uiState.update { current ->
-                    current.copy(
-                        loadingItems = current.loadingItems.remove(finalItem.id),
-                        recentlyAddedItems = current.recentlyAddedItems.replaceById(finalItem.id, finalItem),
-                    )
-                }
-                recalculateMacrosFromState()
-            },
-            onAnalysisFailed = {
-                _uiState.update { it.copy(error = UiError.PhotoAnalysis) }
-            }
-        )
-    }
-
-    fun dismissError() {
-        _uiState.update { it.copy(error = null) }
-    }
+    fun addFoodItemFromBytes(imageBytes: ByteArray) =
+        photoCaptureController.addFromBytes(imageBytes)
 
     fun addFoodItemFromBarcode(
         name: String,
@@ -108,30 +79,10 @@ class MainViewModel(
         protein: Int,
         fat: Int,
         carbs: Int,
-    ) {
-        viewModelScope.launch {
-            val now = Clock.System.now()
-            val item = FoodItemEntity(
-                name = name,
-                calories = calories,
-                protein = protein,
-                fat = fat,
-                carbs = carbs,
-                healthScore = 0,
-                createdAt = now,
-                updatedAt = now,
-                localImagePath = "",
-                loading = false,
-            )
-            val newId = foodRepository.insertFoodItem(item)
-            val insertedItem = item.copy(id = newId)
-            _uiState.update { current ->
-                current.copy(
-                    recentlyAddedItems = current.recentlyAddedItems.mutate { it.add(0, insertedItem) },
-                )
-            }
-            recalculateMacrosFromState()
-        }
+    ) = photoCaptureController.addFromBarcode(name, calories, protein, fat, carbs)
+
+    fun dismissError() {
+        _uiState.update { it.copy(error = null) }
     }
 
     /** Recomputes totals from the in-memory list (used while items are mid-analysis). */
@@ -234,12 +185,4 @@ class MainViewModel(
             )
         }
     }
-}
-
-private fun PersistentList<FoodItemEntity>.replaceById(
-    id: Long,
-    replacement: FoodItemEntity,
-): PersistentList<FoodItemEntity> {
-    val idx = indexOfFirst { it.id == id }
-    return if (idx < 0) this else mutate { it[idx] = replacement }
 }
