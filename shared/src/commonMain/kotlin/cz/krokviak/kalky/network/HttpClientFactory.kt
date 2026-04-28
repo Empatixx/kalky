@@ -3,12 +3,17 @@ package cz.krokviak.kalky.network
 import cz.krokviak.kalky.auth.AppCheckTokenProvider
 import cz.krokviak.kalky.auth.AuthTokenProvider
 import io.ktor.client.HttpClient
+import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.api.Send
 import io.ktor.client.plugins.api.createClientPlugin
 import io.ktor.client.request.header
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
+
+private const val CONNECT_TIMEOUT_MS = 10_000L
+private const val SOCKET_TIMEOUT_MS = 15_000L
+private const val REQUEST_TIMEOUT_MS = 30_000L
 
 fun createHttpClient(
     authTokenProvider: AuthTokenProvider? = null,
@@ -20,6 +25,11 @@ fun createHttpClient(
                 ignoreUnknownKeys = true
                 isLenient = true
             })
+        }
+        install(HttpTimeout) {
+            connectTimeoutMillis = CONNECT_TIMEOUT_MS
+            socketTimeoutMillis = SOCKET_TIMEOUT_MS
+            requestTimeoutMillis = REQUEST_TIMEOUT_MS
         }
 
         if (authTokenProvider != null || appCheckTokenProvider != null) {
