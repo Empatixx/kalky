@@ -1,0 +1,1 @@
+CREATE INDEX IF NOT EXISTS idx_food_items_name_nocase ON food_items(name COLLATE NOCASE);

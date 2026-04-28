@@ -20,6 +20,7 @@ CREATE TABLE food_items (
 CREATE INDEX IF NOT EXISTS idx_food_items_created_at ON food_items(createdAt);
 CREATE INDEX IF NOT EXISTS idx_food_items_updated_at ON food_items(updatedAt);
 CREATE INDEX IF NOT EXISTS idx_food_items_is_custom ON food_items(isCustom);
+CREATE INDEX IF NOT EXISTS idx_food_items_name_nocase ON food_items(name COLLATE NOCASE);
 
 getAllFoodItems:
 SELECT * FROM food_items ORDER BY createdAt DESC;
@@ -104,7 +105,7 @@ getCustomFoods:
 SELECT * FROM food_items WHERE isCustom = 1 ORDER BY updatedAt DESC;
 
 searchCustomFoods:
-SELECT * FROM food_items WHERE isCustom = 1 AND LOWER(name) LIKE '%' || LOWER(?) || '%' ORDER BY updatedAt DESC;
+SELECT * FROM food_items WHERE isCustom = 1 AND name LIKE ? || '%' COLLATE NOCASE ORDER BY updatedAt DESC;
 
 searchDistinctFoodsByName:
 SELECT f.*
@@ -113,7 +114,7 @@ INNER JOIN (
     SELECT name, MAX(updatedAt) AS latestUpdate
     FROM food_items
     WHERE loading = 0 AND name != 'Neznámé jídlo'
-    AND LOWER(name) LIKE '%' || LOWER(?) || '%'
+    AND name LIKE ? || '%' COLLATE NOCASE
     GROUP BY name
 ) latest ON f.name = latest.name AND f.updatedAt = latest.latestUpdate
 ORDER BY f.updatedAt DESC
