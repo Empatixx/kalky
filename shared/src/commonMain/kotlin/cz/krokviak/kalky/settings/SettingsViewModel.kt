@@ -58,6 +58,12 @@ class SettingsViewModel(
         _uiState.update { it.copy(activityLevel = value, saved = false) }
     }
 
+    fun togglePickerField(field: ProfilePickerField) {
+        _uiState.update {
+            it.copy(activePickerField = if (it.activePickerField == field) null else field)
+        }
+    }
+
     fun save() {
         val state = _uiState.value
         val weight = state.weight.toFloatOrNull() ?: return

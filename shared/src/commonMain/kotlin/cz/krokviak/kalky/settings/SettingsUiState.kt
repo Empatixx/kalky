@@ -1,12 +1,18 @@
 package cz.krokviak.kalky.settings
 
+import androidx.compose.runtime.Immutable
+
+enum class ProfilePickerField { WEIGHT, HEIGHT, AGE }
+
+@Immutable
 data class SettingsUiState(
     val weight: String = "",
     val height: String = "",
     val age: String = "",
     val gender: String = "Muž",
     val activityLevel: Int = 2,
-    val saved: Boolean = false
+    val saved: Boolean = false,
+    val activePickerField: ProfilePickerField? = null,
 ) {
     val bmi: Float?
         get() {
