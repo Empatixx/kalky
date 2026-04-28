@@ -6,7 +6,6 @@ import cz.krokviak.kalky.barcode.data.OpenFoodFactsProduct
 import cz.krokviak.kalky.common.entities.FoodItemEntity
 import cz.krokviak.kalky.common.error.UiError
 import cz.krokviak.kalky.common.repo.FoodRepository
-import cz.krokviak.kalky.common.utils.caloriesFromMacros
 import cz.krokviak.kalky.network.OpenFoodFactsClient
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
@@ -21,7 +20,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
-import kotlin.math.roundToInt
 
 class CustomFoodSearchViewModel(
     private val foodRepository: FoodRepository,
@@ -106,19 +104,14 @@ class CustomFoodSearchViewModel(
         val product = _uiState.value.selectedApiProduct ?: return
         val grams = _uiState.value.portionGrams
         viewModelScope.launch {
-            val nutrients = product.nutriments
-            val factor = grams / 100.0
-            val protein = ((nutrients?.proteins100g ?: 0.0) * factor).roundToInt()
-            val carbs = ((nutrients?.carbohydrates100g ?: 0.0) * factor).roundToInt()
-            val fat = ((nutrients?.fat100g ?: 0.0) * factor).roundToInt()
-            val calories = ((nutrients?.energyKcal100g ?: 0.0) * factor).roundToInt()
+            val scaled = product.nutriments.scaledTo(grams)
             val now = Clock.System.now()
             val item = FoodItemEntity(
                 name = product.productName ?: "",
-                calories = if (calories > 0) calories else caloriesFromMacros(protein, carbs, fat),
-                protein = protein,
-                carbs = carbs,
-                fat = fat,
+                calories = scaled.calories,
+                protein = scaled.protein,
+                carbs = scaled.carbs,
+                fat = scaled.fat,
                 portion = grams,
                 createdAt = now,
                 updatedAt = now,
