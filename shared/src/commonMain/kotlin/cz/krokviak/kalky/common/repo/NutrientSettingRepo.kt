@@ -7,16 +7,21 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Instant
 
-class NutrientSettingRepo(
+interface NutrientSettingRepo {
+    suspend fun getLatestNutrientSettings(): NutrientSettingEntity?
+    suspend fun insertNutrientSettings(entity: NutrientSettingEntity)
+}
+
+class NutrientSettingRepoImpl(
     private val database: KalkyDatabase
-) {
+) : NutrientSettingRepo {
     private val queries get() = database.nutrientSettingQueries
 
-    suspend fun getLatestNutrientSettings(): NutrientSettingEntity? = withContext(Dispatchers.IO) {
+    override suspend fun getLatestNutrientSettings(): NutrientSettingEntity? = withContext(Dispatchers.IO) {
         queries.getLatestNutrientSettings().executeAsOneOrNull()?.toEntity()
     }
 
-    suspend fun insertNutrientSettings(entity: NutrientSettingEntity) = withContext(Dispatchers.IO) {
+    override suspend fun insertNutrientSettings(entity: NutrientSettingEntity) = withContext(Dispatchers.IO) {
         queries.insertNutrientSettings(
             targetCalories = entity.targetCalories,
             targetProtein = entity.targetProtein,

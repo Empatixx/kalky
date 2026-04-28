@@ -8,6 +8,7 @@ import cz.krokviak.kalky.common.domain.GetDailyMacrosUseCase
 import cz.krokviak.kalky.common.domain.GetStreakUseCase
 import cz.krokviak.kalky.common.repo.FoodRepository
 import cz.krokviak.kalky.common.repo.NutrientSettingRepo
+import cz.krokviak.kalky.common.repo.NutrientSettingRepoImpl
 import cz.krokviak.kalky.common.repo.PersonalInfoRepo
 import cz.krokviak.kalky.notifications.MealReminderChecker
 import cz.krokviak.kalky.db.DatabaseSeeder
@@ -45,7 +46,7 @@ val sharedModule = module {
     // Repositories
     single { FoodRepository(get()) }
     single { PersonalInfoRepo(get()) }
-    single { NutrientSettingRepo(get()) }
+    single<NutrientSettingRepo> { NutrientSettingRepoImpl(get()) }
 
     // Streak
     single { StreakCalculator(get()) }
