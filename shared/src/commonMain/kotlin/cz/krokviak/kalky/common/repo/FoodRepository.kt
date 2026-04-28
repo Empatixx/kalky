@@ -9,6 +9,13 @@ import kotlinx.coroutines.withContext
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 
+data class MacroTotals(
+    val calories: Int,
+    val protein: Int,
+    val carbs: Int,
+    val fat: Int,
+)
+
 class FoodRepository(
     private val database: KalkyDatabase
 ) {
@@ -72,6 +79,16 @@ class FoodRepository(
 
     suspend fun getTotalProteinForDate(dateStr: String): Int = withContext(Dispatchers.IO) {
         queries.getTotalProteinForDate(dateStr).executeAsOneOrNull()?.SUM ?: 0
+    }
+
+    suspend fun getMacroTotalsForDate(dateStr: String): MacroTotals = withContext(Dispatchers.IO) {
+        val row = queries.getMacroTotalsForDate(dateStr).executeAsOne()
+        MacroTotals(
+            calories = row.totalCalories.toInt(),
+            protein = row.totalProtein.toInt(),
+            carbs = row.totalCarbs.toInt(),
+            fat = row.totalFat.toInt(),
+        )
     }
 
     suspend fun deleteFoodItem(id: Long) = withContext(Dispatchers.IO) {

@@ -23,16 +23,14 @@ class GetDailyMacrosUseCase(
     suspend operator fun invoke(date: LocalDate): DailyMacros = coroutineScope {
         val dateStr = date.toString()
         val itemsDeferred = async { foodRepository.getFoodItemsForDate(dateStr) }
-        val caloriesDeferred = async { foodRepository.getTotalCaloriesForDate(dateStr) }
-        val proteinDeferred = async { foodRepository.getTotalProteinForDate(dateStr) }
-        val carbsDeferred = async { foodRepository.getTotalCarbsForDate(dateStr) }
-        val fatsDeferred = async { foodRepository.getTotalFatsForDate(dateStr) }
+        val totalsDeferred = async { foodRepository.getMacroTotalsForDate(dateStr) }
+        val totals = totalsDeferred.await()
         DailyMacros(
             items = itemsDeferred.await().toPersistentList(),
-            totalCalories = caloriesDeferred.await(),
-            totalProtein = proteinDeferred.await(),
-            totalCarbs = carbsDeferred.await(),
-            totalFat = fatsDeferred.await(),
+            totalCalories = totals.calories,
+            totalProtein = totals.protein,
+            totalCarbs = totals.carbs,
+            totalFat = totals.fat,
         )
     }
 }

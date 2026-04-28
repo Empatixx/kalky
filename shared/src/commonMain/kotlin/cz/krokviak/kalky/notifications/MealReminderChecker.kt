@@ -28,7 +28,8 @@ class MealReminderChecker(
         val foodItems = foodRepository.getFoodItemsForDate(today)
         if (loggedRecently(foodItems)) return ReminderResult.NoReminder
 
-        val totalCalories = foodRepository.getTotalCaloriesForDate(today)
+        // Reuse already-loaded items for the totalCalories sum — avoids a second DB hit.
+        val totalCalories = foodItems.sumOf { it.calories }
         if (noFoodAlert(totalCalories, currentHour)) return ReminderResult.RemindNoFood
 
         val settings = nutrientSettingRepo.getLatestNutrientSettings()

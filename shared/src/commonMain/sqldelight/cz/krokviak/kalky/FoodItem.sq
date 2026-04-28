@@ -39,6 +39,14 @@ SELECT SUM(carbs) FROM food_items WHERE date(createdAt) = ?;
 getTotalProteinForDate:
 SELECT SUM(protein) FROM food_items WHERE date(createdAt) = ?;
 
+getMacroTotalsForDate:
+SELECT
+    COALESCE(SUM(calories), 0) AS totalCalories,
+    COALESCE(SUM(protein), 0) AS totalProtein,
+    COALESCE(SUM(carbs), 0) AS totalCarbs,
+    COALESCE(SUM(fat), 0) AS totalFat
+FROM food_items WHERE date(createdAt) = ?;
+
 insertFoodItem:
 INSERT INTO food_items (name, calories, protein, fat, carbs, portion, healthScore, createdAt, updatedAt, localImagePath, loading, isCustom)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
