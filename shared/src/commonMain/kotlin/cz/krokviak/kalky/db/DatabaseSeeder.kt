@@ -12,7 +12,11 @@ class DatabaseSeeder(private val db: KalkyDatabase) {
     suspend fun seedIfEmpty() = withContext(Dispatchers.IO) {
         val existing = db.personalInfoQueries.getLatestPersonalInfo().executeAsOneOrNull()
         if (existing != null) return@withContext
+        // Wrap all ~26 inserts in a single transaction so SQLite doesn't fsync per row.
+        db.transaction { seedAll() }
+    }
 
+    private fun seedAll() {
         val now = Clock.System.now()
         val tz = TimeZone.currentSystemDefault()
 
