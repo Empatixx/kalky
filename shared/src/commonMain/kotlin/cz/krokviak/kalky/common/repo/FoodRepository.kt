@@ -115,6 +115,10 @@ class FoodRepository(
         queries.getDistinctFoodDates().executeAsList()
     }
 
+    suspend fun getRecentDistinctFoodDates(limit: Long): List<String> = withContext(Dispatchers.IO) {
+        queries.getRecentDistinctFoodDates(limit).executeAsList()
+    }
+
     suspend fun getDailyMacroTotalsInRange(
         startDate: String,
         endDate: String

@@ -5,9 +5,13 @@ import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.minus
 
+private const val MAX_STREAK_DAYS = 366L
+
 class StreakCalculator(private val foodRepository: FoodRepository) {
     suspend fun getCurrentStreak(): Int {
-        val dates = foodRepository.getDistinctFoodDates()
+        // Only the most recent ~year of unique dates is needed — the streak by definition
+        // ends at the first gap, and we never reward streaks longer than a year.
+        val dates = foodRepository.getRecentDistinctFoodDates(MAX_STREAK_DAYS)
             .mapNotNull { runCatching { LocalDate.parse(it) }.getOrNull() }
             .toSet()
 

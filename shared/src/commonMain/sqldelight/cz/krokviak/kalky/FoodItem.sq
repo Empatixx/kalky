@@ -101,6 +101,9 @@ LIMIT 50;
 getDistinctFoodDates:
 SELECT DISTINCT date(createdAt) AS day FROM food_items ORDER BY day DESC;
 
+getRecentDistinctFoodDates:
+SELECT DISTINCT date(createdAt) AS day FROM food_items ORDER BY day DESC LIMIT ?;
+
 getCustomFoods:
 SELECT * FROM food_items WHERE isCustom = 1 ORDER BY updatedAt DESC;
 
