@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cz.krokviak.kalky.common.formatFloat1
 import cz.krokviak.kalky.theme.AppTheme
+import cz.krokviak.kalky.theme.KalkyAccents
 import cz.krokviak.kalky.ui.components.KalkyCard
 
 @Composable
@@ -79,10 +80,10 @@ fun BmiIndicatorCard(
                     .height(8.dp)
                     .clip(RoundedCornerShape(999.dp))
             ) {
-                BmiSegment(Color(0xFF4DA3FF))
-                BmiSegment(Color(0xFF4ABF63))
-                BmiSegment(Color(0xFFE3BE47))
-                BmiSegment(Color(0xFFE98635))
+                BmiSegment(KalkyAccents.bmiUnder)
+                BmiSegment(KalkyAccents.bmiNormal)
+                BmiSegment(KalkyAccents.bmiOver)
+                BmiSegment(KalkyAccents.bmiObese)
             }
         }
     }
@@ -101,9 +102,9 @@ private fun RowScope.BmiSegment(color: Color) {
 
 private fun bmiLabel(bmi: Float): Pair<String, Color> {
     return when {
-        bmi < 18.5f -> "Podváha" to Color(0xFF4DA3FF)
-        bmi < 25f -> "Normální" to Color(0xFF4ABF63)
-        bmi < 30f -> "Nadváha" to Color(0xFFE3BE47)
-        else -> "Obezita" to Color(0xFFE98635)
+        bmi < 18.5f -> "Podváha" to KalkyAccents.bmiUnder
+        bmi < 25f -> "Normální" to KalkyAccents.bmiNormal
+        bmi < 30f -> "Nadváha" to KalkyAccents.bmiOver
+        else -> "Obezita" to KalkyAccents.bmiObese
     }
 }

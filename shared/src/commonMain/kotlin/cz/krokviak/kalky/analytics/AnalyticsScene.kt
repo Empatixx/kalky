@@ -22,7 +22,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import cz.krokviak.kalky.analytics.components.NutrientCalorieCard
@@ -30,13 +29,12 @@ import cz.krokviak.kalky.analytics.components.WeightLineChart
 import cz.krokviak.kalky.analytics.components.WheelDatePickerInline
 import cz.krokviak.kalky.i18n.LocalStrings
 import cz.krokviak.kalky.theme.AppTheme
+import cz.krokviak.kalky.theme.KalkyAccents
 import cz.krokviak.kalky.ui.LocalDimensions
 import cz.krokviak.kalky.ui.components.KalkyCard
 import kotlinx.datetime.LocalDate
 
 private enum class DateField { START, END }
-
-private val IOS_RED = Color(0xFFFF3B30)
 
 @Composable
 fun AnalyticsPage(
@@ -85,7 +83,7 @@ fun AnalyticsPage(
                         )
                         Text(
                             text = startDateLabel,
-                            color = if (activeDateField == DateField.START) IOS_RED else AppTheme.colors.onBackground,
+                            color = if (activeDateField == DateField.START) KalkyAccents.iosRed else AppTheme.colors.onBackground,
                             fontSize = dims.fontBody,
                             fontWeight = FontWeight.SemiBold,
                         )
@@ -125,7 +123,7 @@ fun AnalyticsPage(
                         )
                         Text(
                             text = endDateLabel,
-                            color = if (activeDateField == DateField.END) IOS_RED else AppTheme.colors.onBackground,
+                            color = if (activeDateField == DateField.END) KalkyAccents.iosRed else AppTheme.colors.onBackground,
                             fontSize = dims.fontBody,
                             fontWeight = FontWeight.SemiBold,
                         )

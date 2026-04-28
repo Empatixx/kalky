@@ -10,6 +10,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import cz.krokviak.kalky.theme.AppTheme
+import cz.krokviak.kalky.theme.KalkyAccents
 
 @Composable
 fun KalkyGradientBackground(
@@ -29,7 +30,7 @@ fun KalkyGradientBackground(
             drawRect(
                 brush = Brush.radialGradient(
                     colors = listOf(
-                        Color(0xFF79C8FF).copy(alpha = 0.09f),
+                        KalkyAccents.brandSky.copy(alpha = 0.09f),
                         Color.Transparent
                     ),
                     center = leftTopCenter,
@@ -39,8 +40,8 @@ fun KalkyGradientBackground(
             drawRect(
                 brush = Brush.radialGradient(
                     colors = listOf(
-                        Color(0xFF9A63FF).copy(alpha = 0.20f),
-                        Color(0xFFFF78D8).copy(alpha = 0.15f),
+                        KalkyAccents.brandViolet.copy(alpha = 0.20f),
+                        KalkyAccents.brandPink.copy(alpha = 0.15f),
                         Color.Transparent
                     ),
                     center = rightTopCenter,

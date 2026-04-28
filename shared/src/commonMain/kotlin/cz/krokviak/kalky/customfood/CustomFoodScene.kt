@@ -66,6 +66,7 @@ import cz.krokviak.kalky.home.components.NutrientsRow
 import cz.krokviak.kalky.i18n.LocalStrings
 import cz.krokviak.kalky.ui.components.MacroPickerRow
 import cz.krokviak.kalky.theme.AppTheme
+import cz.krokviak.kalky.theme.KalkyAccents
 import cz.krokviak.kalky.theme.MacroColors
 import cz.krokviak.kalky.ui.LocalDimensions
 import cz.krokviak.kalky.ui.components.KalkyButton
@@ -257,7 +258,7 @@ fun CustomFoodScene(
                                 SectionHeader(
                                     text = s.customFood.recentlyUsed,
                                     icon = Icons.Default.History,
-                                    iconColor = Color(0xFF4A90D9)
+                                    iconColor = KalkyAccents.accentBlue
                                 )
                             }
                             items(historyTop5, key = { it.id }) { item ->
@@ -265,7 +266,7 @@ fun CustomFoodScene(
                                     item = item,
                                     isSelected = item.id in uiState.selectedItems,
                                     onClick = { onToggleSelection(item.id) },
-                                    fallbackTint = Color(0xFF4A90D9),
+                                    fallbackTint = KalkyAccents.accentBlue,
                                 )
                             }
                         }
