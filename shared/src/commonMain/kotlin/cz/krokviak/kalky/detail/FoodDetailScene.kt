@@ -88,6 +88,10 @@ fun FoodDetailScene(
             },
             onFixResult = { foodDetailViewModel.fixResult() }
         )
+        cz.krokviak.kalky.common.error.ErrorSnackbarHost(
+            error = uiState.error,
+            onDismiss = foodDetailViewModel::dismissError,
+        )
     }
 }
 

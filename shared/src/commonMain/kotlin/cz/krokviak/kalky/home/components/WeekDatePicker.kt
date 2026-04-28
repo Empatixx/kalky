@@ -160,7 +160,7 @@ fun MonthHeader(currentDate: LocalDate, isToday: Boolean, onTodayClick: () -> Un
         ) {
             Icon(
                 imageVector = Icons.Filled.Restore,
-                contentDescription = "Dnes",
+                contentDescription = LocalStrings.current.home.today,
                 tint = AppTheme.colors.onBackground
             )
         }

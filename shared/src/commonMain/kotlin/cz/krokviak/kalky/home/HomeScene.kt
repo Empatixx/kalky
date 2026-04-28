@@ -93,10 +93,9 @@ fun HomeScene(
                             )
                     ) {
                         CalorieCard(
-                            uiState.currentCalories,
-                            uiState.maxCalories,
-                            uiState.calorieRatio(),
-                            currentStreak = uiState.currentStreak,
+                            currentCalories = uiState.currentCalories,
+                            maxCalories = uiState.maxCalories,
+                            calorieRatio = uiState.calorieRatio(),
                         )
 
                         Spacer(modifier = Modifier.height(dims.itemSpacing))

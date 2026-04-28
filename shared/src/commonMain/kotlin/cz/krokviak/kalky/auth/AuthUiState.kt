@@ -1,7 +1,9 @@
 package cz.krokviak.kalky.auth
 
+import androidx.compose.runtime.Immutable
 import kotlinx.coroutines.flow.StateFlow
 
+@Immutable
 data class AuthUiState(
     val isLoading: Boolean = false,
     val isSignedIn: Boolean = false,

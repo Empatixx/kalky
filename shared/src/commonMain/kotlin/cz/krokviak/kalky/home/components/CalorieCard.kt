@@ -28,7 +28,6 @@ fun CalorieCard(
     currentCalories: Int,
     maxCalories: Int,
     calorieRatio: Float,
-    currentStreak: Int = 0,
     modifier: Modifier = Modifier
 ) {
     val dims = LocalDimensions.current
@@ -74,7 +73,3 @@ fun CalorieCard(
     }
 }
 
-fun calorieLabel(calDifference: Int): String {
-    val label = if (calDifference > 0) "zbývá kcal" else "přesazeno kcal"
-    return label;
-}

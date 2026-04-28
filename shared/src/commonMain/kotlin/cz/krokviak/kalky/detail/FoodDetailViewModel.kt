@@ -7,6 +7,7 @@ import cz.krokviak.kalky.common.domain.DeleteFoodItemUseCase
 import cz.krokviak.kalky.common.domain.GetFoodItemUseCase
 import cz.krokviak.kalky.common.domain.UpdateFoodItemUseCase
 import cz.krokviak.kalky.common.entities.FoodItemEntity
+import cz.krokviak.kalky.common.error.UiError
 import cz.krokviak.kalky.common.utils.caloriesFromMacros
 import cz.krokviak.kalky.network.FoodAnalysisClient
 import cz.krokviak.kalky.nutrientedit.MacroField
@@ -102,25 +103,33 @@ class FoodDetailViewModel(
     fun fixResult() {
         viewModelScope.launch {
             val bytes = _uiState.value.localImagePath?.let { imageStorage.getImageBytes(it) }
-            if (bytes != null) {
-                val analysisJob = viewModelScope.launch(Dispatchers.IO) {
-                    val analysis = foodAnalysisClient.getAnalysis(bytes)
-                    if (analysis != null) {
-                        _uiState.update {
-                            it.copy(
-                                name = analysis.title ?: "",
-                                calories = caloriesFromMacros(analysis.protein, analysis.carbs, analysis.fat),
-                                protein = analysis.protein,
-                                fat = analysis.fat,
-                                carbs = analysis.carbs,
-                                healthScore = analysis.healthScore,
-                            )
-                        }
-                    }
-                }
-                joinAll(analysisJob)
+            if (bytes == null) {
+                _uiState.update { it.copy(error = UiError.PhotoAnalysis) }
+                return@launch
             }
+            val analysisJob = viewModelScope.launch(Dispatchers.IO) {
+                val analysis = foodAnalysisClient.getAnalysis(bytes)
+                if (analysis != null) {
+                    _uiState.update {
+                        it.copy(
+                            name = analysis.title ?: "",
+                            calories = caloriesFromMacros(analysis.protein, analysis.carbs, analysis.fat),
+                            protein = analysis.protein,
+                            fat = analysis.fat,
+                            carbs = analysis.carbs,
+                            healthScore = analysis.healthScore,
+                        )
+                    }
+                } else {
+                    _uiState.update { it.copy(error = UiError.PhotoAnalysis) }
+                }
+            }
+            joinAll(analysisJob)
         }
+    }
+
+    fun dismissError() {
+        _uiState.update { it.copy(error = null) }
     }
 
     fun finish() {

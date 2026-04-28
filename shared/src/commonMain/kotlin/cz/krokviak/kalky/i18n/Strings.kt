@@ -105,7 +105,8 @@ data class HomeStrings(
     val deleteSelected: String,
     val saveAsCustom: String,
     val unknownFood: String,
-    val computingMacros: String
+    val computingMacros: String,
+    val today: String,
 )
 
 data class SettingsStrings(
@@ -231,7 +232,8 @@ val CzechStrings = AppStrings(
         deleteSelected = "Smazat",
         saveAsCustom = "Ulo\u017Eit jako j\u00EDdlo",
         unknownFood = "Nezn\u00E1m\u00E9 j\u00EDdlo",
-        computingMacros = "Po\u010D\u00EDt\u00E1m makro\u017Eiviny..."
+        computingMacros = "Po\u010D\u00EDt\u00E1m makro\u017Eiviny...",
+        today = "Dnes",
     ),
     settings = SettingsStrings(
         title = "Nastaven\u00ED",
@@ -404,7 +406,8 @@ val EnglishStrings = AppStrings(
         deleteSelected = "Delete",
         saveAsCustom = "Save as food",
         unknownFood = "Unknown food",
-        computingMacros = "Calculating macros..."
+        computingMacros = "Calculating macros...",
+        today = "Today",
     ),
     settings = SettingsStrings(
         title = "Settings",
