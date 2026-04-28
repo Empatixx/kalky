@@ -59,10 +59,8 @@ fun ManualFoodEntryScene(
     val state by viewModel.state.collectAsState()
     val s = LocalStrings.current
 
-    LaunchedEffect(Unit) {
-        viewModel.foodAdded.collect {
-            onFoodAdded()
-        }
+    LaunchedEffect(viewModel, onFoodAdded) {
+        viewModel.foodAdded.collect { onFoodAdded() }
     }
 
     Column(

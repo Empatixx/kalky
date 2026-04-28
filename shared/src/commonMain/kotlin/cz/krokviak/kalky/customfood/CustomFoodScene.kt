@@ -96,9 +96,9 @@ fun CustomFoodScene(
     val s = LocalStrings.current
     var selectedTab by remember { mutableStateOf(0) } // 0=All, 1=My Foods, 2=Recently Used
 
-    LaunchedEffect(Unit) { onLoadHistory() }
+    LaunchedEffect(onLoadHistory) { onLoadHistory() }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(foodAdded, onFoodAdded) {
         foodAdded.collect { onFoodAdded() }
     }
 

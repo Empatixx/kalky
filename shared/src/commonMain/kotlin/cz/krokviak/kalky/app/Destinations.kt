@@ -182,7 +182,7 @@ internal fun MainScaffold(
 
     val currentPage by remember { derivedStateOf { pagerState.currentPage } }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(uiState.currentDate) {
         mainViewModel.loadFoodItemsForDate(uiState.currentDate)
     }
 
