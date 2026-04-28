@@ -57,16 +57,25 @@ class MainViewModel(
             if (seedMockData) {
                 withContext(Dispatchers.IO) { databaseSeeder.seedIfEmpty() }
             }
-            val latestSettings = getLatestSettings()
-            _uiState.update {
-                it.copy(
-                    maxProtein = latestSettings?.targetProtein ?: 0,
-                    maxCarbs = latestSettings?.targetCarbs ?: 0,
-                    maxFats = latestSettings?.targetFat ?: 0,
-                    maxCalories = latestSettings?.targetCalories ?: 0,
-                )
-            }
+            applyLatestNutrientSettings()
             refreshStreak()
+        }
+    }
+
+    /** Reloads nutrient targets from storage; call after onboarding/settings writes. */
+    fun refreshNutrientSettings() {
+        viewModelScope.launch { applyLatestNutrientSettings() }
+    }
+
+    private suspend fun applyLatestNutrientSettings() {
+        val latestSettings = getLatestSettings()
+        _uiState.update {
+            it.copy(
+                maxProtein = latestSettings?.targetProtein ?: 0,
+                maxCarbs = latestSettings?.targetCarbs ?: 0,
+                maxFats = latestSettings?.targetFat ?: 0,
+                maxCalories = latestSettings?.targetCalories ?: 0,
+            )
         }
     }
 

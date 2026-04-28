@@ -54,7 +54,6 @@ import cz.krokviak.kalky.ui.components.KalkyGradientBackground
 @Composable
 fun OnboardingScene(
     onboardingViewModel: OnboardingViewModel,
-    onFinish: (OnboardingResult) -> Unit,
     appPreferences: AppPreferences = koinInject()
 ) {
     val uiState by onboardingViewModel.uiState.collectAsState()
@@ -209,7 +208,7 @@ fun OnboardingScene(
                     KalkyButton(
                         onClick = {
                             if (isLastStep) {
-                                onFinish(onboardingViewModel.buildResult())
+                                onboardingViewModel.submit()
                             } else {
                                 navigateToNextStep()
                             }

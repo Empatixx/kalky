@@ -17,6 +17,11 @@ class SettingsViewModel(
     val uiState: StateFlow<SettingsUiState> = _uiState.asStateFlow()
 
     init {
+        refresh()
+    }
+
+    /** Reloads personal info from storage; call after onboarding writes. */
+    fun refresh() {
         viewModelScope.launch {
             val info = personalInfoRepo.getLatestPersonalInfo()
             if (info != null) {

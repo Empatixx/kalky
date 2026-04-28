@@ -40,7 +40,6 @@ import cz.krokviak.kalky.home.components.BottomNavBar
 import cz.krokviak.kalky.nutrientedit.NutrientEditScene
 import cz.krokviak.kalky.nutrientedit.NutrientEditViewModel
 import cz.krokviak.kalky.onboarding.OnboardingScene
-import cz.krokviak.kalky.onboarding.OnboardingResult
 import cz.krokviak.kalky.onboarding.OnboardingViewModel
 import cz.krokviak.kalky.settings.ProfileScene
 import cz.krokviak.kalky.settings.SettingsScene
@@ -51,12 +50,8 @@ import kotlinx.coroutines.launch
 @Composable
 internal fun OnboardingDestination(
     onboardingViewModel: OnboardingViewModel,
-    onFinish: (OnboardingResult) -> Unit,
 ) {
-    OnboardingScene(
-        onboardingViewModel = onboardingViewModel,
-        onFinish = onFinish
-    )
+    OnboardingScene(onboardingViewModel = onboardingViewModel)
 }
 
 @Composable

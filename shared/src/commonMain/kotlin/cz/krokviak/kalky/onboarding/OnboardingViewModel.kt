@@ -2,15 +2,21 @@ package cz.krokviak.kalky.onboarding
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.compose.runtime.Immutable
 import cz.krokviak.kalky.common.repo.PersonalInfoRepo
+import cz.krokviak.kalky.common.utils.caloriesFromMacros
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import cz.krokviak.kalky.common.formatFloat1
 import kotlin.math.roundToInt
 
+@Immutable
 data class OnboardingUiState(
     val gender: String = "Mu\u017E",
     val activityLevel: Int = 2,
@@ -34,6 +40,9 @@ class OnboardingViewModel(
 
     private val _uiState = MutableStateFlow(OnboardingUiState())
     val uiState: StateFlow<OnboardingUiState> = _uiState.asStateFlow()
+
+    private val _completed = MutableSharedFlow<OnboardingResult>(extraBufferCapacity = 1)
+    val completed: SharedFlow<OnboardingResult> = _completed.asSharedFlow()
 
     init {
         viewModelScope.launch {
@@ -80,19 +89,19 @@ class OnboardingViewModel(
 
     fun onProteinChanged(value: Int) {
         _uiState.update {
-            it.copy(targetProtein = value, targetCalories = value * 4 + it.targetCarbs * 4 + it.targetFat * 9)
+            it.copy(targetProtein = value, targetCalories = caloriesFromMacros(value, it.targetCarbs, it.targetFat))
         }
     }
 
     fun onCarbsChanged(value: Int) {
         _uiState.update {
-            it.copy(targetCarbs = value, targetCalories = it.targetProtein * 4 + value * 4 + it.targetFat * 9)
+            it.copy(targetCarbs = value, targetCalories = caloriesFromMacros(it.targetProtein, value, it.targetFat))
         }
     }
 
     fun onFatChanged(value: Int) {
         _uiState.update {
-            it.copy(targetFat = value, targetCalories = it.targetProtein * 4 + it.targetCarbs * 4 + value * 9)
+            it.copy(targetFat = value, targetCalories = caloriesFromMacros(it.targetProtein, it.targetCarbs, value))
         }
     }
 
@@ -139,7 +148,12 @@ class OnboardingViewModel(
         }
     }
 
-    fun buildResult(): OnboardingResult {
+    fun submit() {
+        val result = buildResult()
+        viewModelScope.launch { _completed.emit(result) }
+    }
+
+    private fun buildResult(): OnboardingResult {
         val state = _uiState.value
         return OnboardingResult(
             gender = state.gender,

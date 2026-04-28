@@ -1,6 +1,7 @@
 package cz.krokviak.kalky.app
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.navigation.compose.NavHost
@@ -11,6 +12,7 @@ import cz.krokviak.kalky.analytics.AnalyticsViewModel
 import cz.krokviak.kalky.auth.AuthStateProvider
 import cz.krokviak.kalky.auth.AuthViewModelInterface
 import cz.krokviak.kalky.common.AppPreferences
+import cz.krokviak.kalky.common.domain.CompleteOnboardingUseCase
 import cz.krokviak.kalky.common.CustomFoodRoute
 import cz.krokviak.kalky.common.DefaultRoute
 import cz.krokviak.kalky.common.FoodDetailRoute
@@ -49,6 +51,7 @@ fun AppContent(
     val platformActions = LocalPlatformActions.current
     val appPreferences: AppPreferences = koinInject()
     val authStateProvider: AuthStateProvider = koinInject()
+    val completeOnboarding: CompleteOnboardingUseCase = koinInject()
 
     val onboardingCompleted by appPreferences.onboardingCompleted.collectAsState()
     val isAuthenticated by authStateProvider.isAuthenticated.collectAsState()
@@ -65,33 +68,19 @@ fun AppContent(
             startDestination = startDestination
         ) {
             composable<OnboardingRoute> {
-                OnboardingDestination(
-                    onboardingViewModel = onboardingViewModel,
-                    onFinish = { result ->
-                        settingsViewModel.onGenderChange(result.gender)
-                        settingsViewModel.onWeightChange(result.weight)
-                        settingsViewModel.onHeightChange(result.height)
-                        settingsViewModel.onAgeChange(result.age)
-                        settingsViewModel.onActivityLevelChange(result.activityLevel)
-                        settingsViewModel.save()
-                        if (result.targetCalories > 0) {
-                            nutrientEditViewModel.onProteinChange(result.targetProtein)
-                            nutrientEditViewModel.onCarbsChange(result.targetCarbs)
-                            nutrientEditViewModel.onFatChange(result.targetFat)
-                            mainViewModel.updateNutrientSettings(
-                                result.targetProtein,
-                                result.targetCarbs,
-                                result.targetFat,
-                                result.targetCalories
-                            )
-                        }
+                LaunchedEffect(onboardingViewModel) {
+                    onboardingViewModel.completed.collect { result ->
+                        completeOnboarding(result)
+                        mainViewModel.refreshNutrientSettings()
+                        settingsViewModel.refresh()
                         appPreferences.setOnboardingCompleted(true)
                         navController.navigate(LoginRoute) {
                             popUpTo(navController.graph.startDestinationId) { inclusive = true }
                             launchSingleTop = true
                         }
                     }
-                )
+                }
+                OnboardingDestination(onboardingViewModel = onboardingViewModel)
             }
 
             composable<LoginRoute> {
