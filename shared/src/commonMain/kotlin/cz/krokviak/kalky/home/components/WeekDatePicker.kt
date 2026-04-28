@@ -25,8 +25,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import cz.krokviak.kalky.common.toCzechShortName
+import cz.krokviak.kalky.common.shortName
 import cz.krokviak.kalky.common.withDayOfWeek
+import cz.krokviak.kalky.i18n.LocalStrings
 import cz.krokviak.kalky.theme.AppTheme
 import cz.krokviak.kalky.ui.LocalDimensions
 import kotlinx.coroutines.CoroutineScope
@@ -208,9 +209,8 @@ private fun DayItem(
         )
         Spacer(Modifier.height(4.dp))
 
-        // Short Czech name for the day
         Text(
-            text = date.dayOfWeek.toCzechShortName(),
+            text = date.dayOfWeek.shortName(LocalStrings.current.date),
             color = if (isSelected) AppTheme.colors.onPrimary else AppTheme.colors.onBackgroundSecondary,
             fontWeight = FontWeight.SemiBold,
             style = MaterialTheme.typography.bodyMedium

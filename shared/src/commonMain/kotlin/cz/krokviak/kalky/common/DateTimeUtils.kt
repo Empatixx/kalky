@@ -1,5 +1,6 @@
 package cz.krokviak.kalky.common
 
+import cz.krokviak.kalky.i18n.DateStrings
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.DayOfWeek
@@ -7,7 +8,6 @@ import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 
@@ -33,29 +33,14 @@ fun LocalDate.withDayOfWeek(target: DayOfWeek): LocalDate {
     return this.plus(diff, DateTimeUnit.DAY)
 }
 
-fun DayOfWeek.toCzechShortName(): String = when (this) {
-    DayOfWeek.MONDAY -> "Po"
-    DayOfWeek.TUESDAY -> "Út"
-    DayOfWeek.WEDNESDAY -> "St"
-    DayOfWeek.THURSDAY -> "Čt"
-    DayOfWeek.FRIDAY -> "Pá"
-    DayOfWeek.SATURDAY -> "So"
-    DayOfWeek.SUNDAY -> "Ne"
-    else -> "??"
-}
+/**
+ * DayOfWeek.ordinal: Mon=0..Sun=6 — matches DateStrings.daysShort indexing.
+ */
+fun DayOfWeek.shortName(strings: DateStrings): String =
+    strings.daysShort.getOrElse(this.ordinal) { "" }
 
-fun Month.toCzechName(): String = when (this) {
-    Month.JANUARY -> "Leden"
-    Month.FEBRUARY -> "Únor"
-    Month.MARCH -> "Březen"
-    Month.APRIL -> "Duben"
-    Month.MAY -> "Květen"
-    Month.JUNE -> "Červen"
-    Month.JULY -> "Červenec"
-    Month.AUGUST -> "Srpen"
-    Month.SEPTEMBER -> "Září"
-    Month.OCTOBER -> "Říjen"
-    Month.NOVEMBER -> "Listopad"
-    Month.DECEMBER -> "Prosinec"
-    else -> ""
-}
+/**
+ * Month.ordinal: January=0..December=11 — matches DateStrings.months indexing.
+ */
+fun Month.localizedName(strings: DateStrings): String =
+    strings.months.getOrElse(this.ordinal) { "" }

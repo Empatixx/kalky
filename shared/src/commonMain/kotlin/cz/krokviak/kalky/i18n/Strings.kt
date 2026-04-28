@@ -23,7 +23,17 @@ data class AppStrings(
     val customFood: CustomFoodStrings,
     val notifications: NotificationStrings,
     val legal: LegalStrings,
-    val auth: AuthStrings
+    val auth: AuthStrings,
+    val date: DateStrings
+)
+
+/**
+ * [daysShort]: Mon..Sun (size 7).
+ * [months]: Jan..Dec (size 12).
+ */
+data class DateStrings(
+    val daysShort: List<String>,
+    val months: List<String>
 )
 
 data class LegalStrings(
@@ -367,6 +377,13 @@ val CzechStrings = AppStrings(
         haveAccount = "M\u00E1te \u00FA\u010Det?",
         signOut = "Odhl\u00E1sit se",
         or = "nebo"
+    ),
+    date = DateStrings(
+        daysShort = listOf("Po", "\u00DAt", "St", "\u010Ct", "P\u00E1", "So", "Ne"),
+        months = listOf(
+            "Leden", "\u00DAnor", "B\u0159ezen", "Duben", "Kv\u011Bten", "\u010Cerven",
+            "\u010Cervenec", "Srpen", "Z\u00E1\u0159\u00ED", "\u0158\u00EDjen", "Listopad", "Prosinec"
+        )
     )
 )
 
@@ -533,6 +550,13 @@ val EnglishStrings = AppStrings(
         haveAccount = "Already have an account?",
         signOut = "Sign out",
         or = "or"
+    ),
+    date = DateStrings(
+        daysShort = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"),
+        months = listOf(
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        )
     )
 )
 

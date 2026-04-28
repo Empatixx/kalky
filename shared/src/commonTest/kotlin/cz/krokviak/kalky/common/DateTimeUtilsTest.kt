@@ -1,5 +1,7 @@
 package cz.krokviak.kalky.common
 
+import cz.krokviak.kalky.i18n.CzechStrings
+import cz.krokviak.kalky.i18n.EnglishStrings
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
@@ -9,21 +11,33 @@ import kotlin.test.assertEquals
 class DateTimeUtilsTest {
 
     @Test
-    fun toCzechShortName_allDays() {
-        assertEquals("Po", DayOfWeek.MONDAY.toCzechShortName())
-        assertEquals("Út", DayOfWeek.TUESDAY.toCzechShortName())
-        assertEquals("St", DayOfWeek.WEDNESDAY.toCzechShortName())
-        assertEquals("Čt", DayOfWeek.THURSDAY.toCzechShortName())
-        assertEquals("Pá", DayOfWeek.FRIDAY.toCzechShortName())
-        assertEquals("So", DayOfWeek.SATURDAY.toCzechShortName())
-        assertEquals("Ne", DayOfWeek.SUNDAY.toCzechShortName())
+    fun shortName_picksCzechDay() {
+        val cs = CzechStrings.date
+        assertEquals("Po", DayOfWeek.MONDAY.shortName(cs))
+        assertEquals("Út", DayOfWeek.TUESDAY.shortName(cs))
+        assertEquals("Ne", DayOfWeek.SUNDAY.shortName(cs))
     }
 
     @Test
-    fun toCzechName_someMonths() {
-        assertEquals("Leden", Month.JANUARY.toCzechName())
-        assertEquals("Březen", Month.MARCH.toCzechName())
-        assertEquals("Prosinec", Month.DECEMBER.toCzechName())
+    fun shortName_picksEnglishDay() {
+        val en = EnglishStrings.date
+        assertEquals("Mon", DayOfWeek.MONDAY.shortName(en))
+        assertEquals("Sun", DayOfWeek.SUNDAY.shortName(en))
+    }
+
+    @Test
+    fun localizedName_picksCzechMonth() {
+        val cs = CzechStrings.date
+        assertEquals("Leden", Month.JANUARY.localizedName(cs))
+        assertEquals("Březen", Month.MARCH.localizedName(cs))
+        assertEquals("Prosinec", Month.DECEMBER.localizedName(cs))
+    }
+
+    @Test
+    fun localizedName_picksEnglishMonth() {
+        val en = EnglishStrings.date
+        assertEquals("January", Month.JANUARY.localizedName(en))
+        assertEquals("December", Month.DECEMBER.localizedName(en))
     }
 
     @Test
