@@ -1,10 +1,15 @@
 package cz.krokviak.kalky.common.repo
 
+import app.cash.sqldelight.coroutines.asFlow
+import app.cash.sqldelight.coroutines.mapToList
+import app.cash.sqldelight.coroutines.mapToOne
 import cz.krokviak.kalky.analytics.data.DailyMacroTotals
 import cz.krokviak.kalky.common.entities.FoodItemEntity
 import cz.krokviak.kalky.db.KalkyDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
@@ -60,6 +65,25 @@ class FoodRepository(
     suspend fun getFoodItemsForDate(dateStr: String): List<FoodItemEntity> = withContext(Dispatchers.IO) {
         queries.getFoodItemsForDate(dateStr).executeAsList().map { it.toEntity() }
     }
+
+    fun observeFoodItemsForDate(dateStr: String): Flow<List<FoodItemEntity>> =
+        queries.getFoodItemsForDate(dateStr)
+            .asFlow()
+            .mapToList(Dispatchers.IO)
+            .map { rows -> rows.map { it.toEntity() } }
+
+    fun observeMacroTotalsForDate(dateStr: String): Flow<MacroTotals> =
+        queries.getMacroTotalsForDate(dateStr)
+            .asFlow()
+            .mapToOne(Dispatchers.IO)
+            .map { row ->
+                MacroTotals(
+                    calories = row.totalCalories.toInt(),
+                    protein = row.totalProtein.toInt(),
+                    carbs = row.totalCarbs.toInt(),
+                    fat = row.totalFat.toInt(),
+                )
+            }
 
     suspend fun getFoodItem(foodId: Long): FoodItemEntity? = withContext(Dispatchers.IO) {
         queries.getFoodItem(foodId).executeAsOneOrNull()?.toEntity()

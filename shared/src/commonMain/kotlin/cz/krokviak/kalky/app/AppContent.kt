@@ -135,7 +135,8 @@ fun AppContent(
                     onBack = { navController.popBackStack() },
                     onAddNew = { navController.navigate(ManualFoodEntryRoute) },
                     onFoodAdded = {
-                        mainViewModel.loadFoodItemsForDate(mainViewModel.uiState.value.currentDate)
+                        // MainViewModel's daily-macros flow re-emits automatically
+                        // after the insert; no explicit reload needed.
                         navController.popBackStack()
                     }
                 )
@@ -146,7 +147,6 @@ fun AppContent(
                     manualEntryViewModel = manualEntryViewModel,
                     onBack = { navController.popBackStack() },
                     onFoodAdded = {
-                        mainViewModel.loadFoodItemsForDate(mainViewModel.uiState.value.currentDate)
                         navController.navigate(DefaultRoute) {
                             popUpTo(DefaultRoute) { inclusive = false }
                             launchSingleTop = true

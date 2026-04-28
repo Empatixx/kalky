@@ -181,10 +181,8 @@ internal fun MainScaffold(
     val uiState by mainViewModel.uiState.collectAsState()
 
     val currentPage by remember { derivedStateOf { pagerState.currentPage } }
-
-    LaunchedEffect(uiState.currentDate) {
-        mainViewModel.loadFoodItemsForDate(uiState.currentDate)
-    }
+    // No explicit reload needed: MainViewModel observes the daily-macros flow
+    // and re-collects whenever currentDate changes.
 
     KalkyGradientBackground {
         Scaffold(

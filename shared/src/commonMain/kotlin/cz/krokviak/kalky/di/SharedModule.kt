@@ -14,6 +14,7 @@ import cz.krokviak.kalky.common.domain.GetFoodLibraryUseCase
 import cz.krokviak.kalky.common.domain.GetLatestNutrientSettingsUseCase
 import cz.krokviak.kalky.common.domain.GetStreakUseCase
 import cz.krokviak.kalky.common.domain.GetWeightsInRangeUseCase
+import cz.krokviak.kalky.common.domain.ObserveDailyMacrosUseCase
 import cz.krokviak.kalky.common.domain.SearchFoodsUseCase
 import cz.krokviak.kalky.common.domain.SearchHistoryFoodsUseCase
 import cz.krokviak.kalky.common.domain.UpdateFoodItemUseCase
@@ -82,6 +83,7 @@ val sharedModule = module {
     factory { SearchHistoryFoodsUseCase(get()) }
     factory { GetFoodLibraryUseCase(get()) }
     factory { GetWeightsInRangeUseCase(get()) }
+    factory { ObserveDailyMacrosUseCase(get()) }
 
     // Notifications
     single { MealReminderChecker(get(), get()) }
