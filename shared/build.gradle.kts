@@ -93,6 +93,18 @@ kotlin {
             implementation(libs.koin.android)
         }
 
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.turbine)
+        }
+
+        val androidUnitTest by getting {
+            dependencies {
+                implementation(libs.sqldelight.sqlite.driver)
+            }
+        }
+
         iosMain.dependencies {
             // Ktor engine
             implementation(libs.ktor.client.darwin)
