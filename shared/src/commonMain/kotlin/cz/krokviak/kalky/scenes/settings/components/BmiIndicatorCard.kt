@@ -22,6 +22,9 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cz.krokviak.kalky.core.common.formatFloat1
+import cz.krokviak.kalky.core.common.utils.BmiCategory
+import cz.krokviak.kalky.core.common.utils.bmiCategory
+import cz.krokviak.kalky.core.i18n.LocalStrings
 import cz.krokviak.kalky.core.theme.AppTheme
 import cz.krokviak.kalky.core.theme.KalkyAccents
 import cz.krokviak.kalky.core.ui.components.KalkyCard
@@ -32,7 +35,20 @@ fun BmiIndicatorCard(
     textSize: TextUnit = 20.sp,
     modifier: Modifier = Modifier
 ) {
-    val (label, labelColor) = bmiLabel(bmi)
+    val s = LocalStrings.current
+    val category = bmiCategory(bmi)
+    val label = when (category) {
+        BmiCategory.UNDERWEIGHT -> s.profile.bmiUnderweight
+        BmiCategory.NORMAL -> s.profile.bmiNormal
+        BmiCategory.OVERWEIGHT -> s.profile.bmiOverweight
+        BmiCategory.OBESE -> s.profile.bmiObese
+    }
+    val labelColor = when (category) {
+        BmiCategory.UNDERWEIGHT -> KalkyAccents.bmiUnder
+        BmiCategory.NORMAL -> KalkyAccents.bmiNormal
+        BmiCategory.OVERWEIGHT -> KalkyAccents.bmiOver
+        BmiCategory.OBESE -> KalkyAccents.bmiObese
+    }
 
     KalkyCard(
         modifier = modifier,
@@ -100,11 +116,3 @@ private fun RowScope.BmiSegment(color: Color) {
     )
 }
 
-private fun bmiLabel(bmi: Float): Pair<String, Color> {
-    return when {
-        bmi < 18.5f -> "Podváha" to KalkyAccents.bmiUnder
-        bmi < 25f -> "Normální" to KalkyAccents.bmiNormal
-        bmi < 30f -> "Nadváha" to KalkyAccents.bmiOver
-        else -> "Obezita" to KalkyAccents.bmiObese
-    }
-}

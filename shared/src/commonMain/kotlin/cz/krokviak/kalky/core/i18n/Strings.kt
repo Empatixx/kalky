@@ -136,7 +136,11 @@ data class ProfileStrings(
     val sedentary: String,
     val light: String,
     val active: String,
-    val veryActive: String
+    val veryActive: String,
+    val bmiUnderweight: String,
+    val bmiNormal: String,
+    val bmiOverweight: String,
+    val bmiObese: String,
 )
 
 data class CameraStrings(
@@ -268,7 +272,11 @@ val CzechStrings = AppStrings(
         sedentary = "Sedav\u00FD",
         light = "M\u00EDrn\u00FD",
         active = "Aktivn\u00ED",
-        veryActive = "Velmi aktivn\u00ED"
+        veryActive = "Velmi aktivn\u00ED",
+        bmiUnderweight = "Podv\u00E1ha",
+        bmiNormal = "Norm\u00E1ln\u00ED",
+        bmiOverweight = "Nadv\u00E1ha",
+        bmiObese = "Obezita",
     ),
     camera = CameraStrings(
         photoMode = "Re\u017Eim foto",
@@ -449,7 +457,11 @@ val EnglishStrings = AppStrings(
         sedentary = "Sedentary",
         light = "Light",
         active = "Active",
-        veryActive = "Very active"
+        veryActive = "Very active",
+        bmiUnderweight = "Underweight",
+        bmiNormal = "Normal",
+        bmiOverweight = "Overweight",
+        bmiObese = "Obese",
     ),
     camera = CameraStrings(
         photoMode = "Photo mode",
