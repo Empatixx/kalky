@@ -26,13 +26,14 @@ import cz.krokviak.kalky.core.theme.KalkyTheme
 import com.google.firebase.appcheck.FirebaseAppCheck
 import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
 import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
 
 class MainActivity : ComponentActivity() {
     // Only what MainActivity itself needs for camera-result handling and the
-    // sign-in callback. Scenes resolve their own ViewModels via koinInject.
-    private val mainViewModel: MainViewModel by inject()
-    private val authViewModel: AuthViewModel by inject()
+    // sign-in callback. Scenes resolve their own ViewModels via koinViewModel.
+    private val mainViewModel: MainViewModel by viewModel()
+    private val authViewModel: AuthViewModel by viewModel()
     private val appPreferences: AppPreferences by inject()
 
     private val cameraResultLauncher: ActivityResultLauncher<Intent> =

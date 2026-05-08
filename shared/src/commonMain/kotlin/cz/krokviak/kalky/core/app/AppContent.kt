@@ -23,6 +23,7 @@ import cz.krokviak.kalky.core.common.OnboardingRoute
 import cz.krokviak.kalky.core.common.PrivacyPolicyRoute
 import cz.krokviak.kalky.core.common.TermsRoute
 import cz.krokviak.kalky.core.di.koinInject
+import org.koin.compose.viewmodel.koinViewModel
 import cz.krokviak.kalky.scenes.home.MainViewModel
 import cz.krokviak.kalky.scenes.onboarding.OnboardingViewModel
 import cz.krokviak.kalky.scenes.settings.PrivacyPolicyScene
@@ -37,10 +38,10 @@ fun AppContent() {
     val appPreferences: AppPreferences = koinInject()
     val authStateProvider: AuthStateProvider = koinInject()
     val completeOnboarding: CompleteOnboardingUseCase = koinInject()
-    val mainViewModel: MainViewModel = koinInject()
-    val onboardingViewModel: OnboardingViewModel = koinInject()
-    val settingsViewModel: SettingsViewModel = koinInject()
-    val authViewModel: AuthViewModelInterface = koinInject()
+    val mainViewModel: MainViewModel = koinViewModel()
+    val onboardingViewModel: OnboardingViewModel = koinViewModel()
+    val settingsViewModel: SettingsViewModel = koinViewModel()
+    val authViewModel: AuthViewModelInterface = koinViewModel()
 
     val onboardingCompleted by appPreferences.onboardingCompleted.collectAsState()
     val isAuthenticated by authStateProvider.isAuthenticated.collectAsState()

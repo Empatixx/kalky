@@ -20,6 +20,7 @@ import cz.krokviak.kalky.scenes.nutrientedit.NutrientEditViewModel
 import cz.krokviak.kalky.scenes.onboarding.OnboardingViewModel
 import cz.krokviak.kalky.scenes.settings.SettingsViewModel
 import org.koin.core.context.startKoin
+import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 fun initKoinIos(
@@ -46,17 +47,17 @@ fun initKoinIos(
                     single(org.koin.core.qualifier.named("backendBaseUrl")) { backendBaseUrl }
                 }
 
-                // ViewModels
-                single { MainViewModel(get(), get(), get(), get(), get(), get()) }
-                single { FoodDetailViewModel(get(), get(), get()) }
-                single { NutrientEditViewModel(get()) }
-                single { AnalyticsViewModel(get(), get()) }
-                single { SettingsViewModel(get()) }
-                single { OnboardingViewModel(get()) }
-                single { CustomFoodSearchViewModel(get(), get()) }
-                single { ManualFoodEntryViewModel(get(), get()) }
-                single { cz.krokviak.kalky.scenes.barcode.BarcodeScannerViewModel(get()) }
-                single<AuthViewModelInterface> { StubAuthViewModel() }
+                // ViewModels — Koin 4 KMP DSL with proper VM lifecycle
+                viewModel { MainViewModel(get(), get(), get(), get(), get(), get()) }
+                viewModel { FoodDetailViewModel(get(), get(), get()) }
+                viewModel { NutrientEditViewModel(get()) }
+                viewModel { AnalyticsViewModel(get(), get()) }
+                viewModel { SettingsViewModel(get()) }
+                viewModel { OnboardingViewModel(get()) }
+                viewModel { CustomFoodSearchViewModel(get(), get()) }
+                viewModel { ManualFoodEntryViewModel(get(), get()) }
+                viewModel { cz.krokviak.kalky.scenes.barcode.BarcodeScannerViewModel(get()) }
+                viewModel<AuthViewModelInterface> { StubAuthViewModel() }
             }
         )
     }

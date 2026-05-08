@@ -22,8 +22,9 @@ import cz.krokviak.kalky.scenes.onboarding.OnboardingViewModel
 import cz.krokviak.kalky.scenes.settings.SettingsViewModel
 import cz.krokviak.kalky.BuildConfig
 import cz.krokviak.kalky.config.RemoteConfigManager
-import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val appModule = module {
@@ -40,19 +41,17 @@ val appModule = module {
     single<AuthStateProvider> { get<FirebaseAuthTokenProvider>() }
     single<AppCheckTokenProvider> { FirebaseAppCheckTokenProvider() }
 
-    // App-wide ViewModels (single instance per app — scenes inject via koinInject)
-    single { MainViewModel(get(), get(), get(), get(), get(), get(), get(), get(), seedMockData = BuildConfig.DEBUG) }
-    single { FoodDetailViewModel(get(), get(), get(), get(), get(), get()) }
-    single { NutrientEditViewModel(get(), get()) }
-    single { AnalyticsViewModel(get(), get()) }
-    single { SettingsViewModel(get()) }
-    single { OnboardingViewModel(get()) }
-    single { CustomFoodSearchViewModel(get(), get(), get(), get(), get()) }
-    single { ManualFoodEntryViewModel(get(), get(), get(), get()) }
-    single { AuthViewModel(get(), get()) }
-    single<AuthViewModelInterface> { get<AuthViewModel>() }
-
-    // Activity-scoped ViewModels for separate Activities (CameraActivity / BarcodeScannerActivity)
+    // ViewModels — Koin 4 KMP DSL. ViewModelStoreOwner-aware caching gives us
+    // proper onCleared() lifecycle (one instance per VM owner, not app-wide).
+    viewModel { MainViewModel(get(), get(), get(), get(), get(), get(), get(), get(), seedMockData = BuildConfig.DEBUG) }
+    viewModel { FoodDetailViewModel(get(), get(), get(), get(), get(), get()) }
+    viewModel { NutrientEditViewModel(get(), get()) }
+    viewModel { AnalyticsViewModel(get(), get()) }
+    viewModel { SettingsViewModel(get()) }
+    viewModel { OnboardingViewModel(get()) }
+    viewModel { CustomFoodSearchViewModel(get(), get(), get(), get(), get()) }
+    viewModel { ManualFoodEntryViewModel(get(), get(), get(), get()) }
+    viewModel { AuthViewModel(get(), get()) } bind AuthViewModelInterface::class
     viewModel { BarcodeScannerViewModel(get()) }
     viewModel { CameraViewModel(get()) }
 }

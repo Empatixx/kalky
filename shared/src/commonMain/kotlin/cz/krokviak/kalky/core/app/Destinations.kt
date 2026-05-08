@@ -33,7 +33,7 @@ import cz.krokviak.kalky.scenes.customfood.ManualFoodEntryScene
 import cz.krokviak.kalky.scenes.customfood.ManualFoodEntryViewModel
 import cz.krokviak.kalky.scenes.detail.FoodDetailScene
 import cz.krokviak.kalky.scenes.detail.FoodDetailViewModel
-import cz.krokviak.kalky.core.di.koinInject
+import org.koin.compose.viewmodel.koinViewModel
 import cz.krokviak.kalky.scenes.home.HomeScene
 import cz.krokviak.kalky.scenes.home.MainViewModel
 import cz.krokviak.kalky.scenes.home.components.BottomNavBar
@@ -49,7 +49,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 internal fun OnboardingDestination() {
-    val onboardingViewModel: OnboardingViewModel = koinInject()
+    val onboardingViewModel: OnboardingViewModel = koinViewModel()
     OnboardingScene(onboardingViewModel = onboardingViewModel)
 }
 
@@ -59,7 +59,7 @@ internal fun LoginDestination(
     onSignInWithApple: () -> Unit,
     onSignInSuccess: () -> Unit,
 ) {
-    val authViewModel: AuthViewModelInterface = koinInject()
+    val authViewModel: AuthViewModelInterface = koinViewModel()
     val uiState by authViewModel.uiState.collectAsState()
     LoginScene(
         onSignInWithGoogle = onSignInWithGoogle,
@@ -78,7 +78,7 @@ internal fun FoodDetailDestination(
     onShare: (String) -> Unit,
     onDelete: () -> Unit,
 ) {
-    val foodDetailViewModel: FoodDetailViewModel = koinInject()
+    val foodDetailViewModel: FoodDetailViewModel = koinViewModel()
     val uiState by foodDetailViewModel.uiState.collectAsState()
     LaunchedEffect(foodId) { foodDetailViewModel.loadFood(foodId) }
     FoodDetailScene(
@@ -101,8 +101,8 @@ internal fun FoodDetailDestination(
 internal fun NutrientEditDestination(
     onBack: () -> Unit,
 ) {
-    val nutrientEditViewModel: NutrientEditViewModel = koinInject()
-    val mainViewModel: MainViewModel = koinInject()
+    val nutrientEditViewModel: NutrientEditViewModel = koinViewModel()
+    val mainViewModel: MainViewModel = koinViewModel()
     val uiState by nutrientEditViewModel.uiState.collectAsState()
     NutrientEditScene(
         nutrientEditViewModel = nutrientEditViewModel,
@@ -125,8 +125,8 @@ internal fun CustomFoodDestination(
     onAddNew: () -> Unit,
     onFoodAdded: () -> Unit,
 ) {
-    val searchViewModel: CustomFoodSearchViewModel = koinInject()
-    val manualEntryViewModel: ManualFoodEntryViewModel = koinInject()
+    val searchViewModel: CustomFoodSearchViewModel = koinViewModel()
+    val manualEntryViewModel: ManualFoodEntryViewModel = koinViewModel()
     val uiState by searchViewModel.uiState.collectAsState()
     CustomFoodScene(
         uiState = uiState,
@@ -154,7 +154,7 @@ internal fun ManualFoodEntryDestination(
     onBack: () -> Unit,
     onFoodAdded: () -> Unit,
 ) {
-    val manualEntryViewModel: ManualFoodEntryViewModel = koinInject()
+    val manualEntryViewModel: ManualFoodEntryViewModel = koinViewModel()
     ManualFoodEntryScene(
         viewModel = manualEntryViewModel,
         onBackClick = onBack,
@@ -167,11 +167,11 @@ internal fun MainScaffold(
     onCameraClick: () -> Unit,
     navController: NavController,
 ) {
-    val mainViewModel: MainViewModel = koinInject()
-    val analyticsViewModel: AnalyticsViewModel = koinInject()
-    val settingsViewModel: SettingsViewModel = koinInject()
-    val manualEntryViewModel: ManualFoodEntryViewModel = koinInject()
-    val authViewModel: AuthViewModelInterface = koinInject()
+    val mainViewModel: MainViewModel = koinViewModel()
+    val analyticsViewModel: AnalyticsViewModel = koinViewModel()
+    val settingsViewModel: SettingsViewModel = koinViewModel()
+    val manualEntryViewModel: ManualFoodEntryViewModel = koinViewModel()
+    val authViewModel: AuthViewModelInterface = koinViewModel()
     val pagerState = rememberPagerState(
         initialPage = 0,
         pageCount = { 4 }

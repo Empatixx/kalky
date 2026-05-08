@@ -106,6 +106,7 @@ kotlin {
 
             // DI
             implementation(libs.insert.koin.koin.core)
+            implementation(libs.koin.compose.viewmodel)
 
             // Settings (multiplatform SharedPreferences/NSUserDefaults)
             implementation(libs.multiplatform.settings)

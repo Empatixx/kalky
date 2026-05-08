@@ -13,8 +13,9 @@ foundation = "1.8.0"
 haze = "1.5.0"
 hazeMaterials = "1.5.0"
 googleServices = "4.4.2"
-koinAndroid = "3.2.0"
-koinCoreVersion = "3.2.0"
+koinAndroid = "4.0.4"
+koinCoreVersion = "4.0.4"
+koinComposeViewmodel = "4.0.4"
 kotlin = "2.2.0"
 kotlinxDatetime = "0.6.2"
 ktor = "3.2.0"
@@ -71,6 +72,7 @@ androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "j
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koinAndroid" }
+koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koinComposeViewmodel" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
