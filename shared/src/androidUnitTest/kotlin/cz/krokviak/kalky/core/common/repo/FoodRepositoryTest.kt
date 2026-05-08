@@ -183,4 +183,178 @@ class FoodRepositoryTest {
         assertEquals("Updated", updated.name)
         assertEquals(200, updated.calories)
     }
+
+    @Test
+    fun getFoodItem_returnsNull_forUnknownId() = runTest {
+        assertNull(repo.getFoodItem(99_999))
+    }
+
+    @Test
+    fun getTotalCaloriesForDate_sumsAllRows() = runTest {
+        repo.insertFoodItem(item(calories = 100))
+        repo.insertFoodItem(item(calories = 250))
+        repo.insertFoodItem(item(calories = 400, createdAt = yesterday))
+
+        assertEquals(350, repo.getTotalCaloriesForDate("2026-05-08"))
+        assertEquals(400, repo.getTotalCaloriesForDate("2026-05-07"))
+    }
+
+    @Test
+    fun getTotalCaloriesForDate_returnsZero_forEmptyDate() = runTest {
+        assertEquals(0, repo.getTotalCaloriesForDate("2026-01-01"))
+    }
+
+    @Test
+    fun getTotalProteinFatCarbsForDate_sumsCorrectly() = runTest {
+        repo.insertFoodItem(item(protein = 10, fat = 5, carbs = 20))
+        repo.insertFoodItem(item(protein = 15, fat = 8, carbs = 30))
+
+        assertEquals(25, repo.getTotalProteinForDate("2026-05-08"))
+        assertEquals(13, repo.getTotalFatsForDate("2026-05-08"))
+        assertEquals(50, repo.getTotalCarbsForDate("2026-05-08"))
+    }
+
+    @Test
+    fun getMacroTotalsForDate_returnsAggregatedTotals() = runTest {
+        repo.insertFoodItem(item(calories = 100, protein = 10, fat = 5, carbs = 15))
+        repo.insertFoodItem(item(calories = 200, protein = 20, fat = 10, carbs = 30))
+
+        val totals = repo.getMacroTotalsForDate("2026-05-08")
+
+        assertEquals(300, totals.calories)
+        assertEquals(30, totals.protein)
+        assertEquals(15, totals.fat)
+        assertEquals(45, totals.carbs)
+    }
+
+    @Test
+    fun getDistinctFoodsByName_keepsLatestPerName() = runTest {
+        // Two banáns with different timestamps — dedup keeps the latest.
+        val earlier = Instant.parse("2026-05-07T10:00:00Z")
+        val later = Instant.parse("2026-05-08T10:00:00Z")
+        repo.insertFoodItem(item(name = "Banán", calories = 90, createdAt = earlier))
+        repo.insertFoodItem(item(name = "Banán", calories = 95, createdAt = later))
+        repo.insertFoodItem(item(name = "Avokádo", calories = 160, createdAt = today))
+
+        val distinct = repo.getDistinctFoodsByName()
+
+        assertEquals(2, distinct.size)
+        assertEquals(setOf("Banán", "Avokádo"), distinct.map { it.name }.toSet())
+        // Latest banán wins
+        assertEquals(95, distinct.first { it.name == "Banán" }.calories)
+    }
+
+    @Test
+    fun searchDistinctFoodsByName_anchoredPrefixMatch() = runTest {
+        repo.insertFoodItem(item(name = "Banán"))
+        repo.insertFoodItem(item(name = "Banánový jogurt"))
+        repo.insertFoodItem(item(name = "Avokádo"))
+
+        val results = repo.searchDistinctFoodsByName("Ban")
+
+        assertEquals(2, results.size)
+        assertTrue(results.all { it.name.startsWith("Ban") })
+    }
+
+    @Test
+    fun searchDistinctFoodsByName_caseInsensitive_viaCollateNocase() = runTest {
+        repo.insertFoodItem(item(name = "BANÁN"))
+
+        val results = repo.searchDistinctFoodsByName("ban")
+
+        assertEquals(1, results.size)
+    }
+
+    @Test
+    fun searchCustomFoods_returnsCustomMatches_only() = runTest {
+        repo.insertFoodItem(item(name = "Banán photo", isCustom = false))
+        repo.insertFoodItem(item(name = "Banán custom", isCustom = true))
+        repo.insertFoodItem(item(name = "Apple", isCustom = true))
+
+        val results = repo.searchCustomFoods("Banán")
+
+        assertEquals(1, results.size)
+        assertTrue(results.single().isCustom)
+        assertEquals("Banán custom", results.single().name)
+    }
+
+    @Test
+    fun getDistinctFoodDates_returnsUniqueDates_descending() = runTest {
+        repo.insertFoodItem(item(createdAt = today))
+        repo.insertFoodItem(item(createdAt = today)) // dup
+        repo.insertFoodItem(item(createdAt = yesterday))
+
+        val dates = repo.getDistinctFoodDates()
+
+        assertEquals(2, dates.size)
+        // Newest first
+        assertEquals("2026-05-08", dates.first())
+    }
+
+    @Test
+    fun getRecentDistinctFoodDates_appliesLimit() = runTest {
+        val twoDaysAgo = Instant.parse("2026-05-06T10:00:00Z")
+        repo.insertFoodItem(item(createdAt = today))
+        repo.insertFoodItem(item(createdAt = yesterday))
+        repo.insertFoodItem(item(createdAt = twoDaysAgo))
+
+        val limited = repo.getRecentDistinctFoodDates(2)
+
+        assertEquals(2, limited.size)
+        assertEquals("2026-05-08", limited.first())
+    }
+
+    @Test
+    fun getDailyMacroTotalsInRange_returnsRowsForEachDistinctDate() = runTest {
+        repo.insertFoodItem(item(protein = 10, carbs = 20, fat = 5, createdAt = today))
+        repo.insertFoodItem(item(protein = 5, carbs = 10, fat = 2, createdAt = today))
+        repo.insertFoodItem(item(protein = 8, carbs = 15, fat = 3, createdAt = yesterday))
+
+        val rows = repo.getDailyMacroTotalsInRange("2026-05-07", "2026-05-08")
+
+        assertEquals(2, rows.size)
+        val todayRow = rows.first { it.day.toString() == "2026-05-08" }
+        assertEquals(15, todayRow.totalProtein)
+        assertEquals(30, todayRow.totalCarbs)
+        assertEquals(7, todayRow.totalFat)
+    }
+
+    @Test
+    fun getDailyMacroTotalsInRange_excludesDatesOutsideRange() = runTest {
+        val olderDate = Instant.parse("2026-04-01T10:00:00Z")
+        repo.insertFoodItem(item(createdAt = olderDate))
+        repo.insertFoodItem(item(createdAt = today))
+
+        val rows = repo.getDailyMacroTotalsInRange("2026-05-01", "2026-05-31")
+
+        assertEquals(1, rows.size)
+        assertEquals("2026-05-08", rows.single().day.toString())
+    }
+
+    @Test
+    fun observeFoodItemsForDate_emitsAfterDelete() = runTest {
+        val id = repo.insertFoodItem(item(name = "Toemove"))
+
+        repo.observeFoodItemsForDate("2026-05-08").test {
+            assertEquals(1, awaitItem().size)
+            repo.deleteFoodItem(id)
+            assertTrue(awaitItem().isEmpty())
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun observeMacroTotalsForDate_emitsZero_whenAllItemsDeleted() = runTest {
+        val id = repo.insertFoodItem(item(calories = 500, protein = 30, fat = 10, carbs = 50))
+
+        repo.observeMacroTotalsForDate("2026-05-08").test {
+            val first = awaitItem()
+            assertEquals(500, first.calories)
+            repo.deleteFoodItem(id)
+            val zero = awaitItem()
+            assertEquals(0, zero.calories)
+            assertEquals(0, zero.protein)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
 }
