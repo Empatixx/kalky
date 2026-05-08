@@ -47,15 +47,38 @@ fun initKoinIos(
                     single(org.koin.core.qualifier.named("backendBaseUrl")) { backendBaseUrl }
                 }
 
-                // ViewModels — Koin 4 KMP DSL with proper VM lifecycle
-                viewModel { MainViewModel(get(), get(), get(), get(), get(), get()) }
-                viewModel { FoodDetailViewModel(get(), get(), get()) }
-                viewModel { NutrientEditViewModel(get()) }
+                // ViewModels — Koin 4 KMP DSL with proper VM lifecycle.
+                // Constructor arities mirror app/.../core/di/AppModule.kt; keep these
+                // in sync when a VM gains/loses a dependency.
+                viewModel {
+                    MainViewModel(
+                        getLatestSettings = get(),
+                        foodPhotoAnalyzer = get(),
+                        observeDailyMacros = get(),
+                        getStreak = get(),
+                        addFoodItem = get(),
+                        deleteFoodItems = get(),
+                        databaseSeeder = get(),
+                        clock = get(),
+                        seedMockData = false,
+                    )
+                }
+                viewModel {
+                    FoodDetailViewModel(
+                        foodAnalysisClient = get(),
+                        getFoodItem = get(),
+                        updateFoodItem = get(),
+                        deleteFoodItem = get(),
+                        imageStorage = get(),
+                        clock = get(),
+                    )
+                }
+                viewModel { NutrientEditViewModel(get(), get()) }
                 viewModel { AnalyticsViewModel(get(), get()) }
                 viewModel { SettingsViewModel(get()) }
                 viewModel { OnboardingViewModel(get()) }
-                viewModel { CustomFoodSearchViewModel(get(), get()) }
-                viewModel { ManualFoodEntryViewModel(get(), get()) }
+                viewModel { CustomFoodSearchViewModel(get(), get(), get(), get(), get()) }
+                viewModel { ManualFoodEntryViewModel(get(), get(), get(), get()) }
                 viewModel { cz.krokviak.kalky.scenes.barcode.BarcodeScannerViewModel(get()) }
                 viewModel<AuthViewModelInterface> { StubAuthViewModel() }
             }

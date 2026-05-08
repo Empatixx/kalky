@@ -40,7 +40,7 @@ Czech-language food/nutrition tracking app built with Kotlin Multiplatform (KMP)
 ### Platform Abstractions
 - **`PlatformActions`** (`shared/.../common/PlatformActions.kt`): Interface for platform-specific UI actions — `launchCamera()`, `launchBarcodeScanner()`, `signInWithGoogle()`, `signInWithApple()`, `shareImage()`, `requestNotificationPermission()`. Provided via `LocalPlatformActions` CompositionLocal.
 - **`AppPreferences`** (`shared/.../common/AppPreferences.kt`): Multiplatform settings (via `russhwolf/multiplatform-settings`). Stores onboarding state, language, unit system, notification prefs. Replaces the old Android-only `AppPreferencesManager`.
-- **`AuthViewModelInterface`** (`shared/.../auth/AuthUiState.kt`): Shared auth contract. Android's `AuthViewModel` implements it with Firebase. iOS has `StubAuthViewModel` (to be replaced with real Firebase iOS impl).
+- **`AuthViewModelInterface`** (`shared/.../auth/AuthUiState.kt`): Shared auth contract. Android's `AuthViewModel` implements it with Firebase. iOS uses `StubAuthViewModel` in `KoinHelper.kt`; the actual auth flow happens in Swift (`GoogleSignInHelper`, `AppleSignInHelper`) and is bridged via `IosAuthTokenProvider`/`IosAuthStateProvider`.
 - **`ImageStorage`** (`shared/.../common/ImageStorage.kt`): File-based image storage. Android uses external files dir, iOS uses NSDocumentDirectory.
 
 ### Auth Flow

@@ -91,6 +91,48 @@ extension NotificationManager: MessagingDelegate {
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
         guard let token = fcmToken else { return }
         print("FCM token: \(token)")
-        // TODO: Send token to backend via POST /api/auth/fcm-token
+        Task { await postTokenToBackend(token) }
+    }
+
+    /// POST /api/auth/fcm-token with the user's Firebase ID token + AppCheck token.
+    /// Mirrors the Android KalkyFcmService.onNewToken() behavior.
+    private func postTokenToBackend(_ fcmToken: String) async {
+        let backendUrl = IosRemoteConfigManager.getBackendBaseUrl()
+        guard let url = URL(string: "\(backendUrl)/api/auth/fcm-token") else { return }
+
+        let idToken: String?
+        do {
+            idToken = try await IosAuthTokenProvider().getIdToken()
+        } catch {
+            print("FCM token sync skipped — no Firebase ID token: \(error)")
+            return
+        }
+        guard let bearer = idToken else {
+            // User not signed in yet — token will be retried on next refresh.
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("Bearer \(bearer)", forHTTPHeaderField: "Authorization")
+
+        // App Check token is best-effort; backend rejects without it in prod.
+        if let appCheck = try? await IosAppCheckTokenProvider().getToken(), !appCheck.isEmpty {
+            request.setValue(appCheck, forHTTPHeaderField: "X-Firebase-AppCheck")
+        }
+
+        let payload: [String: String] = ["token": fcmToken]
+        guard let body = try? JSONSerialization.data(withJSONObject: payload) else { return }
+        request.httpBody = body
+
+        do {
+            let (_, response) = try await URLSession.shared.data(for: request)
+            if let http = response as? HTTPURLResponse, !(200..<300).contains(http.statusCode) {
+                print("FCM token sync failed: HTTP \(http.statusCode)")
+            }
+        } catch {
+            print("FCM token sync network error: \(error)")
+        }
     }
 }
