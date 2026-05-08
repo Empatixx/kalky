@@ -34,6 +34,7 @@ kotlinxCollectionsImmutable = "0.3.8"
 kotlinxCoroutinesTest = "1.10.1"
 turbine = "1.2.1"
 mokkery = "2.7.2"
+kover = "0.9.1"
 lifecycleViewmodel = "2.8.2"
 lifecycleViewmodelCompose = "2.9.0-alpha11"
 navigationCompose-kmp = "2.8.0-alpha10"
@@ -111,3 +112,4 @@ kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref 
 kotlin-serialization = "org.jetbrains.kotlin.plugin.serialization:2.0.20"
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 mokkery = { id = "dev.mokkery", version.ref = "mokkery" }
+kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }

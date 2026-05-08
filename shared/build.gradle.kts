@@ -6,6 +6,43 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.sqldelight)
     alias(libs.plugins.mokkery)
+    alias(libs.plugins.kover)
+}
+
+kover {
+    reports {
+        filters {
+            excludes {
+                // Generated SQLDelight code
+                classes(
+                    // SQLDelight generated (top-level cz.krokviak.kalky package)
+                    "cz.krokviak.kalky.core.db.*",
+                    "cz.krokviak.kalky.Food_items*",
+                    "cz.krokviak.kalky.Nutrient_settings*",
+                    "cz.krokviak.kalky.Personal_info*",
+                    "cz.krokviak.kalky.FoodItemQueries*",
+                    "cz.krokviak.kalky.NutrientSettingQueries*",
+                    "cz.krokviak.kalky.PersonalInfoQueries*",
+                    // Auto-generated build/resource artifacts
+                    "cz.krokviak.kalky.BuildConfig",
+                    "cz.krokviak.kalky.shared.generated.*",
+                    "*\$\$serializer",
+                    "*ComposableSingletons*",
+                    // Compose UI: top-level Composable scenes & their inner Composable closures
+                    "*SceneKt",
+                    "*SceneKt\$*",
+                    "*PageKt",
+                    "*PageKt\$*",
+                    // Reusable UI components, theme, navigation glue
+                    "cz.krokviak.kalky.core.ui.*",
+                    "cz.krokviak.kalky.core.theme.*",
+                    "cz.krokviak.kalky.core.app.*",
+                    "cz.krokviak.kalky.scenes.*.components.*",
+                    "cz.krokviak.kalky.scenes.onboarding.pages.*",
+                )
+            }
+        }
+    }
 }
 
 composeCompiler {

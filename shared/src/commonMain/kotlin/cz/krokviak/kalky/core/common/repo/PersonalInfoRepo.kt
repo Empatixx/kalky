@@ -14,12 +14,12 @@ data class WeightEntry(
     val weight: Double
 )
 
-class PersonalInfoRepo(
+open class PersonalInfoRepo(
     private val database: KalkyDatabase
 ) {
     private val queries get() = database.personalInfoQueries
 
-    suspend fun insertPersonalInfo(info: PersonalInfoEntity): Long = withContext(Dispatchers.IO) {
+    open suspend fun insertPersonalInfo(info: PersonalInfoEntity): Long = withContext(Dispatchers.IO) {
         database.transactionWithResult {
             queries.insertPersonalInfo(
                 gender = info.gender,
@@ -34,11 +34,11 @@ class PersonalInfoRepo(
         }
     }
 
-    suspend fun getLatestPersonalInfo(): PersonalInfoEntity? = withContext(Dispatchers.IO) {
+    open suspend fun getLatestPersonalInfo(): PersonalInfoEntity? = withContext(Dispatchers.IO) {
         queries.getLatestPersonalInfo().executeAsOneOrNull()?.toEntity()
     }
 
-    suspend fun getWeightsInRange(startDate: LocalDate, endDate: LocalDate): List<WeightEntry> = withContext(Dispatchers.IO) {
+    open suspend fun getWeightsInRange(startDate: LocalDate, endDate: LocalDate): List<WeightEntry> = withContext(Dispatchers.IO) {
         val personalInfoList = queries.getPersonalInfoBetweenDates(
             startDate.toString(),
             endDate.toString()

@@ -11,13 +11,13 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
-class OpenFoodFactsClient(private val httpClient: HttpClient) {
+open class OpenFoodFactsClient(private val httpClient: HttpClient) {
     private val productMutex = Mutex()
     private val searchMutex = Mutex()
     private val productInflight = mutableMapOf<String, CompletableDeferred<OpenFoodFactsProduct?>>()
     private val searchInflight = mutableMapOf<SearchKey, CompletableDeferred<List<OpenFoodFactsProduct>>>()
 
-    suspend fun getProduct(barcode: String): OpenFoodFactsProduct? {
+    open suspend fun getProduct(barcode: String): OpenFoodFactsProduct? {
         val cached = productMutex.withLock { productInflight[barcode] }
         if (cached != null) return cached.await()
 
@@ -29,7 +29,7 @@ class OpenFoodFactsClient(private val httpClient: HttpClient) {
         return result
     }
 
-    suspend fun searchProducts(query: String, pageSize: Int = 20): List<OpenFoodFactsProduct> {
+    open suspend fun searchProducts(query: String, pageSize: Int = 20): List<OpenFoodFactsProduct> {
         val key = SearchKey(query, pageSize)
         val cached = searchMutex.withLock { searchInflight[key] }
         if (cached != null) return cached.await()
