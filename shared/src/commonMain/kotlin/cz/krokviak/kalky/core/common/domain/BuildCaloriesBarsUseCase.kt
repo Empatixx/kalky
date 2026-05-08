@@ -11,10 +11,10 @@ import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.plus
 
-class BuildCaloriesBarsUseCase(
+open class BuildCaloriesBarsUseCase(
     private val foodRepository: FoodRepository,
 ) {
-    suspend operator fun invoke(
+    open suspend operator fun invoke(
         start: LocalDate,
         end: LocalDate,
         dateStrings: DateStrings = CzechStrings.date,

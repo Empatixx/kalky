@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.sqldelight)
+    alias(libs.plugins.mokkery)
 }
 
 composeCompiler {
@@ -97,6 +98,7 @@ kotlin {
             implementation(kotlin("test"))
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.turbine)
+            implementation(libs.ktor.client.mock)
         }
 
         val androidUnitTest by getting {

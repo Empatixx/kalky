@@ -7,9 +7,9 @@ import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
 
-class DatabaseSeeder(private val db: KalkyDatabase) {
+open class DatabaseSeeder(private val db: KalkyDatabase) {
 
-    suspend fun seedIfEmpty() = withContext(Dispatchers.IO) {
+    open suspend fun seedIfEmpty() = withContext(Dispatchers.IO) {
         val existing = db.personalInfoQueries.getLatestPersonalInfo().executeAsOneOrNull()
         if (existing != null) return@withContext
         // Wrap all ~26 inserts in a single transaction so SQLite doesn't fsync per row.

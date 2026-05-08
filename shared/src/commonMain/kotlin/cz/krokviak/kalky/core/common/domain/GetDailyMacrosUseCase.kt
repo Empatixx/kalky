@@ -17,10 +17,10 @@ data class DailyMacros(
     val totalFat: Int = 0,
 )
 
-class GetDailyMacrosUseCase(
+open class GetDailyMacrosUseCase(
     private val foodRepository: FoodRepository,
 ) {
-    suspend operator fun invoke(date: LocalDate): DailyMacros = coroutineScope {
+    open suspend operator fun invoke(date: LocalDate): DailyMacros = coroutineScope {
         val dateStr = date.toString()
         val itemsDeferred = async { foodRepository.getFoodItemsForDate(dateStr) }
         val totalsDeferred = async { foodRepository.getMacroTotalsForDate(dateStr) }

@@ -21,12 +21,12 @@ data class MacroTotals(
     val fat: Int,
 )
 
-class FoodRepository(
+open class FoodRepository(
     private val database: KalkyDatabase
 ) {
     private val queries get() = database.foodItemQueries
 
-    suspend fun insertFoodItem(item: FoodItemEntity): Long = withContext(Dispatchers.IO) {
+    open suspend fun insertFoodItem(item: FoodItemEntity): Long = withContext(Dispatchers.IO) {
         database.transactionWithResult {
             queries.insertFoodItem(
                 name = item.name,
@@ -46,7 +46,7 @@ class FoodRepository(
         }
     }
 
-    suspend fun updateFoodItem(item: FoodItemEntity) = withContext(Dispatchers.IO) {
+    open suspend fun updateFoodItem(item: FoodItemEntity) = withContext(Dispatchers.IO) {
         queries.updateFoodItem(
             name = item.name,
             calories = item.calories,
@@ -62,17 +62,17 @@ class FoodRepository(
         )
     }
 
-    suspend fun getFoodItemsForDate(dateStr: String): List<FoodItemEntity> = withContext(Dispatchers.IO) {
+    open suspend fun getFoodItemsForDate(dateStr: String): List<FoodItemEntity> = withContext(Dispatchers.IO) {
         queries.getFoodItemsForDate(dateStr).executeAsList().map { it.toEntity() }
     }
 
-    fun observeFoodItemsForDate(dateStr: String): Flow<List<FoodItemEntity>> =
+    open fun observeFoodItemsForDate(dateStr: String): Flow<List<FoodItemEntity>> =
         queries.getFoodItemsForDate(dateStr)
             .asFlow()
             .mapToList(Dispatchers.IO)
             .map { rows -> rows.map { it.toEntity() } }
 
-    fun observeMacroTotalsForDate(dateStr: String): Flow<MacroTotals> =
+    open fun observeMacroTotalsForDate(dateStr: String): Flow<MacroTotals> =
         queries.getMacroTotalsForDate(dateStr)
             .asFlow()
             .mapToOne(Dispatchers.IO)
@@ -85,27 +85,27 @@ class FoodRepository(
                 )
             }
 
-    suspend fun getFoodItem(foodId: Long): FoodItemEntity? = withContext(Dispatchers.IO) {
+    open suspend fun getFoodItem(foodId: Long): FoodItemEntity? = withContext(Dispatchers.IO) {
         queries.getFoodItem(foodId).executeAsOneOrNull()?.toEntity()
     }
 
-    suspend fun getTotalCaloriesForDate(dateStr: String): Int = withContext(Dispatchers.IO) {
+    open suspend fun getTotalCaloriesForDate(dateStr: String): Int = withContext(Dispatchers.IO) {
         queries.getTotalCaloriesForDate(dateStr).executeAsOneOrNull()?.SUM ?: 0
     }
 
-    suspend fun getTotalFatsForDate(dateStr: String): Int = withContext(Dispatchers.IO) {
+    open suspend fun getTotalFatsForDate(dateStr: String): Int = withContext(Dispatchers.IO) {
         queries.getTotalFatsForDate(dateStr).executeAsOneOrNull()?.SUM ?: 0
     }
 
-    suspend fun getTotalCarbsForDate(dateStr: String): Int = withContext(Dispatchers.IO) {
+    open suspend fun getTotalCarbsForDate(dateStr: String): Int = withContext(Dispatchers.IO) {
         queries.getTotalCarbsForDate(dateStr).executeAsOneOrNull()?.SUM ?: 0
     }
 
-    suspend fun getTotalProteinForDate(dateStr: String): Int = withContext(Dispatchers.IO) {
+    open suspend fun getTotalProteinForDate(dateStr: String): Int = withContext(Dispatchers.IO) {
         queries.getTotalProteinForDate(dateStr).executeAsOneOrNull()?.SUM ?: 0
     }
 
-    suspend fun getMacroTotalsForDate(dateStr: String): MacroTotals = withContext(Dispatchers.IO) {
+    open suspend fun getMacroTotalsForDate(dateStr: String): MacroTotals = withContext(Dispatchers.IO) {
         val row = queries.getMacroTotalsForDate(dateStr).executeAsOne()
         MacroTotals(
             calories = row.totalCalories.toInt(),
@@ -115,35 +115,35 @@ class FoodRepository(
         )
     }
 
-    suspend fun deleteFoodItem(id: Long) = withContext(Dispatchers.IO) {
+    open suspend fun deleteFoodItem(id: Long) = withContext(Dispatchers.IO) {
         queries.deleteFoodItem(id)
     }
 
-    suspend fun getDistinctFoodsByName(): List<FoodItemEntity> = withContext(Dispatchers.IO) {
+    open suspend fun getDistinctFoodsByName(): List<FoodItemEntity> = withContext(Dispatchers.IO) {
         queries.getDistinctFoodsByName().executeAsList().map { it.toEntity() }
     }
 
-    suspend fun searchDistinctFoodsByName(query: String): List<FoodItemEntity> = withContext(Dispatchers.IO) {
+    open suspend fun searchDistinctFoodsByName(query: String): List<FoodItemEntity> = withContext(Dispatchers.IO) {
         queries.searchDistinctFoodsByName(query).executeAsList().map { it.toEntity() }
     }
 
-    suspend fun getCustomFoods(): List<FoodItemEntity> = withContext(Dispatchers.IO) {
+    open suspend fun getCustomFoods(): List<FoodItemEntity> = withContext(Dispatchers.IO) {
         queries.getCustomFoods().executeAsList().map { it.toEntity() }
     }
 
-    suspend fun searchCustomFoods(query: String): List<FoodItemEntity> = withContext(Dispatchers.IO) {
+    open suspend fun searchCustomFoods(query: String): List<FoodItemEntity> = withContext(Dispatchers.IO) {
         queries.searchCustomFoods(query).executeAsList().map { it.toEntity() }
     }
 
-    suspend fun getDistinctFoodDates(): List<String> = withContext(Dispatchers.IO) {
+    open suspend fun getDistinctFoodDates(): List<String> = withContext(Dispatchers.IO) {
         queries.getDistinctFoodDates().executeAsList()
     }
 
-    suspend fun getRecentDistinctFoodDates(limit: Long): List<String> = withContext(Dispatchers.IO) {
+    open suspend fun getRecentDistinctFoodDates(limit: Long): List<String> = withContext(Dispatchers.IO) {
         queries.getRecentDistinctFoodDates(limit).executeAsList()
     }
 
-    suspend fun getDailyMacroTotalsInRange(
+    open suspend fun getDailyMacroTotalsInRange(
         startDate: String,
         endDate: String
     ): List<DailyMacroTotals> = withContext(Dispatchers.IO) {

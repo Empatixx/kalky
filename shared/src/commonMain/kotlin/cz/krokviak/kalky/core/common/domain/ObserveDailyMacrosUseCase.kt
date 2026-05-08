@@ -11,10 +11,10 @@ import kotlinx.datetime.LocalDate
  * every time the underlying SQLDelight queries change. Used by ViewModels
  * that want live updates instead of pull-on-demand semantics.
  */
-class ObserveDailyMacrosUseCase(
+open class ObserveDailyMacrosUseCase(
     private val foodRepository: FoodRepository,
 ) {
-    operator fun invoke(date: LocalDate): Flow<DailyMacros> {
+    open operator fun invoke(date: LocalDate): Flow<DailyMacros> {
         val dateStr = date.toString()
         return combine(
             foodRepository.observeFoodItemsForDate(dateStr),

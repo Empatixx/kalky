@@ -12,11 +12,11 @@ import cz.krokviak.kalky.scenes.onboarding.OnboardingResult
  * Centralizes the cross-feature write so AppContent doesn't need to know the
  * internals of SettingsViewModel / NutrientEditViewModel / MainViewModel.
  */
-class CompleteOnboardingUseCase(
+open class CompleteOnboardingUseCase(
     private val personalInfoRepo: PersonalInfoRepo,
     private val updateNutrientSettings: UpdateNutrientSettingsUseCase,
 ) {
-    suspend operator fun invoke(result: OnboardingResult) {
+    open suspend operator fun invoke(result: OnboardingResult) {
         val weight = result.weight.toFloatOrNull() ?: return
         val height = result.height.toFloatOrNull() ?: return
         val age = result.age.toIntOrNull() ?: return

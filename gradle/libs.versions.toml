@@ -32,7 +32,8 @@ kotlinxCoroutinesCore = "1.10.1"
 kotlinxSerializationJson = "1.8.0"
 kotlinxCollectionsImmutable = "0.3.8"
 kotlinxCoroutinesTest = "1.10.1"
-turbine = "1.2.0"
+turbine = "1.2.1"
+mokkery = "2.7.2"
 lifecycleViewmodel = "2.8.2"
 lifecycleViewmodelCompose = "2.9.0-alpha11"
 navigationCompose-kmp = "2.8.0-alpha10"
@@ -79,6 +80,7 @@ turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 sqldelight-sqlite-driver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-client-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
@@ -108,3 +110,4 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-serialization = "org.jetbrains.kotlin.plugin.serialization:2.0.20"
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
+mokkery = { id = "dev.mokkery", version.ref = "mokkery" }

@@ -8,18 +8,18 @@ data class FoodSearchResult(
     val history: List<FoodItemEntity>,
 )
 
-class SearchFoodsUseCase(
+open class SearchFoodsUseCase(
     private val foodRepository: FoodRepository,
 ) {
-    suspend operator fun invoke(query: String): FoodSearchResult = FoodSearchResult(
+    open suspend operator fun invoke(query: String): FoodSearchResult = FoodSearchResult(
         custom = foodRepository.searchCustomFoods(query),
         history = foodRepository.searchDistinctFoodsByName(query),
     )
 }
 
-class SearchHistoryFoodsUseCase(
+open class SearchHistoryFoodsUseCase(
     private val foodRepository: FoodRepository,
 ) {
-    suspend operator fun invoke(query: String): List<FoodItemEntity> =
+    open suspend operator fun invoke(query: String): List<FoodItemEntity> =
         foodRepository.searchDistinctFoodsByName(query)
 }

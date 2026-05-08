@@ -31,14 +31,14 @@ private const val LOADING_ANIMATION_DURATION_MS = 6000L
  * before the final commit fires. If analysis returns null, the placeholder is committed
  * as-is with loading=false.
  */
-class FoodPhotoAnalyzer(
+open class FoodPhotoAnalyzer(
     private val foodRepository: FoodRepository,
     private val foodAnalysisClient: FoodAnalysisClient,
     private val imageStorage: ImageStorage,
     private val clock: Clock,
 ) {
 
-    fun analyze(
+    open fun analyze(
         scope: CoroutineScope,
         imageBytes: ByteArray,
         onPlaceholderInserted: (FoodItemEntity) -> Unit,

@@ -12,10 +12,10 @@ data class FoodLibrary(
  * Reads the static food library (custom-defined foods + distinct items by name from history).
  * Used by CustomFoodSearchViewModel for the initial load and after a query is cleared.
  */
-class GetFoodLibraryUseCase(
+open class GetFoodLibraryUseCase(
     private val foodRepository: FoodRepository,
 ) {
-    suspend operator fun invoke(): FoodLibrary = FoodLibrary(
+    open suspend operator fun invoke(): FoodLibrary = FoodLibrary(
         custom = foodRepository.getCustomFoods(),
         history = foodRepository.getDistinctFoodsByName(),
     )
