@@ -132,7 +132,7 @@ android {
 sqldelight {
     databases {
         create("KalkyDatabase") {
-            packageName.set("cz.krokviak.kalky.db")
+            packageName.set("cz.krokviak.kalky.core.db")
         }
     }
 }

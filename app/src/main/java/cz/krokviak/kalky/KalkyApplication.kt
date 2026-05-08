@@ -2,9 +2,9 @@ package cz.krokviak.kalky
 
 import android.app.Application
 import cz.krokviak.kalky.config.RemoteConfigManager
-import cz.krokviak.kalky.di.appModule
-import cz.krokviak.kalky.di.sharedModule
-import cz.krokviak.kalky.notifications.NotificationHelper
+import cz.krokviak.kalky.core.di.appModule
+import cz.krokviak.kalky.core.di.sharedModule
+import cz.krokviak.kalky.core.notifications.NotificationHelper
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 

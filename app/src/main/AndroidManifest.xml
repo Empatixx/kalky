@@ -33,15 +33,15 @@
                 android:resource="@xml/file_paths" />
         </provider>
         <activity
-            android:name=".camera.CameraActivity"
+            android:name=".core.camera.CameraActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".barcode.BarcodeScannerActivity"
+            android:name=".scenes.barcode.BarcodeScannerActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".home.MainActivity"
+            android:name=".scenes.home.MainActivity"
             android:exported="true"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -51,7 +51,7 @@
             </intent-filter>
         </activity>
         <service
-            android:name="cz.krokviak.kalky.notifications.KalkyFcmService"
+            android:name="cz.krokviak.kalky.core.notifications.KalkyFcmService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />

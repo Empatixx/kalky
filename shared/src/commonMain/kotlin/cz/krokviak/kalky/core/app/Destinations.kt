@@ -1,0 +1,297 @@
+package cz.krokviak.kalky.core.app
+
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.navigation.NavController
+import cz.krokviak.kalky.scenes.analytics.AnalyticsPage
+import cz.krokviak.kalky.scenes.analytics.AnalyticsViewModel
+import cz.krokviak.kalky.scenes.auth.AuthViewModelInterface
+import cz.krokviak.kalky.scenes.auth.LoginScene
+import cz.krokviak.kalky.core.common.CustomFoodRoute
+import cz.krokviak.kalky.core.common.DefaultRoute
+import cz.krokviak.kalky.core.common.FoodDetailRoute
+import cz.krokviak.kalky.core.common.LoginRoute
+import cz.krokviak.kalky.core.common.ManualFoodEntryRoute
+import cz.krokviak.kalky.core.common.NutrientEditRoute
+import cz.krokviak.kalky.core.common.TermsRoute
+import cz.krokviak.kalky.core.common.PrivacyPolicyRoute
+import cz.krokviak.kalky.scenes.customfood.CustomFoodScene
+import cz.krokviak.kalky.scenes.customfood.CustomFoodSearchViewModel
+import cz.krokviak.kalky.scenes.customfood.ManualFoodEntryScene
+import cz.krokviak.kalky.scenes.customfood.ManualFoodEntryViewModel
+import cz.krokviak.kalky.scenes.detail.FoodDetailScene
+import cz.krokviak.kalky.scenes.detail.FoodDetailViewModel
+import cz.krokviak.kalky.core.di.koinInject
+import cz.krokviak.kalky.scenes.home.HomeScene
+import cz.krokviak.kalky.scenes.home.MainViewModel
+import cz.krokviak.kalky.scenes.home.components.BottomNavBar
+import cz.krokviak.kalky.scenes.nutrientedit.NutrientEditScene
+import cz.krokviak.kalky.scenes.nutrientedit.NutrientEditViewModel
+import cz.krokviak.kalky.scenes.onboarding.OnboardingScene
+import cz.krokviak.kalky.scenes.onboarding.OnboardingViewModel
+import cz.krokviak.kalky.scenes.settings.ProfileScene
+import cz.krokviak.kalky.scenes.settings.SettingsScene
+import cz.krokviak.kalky.scenes.settings.SettingsViewModel
+import cz.krokviak.kalky.core.ui.components.KalkyGradientBackground
+import kotlinx.coroutines.launch
+
+@Composable
+internal fun OnboardingDestination() {
+    val onboardingViewModel: OnboardingViewModel = koinInject()
+    OnboardingScene(onboardingViewModel = onboardingViewModel)
+}
+
+@Composable
+internal fun LoginDestination(
+    onSignInWithGoogle: () -> Unit,
+    onSignInWithApple: () -> Unit,
+    onSignInSuccess: () -> Unit,
+) {
+    val authViewModel: AuthViewModelInterface = koinInject()
+    val uiState by authViewModel.uiState.collectAsState()
+    LoginScene(
+        onSignInWithGoogle = onSignInWithGoogle,
+        onSignInWithApple = onSignInWithApple,
+        onSignInSuccess = onSignInSuccess,
+        isLoading = uiState.isLoading,
+        error = uiState.error,
+        isSignedIn = uiState.isSignedIn
+    )
+}
+
+@Composable
+internal fun FoodDetailDestination(
+    foodId: Long,
+    onExit: () -> Unit,
+    onShare: (String) -> Unit,
+    onDelete: () -> Unit,
+) {
+    val foodDetailViewModel: FoodDetailViewModel = koinInject()
+    val uiState by foodDetailViewModel.uiState.collectAsState()
+    LaunchedEffect(foodId) { foodDetailViewModel.loadFood(foodId) }
+    FoodDetailScene(
+        foodDetailViewModel = foodDetailViewModel,
+        uiState = uiState,
+        foodId = foodId,
+        onExitClick = onExit,
+        onShareClick = {
+            val imagePath = uiState.localImagePath
+            if (imagePath != null) onShare(imagePath)
+        },
+        onDeleteClick = {
+            foodDetailViewModel.deleteFood()
+            onDelete()
+        }
+    )
+}
+
+@Composable
+internal fun NutrientEditDestination(
+    onBack: () -> Unit,
+) {
+    val nutrientEditViewModel: NutrientEditViewModel = koinInject()
+    val mainViewModel: MainViewModel = koinInject()
+    val uiState by nutrientEditViewModel.uiState.collectAsState()
+    NutrientEditScene(
+        nutrientEditViewModel = nutrientEditViewModel,
+        uiState = uiState,
+        onBackClick = {
+            mainViewModel.updateNutrientSettings(
+                uiState.protein,
+                uiState.carbs,
+                uiState.fat,
+                uiState.calories
+            )
+            onBack()
+        }
+    )
+}
+
+@Composable
+internal fun CustomFoodDestination(
+    onBack: () -> Unit,
+    onAddNew: () -> Unit,
+    onFoodAdded: () -> Unit,
+) {
+    val searchViewModel: CustomFoodSearchViewModel = koinInject()
+    val manualEntryViewModel: ManualFoodEntryViewModel = koinInject()
+    val uiState by searchViewModel.uiState.collectAsState()
+    CustomFoodScene(
+        uiState = uiState,
+        foodAdded = searchViewModel.foodAdded,
+        onBackClick = onBack,
+        onAddNewClick = {
+            manualEntryViewModel.reset()
+            onAddNew()
+        },
+        onFoodAdded = onFoodAdded,
+        onLoadHistory = searchViewModel::loadHistory,
+        onSearchQueryChange = searchViewModel::onSearchQueryChange,
+        onToggleSelection = searchViewModel::toggleSelection,
+        onSelectApiProduct = searchViewModel::selectApiProduct,
+        onAddSelectedFoods = searchViewModel::addSelectedFoods,
+        onPortionChanged = searchViewModel::setPortionGrams,
+        onConfirmApiProduct = searchViewModel::confirmAddApiProduct,
+        onDismissPortionPicker = searchViewModel::dismissPortionPicker,
+        onDismissError = searchViewModel::dismissError,
+    )
+}
+
+@Composable
+internal fun ManualFoodEntryDestination(
+    onBack: () -> Unit,
+    onFoodAdded: () -> Unit,
+) {
+    val manualEntryViewModel: ManualFoodEntryViewModel = koinInject()
+    ManualFoodEntryScene(
+        viewModel = manualEntryViewModel,
+        onBackClick = onBack,
+        onFoodAdded = onFoodAdded
+    )
+}
+
+@Composable
+internal fun MainScaffold(
+    onCameraClick: () -> Unit,
+    navController: NavController,
+) {
+    val mainViewModel: MainViewModel = koinInject()
+    val analyticsViewModel: AnalyticsViewModel = koinInject()
+    val settingsViewModel: SettingsViewModel = koinInject()
+    val manualEntryViewModel: ManualFoodEntryViewModel = koinInject()
+    val authViewModel: AuthViewModelInterface = koinInject()
+    val pagerState = rememberPagerState(
+        initialPage = 0,
+        pageCount = { 4 }
+    )
+    val scope = rememberCoroutineScope()
+    val uiState by mainViewModel.uiState.collectAsState()
+
+    val currentPage by remember { derivedStateOf { pagerState.currentPage } }
+    // No explicit reload needed: MainViewModel observes the daily-macros flow
+    // and re-collects whenever currentDate changes.
+
+    KalkyGradientBackground {
+        Scaffold(
+            containerColor = Color.Transparent,
+            bottomBar = {
+                BottomNavBar(
+                    currentPage = currentPage,
+                    onSceneSelected = { page ->
+                        scope.launch { pagerState.animateScrollToPage(page) }
+                    },
+                    onCameraClick = onCameraClick
+                )
+            },
+        ) { innerPadding ->
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+            ) { page ->
+                when (page) {
+                    0 -> HomePage(
+                        uiState = uiState,
+                        mainViewModel = mainViewModel,
+                        manualEntryViewModel = manualEntryViewModel,
+                        navController = navController,
+                    )
+                    1 -> AnalyticsPageDestination(analyticsViewModel = analyticsViewModel)
+                    2 -> {
+                        val settingsUiState by settingsViewModel.uiState.collectAsState()
+                        ProfileScene(
+                            uiState = settingsUiState,
+                            viewModel = settingsViewModel,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+                    3 -> AccountPage(
+                        authViewModel = authViewModel,
+                        navController = navController,
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun HomePage(
+    uiState: cz.krokviak.kalky.scenes.home.MainUiState,
+    mainViewModel: MainViewModel,
+    manualEntryViewModel: ManualFoodEntryViewModel,
+    navController: NavController,
+) {
+    HomeScene(
+        uiState = uiState,
+        modifier = Modifier.fillMaxSize(),
+        onFoodClick = { id ->
+            if (uiState.isSelectionMode) {
+                mainViewModel.toggleFoodSelection(id)
+            } else {
+                navController.navigate(FoodDetailRoute(id))
+            }
+        },
+        onFoodLongClick = { id -> mainViewModel.toggleFoodSelection(id) },
+        onDateChange = mainViewModel::onDateSelected,
+        onTodayClick = mainViewModel::resetToToday,
+        onAddCustomClick = { navController.navigate(CustomFoodRoute) },
+        onEditTargetsClick = { navController.navigate(NutrientEditRoute) },
+        onSelectionClear = mainViewModel::clearSelection,
+        onSaveSelectionAsCustom = {
+            val items = mainViewModel.getSelectedFoodItems()
+            val name = items.joinToString(" + ") { it.name }
+            manualEntryViewModel.reset()
+            manualEntryViewModel.onNameChange(name)
+            manualEntryViewModel.setSourceFoods(items)
+            mainViewModel.clearSelection()
+            navController.navigate(ManualFoodEntryRoute)
+        },
+        onDeleteSelection = mainViewModel::deleteSelectedFoods,
+        onDismissError = mainViewModel::dismissError,
+    )
+}
+
+@Composable
+private fun AnalyticsPageDestination(analyticsViewModel: AnalyticsViewModel) {
+    val analyticsUiState by analyticsViewModel.uiState.collectAsState()
+    AnalyticsPage(
+        uiState = analyticsUiState,
+        analyticsViewModel = analyticsViewModel,
+        modifier = Modifier.fillMaxSize()
+    )
+}
+
+@Composable
+private fun AccountPage(
+    authViewModel: AuthViewModelInterface,
+    navController: NavController,
+) {
+    val authUser by authViewModel.authUser.collectAsState()
+    SettingsScene(
+        modifier = Modifier.fillMaxSize(),
+        authUser = authUser,
+        onTermsClick = { navController.navigate(TermsRoute) },
+        onPrivacyClick = { navController.navigate(PrivacyPolicyRoute) },
+        onSignOutClick = {
+            authViewModel.signOut()
+            navController.navigate(LoginRoute) {
+                popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                launchSingleTop = true
+            }
+        }
+    )
+}
