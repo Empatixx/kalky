@@ -23,9 +23,13 @@ class IosAuthStateProvider: AuthStateProvider {
                 )
                 self?._currentUser.emit(authUser)
                 self?._isAuthenticated.emit(KotlinBoolean(value: true))
+                // Mirror Android's FirebaseAuthTokenProvider behavior: tag
+                // crash reports with the signed-in user's UID.
+                CrashlyticsManager.setUserId(user.uid)
             } else {
                 self?._currentUser.emit(nil)
                 self?._isAuthenticated.emit(KotlinBoolean(value: false))
+                CrashlyticsManager.clearUserId()
             }
         }
     }
