@@ -1,7 +1,7 @@
 import { getProductByBarcode } from "../db/products";
 
-export function handleBarcode(code: string): Response {
-  const product = getProductByBarcode(code);
+export async function handleBarcode(code: string): Promise<Response> {
+  const product = await getProductByBarcode(code);
   if (!product) {
     return Response.json({ error: "Product not found" }, { status: 404 });
   }

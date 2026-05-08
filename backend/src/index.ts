@@ -1,4 +1,4 @@
-import { initDb } from "./db/schema";
+import { ensureDataDir, prisma } from "./db/prisma";
 import { handleBarcode } from "./routes/barcode";
 import { handleSearch } from "./routes/search";
 import { handleAnalyze } from "./routes/analyze";
@@ -29,7 +29,12 @@ function withCors(response: Response): Response {
   });
 }
 
-await initDb();
+await ensureDataDir();
+// Open the connection eagerly so a config error (missing DATABASE_URL etc.)
+// fails the process at startup, not on the first request. Prisma's SQLite
+// driver enables WAL mode and foreign-key enforcement per connection by
+// default, so the explicit PRAGMAs from the bun:sqlite era are gone.
+await prisma.$connect();
 
 Bun.serve({
   port: PORT,
@@ -67,7 +72,7 @@ Bun.serve({
         if (appCheckError) return withCors(appCheckError);
         const authResult = await requireAuth(req);
         if (authResult instanceof Response) return withCors(authResult);
-        return withCors(handleBarcode(barcodeMatch[1]));
+        return withCors(await handleBarcode(barcodeMatch[1]));
       }
 
       // GET /api/search?q=...
@@ -76,7 +81,7 @@ Bun.serve({
         if (appCheckError) return withCors(appCheckError);
         const authResult = await requireAuth(req);
         if (authResult instanceof Response) return withCors(authResult);
-        return withCors(handleSearch(url));
+        return withCors(await handleSearch(url));
       }
 
       // POST /cal
@@ -104,7 +109,7 @@ Bun.serve({
     } catch (err) {
       console.error("Request error:", err);
       return withCors(
-        Response.json({ error: "Internal server error" }, { status: 500 })
+        Response.json({ error: "Internal server error" }, { status: 500 }),
       );
     }
   },

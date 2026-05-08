@@ -1,74 +1,82 @@
-import { getDb } from "./schema";
+import type { Product as PrismaProduct } from "@prisma/client";
+import { prisma } from "./prisma";
 
-export interface Product {
-  id: number;
-  barcode: string | null;
-  name: string;
-  energy_kcal_100g: number;
-  protein_100g: number;
-  fat_100g: number;
-  carbs_100g: number;
-  serving_size: string | null;
-  image_url: string | null;
-  created_at: string;
-  updated_at: string;
+/** Public product shape returned by the API (camelCase, JSON-friendly). */
+export type Product = PrismaProduct;
+
+export async function getProductByBarcode(barcode: string): Promise<Product | null> {
+  return prisma.product.findUnique({ where: { barcode } });
 }
 
-export function getProductByBarcode(barcode: string): Product | null {
-  const db = getDb();
-  return db.query<Product, [string]>(
-    "SELECT * FROM products WHERE barcode = ?"
-  ).get(barcode);
-}
+/**
+ * FTS5-backed product name search with prefix matching. Falls back to a LIKE
+ * scan if FTS returns nothing (handles single-character or symbol-only queries).
+ *
+ * Prisma's SQLite provider doesn't model virtual tables, so the FTS5 join goes
+ * through `$queryRaw`. Tokens are split on whitespace and each gets a `*`
+ * suffix so "mle" matches "mléko".
+ */
+export async function searchProducts(query: string, limit = 20): Promise<Product[]> {
+  const tokens = query.trim().split(/\s+/).filter(Boolean);
+  if (tokens.length === 0) return [];
 
-export function searchProducts(query: string, limit: number = 20): Product[] {
-  const db = getDb();
+  const ftsQuery = tokens.map((t) => `"${t.replace(/"/g, "")}"*`).join(" ");
 
-  // FTS5 search with relevance ranking (bm25)
-  // Append * for prefix matching: "mle" matches "mléko", "mlekárna", etc.
-  const ftsQuery = query.split(/\s+/).map(t => `"${t}"*`).join(' ');
-  const results = db.query<Product, [string, number]>(
-    `SELECT p.* FROM products p
-     JOIN products_fts fts ON fts.rowid = p.id
-     WHERE products_fts MATCH ?
-     ORDER BY fts.rank
-     LIMIT ?`
-  ).all(ftsQuery, limit);
+  const ftsRows = await prisma.$queryRaw<Array<{ id: number }>>`
+    SELECT p.id AS id
+    FROM products p
+    JOIN products_fts fts ON fts.rowid = p.id
+    WHERE products_fts MATCH ${ftsQuery}
+    ORDER BY fts.rank
+    LIMIT ${limit}
+  `;
 
-  // Fallback to LIKE if FTS returns nothing (handles edge cases)
-  if (results.length === 0) {
-    return db.query<Product, [string, number]>(
-      "SELECT * FROM products WHERE name LIKE ? LIMIT ?"
-    ).all(`%${query}%`, limit);
+  if (ftsRows.length > 0) {
+    const ids = ftsRows.map((r) => r.id);
+    // Re-fetch via Prisma to keep camelCase mapping + relations consistent.
+    const products = await prisma.product.findMany({ where: { id: { in: ids } } });
+    // Preserve FTS5 rank order (findMany doesn't guarantee it).
+    const order = new Map(ids.map((id, i) => [id, i]));
+    return products.sort((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0));
   }
 
-  return results;
+  return prisma.product.findMany({
+    where: { name: { contains: query } },
+    take: limit,
+  });
 }
 
-export function insertProduct(product: Omit<Product, "id" | "created_at" | "updated_at">): Product | null {
-  const db = getDb();
-  const result = db.query<Product, any>(`
-    INSERT INTO products (barcode, name, energy_kcal_100g, protein_100g, fat_100g, carbs_100g, serving_size, image_url)
-    VALUES ($barcode, $name, $energy_kcal_100g, $protein_100g, $fat_100g, $carbs_100g, $serving_size, $image_url)
-    ON CONFLICT(barcode) DO UPDATE SET
-      name = excluded.name,
-      energy_kcal_100g = excluded.energy_kcal_100g,
-      protein_100g = excluded.protein_100g,
-      fat_100g = excluded.fat_100g,
-      carbs_100g = excluded.carbs_100g,
-      serving_size = excluded.serving_size,
-      image_url = excluded.image_url,
-      updated_at = datetime('now')
-    RETURNING *
-  `).get({
-    $barcode: product.barcode,
-    $name: product.name,
-    $energy_kcal_100g: product.energy_kcal_100g,
-    $protein_100g: product.protein_100g,
-    $fat_100g: product.fat_100g,
-    $carbs_100g: product.carbs_100g,
-    $serving_size: product.serving_size,
-    $image_url: product.image_url,
+/** Camel-cased input shape for upsert. Routes/scripts convert from snake_case. */
+export interface ProductUpsertInput {
+  barcode: string | null;
+  name: string;
+  energyKcal100g: number;
+  protein100g: number;
+  fat100g: number;
+  carbs100g: number;
+  servingSize: string | null;
+  imageUrl: string | null;
+}
+
+export async function upsertProduct(input: ProductUpsertInput): Promise<Product> {
+  const data = {
+    name: input.name,
+    energyKcal100g: input.energyKcal100g,
+    protein100g: input.protein100g,
+    fat100g: input.fat100g,
+    carbs100g: input.carbs100g,
+    servingSize: input.servingSize,
+    imageUrl: input.imageUrl,
+  };
+
+  // Without a barcode there's no upsert key — always insert.
+  if (input.barcode === null || input.barcode === "") {
+    return prisma.product.create({ data });
+  }
+
+  return prisma.product.upsert({
+    where: { barcode: input.barcode },
+    create: { barcode: input.barcode, ...data },
+    update: data,
   });
-  return result;
 }

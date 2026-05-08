@@ -1,5 +1,5 @@
-import { getDb } from "../db/schema";
-import { insertProduct } from "../db/products";
+import { upsertProduct } from "../db/products";
+import { prisma } from "../db/prisma";
 
 interface ImportProduct {
   barcode?: string | null;
@@ -17,22 +17,24 @@ export async function handleAdminImport(req: Request): Promise<Response> {
   try {
     body = await req.json();
   } catch {
-    return Response.json(
-      { error: "Invalid JSON body" },
-      { status: 400 }
-    );
+    return Response.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
   // Accept { products: [...] } or bare array [...]
   let products: ImportProduct[];
   if (Array.isArray(body)) {
     products = body;
-  } else if (body && typeof body === "object" && "products" in body && Array.isArray((body as { products: unknown }).products)) {
+  } else if (
+    body &&
+    typeof body === "object" &&
+    "products" in body &&
+    Array.isArray((body as { products: unknown }).products)
+  ) {
     products = (body as { products: ImportProduct[] }).products;
   } else {
     return Response.json(
       { error: "Expected { products: [...] } or array [...]" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -40,45 +42,58 @@ export async function handleAdminImport(req: Request): Promise<Response> {
     return Response.json({ imported: 0, failed: 0, errors: [] });
   }
 
-  const db = getDb();
   const errors: string[] = [];
   let imported = 0;
   let failed = 0;
 
-  db.exec("BEGIN");
+  // Wrap the whole batch in one transaction so a partial failure doesn't
+  // leave the FTS index out of sync with the products table.
   try {
-    for (let i = 0; i < products.length; i++) {
-      const p = products[i];
+    await prisma.$transaction(async (tx) => {
+      for (let i = 0; i < products.length; i++) {
+        const p = products[i];
 
-      if (!p.name || typeof p.name !== "string" || p.name.trim() === "") {
-        errors.push(`[${i}] Missing or empty 'name'`);
-        failed++;
-        continue;
-      }
+        if (!p.name || typeof p.name !== "string" || p.name.trim() === "") {
+          errors.push(`[${i}] Missing or empty 'name'`);
+          failed++;
+          continue;
+        }
 
-      try {
-        insertProduct({
-          barcode: p.barcode ?? null,
-          name: p.name.trim(),
-          energy_kcal_100g: Number(p.energy_kcal_100g) || 0,
-          protein_100g: Number(p.protein_100g) || 0,
-          fat_100g: Number(p.fat_100g) || 0,
-          carbs_100g: Number(p.carbs_100g) || 0,
-          serving_size: p.serving_size ?? null,
-          image_url: p.image_url ?? null,
-        });
-        imported++;
-      } catch (err) {
-        errors.push(`[${i}] ${err instanceof Error ? err.message : String(err)}`);
-        failed++;
+        try {
+          // Inline upsert to share the surrounding transaction.
+          const data = {
+            name: p.name.trim(),
+            energyKcal100g: Number(p.energy_kcal_100g) || 0,
+            protein100g: Number(p.protein_100g) || 0,
+            fat100g: Number(p.fat_100g) || 0,
+            carbs100g: Number(p.carbs_100g) || 0,
+            servingSize: p.serving_size ?? null,
+            imageUrl: p.image_url ?? null,
+          };
+          const barcode = p.barcode ?? null;
+          if (barcode === null || barcode === "") {
+            await tx.product.create({ data });
+          } else {
+            await tx.product.upsert({
+              where: { barcode },
+              create: { barcode, ...data },
+              update: data,
+            });
+          }
+          imported++;
+        } catch (err) {
+          errors.push(`[${i}] ${err instanceof Error ? err.message : String(err)}`);
+          failed++;
+        }
       }
-    }
-    db.exec("COMMIT");
+    });
   } catch (err) {
-    db.exec("ROLLBACK");
     return Response.json(
-      { error: "Transaction failed", detail: err instanceof Error ? err.message : String(err) },
-      { status: 500 }
+      {
+        error: "Transaction failed",
+        detail: err instanceof Error ? err.message : String(err),
+      },
+      { status: 500 },
     );
   }
 

@@ -1,0 +1,47 @@
+// Prisma schema for Kalky backend.
+//
+// FTS5 virtual table (`products_fts`) and its triggers are NOT modeled here —
+// Prisma's SQLite provider doesn't support virtual tables. They live in the
+// raw migration `1_fts5/migration.sql` and are queried via prisma.$queryRaw.
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id              Int      @id @default(autoincrement())
+  barcode         String?  @unique
+  name            String
+  energyKcal100g  Float    @default(0) @map("energy_kcal_100g")
+  protein100g     Float    @default(0) @map("protein_100g")
+  fat100g         Float    @default(0) @map("fat_100g")
+  carbs100g       Float    @default(0) @map("carbs_100g")
+  servingSize     String?  @map("serving_size")
+  imageUrl        String?  @map("image_url")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@index([barcode])
+  @@index([name])
+  @@map("products")
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  firebaseUid  String   @unique @map("firebase_uid")
+  email        String?
+  displayName  String?  @map("display_name")
+  photoUrl     String?  @map("photo_url")
+  fcmToken     String?  @map("fcm_token")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@index([firebaseUid])
+  @@map("users")
+}
