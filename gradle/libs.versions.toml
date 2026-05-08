@@ -36,6 +36,7 @@ kotlinxCoroutinesTest = "1.10.1"
 turbine = "1.2.1"
 mokkery = "2.10.0"
 kover = "0.9.1"
+robolectric = "4.14.1"
 lifecycleViewmodel = "2.8.2"
 lifecycleViewmodelCompose = "2.9.0-alpha11"
 navigationCompose-kmp = "2.8.0-alpha10"
@@ -81,6 +82,7 @@ kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collec
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 sqldelight-sqlite-driver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-client-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }

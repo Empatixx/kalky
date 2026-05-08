@@ -135,11 +135,19 @@ kotlin {
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.turbine)
             implementation(libs.ktor.client.mock)
+
+            // Compose Multiplatform UI Test (runComposeUiTest, semantics, queries).
+            @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+            implementation(compose.uiTest)
         }
 
         val androidUnitTest by getting {
             dependencies {
                 implementation(libs.sqldelight.sqlite.driver)
+                // Robolectric provides Android framework stubs needed by the
+                // Android-flavor of `runComposeUiTest`. Without it the runtime
+                // crashes on Build.FINGERPRINT being null.
+                implementation(libs.robolectric)
             }
         }
 
@@ -159,6 +167,10 @@ android {
 
     defaultConfig {
         minSdk = 30
+    }
+
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
     }
 
     compileOptions {
