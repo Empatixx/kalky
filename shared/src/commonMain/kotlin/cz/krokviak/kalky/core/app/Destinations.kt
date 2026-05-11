@@ -49,8 +49,7 @@ import cz.krokviak.kalky.core.ui.components.KalkyGradientBackground
 import kotlinx.coroutines.launch
 
 @Composable
-internal fun OnboardingDestination() {
-    val onboardingViewModel: OnboardingViewModel = koinViewModel()
+internal fun OnboardingDestination(onboardingViewModel: OnboardingViewModel) {
     OnboardingScene(onboardingViewModel = onboardingViewModel)
 }
 

@@ -61,6 +61,10 @@ fun AppContent() {
             startDestination = startDestination
         ) {
             composable<OnboardingRoute> {
+                // Collect `completed` on the SAME OnboardingViewModel instance the
+                // scene uses. Resolving it here (instead of inside OnboardingDestination
+                // with koinViewModel(), which would be scoped to the nav back-stack
+                // entry) keeps the emission and this collector on one instance.
                 LaunchedEffect(onboardingViewModel) {
                     onboardingViewModel.completed.collect { result ->
                         completeOnboarding(result)
@@ -73,7 +77,7 @@ fun AppContent() {
                         }
                     }
                 }
-                OnboardingDestination()
+                OnboardingDestination(onboardingViewModel = onboardingViewModel)
             }
 
             composable<LoginRoute> {
