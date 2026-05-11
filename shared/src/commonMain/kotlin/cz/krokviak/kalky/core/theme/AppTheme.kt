@@ -11,6 +11,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
+import com.russhwolf.settings.Settings
 import cz.krokviak.kalky.core.i18n.LocalStrings
 import cz.krokviak.kalky.core.i18n.rememberStrings
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -73,10 +74,17 @@ object AppTheme {
 enum class ThemeMode { SYSTEM, LIGHT, DARK }
 
 object ThemeManager {
-    private val _themeMode = MutableStateFlow(ThemeMode.SYSTEM)
+    private const val KEY = "theme_mode"
+    private val settings: Settings = Settings()
+
+    private val _themeMode = MutableStateFlow(
+        try { ThemeMode.valueOf(settings.getString(KEY, ThemeMode.SYSTEM.name)) }
+        catch (_: Exception) { ThemeMode.SYSTEM }
+    )
     val themeMode: StateFlow<ThemeMode> = _themeMode
 
     fun setThemeMode(mode: ThemeMode) {
+        settings.putString(KEY, mode.name)
         _themeMode.value = mode
     }
 }
