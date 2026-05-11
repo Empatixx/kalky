@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -279,10 +280,13 @@ fun CustomFoodScene(
                                     iconColor = AppTheme.colors.onBackgroundSecondary
                                 )
                             }
-                            items(
+                            // Index-based keys: API results can legitimately contain
+                            // several products with the same name (e.g. "Coca-Cola"),
+                            // and OpenFoodFactsProduct has no unique id.
+                            itemsIndexed(
                                 items = uiState.apiResults,
-                                key = { product -> "api_${product.productName ?: product.hashCode()}" }
-                            ) { product ->
+                                key = { index, _ -> "api_$index" }
+                            ) { _, product ->
                                 ApiResultItem(
                                     product = product,
                                     onClick = { onSelectApiProduct(product) }
