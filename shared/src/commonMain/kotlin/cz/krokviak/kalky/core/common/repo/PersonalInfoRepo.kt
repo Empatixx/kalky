@@ -39,18 +39,23 @@ open class PersonalInfoRepo(
     }
 
     open suspend fun getWeightsInRange(startDate: LocalDate, endDate: LocalDate): List<WeightEntry> = withContext(Dispatchers.IO) {
-        val personalInfoList = queries.getPersonalInfoBetweenDates(
+        val tz = kotlinx.datetime.TimeZone.currentSystemDefault()
+        queries.getPersonalInfoBetweenDates(
             startDate.toString(),
             endDate.toString()
         ).executeAsList()
-
-        personalInfoList.map { row ->
-            val instant = Instant.parse(row.createdAt)
-            WeightEntry(
-                date = instant.toLocalDateTime(kotlinx.datetime.TimeZone.currentSystemDefault()).date,
-                weight = row.weightKg.toDouble()
-            )
-        }
+            .map { row ->
+                WeightEntry(
+                    date = Instant.parse(row.createdAt).toLocalDateTime(tz).date,
+                    weight = row.weightKg.toDouble()
+                )
+            }
+            // personal_info gets a row per profile save, so one day can hold several
+            // entries — collapse to one weight per day (the most recent). The query
+            // returns rows ordered by createdAt ASC, so last() per day wins.
+            .groupBy { it.date }
+            .map { (_, dayEntries) -> dayEntries.last() }
+            .sortedBy { it.date }
     }
 }
 
