@@ -41,7 +41,10 @@ fun AppContent() {
     val mainViewModel: MainViewModel = koinViewModel()
     val onboardingViewModel: OnboardingViewModel = koinViewModel()
     val settingsViewModel: SettingsViewModel = koinViewModel()
-    val authViewModel: AuthViewModelInterface = koinViewModel()
+    // AuthViewModelInterface is a plain interface (not a ViewModel subtype), so
+    // koinViewModel<T>() would reify T to the common supertype `Any` and fail to
+    // resolve. Resolve it through the regular Koin scope instead.
+    val authViewModel: AuthViewModelInterface = koinInject()
 
     val onboardingCompleted by appPreferences.onboardingCompleted.collectAsState()
     val isAuthenticated by authStateProvider.isAuthenticated.collectAsState()

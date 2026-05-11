@@ -33,6 +33,7 @@ import cz.krokviak.kalky.scenes.customfood.ManualFoodEntryScene
 import cz.krokviak.kalky.scenes.customfood.ManualFoodEntryViewModel
 import cz.krokviak.kalky.scenes.detail.FoodDetailScene
 import cz.krokviak.kalky.scenes.detail.FoodDetailViewModel
+import cz.krokviak.kalky.core.di.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import cz.krokviak.kalky.scenes.home.HomeScene
 import cz.krokviak.kalky.scenes.home.MainViewModel
@@ -59,7 +60,7 @@ internal fun LoginDestination(
     onSignInWithApple: () -> Unit,
     onSignInSuccess: () -> Unit,
 ) {
-    val authViewModel: AuthViewModelInterface = koinViewModel()
+    val authViewModel: AuthViewModelInterface = koinInject()
     val uiState by authViewModel.uiState.collectAsState()
     LoginScene(
         onSignInWithGoogle = onSignInWithGoogle,
@@ -171,7 +172,7 @@ internal fun MainScaffold(
     val analyticsViewModel: AnalyticsViewModel = koinViewModel()
     val settingsViewModel: SettingsViewModel = koinViewModel()
     val manualEntryViewModel: ManualFoodEntryViewModel = koinViewModel()
-    val authViewModel: AuthViewModelInterface = koinViewModel()
+    val authViewModel: AuthViewModelInterface = koinInject()
     val pagerState = rememberPagerState(
         initialPage = 0,
         pageCount = { 4 }
