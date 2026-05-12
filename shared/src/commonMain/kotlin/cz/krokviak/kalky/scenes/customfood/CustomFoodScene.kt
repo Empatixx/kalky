@@ -493,24 +493,3 @@ private fun SectionHeader(
     }
 }
 
-@Composable
-private fun AddButton() {
-    val s = LocalStrings.current
-    Box(
-        modifier = Modifier
-            .size(36.dp)
-            .background(
-                color = AppTheme.colors.onBackground,
-                shape = CircleShape
-            ),
-        contentAlignment = Alignment.Center
-    ) {
-        Icon(
-            imageVector = Icons.Default.Add,
-            contentDescription = s.common.add,
-            tint = AppTheme.colors.background,
-            modifier = Modifier.size(20.dp)
-        )
-    }
-}
-

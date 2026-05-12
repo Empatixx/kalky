@@ -10,11 +10,6 @@ private val intColumnAdapter = object : ColumnAdapter<Int, Long> {
     override fun encode(value: Int) = value.toLong()
 }
 
-private val booleanColumnAdapter = object : ColumnAdapter<Boolean, Long> {
-    override fun decode(databaseValue: Long) = databaseValue != 0L
-    override fun encode(value: Boolean) = if (value) 1L else 0L
-}
-
 private val floatColumnAdapter = object : ColumnAdapter<Float, Double> {
     override fun decode(databaseValue: Double) = databaseValue.toFloat()
     override fun encode(value: Float) = value.toDouble()
