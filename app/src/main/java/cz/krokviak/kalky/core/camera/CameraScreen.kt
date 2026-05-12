@@ -76,24 +76,29 @@ fun CameraScreen(
             }
         }
 
-        if (uiState.cameraMode == CameraMode.QR && uiState.barcodeScanState !is BarcodeScanState.Scanning) {
+        val barcodeResultShown = uiState.cameraMode == CameraMode.QR &&
+            uiState.barcodeScanState !is BarcodeScanState.Scanning
+
+        if (barcodeResultShown) {
+            // Replaces the mode toggle / capture controls — both live at
+            // BottomCenter, so showing them together overlaps the result card.
             BarcodeOverlay(
                 state = uiState.barcodeScanState,
                 onRetryClick = cameraViewModel::resetScan,
                 onAddClick = onAddBarcodeClick,
                 modifier = Modifier.align(Alignment.BottomCenter)
             )
+        } else {
+            CameraBottomControls(
+                cameraMode = uiState.cameraMode,
+                onPhotoModeClick = { cameraViewModel.setMode(CameraMode.PHOTO) },
+                onQrModeClick = { cameraViewModel.setMode(CameraMode.QR) },
+                onCaptureClick = {
+                    cameraViewModel.takePicture(onPictureBytesReady)
+                },
+                modifier = Modifier.align(Alignment.BottomCenter)
+            )
         }
-
-        CameraBottomControls(
-            cameraMode = uiState.cameraMode,
-            onPhotoModeClick = { cameraViewModel.setMode(CameraMode.PHOTO) },
-            onQrModeClick = { cameraViewModel.setMode(CameraMode.QR) },
-            onCaptureClick = {
-                cameraViewModel.takePicture(onPictureBytesReady)
-            },
-            modifier = Modifier.align(Alignment.BottomCenter)
-        )
     }
 }
 
