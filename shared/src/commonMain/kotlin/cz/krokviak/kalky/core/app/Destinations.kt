@@ -198,6 +198,9 @@ internal fun MainScaffold(
         ) { innerPadding ->
             HorizontalPager(
                 state = pagerState,
+                // Pre-compose neighbouring pages so the heavy Analytics charts
+                // are laid out before they scroll into view (no jank on swipe).
+                beyondViewportPageCount = 1,
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)

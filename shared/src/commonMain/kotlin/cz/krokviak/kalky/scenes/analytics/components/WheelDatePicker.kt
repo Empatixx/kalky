@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cz.krokviak.kalky.core.theme.AppTheme
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
@@ -83,7 +84,10 @@ fun WheelDatePickerInline(
 
     LaunchedEffect(selectedDay, selectedMonth, selectedYear, maxDays) {
         val clampedDay = selectedDay.coerceIn(1, maxDays)
-        onDateChanged(LocalDate(selectedYear, selectedMonth, clampedDay))
+        val newDate = LocalDate(selectedYear, selectedMonth, clampedDay)
+        // Skip the redundant emit on first composition (value == initialDate),
+        // which would trigger a needless reload just by opening the picker.
+        if (newDate != initialDate) onDateChanged(newDate)
     }
 
     val surfaceColor = AppTheme.colors.surface
@@ -186,10 +190,13 @@ private fun WheelColumn(
     )
     val snapBehavior = rememberSnapFlingBehavior(lazyListState)
 
+    // Only report the selected index once scrolling settles, otherwise every
+    // item crossed during a fling fires a reload (jank on the Analytics screen).
     LaunchedEffect(lazyListState) {
-        snapshotFlow { lazyListState.firstVisibleItemIndex }
+        snapshotFlow { lazyListState.isScrollInProgress }
             .distinctUntilChanged()
-            .collect { index -> onIndexChanged(index) }
+            .filter { !it }
+            .collect { onIndexChanged(lazyListState.firstVisibleItemIndex) }
     }
 
     LazyColumn(
