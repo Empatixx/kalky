@@ -126,7 +126,7 @@ internal fun CustomFoodDestination(
     onFoodAdded: () -> Unit,
 ) {
     val searchViewModel: CustomFoodSearchViewModel = koinViewModel()
-    val manualEntryViewModel: ManualFoodEntryViewModel = koinViewModel()
+    val manualEntryViewModel: ManualFoodEntryViewModel = koinInject()
     val uiState by searchViewModel.uiState.collectAsState()
     CustomFoodScene(
         uiState = uiState,
@@ -154,7 +154,7 @@ internal fun ManualFoodEntryDestination(
     onBack: () -> Unit,
     onFoodAdded: () -> Unit,
 ) {
-    val manualEntryViewModel: ManualFoodEntryViewModel = koinViewModel()
+    val manualEntryViewModel: ManualFoodEntryViewModel = koinInject()
     ManualFoodEntryScene(
         viewModel = manualEntryViewModel,
         onBackClick = onBack,
@@ -170,7 +170,7 @@ internal fun MainScaffold(
     val mainViewModel: MainViewModel = koinViewModel()
     val analyticsViewModel: AnalyticsViewModel = koinViewModel()
     val settingsViewModel: SettingsViewModel = koinViewModel()
-    val manualEntryViewModel: ManualFoodEntryViewModel = koinViewModel()
+    val manualEntryViewModel: ManualFoodEntryViewModel = koinInject()
     val authViewModel: AuthViewModelInterface = koinInject()
     val pagerState = rememberPagerState(
         initialPage = 0,
