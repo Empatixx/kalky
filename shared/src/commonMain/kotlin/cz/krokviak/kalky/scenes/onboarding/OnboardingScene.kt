@@ -22,7 +22,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import cz.krokviak.kalky.scenes.onboarding.components.OnboardingProgressBar
 import cz.krokviak.kalky.scenes.onboarding.pages.ActivityOnboardingPage
 import cz.krokviak.kalky.scenes.onboarding.pages.AgeOnboardingPage
@@ -35,12 +34,10 @@ import cz.krokviak.kalky.scenes.onboarding.pages.MacrosOnboardingPage
 import cz.krokviak.kalky.scenes.onboarding.pages.PromoCodeOnboardingPage
 import cz.krokviak.kalky.scenes.onboarding.pages.UnitsOnboardingPage
 import cz.krokviak.kalky.scenes.onboarding.pages.WeightOnboardingPage
-import cz.krokviak.kalky.core.common.AppLanguage
 import cz.krokviak.kalky.core.common.AppPreferences
 import cz.krokviak.kalky.core.common.UnitSystem
 import cz.krokviak.kalky.core.di.koinInject
 import cz.krokviak.kalky.core.theme.ThemeManager
-import cz.krokviak.kalky.core.theme.ThemeMode
 import cz.krokviak.kalky.scenes.settings.formatHeightForDisplay
 import cz.krokviak.kalky.scenes.settings.formatWeightForDisplay
 import cz.krokviak.kalky.scenes.settings.heightUnitLabel

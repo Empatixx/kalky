@@ -50,9 +50,7 @@ import cz.krokviak.kalky.core.theme.MacroColors
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import cz.krokviak.kalky.core.common.entities.FoodItemEntity
 import cz.krokviak.kalky.core.i18n.LocalStrings
-import cz.krokviak.kalky.scenes.barcode.data.OpenFoodFactsProduct
 import cz.krokviak.kalky.scenes.nutrientedit.MacroField
 import cz.krokviak.kalky.core.ui.components.MacroPickerRow
 import cz.krokviak.kalky.core.theme.AppTheme

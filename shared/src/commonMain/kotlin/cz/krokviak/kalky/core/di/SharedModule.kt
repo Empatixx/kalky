@@ -31,7 +31,6 @@ import cz.krokviak.kalky.core.network.OpenFoodFactsClient
 import cz.krokviak.kalky.core.network.createHttpClient
 import io.ktor.client.HttpClient
 import kotlinx.datetime.Clock
-import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 

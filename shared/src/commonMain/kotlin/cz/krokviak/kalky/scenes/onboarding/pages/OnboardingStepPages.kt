@@ -13,7 +13,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -23,12 +22,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.material.icons.filled.Eco
 import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.filled.Spa
-import androidx.compose.ui.graphics.vector.ImageVector
 import cz.krokviak.kalky.core.common.utils.caloriesFromMacros
 import cz.krokviak.kalky.core.theme.MacroColors
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import cz.krokviak.kalky.scenes.nutrientedit.MacroField
 import cz.krokviak.kalky.scenes.nutrientedit.components.VerticalCalorieCard
 import cz.krokviak.kalky.scenes.onboarding.GoalChoice
@@ -37,7 +34,6 @@ import cz.krokviak.kalky.core.common.UnitSystem
 import cz.krokviak.kalky.scenes.settings.components.IosInlineValuePicker
 import cz.krokviak.kalky.core.theme.AppTheme
 import cz.krokviak.kalky.core.ui.components.MacroPickerRow
-import cz.krokviak.kalky.core.theme.ThemeManager
 import cz.krokviak.kalky.core.theme.ThemeMode
 import cz.krokviak.kalky.core.i18n.LocalStrings
 import cz.krokviak.kalky.core.ui.LocalDimensions

@@ -32,7 +32,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import cz.krokviak.kalky.scenes.barcode.data.OpenFoodFactsProduct
 import cz.krokviak.kalky.core.theme.AppTheme
 import cz.krokviak.kalky.core.i18n.LocalStrings

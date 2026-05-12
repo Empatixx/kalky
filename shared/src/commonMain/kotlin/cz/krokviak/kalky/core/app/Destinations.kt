@@ -20,7 +20,6 @@ import cz.krokviak.kalky.scenes.analytics.AnalyticsViewModel
 import cz.krokviak.kalky.scenes.auth.AuthViewModelInterface
 import cz.krokviak.kalky.scenes.auth.LoginScene
 import cz.krokviak.kalky.core.common.CustomFoodRoute
-import cz.krokviak.kalky.core.common.DefaultRoute
 import cz.krokviak.kalky.core.common.FoodDetailRoute
 import cz.krokviak.kalky.core.common.LoginRoute
 import cz.krokviak.kalky.core.common.ManualFoodEntryRoute

@@ -1,11 +1,9 @@
 package cz.krokviak.kalky.core.app
 
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.remember
 import androidx.compose.ui.window.ComposeUIViewController
 import cz.krokviak.kalky.scenes.analytics.AnalyticsViewModel
 import cz.krokviak.kalky.scenes.auth.AuthViewModelInterface
-import cz.krokviak.kalky.scenes.auth.StubAuthViewModel
 import cz.krokviak.kalky.core.common.IosPlatformActions
 import cz.krokviak.kalky.core.common.LocalPlatformActions
 import cz.krokviak.kalky.core.common.PlatformActions
