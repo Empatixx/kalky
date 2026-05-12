@@ -78,7 +78,6 @@ fun initKoinIos(
                 viewModel { SettingsViewModel(get()) }
                 viewModel { OnboardingViewModel(get()) }
                 viewModel { CustomFoodSearchViewModel(get(), get(), get(), get(), get()) }
-                // Single: the manual-entry draft is prefilled on one screen and read on another.
                 single { ManualFoodEntryViewModel(get(), get(), get(), get()) }
                 viewModel { cz.krokviak.kalky.scenes.barcode.BarcodeScannerViewModel(get()) }
                 viewModel<AuthViewModelInterface> { StubAuthViewModel() }

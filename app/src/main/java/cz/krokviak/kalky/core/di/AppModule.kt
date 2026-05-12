@@ -50,9 +50,6 @@ val appModule = module {
     viewModel { SettingsViewModel(get()) }
     viewModel { OnboardingViewModel(get()) }
     viewModel { CustomFoodSearchViewModel(get(), get(), get(), get(), get()) }
-    // Single, not viewModel: the manual-entry draft is set from one screen (Home
-    // "save selection as custom" prefills name + source foods) and consumed on
-    // another (ManualFoodEntryScene), so all call sites must see the same instance.
     single { ManualFoodEntryViewModel(get(), get(), get(), get()) }
     viewModel { AuthViewModel(get(), get()) } bind AuthViewModelInterface::class
     viewModel { BarcodeScannerViewModel(get()) }

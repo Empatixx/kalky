@@ -132,8 +132,6 @@ fun ManualFoodEntryScene(
                 singleLine = true
             )
 
-            // ---- Ingredients: build the food from existing foods; macros/calories
-            // below are then the (auto) sum of all ingredients scaled by grams. ----
             val ingredientsMode = state.sourceFoods.isNotEmpty()
             var ingredientQuery by remember { mutableStateOf("") }
 
@@ -354,7 +352,6 @@ private fun MacroDivider() {
     )
 }
 
-/** Scales a per-100 g macro/calorie value to the given grams. */
 internal fun scaledForGrams(per100: Int, grams: Int): Int =
     ((per100 * grams) / 100.0).roundToInt()
 

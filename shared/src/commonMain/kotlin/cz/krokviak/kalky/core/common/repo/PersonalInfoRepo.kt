@@ -50,9 +50,6 @@ open class PersonalInfoRepo(
                     weight = row.weightKg.toDouble()
                 )
             }
-            // personal_info gets a row per profile save, so one day can hold several
-            // entries — collapse to one weight per day (the most recent). The query
-            // returns rows ordered by createdAt ASC, so last() per day wins.
             .groupBy { it.date }
             .map { (_, dayEntries) -> dayEntries.last() }
             .sortedBy { it.date }

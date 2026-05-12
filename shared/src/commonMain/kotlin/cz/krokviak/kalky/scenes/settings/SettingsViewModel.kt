@@ -61,8 +61,6 @@ class SettingsViewModel(
     }
 
     fun togglePickerField(field: ProfilePickerField) {
-        // Closing or switching away from an open picker → persist the value that
-        // was just edited. (Opening the first picker has nothing to save yet.)
         if (_uiState.value.activePickerField != null && !_uiState.value.saved) save()
         _uiState.update {
             it.copy(activePickerField = if (it.activePickerField == field) null else field)

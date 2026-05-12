@@ -80,8 +80,6 @@ fun CameraScreen(
             uiState.barcodeScanState !is BarcodeScanState.Scanning
 
         if (barcodeResultShown) {
-            // Replaces the mode toggle / capture controls — both live at
-            // BottomCenter, so showing them together overlaps the result card.
             BarcodeOverlay(
                 state = uiState.barcodeScanState,
                 onRetryClick = cameraViewModel::resetScan,

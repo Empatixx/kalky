@@ -280,9 +280,6 @@ fun CustomFoodScene(
                                     iconColor = AppTheme.colors.onBackgroundSecondary
                                 )
                             }
-                            // Index-based keys: API results can legitimately contain
-                            // several products with the same name (e.g. "Coca-Cola"),
-                            // and OpenFoodFactsProduct has no unique id.
                             itemsIndexed(
                                 items = uiState.apiResults,
                                 key = { index, _ -> "api_$index" }
