@@ -65,7 +65,6 @@ internal class PhotoCaptureController(
                 loading = false,
             )
             addFoodItem(item)
-            // The daily-macros flow picks up the new row and updates state.
         }
     }
 }

@@ -55,30 +55,24 @@ fun WeekDatePicker(
     onDateChange: (LocalDate) -> Unit,
     onTodayClick: () -> Unit
 ) {
-    // 2) Monday of the current week
     val mondayOfThisWeek = remember { currentDate.withDayOfWeek(DayOfWeek.MONDAY) }
 
-    // 3) Build a mutable list of dates (±30 days around Monday).
     val days = remember {
         val initialStart = mondayOfThisWeek.minus(30, DateTimeUnit.DAY)
         val initialEnd = mondayOfThisWeek.plus(30, DateTimeUnit.DAY)
         generateDateRange(initialStart, initialEnd).toMutableStateList()
     }
 
-    // 4) Track which index is "selected." Default is "today."
     var selectedIndex by remember {
         mutableStateOf(days.indexOf(currentDate).coerceAtLeast(0))
     }
-    // 5) Lazy list state + coroutine scope for smooth scrolling
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
-    // 6) On first composition, scroll so current date is centered
     LaunchedEffect(Unit) {
         val index = days.indexOf(currentDate).coerceAtLeast(0)
         listState.scrollToItem((index - 3).coerceAtLeast(0))
     }
 
-    // 7) Scroll back when currentDate changes externally (e.g. "back to today")
     LaunchedEffect(currentDate) {
         val index = days.indexOf(currentDate)
         if (index >= 0 && index != selectedIndex) {
@@ -87,11 +81,10 @@ fun WeekDatePicker(
         }
     }
 
-    // 8) Observe lazy list edges, loading more days if needed
     observeInfiniteScroll(
         listState = listState,
         days = days,
-        selectedIndexUpdater = { selectedIndex += it },  // shift selected index if needed
+        selectedIndexUpdater = { selectedIndex += it },
         coroutineScope = coroutineScope
     )
     MonthHeader(currentDate = currentDate, isToday = isToday, onTodayClick = onTodayClick)
@@ -102,11 +95,8 @@ fun WeekDatePicker(
     ) {
         val columnsToShow = 7
         val spacing = dims.halfSpacing
-        // 6 gaps between 7 columns
         val totalSpacing = spacing * (columnsToShow - 1)
-        // Each item's width = (availableWidth - spacing) / columns
         val itemWidth = (maxWidth - totalSpacing).coerceAtLeast(0.dp) / columnsToShow
-        // Horizontal scroller
         LazyRow(
             state = listState,
             modifier = Modifier
@@ -200,7 +190,6 @@ private fun DayItem(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Day number
         Text(
             text = date.dayOfMonth.toString(),
             fontWeight = FontWeight.ExtraBold,
@@ -217,7 +206,6 @@ private fun DayItem(
         )
         Spacer(Modifier.height(4.dp))
 
-        // Dot placeholder
         Box(
             modifier = Modifier
                 .size(6.dp)
@@ -255,14 +243,12 @@ private fun observeInfiniteScroll(
                 val visibleCount = listState.layoutInfo.visibleItemsInfo.size
                 val lastVisible = firstVisible + visibleCount
 
-                // If near the left edge, prepend more days
                 if (firstVisible < 5) {
                     prependMoreDays(days, coroutineScope, listState, firstVisible)
-                    // We inserted 30 days at the start, so shift the selection index by +30
+                    // we inserted 30 days at the start, so shift the selection index by +30
                     selectedIndexUpdater(30)
                 }
 
-                // If near the right edge, append more days
                 if (lastVisible > days.size - 5) {
                     appendMoreDays(days)
                 }
@@ -301,7 +287,6 @@ private fun prependMoreDays(
     days.addAll(0, newDates)
 
     coroutineScope.launch {
-        // Shift scroll to preserve the current visible position
         listState.scrollToItem(firstVisibleIndex + newDates.size)
     }
 }

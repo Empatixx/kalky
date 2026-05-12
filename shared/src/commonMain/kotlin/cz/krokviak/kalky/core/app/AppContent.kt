@@ -9,7 +9,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import cz.krokviak.kalky.scenes.auth.AuthStateProvider
-import cz.krokviak.kalky.scenes.auth.AuthViewModelInterface
 import cz.krokviak.kalky.core.common.AppPreferences
 import cz.krokviak.kalky.core.common.domain.CompleteOnboardingUseCase
 import cz.krokviak.kalky.core.common.CustomFoodRoute
@@ -41,10 +40,6 @@ fun AppContent() {
     val mainViewModel: MainViewModel = koinViewModel()
     val onboardingViewModel: OnboardingViewModel = koinViewModel()
     val settingsViewModel: SettingsViewModel = koinViewModel()
-    // AuthViewModelInterface is a plain interface (not a ViewModel subtype), so
-    // koinViewModel<T>() would reify T to the common supertype `Any` and fail to
-    // resolve. Resolve it through the regular Koin scope instead.
-    val authViewModel: AuthViewModelInterface = koinInject()
 
     val onboardingCompleted by appPreferences.onboardingCompleted.collectAsState()
     val isAuthenticated by authStateProvider.isAuthenticated.collectAsState()
@@ -61,10 +56,6 @@ fun AppContent() {
             startDestination = startDestination
         ) {
             composable<OnboardingRoute> {
-                // Collect `completed` on the SAME OnboardingViewModel instance the
-                // scene uses. Resolving it here (instead of inside OnboardingDestination
-                // with koinViewModel(), which would be scoped to the nav back-stack
-                // entry) keeps the emission and this collector on one instance.
                 LaunchedEffect(onboardingViewModel) {
                     onboardingViewModel.completed.collect { result ->
                         completeOnboarding(result)
@@ -120,11 +111,7 @@ fun AppContent() {
                 CustomFoodDestination(
                     onBack = { navController.popBackStack() },
                     onAddNew = { navController.navigate(ManualFoodEntryRoute) },
-                    onFoodAdded = {
-                        // MainViewModel's daily-macros flow re-emits automatically
-                        // after the insert; no explicit reload needed.
-                        navController.popBackStack()
-                    }
+                    onFoodAdded = { navController.popBackStack() }
                 )
             }
 

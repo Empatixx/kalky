@@ -40,7 +40,6 @@ fun CupertinoAutoscaleText(
                     readyToDraw = true
                 }
             },
-            // Only draw the text when we're sure it fits within the bounds
             modifier = if (readyToDraw) Modifier else Modifier.drawWithContent { }
         )
 }

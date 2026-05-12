@@ -30,8 +30,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
 
 class MainActivity : ComponentActivity() {
-    // Only what MainActivity itself needs for camera-result handling and the
-    // sign-in callback. Scenes resolve their own ViewModels via koinViewModel.
     private val mainViewModel: MainViewModel by viewModel()
     private val authViewModel: AuthViewModel by viewModel()
     private val appPreferences: AppPreferences by inject()

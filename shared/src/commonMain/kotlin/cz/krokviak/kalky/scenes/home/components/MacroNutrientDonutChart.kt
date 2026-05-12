@@ -29,25 +29,18 @@ fun MacroNutrientDonutChart(
     iconFraction: Float = 0.2f,
     centerIconBackgroundColor: Color = AppTheme.colors.surfaceSecondary,
 ) {
-    // BoxWithConstraints gives us maxWidth & maxHeight of the parent
     BoxWithConstraints(
         modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
-        // The limiting dimension of this Box (e.g. if width < height, use width)
         val chartSize = min(maxWidth, maxHeight)
-
-        // Convert that to a Dp to measure actual size
         val strokeWidth = chartSize * strokeWidthFraction
 
-        // Use the computed chartSize for the entire PieChart
-        // (You could also just do .fillMaxSize(), but for a donut typically you'd keep it a square.)
         Box(
             modifier = Modifier
                 .size(chartSize),
             contentAlignment = Alignment.Center
         ) {
-            // Prepare data
             val data by remember(percentage) {
                 mutableStateOf(
                     listOf(
@@ -65,7 +58,6 @@ fun MacroNutrientDonutChart(
                 )
             }
 
-            // Draw the PieChart
             PieChart(
                 data = data,
                 modifier = Modifier.fillMaxSize()
@@ -76,9 +68,7 @@ fun MacroNutrientDonutChart(
                 )
             )
 
-            // Center icon
             if (centerIcon != null) {
-                // Option 1: Scale the background circle & icon relative to the chart size
                 val iconBackgroundSize = chartSize * centerIconBackgroundFraction
                 val iconSize = chartSize * iconFraction
 

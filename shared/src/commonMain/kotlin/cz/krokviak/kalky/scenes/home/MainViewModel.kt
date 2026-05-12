@@ -142,8 +142,6 @@ class MainViewModel(
     fun resetToToday() = onDateSelected(cz.krokviak.kalky.core.common.currentLocalDate())
 
     fun onDateSelected(date: LocalDate) {
-        // The currentDate change is observed in observeMacrosForCurrentDate(),
-        // which restarts the daily-macros flow collector for the new date.
         _uiState.update { current -> current.copy(currentDate = date) }
     }
 
@@ -166,8 +164,6 @@ class MainViewModel(
         viewModelScope.launch {
             val ids = _uiState.value.selectedFoodIds
             deleteFoodItems(ids)
-            // The daily-macros flow re-emits after the delete; we only need to
-            // clear the selection here.
             _uiState.update { it.copy(selectedFoodIds = persistentSetOf()) }
         }
     }

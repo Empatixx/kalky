@@ -85,8 +85,7 @@ fun WheelDatePickerInline(
     LaunchedEffect(selectedDay, selectedMonth, selectedYear, maxDays) {
         val clampedDay = selectedDay.coerceIn(1, maxDays)
         val newDate = LocalDate(selectedYear, selectedMonth, clampedDay)
-        // Skip the redundant emit on first composition (value == initialDate),
-        // which would trigger a needless reload just by opening the picker.
+        // skip the no-op emit on first composition (would trigger a needless reload)
         if (newDate != initialDate) onDateChanged(newDate)
     }
 
@@ -99,7 +98,6 @@ fun WheelDatePickerInline(
             .fillMaxWidth()
             .height(PICKER_HEIGHT)
     ) {
-        // Selection band
         Box(
             modifier = Modifier
                 .align(Alignment.Center)
@@ -112,7 +110,6 @@ fun WheelDatePickerInline(
                 )
         )
 
-        // Three wheel columns
         Row(
             modifier = Modifier.fillMaxSize(),
             horizontalArrangement = Arrangement.Center
@@ -145,7 +142,6 @@ fun WheelDatePickerInline(
             )
         }
 
-        // Fade top
         Box(
             modifier = Modifier
                 .align(Alignment.TopCenter)
@@ -159,7 +155,6 @@ fun WheelDatePickerInline(
                     )
                 )
         )
-        // Fade bottom
         Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -190,8 +185,7 @@ private fun WheelColumn(
     )
     val snapBehavior = rememberSnapFlingBehavior(lazyListState)
 
-    // Only report the selected index once scrolling settles, otherwise every
-    // item crossed during a fling fires a reload (jank on the Analytics screen).
+    // report the index only once scrolling settles (every item crossed mid-fling would fire a reload)
     LaunchedEffect(lazyListState) {
         snapshotFlow { lazyListState.isScrollInProgress }
             .distinctUntilChanged()

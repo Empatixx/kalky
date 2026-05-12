@@ -28,21 +28,16 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val appModule = module {
-    // Platform-specific
     single { DriverFactory(get()) }
     single<ImageStorage> { AndroidImageStorage(get()) }
 
-    // Remote Config - provides backend URL override for shared module
     single(named("backendBaseUrl")) { RemoteConfigManager.getBackendBaseUrl() }
 
-    // Auth
     single { FirebaseAuthTokenProvider() }
     single<AuthTokenProvider> { get<FirebaseAuthTokenProvider>() }
     single<AuthStateProvider> { get<FirebaseAuthTokenProvider>() }
     single<AppCheckTokenProvider> { FirebaseAppCheckTokenProvider() }
 
-    // ViewModels — Koin 4 KMP DSL. ViewModelStoreOwner-aware caching gives us
-    // proper onCleared() lifecycle (one instance per VM owner, not app-wide).
     viewModel { MainViewModel(get(), get(), get(), get(), get(), get(), get(), get(), seedMockData = BuildConfig.DEBUG) }
     viewModel { FoodDetailViewModel(get(), get(), get(), get(), get(), get()) }
     viewModel { NutrientEditViewModel(get(), get()) }
