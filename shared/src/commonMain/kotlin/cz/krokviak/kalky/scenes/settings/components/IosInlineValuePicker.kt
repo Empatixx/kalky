@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cz.krokviak.kalky.core.theme.AppTheme
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 
 @Composable
 fun IosInlineValuePicker(
@@ -85,9 +86,10 @@ private fun NumberWheel(
     val textColor = AppTheme.colors.onBackground
 
     LaunchedEffect(listState) {
-        snapshotFlow { listState.firstVisibleItemIndex }
+        snapshotFlow { listState.isScrollInProgress }
             .distinctUntilChanged()
-            .collect { index -> onIndexChanged(index.coerceIn(0, values.lastIndex)) }
+            .filter { !it }
+            .collect { onIndexChanged(listState.firstVisibleItemIndex.coerceIn(0, values.lastIndex)) }
     }
 
     Box(
