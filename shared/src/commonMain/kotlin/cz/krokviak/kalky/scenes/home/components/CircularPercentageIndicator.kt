@@ -22,33 +22,31 @@ fun CircularPercentageIndicator(
     backgroundColor: Color,
     modifier: Modifier = Modifier.size(80.dp)
 ) {
-    // Convert percentage (0..100) to a 0..1 float
+
     val progress = (percentage.coerceIn(0, 100)) / 100f
 
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
     ) {
-        // 1) The circular progress arcs
+
         Canvas(modifier = Modifier.fillMaxSize()) {
-            // We'll base the stroke width on the smaller dimension
+
             val canvasSize = size.minDimension
-            val strokeWidth = canvasSize / 10f  // arbitrary ratio, adjust as you like
+            val strokeWidth = canvasSize / 10f
             val radius = (canvasSize - strokeWidth) / 2
             val center = Offset(x = size.width / 2, y = size.height / 2)
 
-            // --- Draw the background arc (full circle) ---
             drawArc(
                 color = backgroundColor,
-                startAngle = -90f,           // start at "top"
-                sweepAngle = 360f,           // full circle
-                useCenter = false,           // draw an arc, not a filled sector
+                startAngle = -90f,
+                sweepAngle = 360f,
+                useCenter = false,
                 topLeft = Offset(center.x - radius, center.y - radius),
                 size = Size(radius * 2, radius * 2),
                 style = Stroke(width = strokeWidth)
             )
 
-            // --- Draw the progress arc ---
             val sweepAngle = 360f * progress
             drawArc(
                 color = progressColor,
@@ -61,7 +59,6 @@ fun CircularPercentageIndicator(
             )
         }
 
-        // 2) The percentage text
         Text(
             text = "${percentage.coerceIn(0, 100)}%",
             color = progressColor,

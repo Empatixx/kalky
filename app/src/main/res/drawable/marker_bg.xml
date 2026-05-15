@@ -1,8 +1,6 @@
-<!-- res/drawable/marker_bg.xml -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
 
-    <!-- Example styling; tweak as you wish -->
     <solid android:color="#AA000000" />
     <corners android:radius="4dp" />
     <padding

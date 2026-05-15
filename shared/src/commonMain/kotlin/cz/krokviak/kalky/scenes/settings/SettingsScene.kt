@@ -90,7 +90,6 @@ fun SettingsScene(
             color = AppTheme.colors.onBackground
         )
 
-        // Account card
         if (authUser != null) {
             KalkyCard(
                 modifier = Modifier.fillMaxWidth(),
@@ -180,7 +179,6 @@ fun SettingsScene(
             }
         }
 
-        // Theme section
         SectionHeader(s.settings.appearance)
 
         KalkySegmentedControl(
@@ -212,7 +210,6 @@ fun SettingsScene(
 
         Spacer(modifier = Modifier.height(dims.halfSpacing))
 
-        // Notifications section
         SectionHeader(s.notifications.reminders)
         Row(
             modifier = Modifier
@@ -251,7 +248,6 @@ fun SettingsScene(
 
         Spacer(modifier = Modifier.height(dims.halfSpacing))
 
-        // Legal section
         SectionHeader(s.legal.sectionTitle)
 
         LegalRow(label = s.legal.termsTitle, onClick = onTermsClick)

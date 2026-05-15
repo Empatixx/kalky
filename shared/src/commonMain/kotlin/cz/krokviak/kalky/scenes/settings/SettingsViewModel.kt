@@ -21,7 +21,6 @@ class SettingsViewModel(
         refresh()
     }
 
-    /** Reloads personal info from storage; call after onboarding writes. */
     fun refresh() {
         viewModelScope.launch {
             val info = personalInfoRepo.getLatestPersonalInfo()

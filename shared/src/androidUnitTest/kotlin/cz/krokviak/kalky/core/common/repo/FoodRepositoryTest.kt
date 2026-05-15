@@ -232,7 +232,7 @@ class FoodRepositoryTest {
 
     @Test
     fun getDistinctFoodsByName_keepsLatestPerName() = runTest {
-        // Two banáns with different timestamps — dedup keeps the latest.
+
         val earlier = Instant.parse("2026-05-07T10:00:00Z")
         val later = Instant.parse("2026-05-08T10:00:00Z")
         repo.insertFoodItem(item(name = "Banán", calories = 90, createdAt = earlier))
@@ -243,7 +243,7 @@ class FoodRepositoryTest {
 
         assertEquals(2, distinct.size)
         assertEquals(setOf("Banán", "Avokádo"), distinct.map { it.name }.toSet())
-        // Latest banán wins
+
         assertEquals(95, distinct.first { it.name == "Banán" }.calories)
     }
 
@@ -284,13 +284,13 @@ class FoodRepositoryTest {
     @Test
     fun getDistinctFoodDates_returnsUniqueDates_descending() = runTest {
         repo.insertFoodItem(item(createdAt = today))
-        repo.insertFoodItem(item(createdAt = today)) // dup
+        repo.insertFoodItem(item(createdAt = today))
         repo.insertFoodItem(item(createdAt = yesterday))
 
         val dates = repo.getDistinctFoodDates()
 
         assertEquals(2, dates.size)
-        // Newest first
+
         assertEquals("2026-05-08", dates.first())
     }
 

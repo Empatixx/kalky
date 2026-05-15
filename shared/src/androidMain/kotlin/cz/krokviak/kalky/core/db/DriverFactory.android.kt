@@ -6,7 +6,7 @@ import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 
 actual class DriverFactory(private val context: Context) {
     actual fun createDriver(): SqlDriver {
-        // Migrate old database filename
+
         val oldDb = context.getDatabasePath("kalai.db")
         val newDb = context.getDatabasePath("kalky.db")
         if (oldDb.exists() && !newDb.exists()) {

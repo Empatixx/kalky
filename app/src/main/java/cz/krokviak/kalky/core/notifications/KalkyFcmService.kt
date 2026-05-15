@@ -17,7 +17,7 @@ class KalkyFcmService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
-        // Send token to backend
+
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 httpClient.post("${getBackendBaseUrl()}/api/auth/fcm-token") {
@@ -25,7 +25,7 @@ class KalkyFcmService : FirebaseMessagingService() {
                     setBody("""{"token":"$token"}""")
                 }
             } catch (_: Exception) {
-                // Will retry on next app start
+
             }
         }
     }

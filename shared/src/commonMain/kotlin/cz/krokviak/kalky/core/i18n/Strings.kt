@@ -27,10 +27,6 @@ data class AppStrings(
     val date: DateStrings
 )
 
-/**
- * [daysShort]: Mon..Sun (size 7).
- * [months]: Jan..Dec (size 12).
- */
 data class DateStrings(
     val daysShort: List<String>,
     val months: List<String>

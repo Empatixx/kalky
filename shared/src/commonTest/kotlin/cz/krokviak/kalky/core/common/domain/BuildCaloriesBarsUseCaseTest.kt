@@ -31,7 +31,7 @@ class BuildCaloriesBarsUseCaseTest {
 
     @Test
     fun sevenDayRange_returnsSevenBars_withDayLabels() = runTest {
-        val start = LocalDate(2026, 5, 1) // Friday
+        val start = LocalDate(2026, 5, 1)
         val end = LocalDate(2026, 5, 7)
         val repo = mock<FoodRepository> {
             everySuspend { getDailyMacroTotalsInRange(any(), any()) } returns listOf(
@@ -45,7 +45,7 @@ class BuildCaloriesBarsUseCaseTest {
         assertEquals(7, bars.size)
         assertEquals(50, bars.first().protein)
         assertEquals(80, bars.last().protein)
-        // Days <= 14 -> short day names
+
         assertEquals(2, bars.first().label.length)
     }
 
@@ -77,8 +77,8 @@ class BuildCaloriesBarsUseCaseTest {
         val bars = BuildCaloriesBarsUseCase(repo).invoke(start, end)
 
         assertEquals(3, bars.size)
-        assertEquals(0, bars[0].protein)  // 5/1 missing
-        assertEquals(10, bars[1].protein) // 5/2
-        assertEquals(0, bars[2].protein)  // 5/3 missing
+        assertEquals(0, bars[0].protein)
+        assertEquals(10, bars[1].protein)
+        assertEquals(0, bars[2].protein)
     }
 }

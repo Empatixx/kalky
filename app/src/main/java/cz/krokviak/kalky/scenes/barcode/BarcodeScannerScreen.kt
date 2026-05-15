@@ -50,10 +50,9 @@ fun BarcodeScannerScreen(
     val s = LocalStrings.current
     val dims = LocalDimensions.current
     Box(modifier = Modifier.fillMaxSize()) {
-        // Camera preview as background
+
         cameraPreview()
 
-        // Close button
         IconButton(
             onClick = onCloseClick,
             modifier = Modifier
@@ -68,7 +67,6 @@ fun BarcodeScannerScreen(
             )
         }
 
-        // Scan hint at top
         if (state is BarcodeScanState.Scanning) {
             Text(
                 text = s.barcode.scanBarcode,
@@ -86,7 +84,6 @@ fun BarcodeScannerScreen(
             )
         }
 
-        // Bottom card overlay
         when (state) {
             is BarcodeScanState.Loading -> {
                 BottomCard(Modifier.align(Alignment.BottomCenter)) {
@@ -197,7 +194,7 @@ fun BarcodeScannerScreen(
                 }
             }
 
-            is BarcodeScanState.Scanning -> { /* No bottom card while scanning */ }
+            is BarcodeScanState.Scanning -> {  }
         }
     }
 }

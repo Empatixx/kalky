@@ -13,13 +13,6 @@ import androidx.compose.ui.unit.sp
 import cz.krokviak.kalky.scenes.nutrientedit.components.NutrientEditRow
 import cz.krokviak.kalky.scenes.settings.components.IosInlineValuePicker
 
-/**
- * NutrientEditRow + IosInlineValuePicker combined for the protein/carbs/fat triplet pattern.
- *
- * Use one MacroPickerRow per macro. The caller owns the `expanded` flag (typically a
- * single `activeField: MacroField?` shared across the three rows so only one picker is
- * open at a time) and the value-change callback.
- */
 @Composable
 fun MacroPickerRow(
     label: String,

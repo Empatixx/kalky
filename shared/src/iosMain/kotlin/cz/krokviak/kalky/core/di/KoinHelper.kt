@@ -33,23 +33,18 @@ fun initKoinIos(
         modules(
             sharedModule,
             module {
-                // Platform-specific
+
                 single { DriverFactory() }
                 single<ImageStorage> { IosImageStorage() }
 
-                // Auth providers (stubs by default, replaced by Swift implementations later)
                 single<AuthTokenProvider> { authTokenProvider ?: StubAuthTokenProvider() }
                 single<AuthStateProvider> { authStateProvider ?: StubAuthStateProvider() }
                 single<AppCheckTokenProvider> { appCheckTokenProvider ?: StubAppCheckTokenProvider() }
 
-                // Backend URL override
                 if (backendBaseUrl != null) {
                     single(org.koin.core.qualifier.named("backendBaseUrl")) { backendBaseUrl }
                 }
 
-                // ViewModels — Koin 4 KMP DSL with proper VM lifecycle.
-                // Constructor arities mirror app/.../core/di/AppModule.kt; keep these
-                // in sync when a VM gains/loses a dependency.
                 viewModel {
                     MainViewModel(
                         getLatestSettings = get(),

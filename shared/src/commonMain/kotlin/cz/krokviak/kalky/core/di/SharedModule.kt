@@ -35,13 +35,11 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val sharedModule = module {
-    // Time source (injected so tests can swap in a TestClock)
+
     single<Clock> { Clock.System }
 
-    // Preferences
     single { AppPreferences() }
 
-    // Network
     single<HttpClient> { createHttpClient(getOrNull(), getOrNull()) }
     single {
         FoodAnalysisClient(
@@ -51,22 +49,17 @@ val sharedModule = module {
     }
     single { OpenFoodFactsClient(get()) }
 
-    // Database
     single { createDatabase(get()) }
     single { DatabaseSeeder(get()) }
 
-    // Repositories
     single { FoodRepository(get()) }
     single { PersonalInfoRepo(get()) }
     single<NutrientSettingRepo> { NutrientSettingRepoImpl(get()) }
 
-    // Streak
     single { StreakCalculator(get()) }
 
-    // Food photo pipeline
     single { FoodPhotoAnalyzer(get(), get(), get(), get()) }
 
-    // Domain use cases
     factory { GetDailyMacrosUseCase(get()) }
     factory { GetStreakUseCase(get()) }
     factory { BuildCaloriesBarsUseCase(get()) }
@@ -84,6 +77,5 @@ val sharedModule = module {
     factory { GetWeightsInRangeUseCase(get()) }
     factory { ObserveDailyMacrosUseCase(get()) }
 
-    // Notifications
     single { MealReminderChecker(get(), get()) }
 }

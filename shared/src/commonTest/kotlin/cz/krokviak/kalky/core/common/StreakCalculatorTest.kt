@@ -53,7 +53,7 @@ class StreakCalculatorTest {
         val dates = listOf(
             today.toString(),
             today.minus(1, DateTimeUnit.DAY).toString(),
-            // gap on day -2
+
             today.minus(3, DateTimeUnit.DAY).toString(),
         )
         val streak = StreakCalculator(mockRepo(dates)).getCurrentStreak()

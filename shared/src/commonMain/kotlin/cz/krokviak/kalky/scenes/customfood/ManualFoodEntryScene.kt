@@ -212,7 +212,6 @@ fun ManualFoodEntryScene(
                 }
             }
 
-            // Calories summary card (read-only, auto-calculated)
             KalkyCard(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(14.dp),
@@ -266,7 +265,6 @@ fun ManualFoodEntryScene(
                 }
             }
 
-            // Macro editors
             KalkyCard(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(LocalDimensions.current.cardCornerRadius),

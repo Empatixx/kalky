@@ -82,7 +82,7 @@ class BarcodeScannerViewModelTest {
         advanceUntilIdle()
 
         val state = assertIs<BarcodeScanState.Error>(vm.state.value)
-        // "network down" matches the network-keyword heuristic in toUiError
+
         assertEquals(UiError.Network, state.error)
     }
 
@@ -94,11 +94,10 @@ class BarcodeScannerViewModelTest {
         val vm = BarcodeScannerViewModel(client)
 
         vm.onBarcodeDetected("123")
-        // Don't advance — state is Loading. Calling again should be a no-op.
+
         vm.onBarcodeDetected("123")
         advanceUntilIdle()
 
-        // Should still resolve to ProductFound (only one lookup happened)
         assertIs<BarcodeScanState.ProductFound>(vm.state.value)
     }
 

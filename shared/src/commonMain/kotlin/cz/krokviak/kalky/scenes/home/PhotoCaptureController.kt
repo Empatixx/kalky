@@ -10,15 +10,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 
-/**
- * Orchestrates the "add food item" pipelines (camera photo + barcode).
- *
- * Since H10, the SQLDelight reactive flow in MainViewModel reflects DB writes
- * automatically — placeholder, analyzed, and final-committed states each
- * trigger a re-emit. This controller therefore only manages the [loadingItems]
- * UI marker and the analysis-failed signal; the food list itself is owned by
- * the flow.
- */
 internal class PhotoCaptureController(
     private val scope: CoroutineScope,
     private val state: MutableStateFlow<MainUiState>,
@@ -35,7 +26,7 @@ internal class PhotoCaptureController(
             onPlaceholderInserted = { placeholder ->
                 state.update { it.copy(loadingItems = it.loadingItems.add(placeholder.id)) }
             },
-            onAnalysisComplete = { /* DB flow re-emits; no-op */ },
+            onAnalysisComplete = {  },
             onFinalCommitted = { finalItem ->
                 state.update { it.copy(loadingItems = it.loadingItems.remove(finalItem.id)) }
             },

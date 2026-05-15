@@ -102,7 +102,7 @@ struct ContentView: View {
 
     private func handlePhotoCaptured(_ data: Data) {
         showCamera = false
-        // Convert Swift Data to Kotlin ByteArray and call shared ViewModel
+
         let kotlinBytes = DataToByteArray.convert(data)
         let mainViewModel: MainViewModel = KoinHelper.resolve()
         mainViewModel.addFoodItemFromBytes(imageBytes: kotlinBytes)
@@ -110,13 +110,11 @@ struct ContentView: View {
 
     private func handleBarcodeDetected(_ barcode: String) {
         showCamera = false
-        // Use shared BarcodeScannerViewModel for product lookup
+
         let barcodeVM: BarcodeScannerViewModel = KoinHelper.resolve()
         barcodeVM.onBarcodeDetected(barcode: barcode)
     }
 }
-
-// MARK: - Camera SwiftUI Wrapper
 
 struct CameraViewWrapper: UIViewControllerRepresentable {
     let mode: CameraMode
@@ -134,8 +132,6 @@ struct CameraViewWrapper: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: KalkyCameraViewController, context: Context) {}
 }
 
-// MARK: - Koin Helper for Swift
-
 enum KoinHelper {
     static func resolve<T: AnyObject>() -> T {
         let koin = KoinPlatformKt.getKoin()
@@ -145,8 +141,6 @@ enum KoinHelper {
         return instance
     }
 }
-
-// MARK: - Data <-> ByteArray Conversion
 
 enum DataToByteArray {
     static func convert(_ data: Data) -> KotlinByteArray {

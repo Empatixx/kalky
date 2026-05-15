@@ -20,7 +20,6 @@ export async function handleAdminImport(req: Request): Promise<Response> {
     return Response.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
-  // Accept { products: [...] } or bare array [...]
   let products: ImportProduct[];
   if (Array.isArray(body)) {
     products = body;
@@ -46,8 +45,6 @@ export async function handleAdminImport(req: Request): Promise<Response> {
   let imported = 0;
   let failed = 0;
 
-  // Wrap the whole batch in one transaction so a partial failure doesn't
-  // leave the FTS index out of sync with the products table.
   try {
     await prisma.$transaction(async (tx) => {
       for (let i = 0; i < products.length; i++) {
@@ -60,7 +57,7 @@ export async function handleAdminImport(req: Request): Promise<Response> {
         }
 
         try {
-          // Inline upsert to share the surrounding transaction.
+
           const data = {
             name: p.name.trim(),
             energyKcal100g: Number(p.energy_kcal_100g) || 0,

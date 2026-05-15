@@ -132,13 +132,12 @@ class MainViewModelTest {
         val vm = buildViewModel(macrosFlow = flow)
 
         vm.uiState.test {
-            // initial state (before flow collection)
+
             val initial = awaitItem()
             assertEquals(0, initial.currentCalories)
 
             advanceUntilIdle()
 
-            // after flow emission
             val updated = expectMostRecentItem()
             assertEquals(1234, updated.currentCalories)
             assertEquals(80, updated.currentProtein)
@@ -159,7 +158,7 @@ class MainViewModelTest {
         assertEquals(setOf(1L, 2L), vm.uiState.value.selectedFoodIds.toSet())
         assertTrue(vm.uiState.value.isSelectionMode)
 
-        vm.toggleFoodSelection(1L) // remove
+        vm.toggleFoodSelection(1L)
         assertEquals(setOf(2L), vm.uiState.value.selectedFoodIds.toSet())
     }
 

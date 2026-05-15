@@ -107,11 +107,11 @@ class FoodDetailViewModelTest {
         val vm = buildVm()
         vm.loadFood(7)
         advanceUntilIdle()
-        // initial portion = 1
+
         vm.decreasePortion()
         assertEquals(1, vm.uiState.value.portion)
         vm.increasePortion()
-        vm.increasePortion() // 3
+        vm.increasePortion()
         vm.decreasePortion()
         assertEquals(2, vm.uiState.value.portion)
     }
@@ -121,10 +121,10 @@ class FoodDetailViewModelTest {
         val vm = buildVm()
         vm.loadFood(7)
         advanceUntilIdle()
-        vm.onProteinChange(999) // clamps to 500
+        vm.onProteinChange(999)
         val s = vm.uiState.value
         assertEquals(500, s.protein)
-        // 500*4 + 23*4 + 0*9 = 2092
+
         assertEquals(2092, s.calories)
     }
 
@@ -144,28 +144,12 @@ class FoodDetailViewModelTest {
         vm.loadFood(7)
         advanceUntilIdle()
 
-        // After load, localImagePath in state is "" — fixResult should mark error
-        // (current state localImagePath comes from food which has empty string)
-        // actually FoodDetailViewModel sets localImagePath = food.localImagePath, which is ""
-        // that means imageStorage.getImageBytes("") might still work... let's check fix the test:
-        // in this test, image is "" but state stored "" not null. Force null path:
-        // Actually after loadFood sets state.localImagePath to food.localImagePath="" not null.
-        // The condition is `?.let { ... } ?: return@launch markPhotoAnalysisError()`.
-        // For "" the let block runs (not null) and proceeds to runAnalysis.
-        // To trigger the error path, we need null. The state default is null but loadFood overrides it.
-
-        // Better test: after load with localImagePath = null — but FoodItemEntity has String field.
-        // Fall back to: don't load food at all, fix on initial state where localImagePath is null
         val vm2 = buildVm()
-        // skip loadFood — initial state has localImagePath = null
+
         vm2.fixResult()
         advanceUntilIdle()
         assertEquals(UiError.PhotoAnalysis, vm2.uiState.value.error)
     }
-
-    // fixResult success/null-analysis paths require Dispatchers.IO which isn't
-    // the test dispatcher; skipping to avoid relying on real IO. The
-    // imageless-error path below is covered.
 
     @Test
     fun deleteFood_invokesDeleteUseCase() = runTest(dispatcher) {
@@ -211,7 +195,7 @@ class FoodDetailViewModelTest {
     @Test
     fun dismissError_clearsError() = runTest(dispatcher) {
         val vm = buildVm()
-        vm.fixResult() // triggers error since localImagePath is null on initial state
+        vm.fixResult()
         advanceUntilIdle()
         assertEquals(UiError.PhotoAnalysis, vm.uiState.value.error)
         vm.dismissError()

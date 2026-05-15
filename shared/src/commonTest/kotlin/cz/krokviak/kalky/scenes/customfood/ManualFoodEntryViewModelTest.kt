@@ -54,7 +54,7 @@ class ManualFoodEntryViewModelTest {
     fun onProteinChange_updatesCalories_via4kcalPerGram() {
         val vm = buildVm()
         vm.onProteinChange(50)
-        // 50*4 = 200
+
         assertEquals(50, vm.state.value.protein)
         assertEquals(200, vm.state.value.calories)
     }
@@ -62,10 +62,10 @@ class ManualFoodEntryViewModelTest {
     @Test
     fun onCarbsAndFatChange_aggregateCalories() {
         val vm = buildVm()
-        vm.onProteinChange(20) // 80 kcal
-        vm.onCarbsChange(50)   // +200 kcal
-        vm.onFatChange(10)     // +90 kcal
-        // 80+200+90 = 370
+        vm.onProteinChange(20)
+        vm.onCarbsChange(50)
+        vm.onFatChange(10)
+
         assertEquals(370, vm.state.value.calories)
     }
 
@@ -131,9 +131,9 @@ class ManualFoodEntryViewModelTest {
         )
         vm.setSourceFoods(foods)
         val s = vm.state.value
-        assertEquals(15, s.protein) // 10+5
-        assertEquals(50, s.carbs)   // 20+30
-        assertEquals(7, s.fat)      // 5+2
+        assertEquals(15, s.protein)
+        assertEquals(50, s.carbs)
+        assertEquals(7, s.fat)
     }
 
     @Test
@@ -143,9 +143,9 @@ class ManualFoodEntryViewModelTest {
             FoodItemEntity(id = 1, name = "A", protein = 10, carbs = 20, fat = 5,
                 calories = 0, createdAt = fixedNow, updatedAt = fixedNow),
         ))
-        // default 100g -> protein 10
+
         vm.updateSourcePortion(1, 200)
-        // 200g -> protein 20
+
         assertEquals(20, vm.state.value.protein)
         assertEquals(40, vm.state.value.carbs)
     }
@@ -181,7 +181,7 @@ class ManualFoodEntryViewModelTest {
         vm.addSourceFoodFromApi(product)
         val s = vm.state.value
         assertEquals(1, s.sourceFoods.size)
-        assertEquals(3, s.protein) // rounded 3.4
+        assertEquals(3, s.protein)
     }
 
     @Test
@@ -211,7 +211,7 @@ class ManualFoodEntryViewModelTest {
         val vm = ManualFoodEntryViewModel(searchHistory, ofc, addFood, fixedClock)
 
         vm.searchIngredients("ban")
-        // Debounce 300ms — before that, no results yet
+
         advanceTimeBy(100)
         assertTrue(vm.state.value.ingredientResults.isEmpty())
 

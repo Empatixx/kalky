@@ -40,13 +40,6 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 
-/**
- * A horizontally scrollable date picker that:
- * - Always shows exactly 7 columns (days) at a time.
- * - Automatically scrolls so that the Monday of the current week is left-aligned at first composition.
- * - Highlights today's date by default.
- * - Supports "infinite" scroll by prepending or appending blocks of 30 days.
- */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun WeekDatePicker(
@@ -123,7 +116,6 @@ fun WeekDatePicker(
     }
 }
 
-
 @Composable
 fun MonthHeader(currentDate: LocalDate, isToday: Boolean, onTodayClick: () -> Unit) {
     val monthName = currentDate.month.localizedName(LocalStrings.current.date)
@@ -157,17 +149,6 @@ fun MonthHeader(currentDate: LocalDate, isToday: Boolean, onTodayClick: () -> Un
     }
 }
 
-
-
-
-/**
- * Composable for a single day "column" item.
- *
- * @param date the date to display
- * @param isSelected whether this date is highlighted
- * @param itemWidth the fixed width for this column
- * @param onDayClick callback when the user clicks this date
- */
 @Composable
 private fun DayItem(
     date: LocalDate,
@@ -223,13 +204,6 @@ private fun DayItem(
     }
 }
 
-
-/**
- * Observe the first visible item in the [LazyListState].
- * - If near the left edge, prepend days.
- * - If near the right edge, append days.
- * - Adjust [selectedIndexUpdater] if new items are prepended (so the selected day doesn't shift).
- */
 @Composable
 private fun observeInfiniteScroll(
     listState: LazyListState,
@@ -245,7 +219,7 @@ private fun observeInfiniteScroll(
 
                 if (firstVisible < 5) {
                     prependMoreDays(days, coroutineScope, listState, firstVisible)
-                    // we inserted 30 days at the start, so shift the selection index by +30
+
                     selectedIndexUpdater(30)
                 }
 
@@ -256,9 +230,6 @@ private fun observeInfiniteScroll(
     }
 }
 
-/**
- * Generate a list of [LocalDate] from [start] to [end] (inclusive).
- */
 private fun generateDateRange(start: LocalDate, end: LocalDate): List<LocalDate> {
     require(end >= start) { "End date can't be before start date." }
     val result = mutableListOf<LocalDate>()
@@ -270,11 +241,6 @@ private fun generateDateRange(start: LocalDate, end: LocalDate): List<LocalDate>
     return result
 }
 
-/**
- * Prepend 30 more days to the start of [days],
- * then adjust the visible item to compensate,
- * so the user doesn't notice a jump.
- */
 private fun prependMoreDays(
     days: MutableList<LocalDate>,
     coroutineScope: CoroutineScope,
@@ -291,13 +257,9 @@ private fun prependMoreDays(
     }
 }
 
-/**
- * Append 30 more days to the end of [days].
- */
 private fun appendMoreDays(days: MutableList<LocalDate>) {
     val lastDate = days.last()
     val newEnd = lastDate.plus(30, DateTimeUnit.DAY)
     val newDates = generateDateRange(lastDate.plus(1, DateTimeUnit.DAY), newEnd)
     days.addAll(newDates)
 }
-

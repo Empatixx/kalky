@@ -3,8 +3,6 @@ import CryptoKit
 import FirebaseAuth
 import UIKit
 
-/// Handles Sign in with Apple flow on iOS.
-/// Uses ASAuthorizationController → exchanges for Firebase credential.
 class AppleSignInHelper: NSObject {
 
     private var continuation: CheckedContinuation<Void, Error>?
@@ -28,8 +26,6 @@ class AppleSignInHelper: NSObject {
         }
     }
 
-    // MARK: - Crypto helpers
-
     private static func randomNonceString(length: Int = 32) -> String {
         precondition(length > 0)
         var randomBytes = [UInt8](repeating: 0, count: length)
@@ -47,8 +43,6 @@ class AppleSignInHelper: NSObject {
         return hashedData.compactMap { String(format: "%02x", $0) }.joined()
     }
 }
-
-// MARK: - ASAuthorizationControllerDelegate
 
 extension AppleSignInHelper: ASAuthorizationControllerDelegate {
 

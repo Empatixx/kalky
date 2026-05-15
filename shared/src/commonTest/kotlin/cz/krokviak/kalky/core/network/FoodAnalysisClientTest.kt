@@ -58,7 +58,7 @@ class FoodAnalysisClientTest {
         assertEquals("Avokádo", result.title)
         assertEquals(200, result.weight)
         assertEquals(8, result.healthScore)
-        // calories = 4*4 + 12*4 + 22*9 = 16 + 48 + 198 = 262
+
         assertEquals(262, result.calories)
     }
 

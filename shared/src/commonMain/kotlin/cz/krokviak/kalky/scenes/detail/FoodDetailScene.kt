@@ -44,7 +44,7 @@ fun FoodDetailScene(
     onDeleteClick: () -> Unit = {}
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
-        // Main Image
+
         AsyncImage(
             model = uiState.localImagePath ?: "",
             contentDescription = null,
@@ -56,7 +56,7 @@ fun FoodDetailScene(
         )
 
         val dims = LocalDimensions.current
-        // Top Icons with context menu
+
         FoodDetailTopIcons(
             modifier = Modifier
                 .align(Alignment.TopCenter)
@@ -66,7 +66,6 @@ fun FoodDetailScene(
             onDeleteClick = onDeleteClick
         )
 
-        // Bottom Sheet
         FoodBottomSheetCard(
             name = uiState.name,
             calories = uiState.calories,
@@ -109,7 +108,7 @@ fun FoodDetailTopIcons(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        // Exit Button with translucent circle
+
         IconButton(
             onClick = onExitClick,
             modifier = Modifier
@@ -126,7 +125,6 @@ fun FoodDetailTopIcons(
             )
         }
 
-        // 3 dots button - opens context menu
         Box {
             IconButton(
                 onClick = { menuExpanded = true },

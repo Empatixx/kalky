@@ -112,7 +112,6 @@ class OnboardingViewModel(
         val heightCm = heightValues[state.heightIndex].toFloat()
         val age = ageValues[state.ageIndex].toInt()
 
-        // Mifflin-St Jeor
         val bmr = if (state.gender == Gender.MALE) {
             10.0 * weightKg + 6.25 * heightCm - 5.0 * age + 5
         } else {
@@ -172,9 +171,9 @@ class OnboardingViewModel(
     }
 }
 
-private const val DEFAULT_WEIGHT_INDEX = 500 // 80.0 kg
-private const val DEFAULT_HEIGHT_INDEX = 70 // 170 cm
-private const val DEFAULT_AGE_INDEX = 24 // 25 years
+private const val DEFAULT_WEIGHT_INDEX = 500
+private const val DEFAULT_HEIGHT_INDEX = 70
+private const val DEFAULT_AGE_INDEX = 24
 
 private fun resolveWeightIndex(value: Float): Int {
     return ((value * 10f).roundToInt() - 300).coerceIn(0, 2200)

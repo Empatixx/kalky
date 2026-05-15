@@ -61,7 +61,6 @@ dependencies {
     val composeBom = platform("androidx.compose:compose-bom:2025.02.00")
     implementation(composeBom)
 
-    // Compose UI
     implementation(libs.androidx.material.icons.core)
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.activity.compose)
@@ -70,41 +69,32 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.foundation)
 
-    // CameraX
     implementation(libs.androidx.camera.core)
     implementation(libs.androidx.camera.camera2)
     implementation(libs.androidx.camera.lifecycle)
     implementation(libs.androidx.camera.view)
 
-    // ML Kit Barcode
     implementation(libs.barcode.scanning)
 
-    // Image loading
     implementation(libs.coil.compose)
 
-    // UI libraries
     implementation(libs.compose.charts)
     implementation(libs.vico.multiplatform)
 
-    // WorkManager
     implementation(libs.androidx.work.runtime.ktx)
 
-    // AndroidX
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
 
-    // Kotlin
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.datetime)
     implementation(libs.kotlinx.serialization.json)
 
-    // DI
     implementation(libs.insert.koin.koin.core)
     implementation(libs.koin.android)
 
-    // Firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.analytics)
@@ -115,12 +105,10 @@ dependencies {
     implementation("com.google.firebase:firebase-appcheck")
     implementation("com.google.firebase:firebase-appcheck-playintegrity")
 
-    // Credential Manager for Google Sign-In
     implementation("androidx.credentials:credentials:1.3.0")
     implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
     implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
 
-    // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

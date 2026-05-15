@@ -8,25 +8,20 @@ enum CameraMode {
 
 class KalkyCameraViewController: UIViewController {
 
-    // MARK: - Callbacks
     var onPhotoCaptured: ((Data) -> Void)?
     var onBarcodeDetected: ((String) -> Void)?
     var onDismiss: (() -> Void)?
 
-    // MARK: - Camera
     private let captureSession = AVCaptureSession()
     private let photoOutput = AVCapturePhotoOutput()
     private let metadataOutput = AVCaptureMetadataOutput()
     private var previewLayer: AVCaptureVideoPreviewLayer!
     private var currentMode: CameraMode = .photo
 
-    // MARK: - UI
     private let captureButton = UIButton(type: .system)
     private let backButton = UIButton(type: .system)
     private let modeToggle = UISegmentedControl(items: ["Foto", "Sken"])
     private let barcodeLabel = UILabel()
-
-    // MARK: - Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -51,8 +46,6 @@ class KalkyCameraViewController: UIViewController {
         super.viewWillDisappear(animated)
         captureSession.stopRunning()
     }
-
-    // MARK: - Camera Setup
 
     private func setupCamera() {
         captureSession.sessionPreset = .photo
@@ -84,17 +77,14 @@ class KalkyCameraViewController: UIViewController {
         updateModeOutputs()
     }
 
-    // MARK: - UI Setup
-
     private func setupUI() {
-        // Back button
+
         backButton.setImage(UIImage(systemName: "xmark.circle.fill"), for: .normal)
         backButton.tintColor = .white
         backButton.addTarget(self, action: #selector(backTapped), for: .touchUpInside)
         backButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(backButton)
 
-        // Mode toggle
         modeToggle.selectedSegmentIndex = 0
         modeToggle.backgroundColor = UIColor.black.withAlphaComponent(0.5)
         modeToggle.selectedSegmentTintColor = .white
@@ -104,7 +94,6 @@ class KalkyCameraViewController: UIViewController {
         modeToggle.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(modeToggle)
 
-        // Capture button
         captureButton.setImage(UIImage(systemName: "circle.inset.filled")?.withConfiguration(
             UIImage.SymbolConfiguration(pointSize: 72, weight: .light)
         ), for: .normal)
@@ -113,7 +102,6 @@ class KalkyCameraViewController: UIViewController {
         captureButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(captureButton)
 
-        // Barcode label
         barcodeLabel.textColor = .white
         barcodeLabel.textAlignment = .center
         barcodeLabel.font = .systemFont(ofSize: 18, weight: .medium)
@@ -144,8 +132,6 @@ class KalkyCameraViewController: UIViewController {
         ])
     }
 
-    // MARK: - Mode Switching
-
     private func updateModeOutputs() {
         captureButton.isHidden = currentMode == .barcode
         barcodeLabel.isHidden = currentMode == .photo
@@ -156,8 +142,6 @@ class KalkyCameraViewController: UIViewController {
         currentMode = modeToggle.selectedSegmentIndex == 0 ? .photo : .barcode
         updateModeOutputs()
     }
-
-    // MARK: - Actions
 
     @objc private func backTapped() {
         dismiss(animated: true) { [weak self] in
@@ -171,8 +155,6 @@ class KalkyCameraViewController: UIViewController {
         photoOutput.capturePhoto(with: settings, delegate: self)
     }
 }
-
-// MARK: - Photo Capture Delegate
 
 extension KalkyCameraViewController: AVCapturePhotoCaptureDelegate {
     func photoOutput(_ output: AVCapturePhotoOutput,
@@ -190,8 +172,6 @@ extension KalkyCameraViewController: AVCapturePhotoCaptureDelegate {
     }
 }
 
-// MARK: - Barcode Detection Delegate
-
 extension KalkyCameraViewController: AVCaptureMetadataOutputObjectsDelegate {
     func metadataOutput(_ output: AVCaptureMetadataOutput,
                         didOutput metadataObjects: [AVMetadataObject],
@@ -202,7 +182,6 @@ extension KalkyCameraViewController: AVCaptureMetadataOutputObjectsDelegate {
             return
         }
 
-        // Haptic feedback
         let generator = UINotificationFeedbackGenerator()
         generator.notificationOccurred(.success)
 

@@ -3,8 +3,6 @@ import FirebaseAuth
 import FirebaseCore
 import UIKit
 
-/// Handles Google Sign-In flow on iOS.
-/// Uses Google Sign-In SDK → exchanges for Firebase credential.
 enum GoogleSignInHelper {
 
     static func signIn(presenting viewController: UIViewController) async throws {

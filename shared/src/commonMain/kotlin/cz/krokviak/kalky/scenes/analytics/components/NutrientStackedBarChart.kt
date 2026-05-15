@@ -131,7 +131,6 @@ private fun EmptyNutrientCard() {
     }
 }
 
-// Calories tab: stacked bars (protein + carbs + fat)
 @Composable
 private fun StackedCaloriesChart(bars: List<CaloriesBar>) {
     val dims = LocalDimensions.current
@@ -225,7 +224,6 @@ private fun StackedCaloriesChart(bars: List<CaloriesBar>) {
     }
 }
 
-// Protein/Carbs/Fat tabs: single-color bars
 @Composable
 private fun SingleNutrientChart(bars: List<CaloriesBar>, tab: NutrientTab) {
     val dims = LocalDimensions.current

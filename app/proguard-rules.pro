@@ -1,12 +1,9 @@
-# Keep line numbers in stack traces
 -keepattributes SourceFile,LineNumberTable
 -renamesourcefileattribute SourceFile
 
-# ==== kotlinx.serialization ====
 -keepattributes *Annotation*, InnerClasses
 -dontnote kotlinx.serialization.AnnotationsKt
 
-# Keep serialization @Serializable metadata for app data classes
 -keepclassmembers class kotlinx.serialization.json.** {
     *** Companion;
 }
@@ -22,13 +19,11 @@
     kotlinx.serialization.KSerializer serializer(...);
 }
 
-# ==== Ktor ====
 -keep class io.ktor.** { *; }
 -keep class kotlinx.coroutines.** { *; }
 -dontwarn io.ktor.**
 -dontwarn org.slf4j.**
 
-# ==== SQLDelight ====
 -keep class app.cash.sqldelight.** { *; }
 -keep class cz.krokviak.kalky.db.** { *; }
 -keep class cz.krokviak.kalky.Food_items { *; }
@@ -38,14 +33,12 @@
 -keep class cz.krokviak.kalky.Nutrient_settings { *; }
 -keep class cz.krokviak.kalky.Nutrient_settings$* { *; }
 
-# ==== Koin ====
 -keep class org.koin.** { *; }
 -keep class * extends org.koin.core.module.Module
 -keepclassmembers class ** {
     public <init>();
 }
 
-# ==== Firebase ====
 -keepattributes Signature, *Annotation*
 -keep class com.google.firebase.** { *; }
 -keep class com.google.android.gms.** { *; }
@@ -54,34 +47,27 @@
 -dontwarn com.google.android.gms.**
 -dontwarn com.google.android.play.**
 
-# Firebase Crashlytics
 -keep class com.google.firebase.crashlytics.** { *; }
 -keep class com.google.firebase.components.** { *; }
 
-# ==== CameraX ====
 -keep class androidx.camera.** { *; }
 -dontwarn androidx.camera.**
 
-# ==== ML Kit Barcode ====
 -keep class com.google.mlkit.** { *; }
 -keep class com.google.android.gms.internal.mlkit_vision_barcode.** { *; }
 -dontwarn com.google.mlkit.**
 
-# ==== Compose Multiplatform / Vico / Coil ====
 -keep class com.patrykandpatrick.vico.** { *; }
 -dontwarn com.patrykandpatrick.vico.**
 -keep class coil3.** { *; }
 -dontwarn coil3.**
 
-# ==== Data classes used via Intent extras / reflection ====
 -keep class cz.krokviak.kalky.barcode.data.** { *; }
 -keep class cz.krokviak.kalky.common.entities.** { *; }
 
-# ==== Kotlin reflection ====
 -keep class kotlin.Metadata { *; }
 -keep class kotlin.reflect.** { *; }
 -dontwarn kotlin.reflect.jvm.internal.**
 
-# ==== Compose runtime ====
 -keep class androidx.compose.runtime.** { *; }
 -keep class androidx.compose.ui.platform.** { *; }

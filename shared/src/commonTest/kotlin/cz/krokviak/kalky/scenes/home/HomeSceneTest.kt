@@ -18,12 +18,6 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.GraphicsMode
 import kotlin.test.Test
 
-/**
- * Smoke-level tests for HomeScene. LazyColumn + Robolectric is finicky with
- * item visibility (children only get composed when the viewport actually
- * measures them), so we keep these tests focused on header/static content.
- * For interaction-heavy tests of FoodItemCard, see [FoodItemCardTest].
- */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @OptIn(ExperimentalTestApi::class)

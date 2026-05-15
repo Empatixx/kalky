@@ -9,16 +9,14 @@ struct iOSApp: App {
     @StateObject private var notificationManager = NotificationManager.shared
 
     init() {
-        // Firebase
+
         FirebaseApp.configure()
         let appCheckProviderFactory = AppCheckDebugProviderFactory()
-        // In production use: DeviceCheckProviderFactory()
+
         AppCheck.setAppCheckProviderFactory(appCheckProviderFactory)
 
-        // Remote Config
         IosRemoteConfigManager.initialize()
 
-        // Koin DI with real Firebase providers
         KoinHelperKt.doInitKoinIos(
             authTokenProvider: IosAuthTokenProvider(),
             authStateProvider: IosAuthStateProvider(),

@@ -68,7 +68,7 @@ class NutrientEditViewModelTest {
 
         val state = viewModel.uiState.value
         assertEquals(50, state.protein)
-        // 50 * 4 = 200
+
         assertEquals(200, state.calories)
     }
 
@@ -88,13 +88,11 @@ class NutrientEditViewModelTest {
         advanceTimeBy(100)
         viewModel.onProteinChange(30)
 
-        // Still within debounce window — no save yet.
         assertEquals(0, repo.inserts.size)
 
         advanceTimeBy(300)
         advanceUntilIdle()
 
-        // One save with the final value.
         assertEquals(1, repo.inserts.size)
         assertEquals(30, repo.inserts.last().targetProtein)
     }

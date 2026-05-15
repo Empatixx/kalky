@@ -17,7 +17,7 @@ class MealReminderChecker(
     private val nutrientSettingRepo: NutrientSettingRepo
 ) {
     suspend fun shouldRemind(currentHour: Int): ReminderResult {
-        // Time gate: only 7:00–21:00
+
         if (currentHour < 7 || currentHour >= 21) return ReminderResult.NoReminder
 
         val today = Clock.System.now()
@@ -28,7 +28,6 @@ class MealReminderChecker(
         val foodItems = foodRepository.getFoodItemsForDate(today)
         if (loggedRecently(foodItems)) return ReminderResult.NoReminder
 
-        // Reuse already-loaded items for the totalCalories sum — avoids a second DB hit.
         val totalCalories = foodItems.sumOf { it.calories }
         if (noFoodAlert(totalCalories, currentHour)) return ReminderResult.RemindNoFood
 

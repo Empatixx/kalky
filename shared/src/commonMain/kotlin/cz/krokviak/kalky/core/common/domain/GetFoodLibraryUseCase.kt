@@ -8,10 +8,6 @@ data class FoodLibrary(
     val history: List<FoodItemEntity>,
 )
 
-/**
- * Reads the static food library (custom-defined foods + distinct items by name from history).
- * Used by CustomFoodSearchViewModel for the initial load and after a query is cleared.
- */
 open class GetFoodLibraryUseCase(
     private val foodRepository: FoodRepository,
 ) {

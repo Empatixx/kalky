@@ -2,11 +2,6 @@ package cz.krokviak.kalky.core.theme
 
 import androidx.compose.ui.graphics.Color
 
-/**
- * Brand and accent colors that aren't part of the AppColors palette.
- * Kept separate so they can be used outside of CompositionLocal contexts
- * (e.g. in static `val` initializers).
- */
 object KalkyAccents {
     val iosRed = Color(0xFFFF3B30)
     val accentBlue = Color(0xFF4A90D9)

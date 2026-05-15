@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Layer 1: White → barely-there lavender -->
     <item>
         <shape android:shape="rectangle">
             <gradient
@@ -14,7 +13,6 @@
         </shape>
     </item>
 
-    <!-- Layer 2: Soft violet glow at top-right, ~30% opacity -->
     <item>
         <shape android:shape="rectangle">
             <gradient

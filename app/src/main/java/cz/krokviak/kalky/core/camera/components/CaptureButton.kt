@@ -28,13 +28,12 @@ fun CaptureButton(
         val strokeWidth = 4.dp.toPx()
         val outerRadius = (size.minDimension / 2f) - (strokeWidth / 2f)
 
-        // Outer ring
         drawCircle(
             color = Color.White,
             radius = outerRadius,
             style = Stroke(width = strokeWidth)
         )
-        // Inner circle
+
         drawCircle(
             color = Color.White,
             radius = size.minDimension / 2.5f

@@ -15,8 +15,6 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.GraphicsMode
 
-// Compose UI tests on the Android target need a fake Android framework.
-// Robolectric provides Build.FINGERPRINT and the SDK stubs the renderer needs.
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @OptIn(ExperimentalTestApi::class)

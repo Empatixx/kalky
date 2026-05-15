@@ -84,7 +84,7 @@ fun CustomFoodScene(
     onDismissError: () -> Unit,
 ) {
     val s = LocalStrings.current
-    var selectedTab by remember { mutableStateOf(0) } // 0=All, 1=My Foods, 2=Recently Used
+    var selectedTab by remember { mutableStateOf(0) }
 
     LaunchedEffect(onLoadHistory) { onLoadHistory() }
 
@@ -165,7 +165,7 @@ fun CustomFoodScene(
                 )
 
                 val hasAnyResults = when (selectedTab) {
-                    1 -> true // Always show list so Add button is visible
+                    1 -> true
                     2 -> uiState.historyItems.isNotEmpty()
                     else -> uiState.customFoods.isNotEmpty() || uiState.historyItems.isNotEmpty() || uiState.apiResults.isNotEmpty()
                 }
@@ -417,7 +417,7 @@ private fun ApiResultItem(
     ) {
         Box {
             Row(modifier = Modifier.fillMaxWidth()) {
-                // Fallback thumbnail with gray icon (no image for API results)
+
                 Box(
                     modifier = Modifier
                         .width(dims.thumbnailSize)
@@ -466,7 +466,6 @@ private fun ApiResultItem(
     }
 }
 
-
 @Composable
 private fun SectionHeader(
     text: String,
@@ -492,4 +491,3 @@ private fun SectionHeader(
         )
     }
 }
-

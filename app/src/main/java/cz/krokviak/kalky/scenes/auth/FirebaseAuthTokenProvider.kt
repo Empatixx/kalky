@@ -24,7 +24,7 @@ class FirebaseAuthTokenProvider : AuthTokenProvider, AuthStateProvider {
 
     init {
         firebaseAuth.addAuthStateListener(authStateListener)
-        // Set Crashlytics user ID for returning users
+
         firebaseAuth.currentUser?.uid?.let { Firebase.crashlytics.setUserId(it) }
     }
 

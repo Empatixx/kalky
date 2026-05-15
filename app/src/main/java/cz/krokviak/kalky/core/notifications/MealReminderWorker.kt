@@ -39,7 +39,7 @@ class MealReminderWorker(
 
         val checker: MealReminderChecker = get()
         when (val result = checker.shouldRemind(currentHour)) {
-            is ReminderResult.NoReminder -> { /* do nothing */ }
+            is ReminderResult.NoReminder -> {  }
             is ReminderResult.RemindNoFood -> {
                 NotificationHelper.showMealReminder(
                     applicationContext,

@@ -87,7 +87,7 @@ class CustomFoodSearchViewModelTest {
         val vm = buildVm()
         advanceUntilIdle()
         vm.onSearchQueryChange("ban")
-        // Query is set synchronously, before debounce
+
         assertEquals("ban", vm.uiState.value.searchQuery)
     }
 
@@ -100,7 +100,7 @@ class CustomFoodSearchViewModelTest {
 
         vm.onSearchQueryChange("ban")
         advanceTimeBy(100)
-        // Before debounce — apiResults still empty
+
         assertTrue(vm.uiState.value.apiResults.isEmpty())
 
         advanceTimeBy(250)
@@ -113,7 +113,7 @@ class CustomFoodSearchViewModelTest {
     fun onSearchQueryChange_blank_reloadsLibrary() = runTest(dispatcher) {
         val vm = buildVm()
         advanceUntilIdle()
-        // Pretend API set some apiResults; clearing query should reset
+
         vm.onSearchQueryChange("ban")
         advanceUntilIdle()
         vm.onSearchQueryChange("")
@@ -197,7 +197,7 @@ class CustomFoodSearchViewModelTest {
         advanceUntilIdle()
         vm.confirmAddApiProduct()
         advanceUntilIdle()
-        // Nothing crashed; still no foodAdded emission
+
     }
 
     @Test
@@ -219,7 +219,7 @@ class CustomFoodSearchViewModelTest {
         vm.foodAdded.test {
             vm.addSelectedFoods()
             advanceUntilIdle()
-            // emits 0 as a sentinel
+
             assertEquals(0L, awaitItem())
             cancelAndIgnoreRemainingEvents()
         }

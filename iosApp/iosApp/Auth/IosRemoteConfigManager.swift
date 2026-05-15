@@ -1,6 +1,5 @@
 import FirebaseRemoteConfig
 
-/// Firebase Remote Config for backend URL and feature flags.
 enum IosRemoteConfigManager {
     private static let defaultBackendUrl = "http://178.104.95.213"
 

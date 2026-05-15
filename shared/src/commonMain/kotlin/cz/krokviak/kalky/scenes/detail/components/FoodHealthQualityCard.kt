@@ -30,7 +30,6 @@ import cz.krokviak.kalky.core.theme.AppTheme
 import cz.krokviak.kalky.core.ui.LocalDimensions
 import cz.krokviak.kalky.core.ui.components.KalkyCard
 
-
 @Composable
 fun FoodHealthQualityCard(
     score: Int = 0,
@@ -101,7 +100,7 @@ private fun FoodHealthQualityBar(
 ) {
     Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
         for (i in 1..rectCount) {
-            // highlight up to (score * rectCount / maxScore)
+
             val threshold = score * rectCount / maxScore
             Box(
                 modifier = Modifier

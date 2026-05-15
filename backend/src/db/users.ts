@@ -13,7 +13,7 @@ export async function getOrCreateUser(
   displayName?: string,
   photoUrl?: string,
 ): Promise<User> {
-  // COALESCE-style: only overwrite optional fields when the new value is set.
+
   return prisma.user.upsert({
     where: { firebaseUid },
     create: {

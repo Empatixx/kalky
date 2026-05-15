@@ -46,9 +46,5 @@ jobs:
         run: ./gradlew :shared:linkDebugFrameworkIosSimulatorArm64
 
       - name: Run shared unit tests on iOS Simulator
-        # commonTest covers network clients, ViewModels, repos, utils,
-        # FoodPhotoAnalyzer pipeline, BMI category — all run against the
-        # iosSimulatorArm64 target via Kotlin/Native. Catches KMP regressions
-        # that the JVM-only test pass can miss (e.g. Native-incompatible
-        # reflection, expect/actual gaps).
+
         run: ./gradlew :shared:iosSimulatorArm64Test

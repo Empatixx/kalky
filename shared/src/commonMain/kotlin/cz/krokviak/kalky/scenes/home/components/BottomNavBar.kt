@@ -70,20 +70,17 @@ fun BottomNavBar(
                 .align(Alignment.BottomCenter),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Left side
+
             val s = LocalStrings.current
             NavItem(0, Icons.Outlined.Home, s.nav.home, currentPage, onSceneSelected, navColors)
             NavItem(1, Icons.Outlined.Analytics, s.nav.analytics, currentPage, onSceneSelected, navColors)
 
-            // Center spacer for the FABs
             Box(modifier = Modifier.weight(1.2f))
 
-            // Right side
             NavItem(2, Icons.Outlined.Person, s.nav.profile, currentPage, onSceneSelected, navColors)
             NavItem(3, Icons.Outlined.Settings, s.nav.settings, currentPage, onSceneSelected, navColors)
         }
 
-        // Centered FAB overlapping the nav bar
         Row(
             modifier = Modifier
                 .align(Alignment.TopCenter)

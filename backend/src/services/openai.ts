@@ -59,7 +59,6 @@ export async function analyzeImage(imageBase64: string): Promise<FoodAnalysis> {
     throw new Error("Empty response from OpenAI");
   }
 
-  // Strip potential markdown code fences
   const cleaned = text.replace(/^```json?\s*/, "").replace(/\s*```$/, "");
   const parsed = JSON.parse(cleaned);
 

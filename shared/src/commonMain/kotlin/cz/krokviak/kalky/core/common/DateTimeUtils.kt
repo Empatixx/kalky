@@ -27,20 +27,14 @@ fun Instant.formatIsoDate(): String {
 }
 
 fun LocalDate.withDayOfWeek(target: DayOfWeek): LocalDate {
-    val currentOrdinal = this.dayOfWeek.ordinal // Monday=0, Sunday=6
+    val currentOrdinal = this.dayOfWeek.ordinal
     val targetOrdinal = target.ordinal
     val diff = targetOrdinal - currentOrdinal
     return this.plus(diff, DateTimeUnit.DAY)
 }
 
-/**
- * DayOfWeek.ordinal: Mon=0..Sun=6 — matches DateStrings.daysShort indexing.
- */
 fun DayOfWeek.shortName(strings: DateStrings): String =
     strings.daysShort.getOrElse(this.ordinal) { "" }
 
-/**
- * Month.ordinal: January=0..December=11 — matches DateStrings.months indexing.
- */
 fun Month.localizedName(strings: DateStrings): String =
     strings.months.getOrElse(this.ordinal) { "" }

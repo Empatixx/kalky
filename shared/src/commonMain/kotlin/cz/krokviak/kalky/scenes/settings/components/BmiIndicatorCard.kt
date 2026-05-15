@@ -115,4 +115,3 @@ private fun RowScope.BmiSegment(color: Color) {
             .background(color, RoundedCornerShape(999.dp))
     )
 }
-

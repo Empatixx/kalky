@@ -1,6 +1,5 @@
 package cz.krokviak.kalky.core.common.utils
 
-/** WHO BMI categories. Boundaries are inclusive on the lower side. */
 enum class BmiCategory {
     UNDERWEIGHT,
     NORMAL,

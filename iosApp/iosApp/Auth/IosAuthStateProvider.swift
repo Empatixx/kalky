@@ -2,8 +2,6 @@ import FirebaseAuth
 import shared
 import Combine
 
-/// Implements shared AuthStateProvider interface using Firebase iOS SDK.
-/// Tracks current user and authentication state reactively.
 class IosAuthStateProvider: AuthStateProvider {
     private var handle: AuthStateDidChangeListenerHandle?
     private let _currentUser = FlowWrapper<AuthUser>(initial: nil)
@@ -23,8 +21,7 @@ class IosAuthStateProvider: AuthStateProvider {
                 )
                 self?._currentUser.emit(authUser)
                 self?._isAuthenticated.emit(KotlinBoolean(value: true))
-                // Mirror Android's FirebaseAuthTokenProvider behavior: tag
-                // crash reports with the signed-in user's UID.
+
                 CrashlyticsManager.setUserId(user.uid)
             } else {
                 self?._currentUser.emit(nil)
@@ -41,8 +38,6 @@ class IosAuthStateProvider: AuthStateProvider {
     }
 }
 
-/// Helper to bridge Swift values into Kotlin StateFlow.
-/// This is a simplified wrapper — in production, consider using SKIE or KMP-NativeCoroutines.
 class FlowWrapper<T: AnyObject> {
     let flow: any Kotlinx_coroutines_coreStateFlow
 

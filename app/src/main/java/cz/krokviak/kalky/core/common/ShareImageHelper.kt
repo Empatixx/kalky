@@ -37,7 +37,6 @@ object ShareImageHelper {
         val width = bitmap.width.toFloat()
         val height = bitmap.height.toFloat()
 
-        // Scale relative to image width
         val scale = width / 1080f
         val nameSizePx = 22f * 3f * scale
         val macroSizePx = 16f * 3f * scale
@@ -46,7 +45,6 @@ object ShareImageHelper {
         val iconTextGap = 4f * scale
         val macroGap = 20f * scale
 
-        // Semi-transparent gradient overlay at bottom
         val gradientHeight = height * 0.30f
         val gradientPaint = Paint().apply {
             shader = LinearGradient(
@@ -59,14 +57,12 @@ object ShareImageHelper {
         }
         canvas.drawRect(0f, height - gradientHeight, width, height, gradientPaint)
 
-        // Text paint for macro values
         val macroPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = Color.WHITE
             textSize = macroSizePx
             typeface = Typeface.DEFAULT
         }
 
-        // Macro items: icon + text for each
         val macroItems = listOf(
             R.drawable.ic_local_fire_department to "$calories kcal",
             R.drawable.chicken_leg to "${protein}g",
@@ -74,7 +70,6 @@ object ShareImageHelper {
             R.drawable.avocado to "${fat}g"
         )
 
-        // Measure total macro row width to center it
         val itemWidths = macroItems.map { (_, text) ->
             iconSize + iconTextGap + macroPaint.measureText(text)
         }
@@ -84,7 +79,6 @@ object ShareImageHelper {
         val iconTop = (macroY - iconSize + 4f * scale).toInt()
         var cursorX = (width - totalMacroWidth) / 2f
 
-        // Draw each macro item
         macroItems.forEachIndexed { index, (iconRes, text) ->
             drawIconAndText(
                 context, canvas, iconRes,
@@ -95,7 +89,6 @@ object ShareImageHelper {
             }
         }
 
-        // Food name (centered)
         val namePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = Color.WHITE
             textSize = nameSizePx
@@ -106,7 +99,6 @@ object ShareImageHelper {
         val nameX = (width - nameWidth) / 2f
         canvas.drawText(name, nameX, nameY, namePaint)
 
-        // Save to cache
         val shareDir = File(context.cacheDir, "share_images")
         shareDir.mkdirs()
         val shareFile = File(shareDir, "share_food.jpg")

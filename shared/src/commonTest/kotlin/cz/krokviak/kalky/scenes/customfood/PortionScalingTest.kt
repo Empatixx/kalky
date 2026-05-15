@@ -24,7 +24,7 @@ class PortionScalingTest {
             carbohydrates100g = 25.0,
         )
         val scaled = nutriments.scaledTo(150)
-        // 150g portion: 200*1.5=300, 10*1.5=15, 5*1.5=7.5→8, 25*1.5=37.5→38
+
         assertEquals(300, scaled.calories)
         assertEquals(15, scaled.protein)
         assertEquals(8, scaled.fat)
@@ -40,7 +40,7 @@ class PortionScalingTest {
             carbohydrates100g = 20.0,
         )
         val scaled = nutriments.scaledTo(100)
-        // Falls back to caloriesFromMacros(10, 20, 5) = 10*4 + 20*4 + 5*9 = 40+80+45 = 165
+
         assertEquals(165, scaled.calories)
         assertEquals(10, scaled.protein)
         assertEquals(20, scaled.carbs)

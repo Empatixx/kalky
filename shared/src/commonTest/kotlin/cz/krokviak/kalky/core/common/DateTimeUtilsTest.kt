@@ -42,7 +42,7 @@ class DateTimeUtilsTest {
 
     @Test
     fun withDayOfWeek_movesToTargetWithinSameWeek() {
-        // 2026-04-28 is Tuesday
+
         val tuesday = LocalDate(2026, 4, 28)
         assertEquals(LocalDate(2026, 4, 27), tuesday.withDayOfWeek(DayOfWeek.MONDAY))
         assertEquals(LocalDate(2026, 4, 28), tuesday.withDayOfWeek(DayOfWeek.TUESDAY))
@@ -51,9 +51,9 @@ class DateTimeUtilsTest {
 
     @Test
     fun withDayOfWeek_fromSundayCanGoBackToMonday() {
-        // 2026-05-03 is Sunday
+
         val sunday = LocalDate(2026, 5, 3)
-        // Monday=0, Sunday=6 → diff = 0 - 6 = -6 → 2026-04-27 (previous Monday)
+
         assertEquals(LocalDate(2026, 4, 27), sunday.withDayOfWeek(DayOfWeek.MONDAY))
     }
 }

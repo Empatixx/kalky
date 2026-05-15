@@ -6,11 +6,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.datetime.LocalDate
 
-/**
- * Reactive variant of [GetDailyMacrosUseCase] — emits a fresh [DailyMacros]
- * every time the underlying SQLDelight queries change. Used by ViewModels
- * that want live updates instead of pull-on-demand semantics.
- */
 open class ObserveDailyMacrosUseCase(
     private val foodRepository: FoodRepository,
 ) {

@@ -64,7 +64,7 @@ fun MacroNutrientDonutChart(
                     .rotate(degrees = 270f),
                 selectedScale = 1.0f,
                 style = Pie.Style.Stroke(
-                    width = strokeWidth  // use dynamic stroke width
+                    width = strokeWidth
                 )
             )
 

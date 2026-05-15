@@ -7,7 +7,7 @@ import app.cash.sqldelight.driver.native.NativeSqliteDriver
 
 actual class DriverFactory {
     actual fun createDriver(): SqlDriver {
-        // Migrate old database filename
+
         val fileManager = platform.Foundation.NSFileManager.defaultManager
         val documentsDir = fileManager.URLsForDirectory(
             platform.Foundation.NSDocumentDirectory,

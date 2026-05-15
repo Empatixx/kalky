@@ -77,7 +77,7 @@ class MainActivity : ComponentActivity() {
             }
 
             override fun requestNotificationPermission() {
-                // Handled by SettingsScene via rememberLauncherForActivityResult on Android
+
             }
 
             override fun shareImage(imagePath: String) {
@@ -103,7 +103,7 @@ class MainActivity : ComponentActivity() {
             }
 
             override fun signInWithApple() {
-                // Not supported on Android
+
             }
 
             override fun isNotificationPermissionGranted(): Boolean {

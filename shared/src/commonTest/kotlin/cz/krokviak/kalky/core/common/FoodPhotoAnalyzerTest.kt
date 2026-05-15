@@ -82,7 +82,6 @@ class FoodPhotoAnalyzerTest {
             onAnalysisFailed = { failedCalled = true },
         )
 
-        // Animation needs 6 seconds of virtual time to complete.
         advanceTimeBy(6_001)
         advanceUntilIdle()
         job.join()
@@ -109,7 +108,7 @@ class FoodPhotoAnalyzerTest {
         val repository = mock<FoodRepository> {
             everySuspend { insertFoodItem(any()) } returns placeholderId
             everySuspend { updateFoodItem(any()) } returns Unit
-            everySuspend { getFoodItem(any()) } returns null // pipeline falls back to insertedItem
+            everySuspend { getFoodItem(any()) } returns null
         }
         val analyzer = FoodPhotoAnalyzer(repository, analysisClient, fakeImageStorage(), fixedClock)
 
@@ -140,8 +139,7 @@ class FoodPhotoAnalyzerTest {
 
     @Test
     fun analyze_animationRunsConcurrentlyWithAnalysis_takesMaxOfBoth() = runTest {
-        // If analysis returns instantly and animation is 6s, total elapsed must be ~6s
-        // (proves the joinAll waits for the slower one).
+
         val analysisClient = mock<FoodAnalysisClient> {
             everySuspend { getAnalysis(any()) } returns FoodAnalysisDto(title = "Quick")
         }

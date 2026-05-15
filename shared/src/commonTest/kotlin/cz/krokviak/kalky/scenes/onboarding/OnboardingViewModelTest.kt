@@ -55,11 +55,11 @@ class OnboardingViewModelTest {
         val s = vm.uiState.value
         assertEquals(Gender.FEMALE, s.gender)
         assertEquals(3, s.activityLevel)
-        // weightIndex 0 = 30.0kg, so 75.5 -> index (755-300)=455
+
         assertEquals(455, s.weightIndex)
-        // heightIndex 0 = 100cm, 175 -> 75
+
         assertEquals(75, s.heightIndex)
-        // ageIndex 0 = 1, age 28 -> 27
+
         assertEquals(27, s.ageIndex)
     }
 
@@ -117,20 +117,19 @@ class OnboardingViewModelTest {
     @Test
     fun onProteinCarbsFatChanged_aggregateCalories() {
         val vm = OnboardingViewModel(emptyRepo())
-        vm.onProteinChanged(50)  // 200 kcal
-        vm.onCarbsChanged(100)   // +400
-        vm.onFatChanged(20)      // +180
+        vm.onProteinChanged(50)
+        vm.onCarbsChanged(100)
+        vm.onFatChanged(20)
         assertEquals(780, vm.uiState.value.targetCalories)
     }
 
     @Test
     fun calculateMacros_male_maintainGoal_setsTargetsFromMifflinStJeor() {
         val vm = OnboardingViewModel(emptyRepo())
-        // weightIndex 500 -> 80kg, heightIndex 70 -> 170cm, ageIndex 24 -> 25 yrs
+
         vm.calculateMacros()
         val s = vm.uiState.value
-        // BMR(M) = 10*80 + 6.25*170 - 5*25 + 5 = 800 + 1062.5 - 125 + 5 = 1742.5
-        // Activity 2 -> *1.375 = 2395.9, MAINTAIN -> 2396
+
         assertEquals(2396, s.targetCalories)
         assertTrue(s.targetProtein > 0)
         assertTrue(s.targetCarbs > 0)
@@ -143,7 +142,7 @@ class OnboardingViewModelTest {
         vm.onGoalSelected(GoalChoice.LOSE)
         vm.calculateMacros()
         val s = vm.uiState.value
-        // 2396 - 500 = 1896
+
         assertEquals(1896, s.targetCalories)
     }
 
@@ -152,7 +151,7 @@ class OnboardingViewModelTest {
         val vm = OnboardingViewModel(emptyRepo())
         vm.onGoalSelected(GoalChoice.GAIN)
         vm.calculateMacros()
-        // 2396 + 300 = 2696
+
         assertEquals(2696, vm.uiState.value.targetCalories)
     }
 

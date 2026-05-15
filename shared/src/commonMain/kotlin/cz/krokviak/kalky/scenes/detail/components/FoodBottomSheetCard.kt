@@ -247,8 +247,7 @@ private fun CaloriesSummaryCard(calories: Int) {
                 fontSize = dims.fontBody,
                 fontWeight = FontWeight.SemiBold
             )
-            // Keep the same trailing width as nutrient rows (spacer + chevron),
-            // so unit text aligns with the "g" column.
+
             Spacer(modifier = Modifier.width(26.dp))
         }
     }

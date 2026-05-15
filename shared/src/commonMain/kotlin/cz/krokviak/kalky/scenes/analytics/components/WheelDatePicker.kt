@@ -43,7 +43,7 @@ import kotlinx.datetime.minus
 import kotlinx.datetime.toLocalDateTime
 
 private val ITEM_HEIGHT = 36.dp
-private val PICKER_HEIGHT = ITEM_HEIGHT * 5  // 180.dp
+private val PICKER_HEIGHT = ITEM_HEIGHT * 5
 
 private fun daysInMonth(year: Int, month: Int): Int {
     val firstOfNextMonth = if (month == 12) {
@@ -81,7 +81,7 @@ fun WheelDatePickerInline(
     LaunchedEffect(selectedDay, selectedMonth, selectedYear, maxDays) {
         val clampedDay = selectedDay.coerceIn(1, maxDays)
         val newDate = LocalDate(selectedYear, selectedMonth, clampedDay)
-        // skip the no-op emit on first composition (would trigger a needless reload)
+
         if (newDate != initialDate) onDateChanged(newDate)
     }
 
@@ -182,7 +182,6 @@ private fun WheelColumn(
     )
     val snapBehavior = rememberSnapFlingBehavior(lazyListState)
 
-    // report the index only once scrolling settles (every item crossed mid-fling would fire a reload)
     LaunchedEffect(lazyListState) {
         snapshotFlow { lazyListState.isScrollInProgress }
             .distinctUntilChanged()

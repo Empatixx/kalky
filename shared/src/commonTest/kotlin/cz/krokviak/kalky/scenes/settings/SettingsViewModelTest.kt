@@ -156,7 +156,7 @@ class SettingsViewModelTest {
         val vm = SettingsViewModel(emptyRepo())
         vm.onWeightChange("80")
         vm.onHeightChange("180")
-        // BMI = 80 / (1.8 * 1.8) = 24.69
+
         val bmi = vm.uiState.value.bmi!!
         assertTrue(bmi > 24.5f && bmi < 24.8f, "expected ~24.69, got $bmi")
     }

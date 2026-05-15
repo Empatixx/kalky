@@ -68,7 +68,7 @@ class AuthViewModel(
                 contentType(ContentType.Application.Json)
             }
         } catch (_: Exception) {
-            // Backend registration failed but auth succeeded - still allow login
+
         }
         result.user?.uid?.let { Firebase.crashlytics.setUserId(it) }
         _uiState.update { it.copy(isLoading = false, isSignedIn = true) }

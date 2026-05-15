@@ -51,16 +51,13 @@ class CameraViewModel(
         val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
         cameraProvider.unbindAll()
 
-        // Preview
         val previewUseCase = Preview.Builder().build()
 
-        // ImageCapture
         val imageCaptureUseCase = ImageCapture.Builder()
             .setTargetRotation(Surface.ROTATION_0)
             .build()
         this.imageCapture = imageCaptureUseCase
 
-        // ImageAnalysis
         val imageAnalysisUseCase = ImageAnalysis.Builder()
             .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
             .build()
@@ -120,9 +117,6 @@ class CameraViewModel(
         }
     }
 
-    /**
-     * Capture photo and deliver bytes through callback.
-     */
     fun takePicture(onImageCaptured: (ByteArray) -> Unit) {
         val currentCapture = imageCapture ?: return
 

@@ -5,13 +5,6 @@ import cz.krokviak.kalky.core.common.entities.PersonalInfoEntity
 import cz.krokviak.kalky.core.common.repo.PersonalInfoRepo
 import cz.krokviak.kalky.scenes.onboarding.OnboardingResult
 
-/**
- * Persists everything the user picked during onboarding: a PersonalInfoEntity
- * snapshot and (when calorie targets were set) a NutrientSettingEntity.
- *
- * Centralizes the cross-feature write so AppContent doesn't need to know the
- * internals of SettingsViewModel / NutrientEditViewModel / MainViewModel.
- */
 open class CompleteOnboardingUseCase(
     private val personalInfoRepo: PersonalInfoRepo,
     private val updateNutrientSettings: UpdateNutrientSettingsUseCase,

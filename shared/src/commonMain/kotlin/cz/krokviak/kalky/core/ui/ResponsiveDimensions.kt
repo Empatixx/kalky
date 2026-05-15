@@ -7,9 +7,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 enum class ScreenSizeClass {
-    Compact,  // < 360dp
-    Normal,   // 360–411dp
-    Large     // > 411dp
+    Compact,
+    Normal,
+    Large
 }
 
 data class Dimensions(

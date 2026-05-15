@@ -16,21 +16,6 @@ import kotlinx.datetime.Clock
 
 private const val LOADING_ANIMATION_DURATION_MS = 6000L
 
-/**
- * Orchestrates the "take photo → show loading → analyze → commit" pipeline.
- *
- * Caller provides:
- *  - [onPlaceholderInserted]: called immediately after DB insert of the placeholder item
- *    so UI can add it to its list.
- *  - [onAnalysisComplete]: called after analysis arrives (loading=true still). Lets UI
- *    render the analyzed macros while the 6s loading animation keeps running.
- *  - [onFinalCommitted]: called once both the 6s animation window and analysis are done;
- *    the item has loading=false and is ready for final UI state.
- *
- * The animation window (6 s) runs in parallel with the network call; both must complete
- * before the final commit fires. If analysis returns null, the placeholder is committed
- * as-is with loading=false.
- */
 open class FoodPhotoAnalyzer(
     private val foodRepository: FoodRepository,
     private val foodAnalysisClient: FoodAnalysisClient,

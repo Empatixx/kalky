@@ -2,7 +2,6 @@ package cz.krokviak.kalky.core.common.domain
 
 import cz.krokviak.kalky.core.common.repo.FoodRepository
 
-/** Deletes a set of food items by id. */
 open class DeleteFoodItemsUseCase(
     private val foodRepository: FoodRepository,
 ) {
