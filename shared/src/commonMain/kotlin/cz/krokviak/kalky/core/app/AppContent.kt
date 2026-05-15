@@ -86,6 +86,7 @@ fun AppContent() {
 
             composable<DefaultRoute> {
                 MainScaffold(
+                    mainViewModel = mainViewModel,
                     onCameraClick = { platformActions.launchCamera() },
                     navController = navController
                 )

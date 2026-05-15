@@ -58,11 +58,6 @@ class MainViewModel(
         observeMacrosForCurrentDate()
     }
 
-    /**
-     * Subscribes to the daily macros flow for whichever date is currently selected.
-     * `collectLatest` cancels the previous date's collector when the user changes day,
-     * so we never have stale items lingering in state.
-     */
     private fun observeMacrosForCurrentDate() {
         viewModelScope.launch {
             _uiState
@@ -85,7 +80,6 @@ class MainViewModel(
         }
     }
 
-    /** Reloads nutrient targets from storage; call after onboarding/settings writes. */
     fun refreshNutrientSettings() {
         viewModelScope.launch { applyLatestNutrientSettings() }
     }
@@ -107,8 +101,10 @@ class MainViewModel(
         _uiState.update { it.copy(currentStreak = streak) }
     }
 
-    fun addFoodItemFromBytes(imageBytes: ByteArray) =
+    fun addFoodItemFromBytes(imageBytes: ByteArray) {
+        resetToToday()
         photoCaptureController.addFromBytes(imageBytes)
+    }
 
     fun addFoodItemFromBarcode(
         name: String,
@@ -116,7 +112,10 @@ class MainViewModel(
         protein: Int,
         fat: Int,
         carbs: Int,
-    ) = photoCaptureController.addFromBarcode(name, calories, protein, fat, carbs)
+    ) {
+        resetToToday()
+        photoCaptureController.addFromBarcode(name, calories, protein, fat, carbs)
+    }
 
     fun dismissError() {
         _uiState.update { it.copy(error = null) }

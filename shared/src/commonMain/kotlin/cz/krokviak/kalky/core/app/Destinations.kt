@@ -163,10 +163,10 @@ internal fun ManualFoodEntryDestination(
 
 @Composable
 internal fun MainScaffold(
+    mainViewModel: MainViewModel,
     onCameraClick: () -> Unit,
     navController: NavController,
 ) {
-    val mainViewModel: MainViewModel = koinViewModel()
     val analyticsViewModel: AnalyticsViewModel = koinViewModel()
     val settingsViewModel: SettingsViewModel = koinViewModel()
     val manualEntryViewModel: ManualFoodEntryViewModel = koinInject()
