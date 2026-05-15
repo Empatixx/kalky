@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import cz.krokviak.kalky.core.common.localizedName
 import cz.krokviak.kalky.core.common.shortName
 import cz.krokviak.kalky.core.common.withDayOfWeek
 import cz.krokviak.kalky.core.i18n.LocalStrings
@@ -36,7 +37,6 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.Month
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 
@@ -126,7 +126,7 @@ fun WeekDatePicker(
 
 @Composable
 fun MonthHeader(currentDate: LocalDate, isToday: Boolean, onTodayClick: () -> Unit) {
-    val monthName = getNominativeMonthName(currentDate.month)
+    val monthName = currentDate.month.localizedName(LocalStrings.current.date)
     val iconAlpha by animateFloatAsState(
         targetValue = if (isToday) 0f else 1f,
         label = "todayIconAlpha"
@@ -301,20 +301,3 @@ private fun appendMoreDays(days: MutableList<LocalDate>) {
     days.addAll(newDates)
 }
 
-fun getNominativeMonthName(month: Month): String {
-    return when(month) {
-        Month.JANUARY -> "Leden"
-        Month.FEBRUARY -> "Únor"
-        Month.MARCH -> "Březen"
-        Month.APRIL -> "Duben"
-        Month.MAY -> "Květen"
-        Month.JUNE -> "Červen"
-        Month.JULY -> "Červenec"
-        Month.AUGUST -> "Srpen"
-        Month.SEPTEMBER -> "Září"
-        Month.OCTOBER -> "Říjen"
-        Month.NOVEMBER -> "Listopad"
-        Month.DECEMBER -> "Prosinec"
-        else -> ""
-    }
-}

@@ -33,6 +33,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import cz.krokviak.kalky.scenes.barcode.data.OpenFoodFactsProduct
+import cz.krokviak.kalky.core.common.error.toMessage
 import cz.krokviak.kalky.core.theme.AppTheme
 import cz.krokviak.kalky.core.i18n.LocalStrings
 import cz.krokviak.kalky.core.ui.LocalDimensions
@@ -180,7 +181,7 @@ fun BarcodeScannerScreen(
             is BarcodeScanState.Error -> {
                 BottomCard(Modifier.align(Alignment.BottomCenter)) {
                     Text(
-                        text = "${s.barcode.error}: ${state.message}",
+                        text = "${s.barcode.error}: ${state.error.toMessage(s.common)}",
                         fontSize = dims.fontBody,
                         color = Color.Red
                     )

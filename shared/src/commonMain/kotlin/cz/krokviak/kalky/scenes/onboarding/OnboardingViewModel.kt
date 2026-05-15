@@ -3,6 +3,7 @@ package cz.krokviak.kalky.scenes.onboarding
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.compose.runtime.Immutable
+import cz.krokviak.kalky.core.common.entities.Gender
 import cz.krokviak.kalky.core.common.repo.PersonalInfoRepo
 import cz.krokviak.kalky.core.common.utils.caloriesFromMacros
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -18,7 +19,7 @@ import kotlin.math.roundToInt
 
 @Immutable
 data class OnboardingUiState(
-    val gender: String = "Mu\u017E",
+    val gender: Gender = Gender.MALE,
     val activityLevel: Int = 2,
     val goalChoice: GoalChoice = GoalChoice.MAINTAIN,
     val weightIndex: Int = DEFAULT_WEIGHT_INDEX,
@@ -49,7 +50,7 @@ class OnboardingViewModel(
             val latestInfo = personalInfoRepo.getLatestPersonalInfo() ?: return@launch
             _uiState.update {
                 it.copy(
-                    gender = latestInfo.gender.ifBlank { "Muž" },
+                    gender = latestInfo.gender,
                     activityLevel = latestInfo.activityLevel.coerceIn(1, 4),
                     weightIndex = resolveWeightIndex(latestInfo.weightKg),
                     heightIndex = resolveIndex(latestInfo.heightCm.roundToInt(), 100, 250),
@@ -59,7 +60,7 @@ class OnboardingViewModel(
         }
     }
 
-    fun onGenderSelected(value: String) {
+    fun onGenderSelected(value: Gender) {
         _uiState.update { it.copy(gender = value) }
     }
 
@@ -112,7 +113,7 @@ class OnboardingViewModel(
         val age = ageValues[state.ageIndex].toInt()
 
         // Mifflin-St Jeor
-        val bmr = if (state.gender == "Mu\u017E") {
+        val bmr = if (state.gender == Gender.MALE) {
             10.0 * weightKg + 6.25 * heightCm - 5.0 * age + 5
         } else {
             10.0 * weightKg + 6.25 * heightCm - 5.0 * age - 161

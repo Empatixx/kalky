@@ -166,12 +166,17 @@ data class AnalyticsStrings(
     val noCaloriesTitle: String,
     val noCaloriesSubtitle: String,
     val dateStart: String,
-    val dateEnd: String
+    val dateEnd: String,
+    val weightEmptyTitle: String,
+    val weightEmptySubtitle: String,
+    val weightCurrent: String,
+    val weightAverage: String
 )
 
 data class NutrientEditStrings(
     val title: String,
-    val macronutrients: String
+    val macronutrients: String,
+    val dailyCalorieTarget: String
 )
 
 data class DetailStrings(
@@ -224,7 +229,11 @@ data class CommonStrings(
     val cdDecrease: String,
     val cdHeart: String,
     val kcal: String,
-    val unitPieces: String
+    val unitPieces: String,
+    val errorGeneric: String,
+    val errorNetwork: String,
+    val errorPhotoAnalysis: String,
+    val errorProductSearch: String
 )
 
 val CzechStrings = AppStrings(
@@ -299,11 +308,16 @@ val CzechStrings = AppStrings(
         noCaloriesTitle = "Chyb\u00ED informace o va\u0161\u00EDch kalori\u00EDch",
         noCaloriesSubtitle = "P\u0159idejte sv\u00E9 kalorie v \u00FAvodu",
         dateStart = "Za\u010D\u00E1tek",
-        dateEnd = "Konec"
+        dateEnd = "Konec",
+        weightEmptyTitle = "Zat\u00EDm nem\u00E1me \u00FAdaje o va\u0161\u00ED v\u00E1ze",
+        weightEmptySubtitle = "P\u0159idejte je v nastaven\u00ED.",
+        weightCurrent = "Aktu\u00E1ln\u00ED v\u00E1ha",
+        weightAverage = "Pr\u016Fm\u011Br"
     ),
     nutrientEdit = NutrientEditStrings(
         title = "\u00DAprava makro\u017Eivin",
-        macronutrients = "Makro\u017Eiviny"
+        macronutrients = "Makro\u017Eiviny",
+        dailyCalorieTarget = "Denn\u00ED c\u00EDl kalori\u00ED"
     ),
     detail = DetailStrings(
         fix = "Opravit",
@@ -353,7 +367,11 @@ val CzechStrings = AppStrings(
         cdDecrease = "Odebrat",
         cdHeart = "Zdrav\u00ED",
         kcal = "kcal",
-        unitPieces = "ks"
+        unitPieces = "ks",
+        errorGeneric = "N\u011Bco se nepoda\u0159ilo",
+        errorNetwork = "Chyba s\u00EDt\u011B, zkontroluj p\u0159ipojen\u00ED",
+        errorPhotoAnalysis = "Nepoda\u0159ilo se analyzovat fotku",
+        errorProductSearch = "Vyhled\u00E1v\u00E1n\u00ED produkt\u016F selhalo"
     ),
     customFood = CustomFoodStrings(
         title = "P\u0159idat j\u00EDdlo",
@@ -485,11 +503,16 @@ val EnglishStrings = AppStrings(
         noCaloriesTitle = "No calorie data available",
         noCaloriesSubtitle = "Add your calories on the home screen",
         dateStart = "Start",
-        dateEnd = "End"
+        dateEnd = "End",
+        weightEmptyTitle = "No weight data yet",
+        weightEmptySubtitle = "Add it in settings.",
+        weightCurrent = "Current weight",
+        weightAverage = "Average"
     ),
     nutrientEdit = NutrientEditStrings(
         title = "Edit macronutrients",
-        macronutrients = "Macronutrients"
+        macronutrients = "Macronutrients",
+        dailyCalorieTarget = "Daily calorie target"
     ),
     detail = DetailStrings(
         fix = "Fix",
@@ -539,7 +562,11 @@ val EnglishStrings = AppStrings(
         cdDecrease = "Decrease",
         cdHeart = "Health",
         kcal = "kcal",
-        unitPieces = "pcs"
+        unitPieces = "pcs",
+        errorGeneric = "Something went wrong",
+        errorNetwork = "Network error, check your connection",
+        errorPhotoAnalysis = "Photo analysis failed",
+        errorProductSearch = "Product search failed"
     ),
     customFood = CustomFoodStrings(
         title = "Add food",
@@ -601,12 +628,14 @@ val EnglishStrings = AppStrings(
 
 val LocalStrings = staticCompositionLocalOf { CzechStrings }
 
+fun stringsFor(language: AppLanguage): AppStrings = when (language) {
+    AppLanguage.CS -> CzechStrings
+    AppLanguage.EN -> EnglishStrings
+}
+
 @Composable
 fun rememberStrings(): AppStrings {
     val appPreferences: AppPreferences = koinInject()
     val language by appPreferences.language.collectAsState()
-    return when (language) {
-        AppLanguage.CS -> CzechStrings
-        AppLanguage.EN -> EnglishStrings
-    }
+    return stringsFor(language)
 }

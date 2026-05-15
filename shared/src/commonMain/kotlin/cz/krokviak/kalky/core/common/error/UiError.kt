@@ -1,6 +1,7 @@
 package cz.krokviak.kalky.core.common.error
 
 import androidx.compose.runtime.Immutable
+import cz.krokviak.kalky.core.i18n.CommonStrings
 
 @Immutable
 sealed interface UiError {
@@ -8,10 +9,10 @@ sealed interface UiError {
     data object PhotoAnalysis : UiError
     data object ProductSearch : UiError
     data object BarcodeNotFound : UiError
-    data class Generic(val message: String) : UiError
+    data object Generic : UiError
 }
 
-fun Throwable.toUiError(default: UiError = UiError.Generic("Něco se nepodařilo")): UiError {
+fun Throwable.toUiError(default: UiError = UiError.Generic): UiError {
     val msg = message ?: ""
     return when {
         msg.contains("UnresolvedAddress", ignoreCase = true) ||
@@ -22,10 +23,10 @@ fun Throwable.toUiError(default: UiError = UiError.Generic("Něco se nepodařilo
     }
 }
 
-fun UiError.toMessage(): String = when (this) {
-    UiError.Network -> "Chyba sítě, zkontroluj připojení"
-    UiError.PhotoAnalysis -> "Nepodařilo se analyzovat fotku"
-    UiError.ProductSearch -> "Vyhledávání produktů selhalo"
-    UiError.BarcodeNotFound -> "Produkt nebyl nalezen"
-    is UiError.Generic -> message
+fun UiError.toMessage(strings: CommonStrings): String = when (this) {
+    UiError.Network -> strings.errorNetwork
+    UiError.PhotoAnalysis -> strings.errorPhotoAnalysis
+    UiError.ProductSearch -> strings.errorProductSearch
+    UiError.BarcodeNotFound -> strings.errorGeneric
+    UiError.Generic -> strings.errorGeneric
 }

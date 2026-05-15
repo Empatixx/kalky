@@ -1,6 +1,8 @@
 package cz.krokviak.kalky.core.db
 
+import cz.krokviak.kalky.core.common.entities.Gender
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
@@ -25,7 +27,7 @@ open class DatabaseSeeder(private val db: KalkyDatabase) {
             val instant = now.minus((6 - i), DateTimeUnit.DAY, tz)
             val timestamp = instant.toString()
             db.personalInfoQueries.insertPersonalInfo(
-                gender = "Muž",
+                gender = Gender.MALE,
                 age = 25,
                 heightCm = 180f,
                 weightKg = weight,

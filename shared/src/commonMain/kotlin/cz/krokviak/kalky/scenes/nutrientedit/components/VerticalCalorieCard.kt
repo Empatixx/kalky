@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import cz.krokviak.kalky.core.i18n.LocalStrings
 import cz.krokviak.kalky.core.theme.AppTheme
 import cz.krokviak.kalky.core.ui.LocalDimensions
 import cz.krokviak.kalky.scenes.home.components.MacroNutrientDonutChart
@@ -61,7 +62,7 @@ fun VerticalCalorieCard(
                 fontWeight = FontWeight.ExtraBold
             )
             Text(
-                text = "Denní cíl kalorií",
+                text = LocalStrings.current.nutrientEdit.dailyCalorieTarget,
                 color = AppTheme.colors.onBackgroundSecondary,
                 fontSize = dims.fontBody,
                 fontWeight = FontWeight.Medium

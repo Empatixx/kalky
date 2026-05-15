@@ -37,6 +37,7 @@ import cz.krokviak.kalky.core.theme.AppTheme
 import cz.krokviak.kalky.core.ui.components.KalkyCard
 import cz.krokviak.kalky.core.common.AppPreferences
 import cz.krokviak.kalky.core.common.UnitSystem
+import cz.krokviak.kalky.core.common.entities.Gender
 import cz.krokviak.kalky.core.di.koinInject
 import cz.krokviak.kalky.core.i18n.LocalStrings
 import cz.krokviak.kalky.core.ui.components.KalkySegmentedControl
@@ -49,8 +50,8 @@ fun ProfileScene(
     appPreferences: AppPreferences = koinInject()
 ) {
     val s = LocalStrings.current
+    val genders = Gender.entries
     val genderOptions = listOf(s.profile.male, s.profile.female)
-    val genderKeys = listOf("Muž", "Žena")
     val activityLabels = listOf(s.profile.sedentary, s.profile.light, s.profile.active, s.profile.veryActive)
     val cardContentInset = 12.dp
     val cardTextSize = 20.sp
@@ -111,9 +112,9 @@ fun ProfileScene(
 
         SectionHeader(title = s.profile.gender, startInset = cardContentInset)
         KalkySegmentedControl(
-            selectedIndex = genderKeys.indexOf(uiState.gender).coerceAtLeast(0),
+            selectedIndex = genders.indexOf(uiState.gender).coerceAtLeast(0),
             items = genderOptions,
-            onItemSelected = { viewModel.onGenderChange(genderKeys[it]) },
+            onItemSelected = { viewModel.onGenderChange(genders[it]) },
             modifier = Modifier.fillMaxWidth(),
             trackColor = AppTheme.colors.surfaceSecondary,
             indicatorColor = AppTheme.colors.surface,

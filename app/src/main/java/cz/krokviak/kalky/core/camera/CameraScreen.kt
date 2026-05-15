@@ -37,6 +37,7 @@ import cz.krokviak.kalky.scenes.barcode.NutrientRow
 import cz.krokviak.kalky.scenes.barcode.data.OpenFoodFactsProduct
 import cz.krokviak.kalky.core.camera.components.CameraBottomControls
 import cz.krokviak.kalky.core.camera.components.CameraPreview
+import cz.krokviak.kalky.core.common.error.toMessage
 import cz.krokviak.kalky.core.i18n.LocalStrings
 import cz.krokviak.kalky.core.theme.AppTheme
 import cz.krokviak.kalky.core.ui.components.KalkyButton
@@ -148,7 +149,7 @@ private fun BarcodeOverlay(
         is BarcodeScanState.Error -> {
             BottomCard(modifier = modifier) {
                 Text(
-                    text = "${s.barcode.error}: ${state.message}",
+                    text = "${s.barcode.error}: ${state.error.toMessage(s.common)}",
                     fontSize = 16.sp,
                     color = Color.Red
                 )

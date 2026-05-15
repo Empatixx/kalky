@@ -12,6 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import cz.krokviak.kalky.core.i18n.LocalStrings
 
 @Composable
 fun ErrorSnackbarHost(
@@ -20,9 +21,10 @@ fun ErrorSnackbarHost(
     modifier: Modifier = Modifier,
 ) {
     val hostState = remember { SnackbarHostState() }
+    val common = LocalStrings.current.common
     LaunchedEffect(error) {
         if (error != null) {
-            hostState.showSnackbar(error.toMessage())
+            hostState.showSnackbar(error.toMessage(common))
             onDismiss()
         }
     }

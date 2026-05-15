@@ -1,9 +1,11 @@
 package cz.krokviak.kalky.core.db
 
 import app.cash.sqldelight.ColumnAdapter
+import app.cash.sqldelight.EnumColumnAdapter
 import cz.krokviak.kalky.Food_items
 import cz.krokviak.kalky.Nutrient_settings
 import cz.krokviak.kalky.Personal_info
+import cz.krokviak.kalky.core.common.entities.Gender
 
 private val intColumnAdapter = object : ColumnAdapter<Int, Long> {
     override fun decode(databaseValue: Long) = databaseValue.toInt()
@@ -28,6 +30,7 @@ fun createDatabase(driverFactory: DriverFactory): KalkyDatabase {
             healthScoreAdapter = intColumnAdapter
         ),
         personal_infoAdapter = Personal_info.Adapter(
+            genderAdapter = EnumColumnAdapter<Gender>(),
             ageAdapter = intColumnAdapter,
             heightCmAdapter = floatColumnAdapter,
             weightKgAdapter = floatColumnAdapter,

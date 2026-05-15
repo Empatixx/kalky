@@ -1,5 +1,6 @@
 package cz.krokviak.kalky.scenes.settings
 
+import cz.krokviak.kalky.core.common.entities.Gender
 import cz.krokviak.kalky.core.common.entities.PersonalInfoEntity
 import cz.krokviak.kalky.core.common.repo.PersonalInfoRepo
 import dev.mokkery.answering.returns
@@ -38,7 +39,7 @@ class SettingsViewModelTest {
     @Test
     fun init_loadsPersonalInfo_intoState() = runTest(dispatcher) {
         val info = PersonalInfoEntity(
-            weightKg = 75.5f, heightCm = 175.0f, age = 30, gender = "Žena", activityLevel = 3
+            weightKg = 75.5f, heightCm = 175.0f, age = 30, gender = Gender.FEMALE, activityLevel = 3
         )
         val repo = mock<PersonalInfoRepo> {
             everySuspend { getLatestPersonalInfo() } returns info
@@ -50,7 +51,7 @@ class SettingsViewModelTest {
         assertEquals("75.5", s.weight)
         assertEquals("175.0", s.height)
         assertEquals("30", s.age)
-        assertEquals("Žena", s.gender)
+        assertEquals(Gender.FEMALE, s.gender)
         assertEquals(3, s.activityLevel)
     }
 
@@ -60,7 +61,7 @@ class SettingsViewModelTest {
         advanceUntilIdle()
         val s = vm.uiState.value
         assertEquals("", s.weight)
-        assertEquals("Muž", s.gender)
+        assertEquals(Gender.MALE, s.gender)
     }
 
     @Test
@@ -84,9 +85,9 @@ class SettingsViewModelTest {
     @Test
     fun onGenderChange_andOnActivityLevelChange_updateState() {
         val vm = SettingsViewModel(emptyRepo())
-        vm.onGenderChange("Žena")
+        vm.onGenderChange(Gender.FEMALE)
         vm.onActivityLevelChange(4)
-        assertEquals("Žena", vm.uiState.value.gender)
+        assertEquals(Gender.FEMALE, vm.uiState.value.gender)
         assertEquals(4, vm.uiState.value.activityLevel)
     }
 

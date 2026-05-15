@@ -31,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import cz.krokviak.kalky.core.i18n.LocalStrings
 import cz.krokviak.kalky.core.theme.AppTheme
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
@@ -43,11 +44,6 @@ import kotlinx.datetime.toLocalDateTime
 
 private val ITEM_HEIGHT = 36.dp
 private val PICKER_HEIGHT = ITEM_HEIGHT * 5  // 180.dp
-
-private val czechMonths = listOf(
-    "Leden", "Únor", "Březen", "Duben", "Květen", "Červen",
-    "Červenec", "Srpen", "Září", "Říjen", "Listopad", "Prosinec"
-)
 
 private fun daysInMonth(year: Int, month: Int): Int {
     val firstOfNextMonth = if (month == 12) {
@@ -89,6 +85,7 @@ fun WheelDatePickerInline(
         if (newDate != initialDate) onDateChanged(newDate)
     }
 
+    val months = LocalStrings.current.date.months
     val surfaceColor = AppTheme.colors.surface
     val indicatorColor = AppTheme.colors.onBackground.copy(alpha = 0.06f)
     val textColor = AppTheme.colors.onBackground
@@ -125,7 +122,7 @@ fun WheelDatePickerInline(
                 )
             }
             WheelColumn(
-                items = czechMonths,
+                items = months,
                 initialIndex = selectedMonth - 1,
                 onIndexChanged = { selectedMonth = it + 1 },
                 textColor = textColor,

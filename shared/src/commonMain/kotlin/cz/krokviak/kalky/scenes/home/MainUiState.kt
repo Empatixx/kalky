@@ -4,7 +4,6 @@ import androidx.compose.runtime.Immutable
 import cz.krokviak.kalky.core.common.entities.FoodItemEntity
 import cz.krokviak.kalky.core.common.currentLocalDate
 import cz.krokviak.kalky.core.common.error.UiError
-import cz.krokviak.kalky.core.common.utils.caloriesFromMacros
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentListOf
@@ -13,7 +12,6 @@ import kotlinx.datetime.LocalDate
 
 @Immutable
 data class MainUiState(
-    val dailyStats: PersistentList<DailyStats> = persistentListOf(),
     val selectedBottomNavItem: Int = 0,
     val maxCalories: Int = 0,
     val currentCalories: Int = 0,
@@ -40,14 +38,4 @@ data class MainUiState(
         if (max <= 0) return 0f
         return (current.toFloat() / max.toFloat()).coerceIn(0f, 1f)
     }
-}
-
-@Immutable
-data class DailyStats(
-    val dayLabel: String,
-    val protein: Int,
-    val carbs: Int,
-    val fat: Int
-) {
-    val totalCalories: Int get() = caloriesFromMacros(protein, carbs, fat)
 }

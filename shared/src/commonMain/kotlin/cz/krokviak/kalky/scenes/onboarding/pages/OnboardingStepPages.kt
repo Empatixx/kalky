@@ -31,6 +31,7 @@ import cz.krokviak.kalky.scenes.nutrientedit.components.VerticalCalorieCard
 import cz.krokviak.kalky.scenes.onboarding.GoalChoice
 import cz.krokviak.kalky.core.common.AppLanguage
 import cz.krokviak.kalky.core.common.UnitSystem
+import cz.krokviak.kalky.core.common.entities.Gender
 import cz.krokviak.kalky.scenes.settings.components.IosInlineValuePicker
 import cz.krokviak.kalky.core.theme.AppTheme
 import cz.krokviak.kalky.core.ui.components.MacroPickerRow
@@ -86,16 +87,16 @@ fun AppearanceOnboardingPage(
 
 @Composable
 fun GenderOnboardingPage(
-    selectedGender: String,
-    onSelected: (String) -> Unit
+    selectedGender: Gender,
+    onSelected: (Gender) -> Unit
 ) {
     val s = LocalStrings.current
-    val genderKeys = listOf("Mu\u017E", "\u017Dena")
+    val genders = Gender.entries
     ChoiceOnboardingPage(
         title = s.onboarding.chooseGender,
         options = listOf(s.profile.male, s.profile.female),
-        selectedIndex = genderKeys.indexOf(selectedGender).coerceAtLeast(0),
-        onSelected = { onSelected(genderKeys[it]) }
+        selectedIndex = genders.indexOf(selectedGender).coerceAtLeast(0),
+        onSelected = { onSelected(genders[it]) }
     )
 }
 

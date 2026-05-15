@@ -10,9 +10,7 @@ import cz.krokviak.kalky.core.common.domain.GetStreakUseCase
 import cz.krokviak.kalky.core.common.domain.ObserveDailyMacrosUseCase
 import cz.krokviak.kalky.core.common.entities.FoodItemEntity
 import cz.krokviak.kalky.core.db.DatabaseSeeder
-import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentSetOf
-import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -38,9 +36,7 @@ class MainViewModel(
     private val seedMockData: Boolean = false,
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(
-        MainUiState(dailyStats = generateFakeDailyStats(7))
-    )
+    private val _uiState = MutableStateFlow(MainUiState())
     val uiState: StateFlow<MainUiState> = _uiState
 
     private val photoCaptureController = PhotoCaptureController(
@@ -124,19 +120,6 @@ class MainViewModel(
 
     fun dismissError() {
         _uiState.update { it.copy(error = null) }
-    }
-
-    private fun generateFakeDailyStats(days: Int): PersistentList<DailyStats> {
-        val labels = listOf("Po", "Út", "St", "Čt", "Pá", "So", "Ne")
-        return (0 until days).map { i ->
-            val label = if (days == 7) labels[i % 7] else "Den ${i + 1}"
-            DailyStats(
-                dayLabel = label,
-                protein = (20..100).random(),
-                carbs = (50..200).random(),
-                fat = (10..80).random(),
-            )
-        }.toPersistentList()
     }
 
     fun resetToToday() = onDateSelected(cz.krokviak.kalky.core.common.currentLocalDate())

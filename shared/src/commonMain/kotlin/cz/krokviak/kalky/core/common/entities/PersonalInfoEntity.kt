@@ -5,7 +5,7 @@ import kotlinx.datetime.Instant
 
 data class PersonalInfoEntity(
     val id: Long = 0,
-    val gender: String,
+    val gender: Gender,
     val age: Int,
     val heightCm: Float,
     val weightKg: Float,

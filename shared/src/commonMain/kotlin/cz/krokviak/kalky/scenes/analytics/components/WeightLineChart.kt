@@ -37,6 +37,7 @@ import com.patrykandpatrick.vico.multiplatform.common.data.ExtraStore
 import com.patrykandpatrick.vico.multiplatform.common.fill
 import cz.krokviak.kalky.core.common.formatFloat1
 import cz.krokviak.kalky.core.common.repo.WeightEntry
+import cz.krokviak.kalky.core.i18n.LocalStrings
 import cz.krokviak.kalky.core.theme.AppTheme
 import cz.krokviak.kalky.core.ui.LocalDimensions
 import cz.krokviak.kalky.core.ui.components.KalkyCard
@@ -74,6 +75,7 @@ fun WeightLineChart(
 @Composable
 private fun EmptyWeightLineChart() {
     val dims = LocalDimensions.current
+    val s = LocalStrings.current.analytics
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -81,13 +83,13 @@ private fun EmptyWeightLineChart() {
         verticalArrangement = Arrangement.spacedBy(dims.halfSpacing)
     ) {
         Text(
-            text = "Zatím nemáme údaje o vaší váze",
+            text = s.weightEmptyTitle,
             color = AppTheme.colors.onBackground,
             fontWeight = FontWeight.ExtraBold,
             fontSize = dims.fontTitle
         )
         Text(
-            text = "Přidejte je v nastavení.",
+            text = s.weightEmptySubtitle,
             color = AppTheme.colors.onBackground,
             fontSize = dims.fontBody,
             fontWeight = FontWeight.SemiBold
@@ -98,6 +100,7 @@ private fun EmptyWeightLineChart() {
 @Composable
 private fun WeightLineChartInternal(weights: List<WeightEntry>) {
     val dims = LocalDimensions.current
+    val s = LocalStrings.current.analytics
     val currentWeight = remember(weights) { weights.last().weight }
     val avgWeight = remember(weights) { weights.map { it.weight }.average() }
 
@@ -110,7 +113,7 @@ private fun WeightLineChartInternal(weights: List<WeightEntry>) {
     ) {
         Column {
             Text(
-                text = "Aktuální váha",
+                text = s.weightCurrent,
                 color = AppTheme.colors.onBackgroundSecondary,
                 fontSize = dims.fontBody,
                 fontWeight = FontWeight.Bold
@@ -124,7 +127,7 @@ private fun WeightLineChartInternal(weights: List<WeightEntry>) {
         }
         Column(horizontalAlignment = Alignment.End) {
             Text(
-                text = "Průměr",
+                text = s.weightAverage,
                 color = AppTheme.colors.onBackgroundSecondary,
                 fontSize = dims.fontBody,
                 fontWeight = FontWeight.Bold

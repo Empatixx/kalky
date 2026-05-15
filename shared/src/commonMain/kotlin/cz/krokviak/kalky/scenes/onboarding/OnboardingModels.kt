@@ -1,5 +1,7 @@
 package cz.krokviak.kalky.scenes.onboarding
 
+import cz.krokviak.kalky.core.common.entities.Gender
+
 enum class OnboardingStep {
     LANGUAGE, UNITS, APPEARANCE, GENDER, WEIGHT, HEIGHT, AGE, ACTIVITY, GOAL, MACROS, PROMO
 }
@@ -9,7 +11,7 @@ enum class GoalChoice {
 }
 
 data class OnboardingResult(
-    val gender: String,
+    val gender: Gender,
     val weight: String,
     val height: String,
     val age: String,

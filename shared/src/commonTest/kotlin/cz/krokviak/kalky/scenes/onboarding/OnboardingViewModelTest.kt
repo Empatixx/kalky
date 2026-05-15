@@ -1,6 +1,7 @@
 package cz.krokviak.kalky.scenes.onboarding
 
 import app.cash.turbine.test
+import cz.krokviak.kalky.core.common.entities.Gender
 import cz.krokviak.kalky.core.common.entities.PersonalInfoEntity
 import cz.krokviak.kalky.core.common.repo.PersonalInfoRepo
 import dev.mokkery.answering.returns
@@ -36,7 +37,7 @@ class OnboardingViewModelTest {
         val vm = OnboardingViewModel(emptyRepo())
         advanceUntilIdle()
         val s = vm.uiState.value
-        assertEquals("Muž", s.gender)
+        assertEquals(Gender.MALE, s.gender)
         assertEquals(2, s.activityLevel)
         assertEquals(GoalChoice.MAINTAIN, s.goalChoice)
     }
@@ -44,7 +45,7 @@ class OnboardingViewModelTest {
     @Test
     fun init_withExistingPersonalInfo_restoresValues() = runTest(dispatcher) {
         val info = PersonalInfoEntity(
-            weightKg = 75.5f, heightCm = 175.0f, age = 28, gender = "Žena", activityLevel = 3
+            weightKg = 75.5f, heightCm = 175.0f, age = 28, gender = Gender.FEMALE, activityLevel = 3
         )
         val repo = mock<PersonalInfoRepo> {
             everySuspend { getLatestPersonalInfo() } returns info
@@ -52,7 +53,7 @@ class OnboardingViewModelTest {
         val vm = OnboardingViewModel(repo)
         advanceUntilIdle()
         val s = vm.uiState.value
-        assertEquals("Žena", s.gender)
+        assertEquals(Gender.FEMALE, s.gender)
         assertEquals(3, s.activityLevel)
         // weightIndex 0 = 30.0kg, so 75.5 -> index (755-300)=455
         assertEquals(455, s.weightIndex)
@@ -65,7 +66,7 @@ class OnboardingViewModelTest {
     @Test
     fun init_clampsActivityLevel_toValidRange() = runTest(dispatcher) {
         val info = PersonalInfoEntity(weightKg = 70f, heightCm = 175f, age = 30,
-            gender = "Muž", activityLevel = 99)
+            gender = Gender.MALE, activityLevel = 99)
         val repo = mock<PersonalInfoRepo> { everySuspend { getLatestPersonalInfo() } returns info }
         val vm = OnboardingViewModel(repo)
         advanceUntilIdle()
@@ -75,8 +76,8 @@ class OnboardingViewModelTest {
     @Test
     fun onGenderSelected_updatesState() {
         val vm = OnboardingViewModel(emptyRepo())
-        vm.onGenderSelected("Žena")
-        assertEquals("Žena", vm.uiState.value.gender)
+        vm.onGenderSelected(Gender.FEMALE)
+        assertEquals(Gender.FEMALE, vm.uiState.value.gender)
     }
 
     @Test
@@ -165,7 +166,7 @@ class OnboardingViewModelTest {
             vm.submit()
             advanceUntilIdle()
             val result = awaitItem()
-            assertEquals("Muž", result.gender)
+            assertEquals(Gender.MALE, result.gender)
             assertEquals(GoalChoice.MAINTAIN, result.goal)
             assertTrue(result.targetCalories > 0)
             cancelAndIgnoreRemainingEvents()

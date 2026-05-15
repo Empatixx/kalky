@@ -1,9 +1,10 @@
 import kotlin.Int;
 import kotlin.Float;
+import cz.krokviak.kalky.core.common.entities.Gender;
 
 CREATE TABLE personal_info (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    gender TEXT NOT NULL,
+    gender TEXT AS Gender NOT NULL,
     age INTEGER AS Int NOT NULL,
     heightCm REAL AS Float NOT NULL,
     weightKg REAL AS Float NOT NULL,

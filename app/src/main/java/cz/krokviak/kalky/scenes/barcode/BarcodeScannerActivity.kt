@@ -27,12 +27,16 @@ import com.google.mlkit.vision.barcode.BarcodeScanning
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
+import cz.krokviak.kalky.core.common.AppPreferences
+import cz.krokviak.kalky.core.i18n.stringsFor
 import cz.krokviak.kalky.core.theme.KalkyTheme
+import org.koin.android.ext.android.inject
 import java.util.concurrent.Executors
 
 class BarcodeScannerActivity : AppCompatActivity() {
 
     private val viewModel: BarcodeScannerViewModel by viewModel()
+    private val appPreferences: AppPreferences by inject()
     private var previewView: PreviewView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,7 +47,8 @@ class BarcodeScannerActivity : AppCompatActivity() {
                 if (isGranted) {
                     startCamera()
                 } else {
-                    Toast.makeText(this, "Přístup ke kameře zamítnut", Toast.LENGTH_LONG).show()
+                    val strings = stringsFor(appPreferences.language.value)
+                    Toast.makeText(this, strings.camera.permissionDenied, Toast.LENGTH_LONG).show()
                     finish()
                 }
             }
@@ -95,6 +100,7 @@ class BarcodeScannerActivity : AppCompatActivity() {
         setContent {
             KalkyTheme {
                 val state by viewModel.state.collectAsState()
+                val strings = cz.krokviak.kalky.core.i18n.LocalStrings.current
 
                 BarcodeScannerScreen(
                     state = state,
@@ -113,7 +119,7 @@ class BarcodeScannerActivity : AppCompatActivity() {
                         val nutriments = product.nutriments
                         val multiplier = quantity / 100.0
                         val intent = Intent().apply {
-                            putExtra("name", product.productName ?: "Neznámý produkt")
+                            putExtra("name", product.productName ?: strings.common.unknownProduct)
                             putExtra("calories", ((nutriments?.energyKcal100g ?: 0.0) * multiplier).toInt())
                             putExtra("protein", ((nutriments?.proteins100g ?: 0.0) * multiplier).toInt())
                             putExtra("fat", ((nutriments?.fat100g ?: 0.0) * multiplier).toInt())

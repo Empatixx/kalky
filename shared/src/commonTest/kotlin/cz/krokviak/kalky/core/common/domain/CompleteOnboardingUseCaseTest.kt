@@ -1,5 +1,6 @@
 package cz.krokviak.kalky.core.common.domain
 
+import cz.krokviak.kalky.core.common.entities.Gender
 import cz.krokviak.kalky.core.common.entities.NutrientSettingEntity
 import cz.krokviak.kalky.core.common.entities.PersonalInfoEntity
 import cz.krokviak.kalky.core.common.repo.PersonalInfoRepo
@@ -23,7 +24,7 @@ class CompleteOnboardingUseCaseTest {
         age: String = "30",
         targetCalories: Int = 2000,
     ) = OnboardingResult(
-        gender = "Muž",
+        gender = Gender.MALE,
         weight = weight,
         height = height,
         age = age,

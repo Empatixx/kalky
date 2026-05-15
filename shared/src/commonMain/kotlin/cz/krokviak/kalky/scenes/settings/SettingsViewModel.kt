@@ -2,6 +2,7 @@ package cz.krokviak.kalky.scenes.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import cz.krokviak.kalky.core.common.entities.Gender
 import cz.krokviak.kalky.core.common.entities.PersonalInfoEntity
 import cz.krokviak.kalky.core.common.repo.PersonalInfoRepo
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -50,7 +51,7 @@ class SettingsViewModel(
         _uiState.update { it.copy(age = value, saved = false) }
     }
 
-    fun onGenderChange(value: String) {
+    fun onGenderChange(value: Gender) {
         _uiState.update { it.copy(gender = value, saved = false) }
         save()
     }

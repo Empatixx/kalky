@@ -3,6 +3,8 @@ package cz.krokviak.kalky.scenes.barcode
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cz.krokviak.kalky.scenes.barcode.data.OpenFoodFactsProduct
+import cz.krokviak.kalky.core.common.error.UiError
+import cz.krokviak.kalky.core.common.error.toUiError
 import cz.krokviak.kalky.core.network.OpenFoodFactsClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +15,7 @@ sealed class BarcodeScanState {
     data object Loading : BarcodeScanState()
     data class ProductFound(val product: OpenFoodFactsProduct, val barcode: String) : BarcodeScanState()
     data object NotFound : BarcodeScanState()
-    data class Error(val message: String) : BarcodeScanState()
+    data class Error(val error: UiError) : BarcodeScanState()
 }
 
 class BarcodeScannerViewModel(
@@ -40,7 +42,7 @@ class BarcodeScannerViewModel(
         openFoodFactsClient.getProduct(barcode)
     }.fold(
         onSuccess = { product -> productState(product, barcode) },
-        onFailure = { BarcodeScanState.Error(it.message ?: "Neznámá chyba") },
+        onFailure = { BarcodeScanState.Error(it.toUiError(UiError.ProductSearch)) },
     )
 
     private fun productState(product: OpenFoodFactsProduct?, barcode: String): BarcodeScanState =

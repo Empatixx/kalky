@@ -1,12 +1,14 @@
 package cz.krokviak.kalky.core.common.repo
 
 import app.cash.sqldelight.ColumnAdapter
+import app.cash.sqldelight.EnumColumnAdapter
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import app.cash.turbine.test
 import cz.krokviak.kalky.Food_items
 import cz.krokviak.kalky.Nutrient_settings
 import cz.krokviak.kalky.Personal_info
 import cz.krokviak.kalky.core.common.entities.FoodItemEntity
+import cz.krokviak.kalky.core.common.entities.Gender
 import cz.krokviak.kalky.core.db.KalkyDatabase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -81,6 +83,7 @@ class FoodRepositoryTest {
                 targetCarbsAdapter = intAdapter,
             ),
             personal_infoAdapter = Personal_info.Adapter(
+                genderAdapter = EnumColumnAdapter<Gender>(),
                 ageAdapter = intAdapter,
                 heightCmAdapter = floatAdapter,
                 weightKgAdapter = floatAdapter,

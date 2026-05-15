@@ -20,6 +20,8 @@ import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
 import cz.krokviak.kalky.scenes.barcode.BarcodeScanState
+import cz.krokviak.kalky.core.common.error.UiError
+import cz.krokviak.kalky.core.common.error.toUiError
 import cz.krokviak.kalky.core.network.OpenFoodFactsClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
@@ -112,7 +114,7 @@ class CameraViewModel(
                     BarcodeScanState.NotFound
                 }
             } catch (e: Exception) {
-                BarcodeScanState.Error(e.message ?: "Neznámá chyba")
+                BarcodeScanState.Error(e.toUiError(UiError.ProductSearch))
             }
             _uiState.value = _uiState.value.copy(barcodeScanState = nextState)
         }

@@ -1,5 +1,6 @@
 package cz.krokviak.kalky.scenes.barcode
 
+import cz.krokviak.kalky.core.common.error.UiError
 import cz.krokviak.kalky.core.network.OpenFoodFactsClient
 import cz.krokviak.kalky.scenes.barcode.data.OpenFoodFactsProduct
 import dev.mokkery.answering.returns
@@ -81,7 +82,8 @@ class BarcodeScannerViewModelTest {
         advanceUntilIdle()
 
         val state = assertIs<BarcodeScanState.Error>(vm.state.value)
-        assertEquals("network down", state.message)
+        // "network down" matches the network-keyword heuristic in toUiError
+        assertEquals(UiError.Network, state.error)
     }
 
     @Test

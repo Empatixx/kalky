@@ -1,6 +1,7 @@
 package cz.krokviak.kalky.scenes.settings
 
 import androidx.compose.runtime.Immutable
+import cz.krokviak.kalky.core.common.entities.Gender
 
 enum class ProfilePickerField { WEIGHT, HEIGHT, AGE }
 
@@ -9,7 +10,7 @@ data class SettingsUiState(
     val weight: String = "",
     val height: String = "",
     val age: String = "",
-    val gender: String = "Muž",
+    val gender: Gender = Gender.MALE,
     val activityLevel: Int = 2,
     val saved: Boolean = false,
     val activePickerField: ProfilePickerField? = null,
