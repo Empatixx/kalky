@@ -12,8 +12,8 @@ import kotlinx.datetime.minus
 open class DatabaseSeeder(private val db: KalkyDatabase) {
 
     open suspend fun seedIfEmpty() = withContext(Dispatchers.IO) {
-        val existing = db.personalInfoQueries.getLatestPersonalInfo().executeAsOneOrNull()
-        if (existing != null) return@withContext
+        val hasFood = db.foodItemQueries.getAllFoodItems().executeAsList().isNotEmpty()
+        if (hasFood) return@withContext
 
         db.transaction { seedAll() }
     }
