@@ -4,14 +4,15 @@ import cz.krokviak.kalky.core.common.domain.BuildCaloriesBarsUseCase
 import cz.krokviak.kalky.core.common.domain.GetWeightsInRangeUseCase
 import cz.krokviak.kalky.core.common.repo.WeightEntry
 import dev.mokkery.answering.returns
-import dev.mokkery.everySuspend
+import dev.mokkery.every
 import dev.mokkery.matcher.any
 import dev.mokkery.matcher.matching
 import dev.mokkery.mock
-import dev.mokkery.verifySuspend
+import dev.mokkery.verify
 import dev.mokkery.verify.VerifyMode
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -37,10 +38,10 @@ class AnalyticsViewModelTest {
         weights: List<WeightEntry> = listOf(WeightEntry(LocalDate(2026, 5, 8), 80.0)),
     ): AnalyticsViewModel {
         val barsUseCase = mock<BuildCaloriesBarsUseCase> {
-            everySuspend { invoke(any(), any(), any()) } returns bars.toPersistentListLocal()
+            every { observe(any(), any(), any()) } returns flowOf(bars.toPersistentListLocal())
         }
         val weightsUseCase = mock<GetWeightsInRangeUseCase> {
-            everySuspend { invoke(any(), any()) } returns weights
+            every { observe(any(), any()) } returns flowOf(weights)
         }
         return AnalyticsViewModel(barsUseCase, weightsUseCase)
     }
@@ -86,10 +87,10 @@ class AnalyticsViewModelTest {
     @Test
     fun setStartDate_passesNewStartToBarsUseCase() = runTest(dispatcher) {
         val barsUseCase = mock<BuildCaloriesBarsUseCase> {
-            everySuspend { invoke(any(), any(), any()) } returns persistentListOf()
+            every { observe(any(), any(), any()) } returns flowOf(persistentListOf())
         }
         val weightsUseCase = mock<GetWeightsInRangeUseCase> {
-            everySuspend { invoke(any(), any()) } returns emptyList()
+            every { observe(any(), any()) } returns flowOf(emptyList())
         }
         val vm = AnalyticsViewModel(barsUseCase, weightsUseCase)
         advanceUntilIdle()
@@ -98,8 +99,8 @@ class AnalyticsViewModelTest {
         vm.setStartDate(newStart)
         advanceUntilIdle()
 
-        verifySuspend(VerifyMode.atLeast(1)) {
-            barsUseCase.invoke(matching { it == newStart }, any(), any())
+        verify(VerifyMode.atLeast(1)) {
+            barsUseCase.observe(matching { it == newStart }, any(), any())
         }
     }
 }
