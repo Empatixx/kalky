@@ -1,12 +1,17 @@
 package cz.krokviak.kalky.core.common.repo
 
+import app.cash.sqldelight.coroutines.asFlow
+import app.cash.sqldelight.coroutines.mapToList
 import cz.krokviak.kalky.core.common.entities.PersonalInfoEntity
 import cz.krokviak.kalky.core.db.KalkyDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
 data class WeightEntry(
@@ -39,21 +44,29 @@ open class PersonalInfoRepo(
     }
 
     open suspend fun getWeightsInRange(startDate: LocalDate, endDate: LocalDate): List<WeightEntry> = withContext(Dispatchers.IO) {
-        val tz = kotlinx.datetime.TimeZone.currentSystemDefault()
-        queries.getPersonalInfoBetweenDates(
-            startDate.toString(),
-            endDate.toString()
-        ).executeAsList()
-            .map { row ->
-                WeightEntry(
-                    date = Instant.parse(row.createdAt).toLocalDateTime(tz).date,
-                    weight = row.weightKg.toDouble()
-                )
-            }
-            .groupBy { it.date }
-            .map { (_, dayEntries) -> dayEntries.last() }
-            .sortedBy { it.date }
+        queries.getPersonalInfoBetweenDates(startDate.toString(), endDate.toString())
+            .executeAsList()
+            .toWeightEntries()
     }
+
+    open fun observeWeightsInRange(startDate: LocalDate, endDate: LocalDate): Flow<List<WeightEntry>> =
+        queries.getPersonalInfoBetweenDates(startDate.toString(), endDate.toString())
+            .asFlow()
+            .mapToList(Dispatchers.IO)
+            .map { rows -> rows.toWeightEntries() }
+}
+
+private fun List<cz.krokviak.kalky.Personal_info>.toWeightEntries(): List<WeightEntry> {
+    val tz = TimeZone.currentSystemDefault()
+    return map { row ->
+        WeightEntry(
+            date = Instant.parse(row.createdAt).toLocalDateTime(tz).date,
+            weight = row.weightKg.toDouble()
+        )
+    }
+        .groupBy { it.date }
+        .map { (_, dayEntries) -> dayEntries.last() }
+        .sortedBy { it.date }
 }
 
 private fun cz.krokviak.kalky.Personal_info.toEntity() = PersonalInfoEntity(

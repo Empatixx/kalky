@@ -5,9 +5,12 @@ import androidx.lifecycle.viewModelScope
 import cz.krokviak.kalky.core.common.domain.BuildCaloriesBarsUseCase
 import cz.krokviak.kalky.core.common.domain.GetWeightsInRangeUseCase
 import kotlinx.collections.immutable.toPersistentList
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
@@ -20,37 +23,39 @@ class AnalyticsViewModel(
     private val _uiState = MutableStateFlow(AnalyticsUiState())
     val uiState: StateFlow<AnalyticsUiState> = _uiState
 
-    private var loadJob: Job? = null
-
     init {
-        loadData()
+        observeData()
     }
 
     fun setStartDate(date: LocalDate) {
         _uiState.update { it.copy(startDate = date) }
-        loadData()
     }
 
     fun setEndDate(date: LocalDate) {
         _uiState.update { it.copy(endDate = date) }
-        loadData()
     }
 
-    private fun loadData() {
-        val state = _uiState.value
-        val start = state.startDate
-        val end = state.endDate
-
-        loadJob?.cancel()
-        loadJob = viewModelScope.launch {
-            val bars = buildCaloriesBars(start, end)
-            val weights = getWeightsInRange(start, end)
-            _uiState.update {
-                it.copy(
-                    weights = weights.toPersistentList(),
-                    caloriesBars = bars,
-                )
-            }
+    private fun observeData() {
+        viewModelScope.launch {
+            _uiState
+                .map { it.startDate to it.endDate }
+                .distinctUntilChanged()
+                .collectLatest { (start, end) -> collectRange(start, end) }
         }
+    }
+
+    private suspend fun collectRange(start: LocalDate, end: LocalDate) {
+        combine(
+            buildCaloriesBars.observe(start, end),
+            getWeightsInRange.observe(start, end),
+        ) { bars, weights -> bars to weights }
+            .collect { (bars, weights) ->
+                _uiState.update {
+                    it.copy(
+                        caloriesBars = bars,
+                        weights = weights.toPersistentList(),
+                    )
+                }
+            }
     }
 }

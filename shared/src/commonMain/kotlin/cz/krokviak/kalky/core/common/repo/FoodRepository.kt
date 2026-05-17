@@ -147,16 +147,25 @@ open class FoodRepository(
         startDate: String,
         endDate: String
     ): List<DailyMacroTotals> = withContext(Dispatchers.IO) {
-        queries.getDailyMacroTotalsInRange(startDate, endDate).executeAsList().map { row ->
-            DailyMacroTotals(
-                day = LocalDate.parse(row.day!!),
-                totalProtein = row.totalProtein,
-                totalCarbs = row.totalCarbs,
-                totalFat = row.totalFat
-            )
-        }
+        queries.getDailyMacroTotalsInRange(startDate, endDate).executeAsList().map { it.toDailyMacroTotals() }
     }
+
+    open fun observeDailyMacroTotalsInRange(
+        startDate: String,
+        endDate: String
+    ): Flow<List<DailyMacroTotals>> =
+        queries.getDailyMacroTotalsInRange(startDate, endDate)
+            .asFlow()
+            .mapToList(Dispatchers.IO)
+            .map { rows -> rows.map { it.toDailyMacroTotals() } }
 }
+
+private fun cz.krokviak.kalky.GetDailyMacroTotalsInRange.toDailyMacroTotals() = DailyMacroTotals(
+    day = LocalDate.parse(day!!),
+    totalProtein = totalProtein,
+    totalCarbs = totalCarbs,
+    totalFat = totalFat
+)
 
 private fun cz.krokviak.kalky.Food_items.toEntity() = FoodItemEntity(
     id = id,
