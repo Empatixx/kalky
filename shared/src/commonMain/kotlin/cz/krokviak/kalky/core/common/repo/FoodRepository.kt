@@ -3,6 +3,8 @@ package cz.krokviak.kalky.core.common.repo
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOne
+import cz.krokviak.kalky.Food_items
+import cz.krokviak.kalky.GetDailyMacroTotalsInRange
 import cz.krokviak.kalky.scenes.analytics.data.DailyMacroTotals
 import cz.krokviak.kalky.core.common.entities.FoodItemEntity
 import cz.krokviak.kalky.core.db.KalkyDatabase
@@ -160,14 +162,14 @@ open class FoodRepository(
             .map { rows -> rows.map { it.toDailyMacroTotals() } }
 }
 
-private fun cz.krokviak.kalky.GetDailyMacroTotalsInRange.toDailyMacroTotals() = DailyMacroTotals(
+private fun GetDailyMacroTotalsInRange.toDailyMacroTotals() = DailyMacroTotals(
     day = LocalDate.parse(day!!),
     totalProtein = totalProtein,
     totalCarbs = totalCarbs,
     totalFat = totalFat
 )
 
-private fun cz.krokviak.kalky.Food_items.toEntity() = FoodItemEntity(
+private fun Food_items.toEntity() = FoodItemEntity(
     id = id,
     name = name,
     calories = calories,

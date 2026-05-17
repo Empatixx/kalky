@@ -2,6 +2,7 @@ package cz.krokviak.kalky.core.common.repo
 
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
+import cz.krokviak.kalky.Personal_info
 import cz.krokviak.kalky.core.common.entities.PersonalInfoEntity
 import cz.krokviak.kalky.core.db.KalkyDatabase
 import kotlinx.coroutines.Dispatchers
@@ -56,7 +57,7 @@ open class PersonalInfoRepo(
             .map { rows -> rows.toWeightEntries() }
 }
 
-private fun List<cz.krokviak.kalky.Personal_info>.toWeightEntries(): List<WeightEntry> {
+private fun List<Personal_info>.toWeightEntries(): List<WeightEntry> {
     val tz = TimeZone.currentSystemDefault()
     return map { row ->
         WeightEntry(
@@ -69,7 +70,7 @@ private fun List<cz.krokviak.kalky.Personal_info>.toWeightEntries(): List<Weight
         .sortedBy { it.date }
 }
 
-private fun cz.krokviak.kalky.Personal_info.toEntity() = PersonalInfoEntity(
+private fun Personal_info.toEntity() = PersonalInfoEntity(
     id = id,
     gender = gender,
     age = age,
