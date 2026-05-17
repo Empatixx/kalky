@@ -80,10 +80,6 @@ class MainViewModel(
         }
     }
 
-    fun refreshNutrientSettings() {
-        viewModelScope.launch { applyLatestNutrientSettings() }
-    }
-
     private suspend fun applyLatestNutrientSettings() {
         val latestSettings = getLatestSettings()
         _uiState.update {

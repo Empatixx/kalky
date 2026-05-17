@@ -40,7 +40,6 @@ import cz.krokviak.kalky.scenes.home.components.BottomNavBar
 import cz.krokviak.kalky.scenes.nutrientedit.NutrientEditScene
 import cz.krokviak.kalky.scenes.nutrientedit.NutrientEditViewModel
 import cz.krokviak.kalky.scenes.onboarding.OnboardingScene
-import cz.krokviak.kalky.scenes.onboarding.OnboardingViewModel
 import cz.krokviak.kalky.scenes.settings.ProfileScene
 import cz.krokviak.kalky.scenes.settings.SettingsScene
 import cz.krokviak.kalky.scenes.settings.SettingsViewModel
@@ -48,8 +47,8 @@ import cz.krokviak.kalky.core.ui.components.KalkyGradientBackground
 import kotlinx.coroutines.launch
 
 @Composable
-internal fun OnboardingDestination(onboardingViewModel: OnboardingViewModel) {
-    OnboardingScene(onboardingViewModel = onboardingViewModel)
+internal fun OnboardingDestination() {
+    OnboardingScene()
 }
 
 @Composable
@@ -163,20 +162,14 @@ internal fun ManualFoodEntryDestination(
 
 @Composable
 internal fun MainScaffold(
-    mainViewModel: MainViewModel,
     onCameraClick: () -> Unit,
     navController: NavController,
 ) {
-    val analyticsViewModel: AnalyticsViewModel = koinViewModel()
-    val settingsViewModel: SettingsViewModel = koinViewModel()
-    val manualEntryViewModel: ManualFoodEntryViewModel = koinInject()
-    val authViewModel: AuthViewModelInterface = koinInject()
     val pagerState = rememberPagerState(
         initialPage = 0,
         pageCount = { 4 }
     )
     val scope = rememberCoroutineScope()
-    val uiState by mainViewModel.uiState.collectAsState()
 
     val currentPage by remember { derivedStateOf { pagerState.currentPage } }
 
@@ -201,25 +194,10 @@ internal fun MainScaffold(
                     .padding(innerPadding)
             ) { page ->
                 when (page) {
-                    0 -> HomePage(
-                        uiState = uiState,
-                        mainViewModel = mainViewModel,
-                        manualEntryViewModel = manualEntryViewModel,
-                        navController = navController,
-                    )
-                    1 -> AnalyticsPageDestination(analyticsViewModel = analyticsViewModel)
-                    2 -> {
-                        val settingsUiState by settingsViewModel.uiState.collectAsState()
-                        ProfileScene(
-                            uiState = settingsUiState,
-                            viewModel = settingsViewModel,
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
-                    3 -> AccountPage(
-                        authViewModel = authViewModel,
-                        navController = navController,
-                    )
+                    0 -> HomePage(navController = navController)
+                    1 -> AnalyticsPageDestination()
+                    2 -> ProfilePageDestination()
+                    3 -> AccountPage(navController = navController)
                 }
             }
         }
@@ -227,12 +205,10 @@ internal fun MainScaffold(
 }
 
 @Composable
-private fun HomePage(
-    uiState: cz.krokviak.kalky.scenes.home.MainUiState,
-    mainViewModel: MainViewModel,
-    manualEntryViewModel: ManualFoodEntryViewModel,
-    navController: NavController,
-) {
+private fun HomePage(navController: NavController) {
+    val mainViewModel: MainViewModel = koinViewModel()
+    val manualEntryViewModel: ManualFoodEntryViewModel = koinInject()
+    val uiState by mainViewModel.uiState.collectAsState()
     HomeScene(
         uiState = uiState,
         modifier = Modifier.fillMaxSize(),
@@ -264,7 +240,8 @@ private fun HomePage(
 }
 
 @Composable
-private fun AnalyticsPageDestination(analyticsViewModel: AnalyticsViewModel) {
+private fun AnalyticsPageDestination() {
+    val analyticsViewModel: AnalyticsViewModel = koinViewModel()
     val analyticsUiState by analyticsViewModel.uiState.collectAsState()
     AnalyticsPage(
         uiState = analyticsUiState,
@@ -274,10 +251,21 @@ private fun AnalyticsPageDestination(analyticsViewModel: AnalyticsViewModel) {
 }
 
 @Composable
+private fun ProfilePageDestination() {
+    val settingsViewModel: SettingsViewModel = koinViewModel()
+    val settingsUiState by settingsViewModel.uiState.collectAsState()
+    ProfileScene(
+        uiState = settingsUiState,
+        viewModel = settingsViewModel,
+        modifier = Modifier.fillMaxSize()
+    )
+}
+
+@Composable
 private fun AccountPage(
-    authViewModel: AuthViewModelInterface,
     navController: NavController,
 ) {
+    val authViewModel: AuthViewModelInterface = koinInject()
     val authUser by authViewModel.authUser.collectAsState()
     SettingsScene(
         modifier = Modifier.fillMaxSize(),

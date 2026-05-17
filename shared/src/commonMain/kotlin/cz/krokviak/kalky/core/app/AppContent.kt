@@ -23,10 +23,8 @@ import cz.krokviak.kalky.core.common.PrivacyPolicyRoute
 import cz.krokviak.kalky.core.common.TermsRoute
 import cz.krokviak.kalky.core.di.koinInject
 import org.koin.compose.viewmodel.koinViewModel
-import cz.krokviak.kalky.scenes.home.MainViewModel
 import cz.krokviak.kalky.scenes.onboarding.OnboardingViewModel
 import cz.krokviak.kalky.scenes.settings.PrivacyPolicyScene
-import cz.krokviak.kalky.scenes.settings.SettingsViewModel
 import cz.krokviak.kalky.scenes.settings.TermsScene
 import cz.krokviak.kalky.core.ui.components.ResponsiveProvider
 
@@ -37,9 +35,6 @@ fun AppContent() {
     val appPreferences: AppPreferences = koinInject()
     val authStateProvider: AuthStateProvider = koinInject()
     val completeOnboarding: CompleteOnboardingUseCase = koinInject()
-    val mainViewModel: MainViewModel = koinViewModel()
-    val onboardingViewModel: OnboardingViewModel = koinViewModel()
-    val settingsViewModel: SettingsViewModel = koinViewModel()
 
     val onboardingCompleted by appPreferences.onboardingCompleted.collectAsState()
     val isAuthenticated by authStateProvider.isAuthenticated.collectAsState()
@@ -56,11 +51,10 @@ fun AppContent() {
             startDestination = startDestination
         ) {
             composable<OnboardingRoute> {
+                val onboardingViewModel: OnboardingViewModel = koinViewModel()
                 LaunchedEffect(onboardingViewModel) {
                     onboardingViewModel.completed.collect { result ->
                         completeOnboarding(result)
-                        mainViewModel.refreshNutrientSettings()
-                        settingsViewModel.refresh()
                         appPreferences.setOnboardingCompleted(true)
                         navController.navigate(LoginRoute) {
                             popUpTo(navController.graph.startDestinationId) { inclusive = true }
@@ -68,7 +62,7 @@ fun AppContent() {
                         }
                     }
                 }
-                OnboardingDestination(onboardingViewModel = onboardingViewModel)
+                OnboardingDestination()
             }
 
             composable<LoginRoute> {
@@ -86,7 +80,6 @@ fun AppContent() {
 
             composable<DefaultRoute> {
                 MainScaffold(
-                    mainViewModel = mainViewModel,
                     onCameraClick = { platformActions.launchCamera() },
                     navController = navController
                 )

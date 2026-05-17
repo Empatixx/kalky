@@ -37,6 +37,7 @@ import cz.krokviak.kalky.scenes.onboarding.pages.WeightOnboardingPage
 import cz.krokviak.kalky.core.common.AppPreferences
 import cz.krokviak.kalky.core.common.UnitSystem
 import cz.krokviak.kalky.core.di.koinInject
+import org.koin.compose.viewmodel.koinViewModel
 import cz.krokviak.kalky.core.theme.ThemeManager
 import cz.krokviak.kalky.scenes.settings.formatHeightForDisplay
 import cz.krokviak.kalky.scenes.settings.formatWeightForDisplay
@@ -50,7 +51,7 @@ import cz.krokviak.kalky.core.ui.components.KalkyGradientBackground
 
 @Composable
 fun OnboardingScene(
-    onboardingViewModel: OnboardingViewModel,
+    onboardingViewModel: OnboardingViewModel = koinViewModel(),
     appPreferences: AppPreferences = koinInject()
 ) {
     val uiState by onboardingViewModel.uiState.collectAsState()
