@@ -32,10 +32,17 @@ data class DateStrings(
     val months: List<String>
 )
 
+data class LegalSection(
+    val header: String,
+    val body: String
+)
+
 data class LegalStrings(
     val sectionTitle: String,
     val termsTitle: String,
-    val privacyTitle: String
+    val privacyTitle: String,
+    val privacySections: List<LegalSection>,
+    val termsSections: List<LegalSection>
 )
 
 data class AuthStrings(
@@ -392,7 +399,21 @@ val CzechStrings = AppStrings(
     legal = LegalStrings(
         sectionTitle = "Pr\u00E1vn\u00ED informace",
         termsTitle = "Obchodn\u00ED podm\u00EDnky",
-        privacyTitle = "Ochrana osobn\u00EDch \u00FAdaj\u016F"
+        privacyTitle = "Ochrana osobn\u00EDch \u00FAdaj\u016F",
+        privacySections = listOf(
+            LegalSection("1. Spr\u00E1vce \u00FAdaj\u016F", "Spr\u00E1vcem osobn\u00EDch \u00FAdaj\u016F zpracov\u00E1van\u00FDch prost\u0159ednictv\u00EDm aplikace Kalky je jej\u00ED provozovatel."),
+            LegalSection("2. Jak\u00E9 \u00FAdaje shroma\u017E\u010Fujeme", "Aplikace shroma\u017E\u010Fuje \u00FAdaje, kter\u00E9 zad\u00E1te: v\u00FD\u0161ka, v\u00E1ha, v\u011Bk, pohlav\u00ED, \u00FArove\u0148 aktivity a z\u00E1znamy o stravov\u00E1n\u00ED. Tyto \u00FAdaje jsou ukl\u00E1d\u00E1ny v\u00FDhradn\u011B lok\u00E1ln\u011B na va\u0161em za\u0159\u00EDzen\u00ED."),
+            LegalSection("3. \u00DA\u010Del zpracov\u00E1n\u00ED", "Va\u0161e \u00FAdaje jsou zpracov\u00E1v\u00E1ny za \u00FA\u010Delem v\u00FDpo\u010Dtu doporu\u010Den\u00E9ho denn\u00EDho p\u0159\u00EDjmu kalori\u00ED a makro\u017Eivin a zobrazov\u00E1n\u00ED statistik o va\u0161em stravov\u00E1n\u00ED."),
+            LegalSection("4. Sd\u00EDlen\u00ED \u00FAdaj\u016F", "Va\u0161e osobn\u00ED \u00FAdaje nejsou sd\u00EDleny s t\u0159et\u00EDmi stranami. Fotografie j\u00EDdel mohou b\u00FDt odesl\u00E1ny na server pro anal\u00FDzu nutri\u010Dn\u00EDch hodnot, ale nejsou trvale ukl\u00E1d\u00E1ny."),
+            LegalSection("5. Va\u0161e pr\u00E1va", "M\u00E1te pr\u00E1vo na p\u0159\u00EDstup k sv\u00FDm \u00FAdaj\u016Fm, jejich opravu nebo vymaz\u00E1n\u00ED. Ve\u0161ker\u00E1 data m\u016F\u017Eete smazat odinstalov\u00E1n\u00EDm aplikace.")
+        ),
+        termsSections = listOf(
+            LegalSection("1. \u00DAvodn\u00ED ustanoven\u00ED", "Tyto obchodn\u00ED podm\u00EDnky upravuj\u00ED pr\u00E1va a povinnosti u\u017Eivatel\u016F mobiln\u00ED aplikace Kalky (d\u00E1le jen \u201EAplikace\u201C). Pou\u017E\u00EDv\u00E1n\u00EDm Aplikace souhlas\u00EDte s t\u011Bmito podm\u00EDnkami."),
+            LegalSection("2. Popis slu\u017Eby", "Aplikace Kalky slou\u017E\u00ED k sledov\u00E1n\u00ED p\u0159\u00EDjmu potravin a nutri\u010Dn\u00EDch hodnot. Aplikace umo\u017E\u0148uje zaznamen\u00E1vat j\u00EDdla pomoc\u00ED fotografi\u00ED, \u010D\u00E1rov\u00FDch k\u00F3d\u016F nebo ru\u010Dn\u00EDho zad\u00E1n\u00ED."),
+            LegalSection("3. U\u017Eivatelsk\u00FD \u00FA\u010Det", "Pro pou\u017E\u00EDv\u00E1n\u00ED Aplikace nen\u00ED vy\u017Eadov\u00E1na registrace. Ve\u0161ker\u00E1 data jsou ukl\u00E1d\u00E1na lok\u00E1ln\u011B na za\u0159\u00EDzen\u00ED u\u017Eivatele."),
+            LegalSection("4. Omezen\u00ED odpov\u011Bdnosti", "Nutri\u010Dn\u00ED hodnoty zobrazen\u00E9 v Aplikaci maj\u00ED informativn\u00ED charakter a nenahrazuj\u00ED odborn\u00E9 poradenstv\u00ED. Provozovatel nenese odpov\u011Bdnost za p\u0159esnost \u00FAdaj\u016F z\u00EDskan\u00FDch z extern\u00EDch datab\u00E1z\u00ED."),
+            LegalSection("5. Zm\u011Bny podm\u00EDnek", "Provozovatel si vyhrazuje pr\u00E1vo tyto podm\u00EDnky kdykoli zm\u011Bnit. O zm\u011Bn\u00E1ch bude u\u017Eivatel informov\u00E1n prost\u0159ednictv\u00EDm aktualizace Aplikace.")
+        )
     ),
     notifications = NotificationStrings(
         reminders = "Upozorn\u011Bn\u00ED",
@@ -587,7 +608,21 @@ val EnglishStrings = AppStrings(
     legal = LegalStrings(
         sectionTitle = "Legal",
         termsTitle = "Terms & Conditions",
-        privacyTitle = "Privacy Policy"
+        privacyTitle = "Privacy Policy",
+        privacySections = listOf(
+            LegalSection("1. Data Controller", "The controller of personal data processed through the Kalky application is its operator."),
+            LegalSection("2. What Data We Collect", "The application collects data you enter: height, weight, age, gender, activity level and meal records. This data is stored exclusively locally on your device."),
+            LegalSection("3. Purpose of Processing", "Your data is processed to calculate your recommended daily calorie and macronutrient intake and to display statistics about your diet."),
+            LegalSection("4. Data Sharing", "Your personal data is not shared with third parties. Meal photos may be sent to a server for nutritional analysis, but are not stored permanently."),
+            LegalSection("5. Your Rights", "You have the right to access, correct or delete your data. You can delete all data by uninstalling the application.")
+        ),
+        termsSections = listOf(
+            LegalSection("1. Introductory Provisions", "These terms and conditions govern the rights and obligations of users of the Kalky mobile application (the \u201CApplication\u201D). By using the Application you agree to these terms."),
+            LegalSection("2. Service Description", "The Kalky application is used for tracking food intake and nutritional values. The Application allows recording meals using photos, barcodes or manual entry."),
+            LegalSection("3. User Account", "No registration is required to use the Application. All data is stored locally on the user's device."),
+            LegalSection("4. Limitation of Liability", "Nutritional values shown in the Application are informative and do not replace professional advice. The operator is not responsible for the accuracy of data obtained from external databases."),
+            LegalSection("5. Changes to Terms", "The operator reserves the right to change these terms at any time. Users will be informed of changes through an Application update.")
+        )
     ),
     notifications = NotificationStrings(
         reminders = "Notifications",

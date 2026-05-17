@@ -63,34 +63,10 @@ fun PrivacyPolicyScene(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            LegalSectionHeader("1. Správce údajů")
-            LegalBody(
-                "Správcem osobních údajů zpracovávaných prostřednictvím aplikace Kalky je její provozovatel."
-            )
-
-            LegalSectionHeader("2. Jaké údaje shromažďujeme")
-            LegalBody(
-                "Aplikace shromažďuje údaje, které zadáte: výška, váha, věk, pohlaví, úroveň aktivity " +
-                "a záznamy o stravování. Tyto údaje jsou ukládány výhradně lokálně na vašem zařízení."
-            )
-
-            LegalSectionHeader("3. Účel zpracování")
-            LegalBody(
-                "Vaše údaje jsou zpracovávány za účelem výpočtu doporučeného denního příjmu kalorií " +
-                "a makroživin a zobrazování statistik o vašem stravování."
-            )
-
-            LegalSectionHeader("4. Sdílení údajů")
-            LegalBody(
-                "Vaše osobní údaje nejsou sdíleny s třetími stranami. Fotografie jídel mohou být odeslány " +
-                "na server pro analýzu nutričních hodnot, ale nejsou trvale ukládány."
-            )
-
-            LegalSectionHeader("5. Vaše práva")
-            LegalBody(
-                "Máte právo na přístup k svým údajům, jejich opravu nebo vymazání. Veškerá data můžete " +
-                "smazat odinstalováním aplikace."
-            )
+            s.legal.privacySections.forEach { section ->
+                LegalSectionHeader(section.header)
+                LegalBody(section.body)
+            }
 
             Spacer(modifier = Modifier.height(32.dp))
         }

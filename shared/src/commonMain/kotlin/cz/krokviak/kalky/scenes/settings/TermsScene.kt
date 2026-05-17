@@ -63,35 +63,10 @@ fun TermsScene(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            LegalSectionHeader("1. Úvodní ustanovení")
-            LegalBody(
-                "Tyto obchodní podmínky upravují práva a povinnosti uživatelů mobilní aplikace Kalky " +
-                "(dále jen \u201EAplikace\u201C). Používáním Aplikace souhlasíte s těmito podmínkami."
-            )
-
-            LegalSectionHeader("2. Popis služby")
-            LegalBody(
-                "Aplikace Kalky slouží k sledování příjmu potravin a nutričních hodnot. " +
-                "Aplikace umožňuje zaznamenávat jídla pomocí fotografií, čárových kódů nebo ručního zadání."
-            )
-
-            LegalSectionHeader("3. Uživatelský účet")
-            LegalBody(
-                "Pro používání Aplikace není vyžadována registrace. Veškerá data jsou ukládána lokálně " +
-                "na zařízení uživatele."
-            )
-
-            LegalSectionHeader("4. Omezení odpovědnosti")
-            LegalBody(
-                "Nutriční hodnoty zobrazené v Aplikaci mají informativní charakter a nenahrazují odborné " +
-                "poradenství. Provozovatel nenese odpovědnost za přesnost údajů získaných z externích databází."
-            )
-
-            LegalSectionHeader("5. Změny podmínek")
-            LegalBody(
-                "Provozovatel si vyhrazuje právo tyto podmínky kdykoli změnit. O změnách bude uživatel " +
-                "informován prostřednictvím aktualizace Aplikace."
-            )
+            s.legal.termsSections.forEach { section ->
+                LegalSectionHeader(section.header)
+                LegalBody(section.body)
+            }
 
             Spacer(modifier = Modifier.height(32.dp))
         }

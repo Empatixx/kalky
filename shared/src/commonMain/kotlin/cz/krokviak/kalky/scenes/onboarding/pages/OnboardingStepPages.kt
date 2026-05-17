@@ -49,7 +49,7 @@ fun LanguageOnboardingPage(
     val languages = AppLanguage.entries
     ChoiceOnboardingPage(
         title = s.onboarding.chooseLanguage,
-        options = listOf("\u010Ce\u0161tina", "English"),
+        options = languages.map { it.displayName },
         selectedIndex = languages.indexOf(selectedLanguage).coerceAtLeast(0),
         onSelected = { onSelected(languages[it]) }
     )

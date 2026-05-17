@@ -5,7 +5,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 enum class UnitSystem { METRIC, IMPERIAL }
-enum class AppLanguage { CS, EN }
+enum class AppLanguage(val displayName: String) {
+    CS("\u010Ce\u0161tina"),
+    EN("English")
+}
 
 class AppPreferences(private val settings: Settings = Settings()) {
     private val _language = MutableStateFlow(

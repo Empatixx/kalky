@@ -65,8 +65,8 @@ fun SettingsScene(
     val themeModes = listOf(ThemeMode.SYSTEM, ThemeMode.LIGHT, ThemeMode.DARK)
 
     val language by appPreferences.language.collectAsState()
-    val languageLabels = listOf("\u010Ce\u0161tina", "English")
-    val languageValues = listOf(AppLanguage.CS, AppLanguage.EN)
+    val languageValues = AppLanguage.entries
+    val languageLabels = languageValues.map { it.displayName }
 
     val unitSystem by appPreferences.unitSystem.collectAsState()
     val unitLabels = listOf(s.settings.metric, s.settings.imperial)
