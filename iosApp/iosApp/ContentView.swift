@@ -96,6 +96,8 @@ struct ContentView: View {
                     handlePhotoCaptured(jpegData)
                 } onBarcodeDetected: { barcode in
                     handleBarcodeDetected(barcode)
+                } onDismiss: {
+                    showCamera = false
                 }
             }
     }
@@ -120,11 +122,13 @@ struct CameraViewWrapper: UIViewControllerRepresentable {
     let mode: CameraMode
     let onPhotoCaptured: (Data) -> Void
     let onBarcodeDetected: (String) -> Void
+    let onDismiss: () -> Void
 
     func makeUIViewController(context: Context) -> KalkyCameraViewController {
         let vc = KalkyCameraViewController()
         vc.onPhotoCaptured = onPhotoCaptured
         vc.onBarcodeDetected = onBarcodeDetected
+        vc.onDismiss = onDismiss
         vc.modalPresentationStyle = .fullScreen
         return vc
     }
@@ -134,13 +138,6 @@ struct CameraViewWrapper: UIViewControllerRepresentable {
 
 enum DataToByteArray {
     static func convert(_ data: Data) -> KotlinByteArray {
-        let bytes = KotlinByteArray(size: Int32(data.count))
-        data.withUnsafeBytes { buffer in
-            guard let baseAddress = buffer.baseAddress else { return }
-            for i in 0..<data.count {
-                bytes.set(index: Int32(i), value: baseAddress.load(fromByteOffset: i, as: Int8.self))
-            }
-        }
-        return bytes
+        return NSDataConverterKt.nsDataToByteArray(data: data)
     }
 }
