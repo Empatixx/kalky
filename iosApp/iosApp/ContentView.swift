@@ -47,10 +47,10 @@ struct ComposeView: UIViewControllerRepresentable {
                 Task {
                     do {
                         try await GoogleSignInHelper.signIn(presenting: rootVC)
-                        let authVM: AuthViewModelInterface = KoinHelper.resolve()
+                        let authVM = IosKoinResolversKt.resolveAuthViewModel()
                         authVM.onAuthSuccess()
                     } catch {
-                        let authVM: AuthViewModelInterface = KoinHelper.resolve()
+                        let authVM = IosKoinResolversKt.resolveAuthViewModel()
                         authVM.onAuthError(message: error.localizedDescription)
                     }
                 }
@@ -60,16 +60,16 @@ struct ComposeView: UIViewControllerRepresentable {
                     do {
                         let helper = AppleSignInHelper()
                         try await helper.signIn()
-                        let authVM: AuthViewModelInterface = KoinHelper.resolve()
+                        let authVM = IosKoinResolversKt.resolveAuthViewModel()
                         authVM.onAuthSuccess()
                     } catch {
-                        let authVM: AuthViewModelInterface = KoinHelper.resolve()
+                        let authVM = IosKoinResolversKt.resolveAuthViewModel()
                         authVM.onAuthError(message: error.localizedDescription)
                     }
                 }
             },
             onCheckNotificationPermission: {
-                return NotificationManager.shared.isAuthorized
+                return KotlinBoolean(value: NotificationManager.shared.isAuthorized)
             }
         )
     }
@@ -104,14 +104,14 @@ struct ContentView: View {
         showCamera = false
 
         let kotlinBytes = DataToByteArray.convert(data)
-        let mainViewModel: MainViewModel = KoinHelper.resolve()
+        let mainViewModel = IosKoinResolversKt.resolveMainViewModel()
         mainViewModel.addFoodItemFromBytes(imageBytes: kotlinBytes)
     }
 
     private func handleBarcodeDetected(_ barcode: String) {
         showCamera = false
 
-        let barcodeVM: BarcodeScannerViewModel = KoinHelper.resolve()
+        let barcodeVM = IosKoinResolversKt.resolveBarcodeScannerViewModel()
         barcodeVM.onBarcodeDetected(barcode: barcode)
     }
 }
@@ -130,16 +130,6 @@ struct CameraViewWrapper: UIViewControllerRepresentable {
     }
 
     func updateUIViewController(_ uiViewController: KalkyCameraViewController, context: Context) {}
-}
-
-enum KoinHelper {
-    static func resolve<T: AnyObject>() -> T {
-        let koin = KoinPlatformKt.getKoin()
-        guard let instance = koin.get(objCClass: T.self) as? T else {
-            fatalError("Koin: Could not resolve \(T.self)")
-        }
-        return instance
-    }
 }
 
 enum DataToByteArray {

@@ -30,3 +30,7 @@ EMAIL.md
 # Python scraper artifacts
 scraper/**/__pycache__/
 *.pyc
+
+# XcodeGen-generated iOS artifacts (source of truth is project.yml)
+*.xcodeproj/
+iosApp/Kalky.entitlements

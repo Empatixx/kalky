@@ -1,7 +1,7 @@
 import FirebaseAppCheck
 import shared
 
-class IosAppCheckTokenProvider: AppCheckTokenProvider_ {
+class IosAppCheckTokenProvider: AppCheckTokenProvider {
     func getToken() async throws -> String? {
         let token = try await AppCheck.appCheck().token(forcingRefresh: false)
         return token.token

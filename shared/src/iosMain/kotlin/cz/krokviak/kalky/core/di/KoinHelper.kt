@@ -75,7 +75,7 @@ fun initKoinIos(
                 viewModel { CustomFoodSearchViewModel(get(), get(), get(), get(), get()) }
                 single { ManualFoodEntryViewModel(get(), get(), get(), get()) }
                 viewModel { cz.krokviak.kalky.scenes.barcode.BarcodeScannerViewModel(get()) }
-                viewModel<AuthViewModelInterface> { StubAuthViewModel() }
+                single<AuthViewModelInterface> { StubAuthViewModel() }
             }
         )
     }

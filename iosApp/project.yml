@@ -1,0 +1,63 @@
+name: Kalky
+options:
+  bundleIdPrefix: cz.krokviak.kalky
+  deploymentTarget:
+    iOS: "17.2"
+settings:
+  base:
+    FRAMEWORK_SEARCH_PATHS:
+      - $(SRCROOT)/../shared/build/bin/iosSimulatorArm64/debugFramework
+    ONLY_ACTIVE_ARCH: YES
+packages:
+  Firebase:
+    url: https://github.com/firebase/firebase-ios-sdk
+    from: "12.0.0"
+  GoogleSignIn:
+    url: https://github.com/google/GoogleSignIn-iOS
+    from: "9.0.0"
+targets:
+  Kalky:
+    type: application
+    platform: iOS
+    sources:
+      - path: iosApp
+        excludes:
+          - Info.plist
+    info:
+      path: iosApp/Info.plist
+      properties:
+        CADisableMinimumFrameDurationOnPhone: true
+        NSCameraUsageDescription: "Kalky needs camera access to photograph food for nutritional analysis and scan barcodes."
+        UILaunchScreen: {}
+        CFBundleURLTypes:
+          - CFBundleURLSchemes:
+              - com.googleusercontent.apps.1071491178207-1qo8n0u1nb9ocrorf1cck0m0hr4ugh2v
+    entitlements:
+      path: iosApp/Kalky.entitlements
+      properties:
+        keychain-access-groups:
+          - $(AppIdentifierPrefix)cz.krokviak.kalky
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: cz.krokviak.kalky
+        CODE_SIGN_IDENTITY: "-"
+        CODE_SIGN_STYLE: Manual
+        SWIFT_VERSION: "5.0"
+    dependencies:
+      - framework: ../shared/build/bin/iosSimulatorArm64/debugFramework/shared.framework
+        embed: true
+        codeSign: true
+      - package: Firebase
+        product: FirebaseCore
+      - package: Firebase
+        product: FirebaseAuth
+      - package: Firebase
+        product: FirebaseAppCheck
+      - package: Firebase
+        product: FirebaseRemoteConfig
+      - package: Firebase
+        product: FirebaseMessaging
+      - package: Firebase
+        product: FirebaseCrashlytics
+      - package: GoogleSignIn
+        product: GoogleSignIn
