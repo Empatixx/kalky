@@ -151,6 +151,12 @@ class KalkyCameraViewController: UIViewController {
 
     @objc private func captureTapped() {
         guard currentMode == .photo else { return }
+        guard photoOutput.connection(with: .video) != nil else {
+            dismiss(animated: true) { [weak self] in
+                self?.onDismiss?()
+            }
+            return
+        }
         let settings = AVCapturePhotoSettings()
         photoOutput.capturePhoto(with: settings, delegate: self)
     }
