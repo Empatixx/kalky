@@ -1,5 +1,6 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ComponentType } from 'react';
+import { Utensils, Wheat, Leaf } from 'lucide-react';
 
 export type Macro = {
   label: string;
@@ -7,6 +8,14 @@ export type Macro = {
   target: number;
   unit: string;
   color: string;
+  icon: 'protein' | 'carbs' | 'fat';
+};
+
+// The same three marks the app puts inside its rings.
+const ICONS: Record<Macro['icon'], ComponentType<{ className?: string; style?: object }>> = {
+  protein: Utensils,
+  carbs: Wheat,
+  fat: Leaf,
 };
 
 const RADIUS = 52;
@@ -16,9 +25,12 @@ function Ring({ macro, shown, index }: { macro: Macro; shown: boolean; index: nu
   const ratio = Math.min(macro.value / macro.target, 1);
   const offset = shown ? CIRCUMFERENCE * (1 - ratio) : CIRCUMFERENCE;
 
+  const Icon = ICONS[macro.icon];
+
   return (
     <div className="flex flex-col items-center gap-3">
-      <svg viewBox="0 0 128 128" className="h-28 w-28 sm:h-32 sm:w-32" role="img" aria-label={`${macro.label} ${macro.value} ${macro.unit} of ${macro.target}`}>
+      <div className="relative">
+        <svg viewBox="0 0 128 128" className="h-28 w-28 sm:h-32 sm:w-32" role="img" aria-label={`${macro.label} ${macro.value} ${macro.unit} of ${macro.target}`}>
         <circle
           cx="64"
           cy="64"
@@ -43,7 +55,15 @@ function Ring({ macro, shown, index }: { macro: Macro; shown: boolean; index: nu
             transitionDelay: `${index * 140}ms`,
           }}
         />
-      </svg>
+        </svg>
+        <span
+          className="absolute left-1/2 top-1/2 flex size-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full sm:size-12"
+          style={{ background: `color-mix(in srgb, ${macro.color} 14%, transparent)` }}
+          aria-hidden
+        >
+          <Icon className="size-5" style={{ color: macro.color }} />
+        </span>
+      </div>
       <div className="text-center">
         <p className="k-display text-2xl">
           {macro.value}

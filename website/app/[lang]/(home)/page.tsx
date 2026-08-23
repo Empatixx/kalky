@@ -5,7 +5,7 @@ import { Reveal } from '@/components/landing/reveal';
 import { Parallax } from '@/components/landing/parallax';
 import { MacroRings, type Macro } from '@/components/landing/macro-rings';
 import { PhotoProof, type Chip } from '@/components/landing/photo-proof';
-import { Features, type Feature } from '@/components/landing/features';
+import { FoodSatellite, type SatelliteChip } from '@/components/landing/food-satellite';
 import { VideoTour, type Clip } from '@/components/landing/video-tour';
 import { ScrollSpy } from '@/components/landing/scroll-spy';
 
@@ -23,8 +23,9 @@ type Copy = {
   tourTitle: string;
   clips: Clip[];
   proof: { title: string; body: string; kcal: string; alt: string; chips: Chip[] };
-  featuresTitle: string;
-  features: Feature[];
+  expandLabel: string;
+  closeLabel: string;
+  satellites: { photo: string; alt: string; kcal: string; chips: SatelliteChip[] }[];
   ringsCaption: string;
   macros: Macro[];
   closing: string;
@@ -41,7 +42,6 @@ const COPY: Record<'en' | 'cs', Copy> = {
       { id: 'hero', label: 'Start' },
       { id: 'tour', label: 'In use' },
       { id: 'proof', label: 'From a photo' },
-      { id: 'features', label: 'Features' },
       { id: 'day', label: 'A day' },
     ],
     tourEyebrow: 'The app itself',
@@ -80,20 +80,35 @@ const COPY: Record<'en' | 'cs', Copy> = {
         { value: '26 g', label: 'Fat', color: 'var(--k-fat)' },
       ],
     },
-    featuresTitle: 'What Kalky does',
-    features: [
-      { name: 'Photo analysis', body: 'Point the camera at a meal and get an estimate of calories and macronutrients.', color: 'var(--k-violet)' },
-      { name: 'Barcode scanning', body: 'Packaged food is looked up in the product database, with Open Food Facts as a fallback.', color: 'var(--k-sky)' },
-      { name: 'Product search', body: 'Type a name and pick from the database when the camera is not to hand.', color: 'var(--k-pink)' },
-      { name: 'Your own foods', body: 'Save what you eat regularly and add it again in a single tap.', color: 'var(--k-protein)' },
-      { name: 'Daily targets', body: 'Calories and macros worked out from your profile, activity and goal.', color: 'var(--k-carbs)' },
-      { name: 'Trends and streaks', body: 'Averages over a period, weight over time, and the days you logged in a row.', color: 'var(--k-fat)' },
+    expandLabel: 'Play this recording larger',
+    closeLabel: 'Close',
+    satellites: [
+      {
+        photo: '/img/food/bowl-oats.jpg',
+        alt: 'Oat bowl with kiwi, blueberries and almonds',
+        kcal: '350 kcal',
+        chips: [
+          { value: '12 g', label: 'protein', color: 'var(--k-protein)' },
+          { value: '55 g', label: 'carbs', color: 'var(--k-carbs)' },
+          { value: '8 g', label: 'fat', color: 'var(--k-fat)' },
+        ],
+      },
+      {
+        photo: '/img/food/bowl-poke.jpg',
+        alt: 'Poke bowl with mango, avocado, carrot and noodles',
+        kcal: '490 kcal',
+        chips: [
+          { value: '30 g', label: 'protein', color: 'var(--k-protein)' },
+          { value: '52 g', label: 'carbs', color: 'var(--k-carbs)' },
+          { value: '16 g', label: 'fat', color: 'var(--k-fat)' },
+        ],
+      },
     ],
     ringsCaption: 'One ordinary Sunday, the way the app recorded it.',
     macros: [
-      { label: 'Protein', value: 38, target: 187, unit: 'g', color: 'var(--k-protein)' },
-      { label: 'Carbs', value: 100, target: 249, unit: 'g', color: 'var(--k-carbs)' },
-      { label: 'Fat', value: 34, target: 83, unit: 'g', color: 'var(--k-fat)' },
+      { icon: 'protein', label: 'Protein', value: 76, target: 150, unit: 'g', color: 'var(--k-protein)' },
+      { icon: 'carbs', label: 'Carbs', value: 160, target: 250, unit: 'g', color: 'var(--k-carbs)' },
+      { icon: 'fat', label: 'Fat', value: 68, target: 70, unit: 'g', color: 'var(--k-fat)' },
     ],
     closing: 'Open source. Bring your own backend.',
     cta: 'Read the guide',
@@ -107,7 +122,6 @@ const COPY: Record<'en' | 'cs', Copy> = {
       { id: 'hero', label: 'Začátek' },
       { id: 'tour', label: 'V provozu' },
       { id: 'proof', label: 'Z fotky' },
-      { id: 'features', label: 'Funkce' },
       { id: 'day', label: 'Den' },
     ],
     tourEyebrow: 'Přímo z aplikace',
@@ -146,20 +160,35 @@ const COPY: Record<'en' | 'cs', Copy> = {
         { value: '26 g', label: 'Tuky', color: 'var(--k-fat)' },
       ],
     },
-    featuresTitle: 'Co Kalky umí',
-    features: [
-      { name: 'Analýza z fotky', body: 'Namiř foťák na jídlo a dostaneš odhad kalorií a makroživin.', color: 'var(--k-violet)' },
-      { name: 'Čárové kódy', body: 'Balené potraviny se dohledají v databázi, záložně přes Open Food Facts.', color: 'var(--k-sky)' },
-      { name: 'Vyhledávání', body: 'Napiš název a vyber z databáze, když zrovna nemáš foťák po ruce.', color: 'var(--k-pink)' },
-      { name: 'Vlastní jídla', body: 'Ulož si, co jíš pravidelně, a přidávej to na jedno klepnutí.', color: 'var(--k-protein)' },
-      { name: 'Denní cíle', body: 'Kalorie a makra spočítané z tvého profilu, aktivity a cíle.', color: 'var(--k-carbs)' },
-      { name: 'Trendy a série', body: 'Průměry za období, vývoj váhy a počet dní v řadě.', color: 'var(--k-fat)' },
+    expandLabel: 'Přehrát záznam ve větším',
+    closeLabel: 'Zavřít',
+    satellites: [
+      {
+        photo: '/img/food/bowl-oats.jpg',
+        alt: 'Ovesná miska s kiwi, borůvkami a mandlemi',
+        kcal: '350 kcal',
+        chips: [
+          { value: '12 g', label: 'bílkoviny', color: 'var(--k-protein)' },
+          { value: '55 g', label: 'sacharidy', color: 'var(--k-carbs)' },
+          { value: '8 g', label: 'tuky', color: 'var(--k-fat)' },
+        ],
+      },
+      {
+        photo: '/img/food/bowl-poke.jpg',
+        alt: 'Poke bowl s mangem, avokádem, mrkví a nudlemi',
+        kcal: '490 kcal',
+        chips: [
+          { value: '30 g', label: 'bílkoviny', color: 'var(--k-protein)' },
+          { value: '52 g', label: 'sacharidy', color: 'var(--k-carbs)' },
+          { value: '16 g', label: 'tuky', color: 'var(--k-fat)' },
+        ],
+      },
     ],
     ringsCaption: 'Jedna obyčejná neděle, jak si ji appka zapsala.',
     macros: [
-      { label: 'Bílkoviny', value: 38, target: 187, unit: 'g', color: 'var(--k-protein)' },
-      { label: 'Sacharidy', value: 100, target: 249, unit: 'g', color: 'var(--k-carbs)' },
-      { label: 'Tuky', value: 34, target: 83, unit: 'g', color: 'var(--k-fat)' },
+      { icon: 'protein', label: 'Bílkoviny', value: 76, target: 150, unit: 'g', color: 'var(--k-protein)' },
+      { icon: 'carbs', label: 'Sacharidy', value: 160, target: 250, unit: 'g', color: 'var(--k-carbs)' },
+      { icon: 'fat', label: 'Tuky', value: 68, target: 70, unit: 'g', color: 'var(--k-fat)' },
     ],
     closing: 'Open source. Backend si přineseš vlastní.',
     cta: 'Přečíst průvodce',
@@ -208,9 +237,30 @@ export default async function HomePage({ params }: PageProps<'/[lang]'>) {
           </Reveal>
 
           <Reveal delay={160}>
-            <Parallax strength={26} className="mx-auto mt-16 w-[210px] sm:w-[250px]">
-              <Phone src={heroShot} alt={t.wordmark} priority />
-            </Parallax>
+            <div className="relative mx-auto mt-16 flex w-full max-w-3xl items-center justify-center">
+              <FoodSatellite
+                {...t.satellites[0]}
+                drift={44}
+                className="absolute left-0 top-6 hidden lg:block"
+              />
+
+              <Parallax strength={26} className="w-[210px] sm:w-[250px]">
+                <Phone src={heroShot} alt={t.wordmark} priority />
+              </Parallax>
+
+              <FoodSatellite
+                {...t.satellites[1]}
+                drift={-30}
+                className="absolute right-0 top-40 hidden lg:block"
+              />
+            </div>
+
+            {/* Below the phone on narrow screens, where there is no room beside it. */}
+            <div className="mt-10 flex justify-center gap-4 lg:hidden">
+              {t.satellites.map((satellite) => (
+                <FoodSatellite key={satellite.photo} {...satellite} drift={0} className="w-[46%] max-w-[188px]" />
+              ))}
+            </div>
           </Reveal>
 
           <Reveal delay={320}>
@@ -221,7 +271,13 @@ export default async function HomePage({ params }: PageProps<'/[lang]'>) {
 
       {/* The app, recorded --------------------------------------------- */}
       <section id="tour" className="px-6 pb-24 sm:pb-32">
-        <VideoTour clips={t.clips} eyebrow={t.tourEyebrow} title={t.tourTitle} />
+        <VideoTour
+          clips={t.clips}
+          eyebrow={t.tourEyebrow}
+          title={t.tourTitle}
+          expandLabel={t.expandLabel}
+          closeLabel={t.closeLabel}
+        />
       </section>
 
       {/* Photograph becomes nutrition ---------------------------------- */}
@@ -234,11 +290,6 @@ export default async function HomePage({ params }: PageProps<'/[lang]'>) {
           title={t.proof.title}
           body={t.proof.body}
         />
-      </section>
-
-      {/* Features -------------------------------------------------------- */}
-      <section id="features" className="px-6 py-24 sm:py-32">
-        <Features title={t.featuresTitle} features={t.features} />
       </section>
 
       {/* Signature: the day, drawn ------------------------------------- */}
@@ -256,7 +307,7 @@ export default async function HomePage({ params }: PageProps<'/[lang]'>) {
           }}
         />
         <div className="relative mx-auto max-w-3xl">
-          <MacroRings macros={t.macros} kcal={880} kcalTarget={2494} caption={t.ringsCaption} />
+          <MacroRings macros={t.macros} kcal={1600} kcalTarget={2230} caption={t.ringsCaption} />
         </div>
       </section>
 

@@ -1,15 +1,30 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
+import { Maximize2 } from 'lucide-react';
 import { asset } from '@/lib/asset';
 import { Dots } from './dots';
+import { Lightbox } from './lightbox';
 
 export type Clip = { src: string; poster: string; title: string; body: string; alt: string };
 
-export function VideoTour({ clips, eyebrow, title }: { clips: Clip[]; eyebrow: string; title: string }) {
+export function VideoTour({
+  clips,
+  eyebrow,
+  title,
+  expandLabel,
+  closeLabel,
+}: {
+  clips: Clip[];
+  eyebrow: string;
+  title: string;
+  expandLabel: string;
+  closeLabel: string;
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const videos = useRef<(HTMLVideoElement | null)[]>([]);
   const [active, setActive] = useState(0);
   const [visible, setVisible] = useState(false);
+  const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
     const el = ref.current;
@@ -23,14 +38,14 @@ export function VideoTour({ clips, eyebrow, title }: { clips: Clip[]; eyebrow: s
   useEffect(() => {
     videos.current.forEach((video, i) => {
       if (!video) return;
-      if (i === active && visible) {
+      if (i === active && visible && !expanded) {
         video.currentTime = 0;
         void video.play().catch(() => {});
       } else {
         video.pause();
       }
     });
-  }, [active, visible]);
+  }, [active, visible, expanded]);
 
   const next = () => setActive((i) => (i + 1) % clips.length);
 
@@ -52,8 +67,12 @@ export function VideoTour({ clips, eyebrow, title }: { clips: Clip[]; eyebrow: s
         }}
       >
         <div className="mx-auto grid max-w-3xl items-center justify-center gap-10 md:grid-cols-[auto_minmax(0,24rem)] md:gap-14">
-          {/* Phone */}
-          <div className="relative mx-auto aspect-[540/1200] w-[210px] shrink-0 overflow-hidden rounded-[2rem] bg-black p-[3px] shadow-[0_30px_70px_-25px_rgba(11,10,15,.55)] sm:w-[240px]">
+          {/* Phone — click to watch it larger. */}
+          <button
+            type="button"
+            onClick={() => setExpanded(true)}
+            aria-label={expandLabel}
+            className="group relative mx-auto aspect-[540/1200] w-[210px] shrink-0 cursor-zoom-in overflow-hidden rounded-[2rem] bg-black p-[3px] shadow-[0_30px_70px_-25px_rgba(11,10,15,.55)] outline-none transition-transform duration-300 hover:scale-[1.02] focus-visible:ring-2 focus-visible:ring-white sm:w-[240px]">
             {clips.map((clip, i) => (
               <video
                 key={clip.src}
@@ -71,7 +90,11 @@ export function VideoTour({ clips, eyebrow, title }: { clips: Clip[]; eyebrow: s
                 style={{ opacity: i === active ? 1 : 0 }}
               />
             ))}
-          </div>
+
+            <span className="pointer-events-none absolute bottom-3 right-3 z-10 flex size-8 items-center justify-center rounded-full bg-black/55 text-white opacity-0 backdrop-blur transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100">
+              <Maximize2 className="size-4" />
+            </span>
+          </button>
 
           {/* Caption */}
           <div className="relative min-h-[8.5rem] text-center md:text-left">
@@ -117,6 +140,15 @@ export function VideoTour({ clips, eyebrow, title }: { clips: Clip[]; eyebrow: s
           </div>
         </div>
       </div>
+
+      {expanded ? (
+        <Lightbox
+          src={asset(clips[active].src)}
+          label={clips[active].title}
+          closeLabel={closeLabel}
+          onClose={() => setExpanded(false)}
+        />
+      ) : null}
     </div>
   );
 }
