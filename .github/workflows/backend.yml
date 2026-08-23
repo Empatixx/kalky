@@ -32,25 +32,3 @@ jobs:
       - name: Docker build
         working-directory: .
         run: docker build backend/
-
-  deploy:
-    needs: ci
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy to VPS
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          script: |
-            cd /opt/kalky && git pull
-            cat > backend/.env << ENVEOF
-            OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
-            PORT=3000
-            ADMIN_KEY=${{ secrets.ADMIN_KEY }}
-            GOOGLE_APPLICATION_CREDENTIALS=./firebase-service-account.json
-            ENVEOF
-            echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > backend/firebase-service-account.json
-            cd backend && docker compose up -d --build

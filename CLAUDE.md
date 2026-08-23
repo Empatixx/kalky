@@ -18,7 +18,7 @@ Czech-language food/nutrition tracking app built with Kotlin Multiplatform (KMP)
 ## CI
 - **Android CI** (`.github/workflows/android.yml`): Compiles shared + app, runs unit tests on `ubuntu-latest`
 - **iOS CI** (`.github/workflows/ios.yml`): Compiles shared for iOS + links framework on `macos-latest`
-- **Backend CI** (`.github/workflows/backend.yml`): Typecheck + Docker build + auto-deploy on `ubuntu-latest`
+- **Backend CI** (`.github/workflows/backend.yml`): Typecheck + Docker build on `ubuntu-latest`
 
 ## Architecture
 - **Pattern**: MVVM + Compose Multiplatform
