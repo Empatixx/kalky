@@ -106,9 +106,9 @@ const COPY: Record<'en' | 'cs', Copy> = {
     ],
     ringsCaption: 'One ordinary Sunday, the way the app recorded it.',
     macros: [
-      { icon: 'protein', label: 'Protein', value: 76, target: 150, unit: 'g', color: 'var(--k-protein)' },
-      { icon: 'carbs', label: 'Carbs', value: 160, target: 250, unit: 'g', color: 'var(--k-carbs)' },
-      { icon: 'fat', label: 'Fat', value: 68, target: 70, unit: 'g', color: 'var(--k-fat)' },
+      { icon: 'protein', label: 'Protein', value: 84, target: 150, unit: 'g', color: 'var(--k-protein)' },
+      { icon: 'carbs', label: 'Carbs', value: 188, target: 250, unit: 'g', color: 'var(--k-carbs)' },
+      { icon: 'fat', label: 'Fat', value: 86, target: 70, unit: 'g', color: 'var(--k-fat)' },
     ],
     closing: 'Open source. Bring your own backend.',
     cta: 'Read the guide',
@@ -186,9 +186,9 @@ const COPY: Record<'en' | 'cs', Copy> = {
     ],
     ringsCaption: 'Jedna obyčejná neděle, jak si ji appka zapsala.',
     macros: [
-      { icon: 'protein', label: 'Bílkoviny', value: 76, target: 150, unit: 'g', color: 'var(--k-protein)' },
-      { icon: 'carbs', label: 'Sacharidy', value: 160, target: 250, unit: 'g', color: 'var(--k-carbs)' },
-      { icon: 'fat', label: 'Tuky', value: 68, target: 70, unit: 'g', color: 'var(--k-fat)' },
+      { icon: 'protein', label: 'Bílkoviny', value: 84, target: 150, unit: 'g', color: 'var(--k-protein)' },
+      { icon: 'carbs', label: 'Sacharidy', value: 188, target: 250, unit: 'g', color: 'var(--k-carbs)' },
+      { icon: 'fat', label: 'Tuky', value: 86, target: 70, unit: 'g', color: 'var(--k-fat)' },
     ],
     closing: 'Open source. Backend si přineseš vlastní.',
     cta: 'Přečíst průvodce',
@@ -307,7 +307,7 @@ export default async function HomePage({ params }: PageProps<'/[lang]'>) {
           }}
         />
         <div className="relative mx-auto max-w-3xl">
-          <MacroRings macros={t.macros} kcal={1600} kcalTarget={2230} caption={t.ringsCaption} />
+          <MacroRings macros={t.macros} kcal={1910} kcalTarget={2230} caption={t.ringsCaption} />
         </div>
       </section>
 

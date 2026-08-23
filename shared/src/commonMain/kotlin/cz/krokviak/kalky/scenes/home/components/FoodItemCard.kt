@@ -246,22 +246,29 @@ fun CaloriesRow(calories: Int) {
 @Composable
 fun NutrientsRow(protein: Int, carbs: Int, fat: Int) {
     val s = LocalStrings.current
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    // Equal thirds: fixed gaps let three two-digit values overflow, which wrapped
+    // the last one onto a second line and made the card taller than its siblings.
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
         NutrientItem(
+            modifier = Modifier.weight(1f),
             icon = Icons.Default.Restaurant,
             contentDescription = s.common.protein,
             valueText = "$protein g",
             tintColor = MacroColors.protein
         )
-        Spacer(modifier = Modifier.width(16.dp))
         NutrientItem(
+            modifier = Modifier.weight(1f),
             icon = Icons.Default.Spa,
             contentDescription = s.common.carbs,
             valueText = "$carbs g",
             tintColor = MacroColors.carbs
         )
-        Spacer(modifier = Modifier.width(16.dp))
         NutrientItem(
+            modifier = Modifier.weight(1f),
             icon = Icons.Default.Eco,
             contentDescription = s.common.fat,
             valueText = "$fat g",
@@ -275,10 +282,11 @@ fun NutrientItem(
     icon: ImageVector,
     contentDescription: String,
     valueText: String,
-    tintColor: Color
+    tintColor: Color,
+    modifier: Modifier = Modifier
 ) {
     val dims = LocalDimensions.current
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
         Icon(
             imageVector = icon,
             contentDescription = contentDescription,
@@ -286,7 +294,14 @@ fun NutrientItem(
             tint = tintColor
         )
         Spacer(modifier = Modifier.width(4.dp))
-        Text(text = valueText, fontSize = dims.fontSmall, fontWeight = FontWeight.SemiBold, color = AppTheme.colors.onBackground)
+        Text(
+            text = valueText,
+            fontSize = dims.fontSmall,
+            fontWeight = FontWeight.SemiBold,
+            color = AppTheme.colors.onBackground,
+            maxLines = 1,
+            softWrap = false
+        )
     }
 }
 
