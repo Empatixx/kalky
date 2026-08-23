@@ -10,3 +10,73 @@ html > body[data-scroll-locked] {
   margin-right: 0px !important;
   --removed-body-scroll-bar-size: 0px !important;
 }
+
+/* ---- Landing page ---------------------------------------------------- */
+
+:root {
+  --k-paper: #fafafc;
+  --k-ink: #0b0a0f;
+  --k-muted: #6b6b76;
+  --k-sky: #79c8ff;
+  --k-violet: #9a63ff;
+  --k-pink: #ff78d8;
+  --k-protein: #e26467;
+  --k-carbs: #dea84a;
+  --k-fat: #4caf50;
+}
+
+.k-landing {
+  --k-surface: var(--k-paper);
+  background: var(--k-surface);
+  color: var(--k-ink);
+  font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+}
+
+:root.dark .k-landing {
+  --k-surface: #08070c;
+  --k-ink: #f6f5fa;
+  --k-muted: #9b9baa;
+}
+
+/* Ambient gradient blooms, mirroring KalkyGradientBackground in the app. */
+.k-bloom {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(64px);
+  pointer-events: none;
+}
+
+.k-display {
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 0.95;
+}
+
+.k-eyebrow {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--k-muted);
+}
+
+.k-reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.k-reveal[data-shown='true'] {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .k-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
