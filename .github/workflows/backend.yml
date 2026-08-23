@@ -2,7 +2,7 @@ name: Backend CI
 
 on:
   push:
-    branches: [main, master]
+    branches: [main]
     paths:
       - 'backend/**'
       - '.github/workflows/backend.yml'
@@ -35,7 +35,7 @@ jobs:
 
   deploy:
     needs: ci
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to VPS

@@ -22,6 +22,11 @@ build/
 # Backend
 backend/node_modules/
 
+# Firebase config - per-project, not committed.
+# Copy the .example files and fill in your own Firebase project (see README).
+app/google-services.json
+iosApp/iosApp/GoogleService-Info.plist
+
 # Claude Code workspace artifacts
 .claude/
 .idea/.name

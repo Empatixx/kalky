@@ -2,7 +2,7 @@ name: Android CI
 
 on:
   push:
-    branches: [main, master]
+    branches: [main]
     paths:
       - 'app/**'
       - 'shared/**'
@@ -31,6 +31,9 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
+
+      - name: Provide placeholder google-services.json
+        run: cp app/google-services.json.example app/google-services.json
 
       - name: Compile shared module
         run: ./gradlew :shared:compileDebugKotlinAndroid
