@@ -2,13 +2,11 @@ import Link from 'next/link';
 import { i18n } from '@/lib/i18n';
 import { Phone } from '@/components/landing/phone';
 import { Reveal } from '@/components/landing/reveal';
-import { Showcase, type Beat } from '@/components/landing/showcase';
+import { Parallax } from '@/components/landing/parallax';
 import { MacroRings, type Macro } from '@/components/landing/macro-rings';
 import { PhotoProof, type Chip } from '@/components/landing/photo-proof';
 import { Features, type Feature } from '@/components/landing/features';
-import { Band } from '@/components/landing/band';
-import { Parallax } from '@/components/landing/parallax';
-import { MealCards, type Meal } from '@/components/landing/meal-cards';
+import { VideoTour, type Clip } from '@/components/landing/video-tour';
 import { ScrollSpy } from '@/components/landing/scroll-spy';
 
 export function generateStaticParams() {
@@ -20,14 +18,11 @@ type Copy = {
   headline: string;
   sub: string;
   scroll: string;
-  beats: Beat[];
-  mealsEyebrow: string;
-  mealsTitle: string;
-  meals: Meal[];
   sections: { id: string; label: string }[];
+  tourEyebrow: string;
+  tourTitle: string;
+  clips: Clip[];
   proof: { title: string; body: string; kcal: string; alt: string; chips: Chip[] };
-  bandLine: string;
-  bandAlt: string;
   featuresTitle: string;
   features: Feature[];
   ringsCaption: string;
@@ -42,40 +37,37 @@ const COPY: Record<'en' | 'cs', Copy> = {
     headline: 'Photograph. Done.',
     sub: 'A food diary that reads your plate, so you stop typing one out.',
     scroll: 'Scroll',
-    beats: [
+    sections: [
+      { id: 'hero', label: 'Start' },
+      { id: 'tour', label: 'In use' },
+      { id: 'proof', label: 'From a photo' },
+      { id: 'features', label: 'Features' },
+      { id: 'day', label: 'A day' },
+    ],
+    tourEyebrow: 'The app itself',
+    tourTitle: 'Watch it happen',
+    clips: [
       {
-        src: '/img/en/add-food.png',
-        alt: 'Add food screen listing recently eaten meals',
+        src: '/video/add.mp4',
+        poster: '/video/add.jpg',
+        alt: 'Screen recording of adding two meals, after which the daily total updates',
         title: 'A meal in one tap',
         body: 'What you eat often is already waiting. Pick it, and the day recalculates.',
       },
       {
-        src: '/img/en/detail.png',
-        alt: 'Food detail screen showing calories and macronutrients',
+        src: '/video/detail.mp4',
+        poster: '/video/detail.jpg',
+        alt: 'Screen recording of a food entry opening to show calories and macronutrients',
         title: 'Fix what is off',
         body: 'A photo estimate is a starting point, not a verdict. Correct the numbers and move on.',
       },
       {
-        src: '/img/en/analytics.png',
-        alt: 'Analytics screen with a weight chart and average intake',
+        src: '/video/analytics.mp4',
+        poster: '/video/analytics.jpg',
+        alt: 'Screen recording of the analytics screen with weight and intake charts',
         title: 'Watch the trend',
         body: 'Weeks of averages beside your weight — the measurement that actually answers the question.',
       },
-    ],
-    mealsEyebrow: 'Every meal, counted',
-    mealsTitle: 'Three meals, already added up',
-    meals: [
-      { name: 'Avocado toast', kcal: 310, protein: 8, carbs: 28, fat: 18 },
-      { name: 'Poke bowl', kcal: 490, protein: 30, carbs: 52, fat: 16 },
-      { name: 'Turkey sandwich', kcal: 450, protein: 32, carbs: 38, fat: 16 },
-    ],
-    sections: [
-      { id: 'hero', label: 'Start' },
-      { id: 'meals', label: 'Meals' },
-      { id: 'proof', label: 'From a photo' },
-      { id: 'tour', label: 'Tour' },
-      { id: 'features', label: 'Features' },
-      { id: 'day', label: 'A day' },
     ],
     proof: {
       title: 'A plate, then the numbers',
@@ -88,8 +80,6 @@ const COPY: Record<'en' | 'cs', Copy> = {
         { value: '26 g', label: 'Fat', color: 'var(--k-fat)' },
       ],
     },
-    bandLine: 'Breakfast, lunch, dinner. One photo each.',
-    bandAlt: 'A table covered with plates of brunch food',
     featuresTitle: 'What Kalky does',
     features: [
       { name: 'Photo analysis', body: 'Point the camera at a meal and get an estimate of calories and macronutrients.', color: 'var(--k-violet)' },
@@ -113,40 +103,37 @@ const COPY: Record<'en' | 'cs', Copy> = {
     headline: 'Vyfoť. Hotovo.',
     sub: 'Deník jídla, který si přečte tvůj talíř, abys ho nemusel vypisovat.',
     scroll: 'Posuň dolů',
-    beats: [
+    sections: [
+      { id: 'hero', label: 'Začátek' },
+      { id: 'tour', label: 'V provozu' },
+      { id: 'proof', label: 'Z fotky' },
+      { id: 'features', label: 'Funkce' },
+      { id: 'day', label: 'Den' },
+    ],
+    tourEyebrow: 'Přímo z aplikace',
+    tourTitle: 'Podívej se, jak to jde',
+    clips: [
       {
-        src: '/img/cs/add-food.png',
-        alt: 'Obrazovka přidání jídla s naposledy použitými položkami',
+        src: '/video/add.mp4',
+        poster: '/video/add.jpg',
+        alt: 'Záznam obrazovky s přidáním dvou jídel, po kterém se přepočítá denní součet',
         title: 'Jídlo na jedno klepnutí',
         body: 'Co jíš často, na tebe už čeká. Vybereš a den se přepočítá.',
       },
       {
-        src: '/img/cs/detail.png',
-        alt: 'Detail jídla s kaloriemi a makroživinami',
+        src: '/video/detail.mp4',
+        poster: '/video/detail.jpg',
+        alt: 'Záznam obrazovky s otevřením detailu jídla a jeho výživovými hodnotami',
         title: 'Oprav, co nesedí',
         body: 'Odhad z fotky je výchozí bod, ne rozsudek. Přepíšeš čísla a jdeš dál.',
       },
       {
-        src: '/img/cs/analytics.png',
-        alt: 'Obrazovka analýzy s grafem váhy a průměrným příjmem',
+        src: '/video/analytics.mp4',
+        poster: '/video/analytics.jpg',
+        alt: 'Záznam obrazovky analýzy s grafy váhy a příjmu',
         title: 'Sleduj trend',
         body: 'Týdny průměrů vedle tvé váhy — a právě váha na tu otázku odpovídá.',
       },
-    ],
-    mealsEyebrow: 'Každé jídlo sečtené',
-    mealsTitle: 'Tři jídla, už spočítaná',
-    meals: [
-      { name: 'Avokádový toast', kcal: 310, protein: 8, carbs: 28, fat: 18 },
-      { name: 'Poke bowl', kcal: 490, protein: 30, carbs: 52, fat: 16 },
-      { name: 'Krůtí sendvič', kcal: 450, protein: 32, carbs: 38, fat: 16 },
-    ],
-    sections: [
-      { id: 'hero', label: 'Začátek' },
-      { id: 'meals', label: 'Jídla' },
-      { id: 'proof', label: 'Z fotky' },
-      { id: 'tour', label: 'Průchod' },
-      { id: 'features', label: 'Funkce' },
-      { id: 'day', label: 'Den' },
     ],
     proof: {
       title: 'Z talíře rovnou čísla',
@@ -159,8 +146,6 @@ const COPY: Record<'en' | 'cs', Copy> = {
         { value: '26 g', label: 'Tuky', color: 'var(--k-fat)' },
       ],
     },
-    bandLine: 'Snídaně, oběd, večeře. Pokaždé jedna fotka.',
-    bandAlt: 'Stůl plný talířů s brunchem',
     featuresTitle: 'Co Kalky umí',
     features: [
       { name: 'Analýza z fotky', body: 'Namiř foťák na jídlo a dostaneš odhad kalorií a makroživin.', color: 'var(--k-violet)' },
@@ -188,9 +173,9 @@ export default async function HomePage({ params }: PageProps<'/[lang]'>) {
 
   return (
     <main className="k-landing">
-      {/* Hero ---------------------------------------------------------- */}
       <ScrollSpy sections={t.sections} />
 
+      {/* Hero ---------------------------------------------------------- */}
       <section id="hero" className="relative overflow-hidden px-6 pt-24 pb-32 sm:pt-32">
         <div
           className="k-bloom"
@@ -234,9 +219,9 @@ export default async function HomePage({ params }: PageProps<'/[lang]'>) {
         </div>
       </section>
 
-      {/* Three meals, counted ------------------------------------------ */}
-      <section id="meals" className="px-6 pb-24 sm:pb-32">
-        <MealCards meals={t.meals} eyebrow={t.mealsEyebrow} title={t.mealsTitle} />
+      {/* The app, recorded --------------------------------------------- */}
+      <section id="tour" className="px-6 pb-24 sm:pb-32">
+        <VideoTour clips={t.clips} eyebrow={t.tourEyebrow} title={t.tourTitle} />
       </section>
 
       {/* Photograph becomes nutrition ---------------------------------- */}
@@ -250,14 +235,6 @@ export default async function HomePage({ params }: PageProps<'/[lang]'>) {
           body={t.proof.body}
         />
       </section>
-
-      {/* Scroll sequence ----------------------------------------------- */}
-      <div id="tour">
-        <Showcase beats={t.beats} />
-      </div>
-
-      {/* Full-bleed band ------------------------------------------------ */}
-      <Band photo="/img/food/table.jpg" alt={t.bandAlt} line={t.bandLine} />
 
       {/* Features -------------------------------------------------------- */}
       <section id="features" className="px-6 py-24 sm:py-32">
@@ -279,12 +256,7 @@ export default async function HomePage({ params }: PageProps<'/[lang]'>) {
           }}
         />
         <div className="relative mx-auto max-w-3xl">
-          <MacroRings
-            macros={t.macros}
-            kcal={880}
-            kcalTarget={2494}
-            caption={t.ringsCaption}
-          />
+          <MacroRings macros={t.macros} kcal={880} kcalTarget={2494} caption={t.ringsCaption} />
         </div>
       </section>
 
