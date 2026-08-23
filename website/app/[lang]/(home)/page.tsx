@@ -4,6 +4,10 @@ import { Phone } from '@/components/landing/phone';
 import { Reveal } from '@/components/landing/reveal';
 import { Showcase, type Beat } from '@/components/landing/showcase';
 import { MacroRings, type Macro } from '@/components/landing/macro-rings';
+import { PhotoProof, type Chip } from '@/components/landing/photo-proof';
+import { Features, type Feature } from '@/components/landing/features';
+import { Band } from '@/components/landing/band';
+import { Parallax } from '@/components/landing/parallax';
 
 export function generateStaticParams() {
   return i18n.languages.map((lang) => ({ lang }));
@@ -15,6 +19,11 @@ type Copy = {
   sub: string;
   scroll: string;
   beats: Beat[];
+  proof: { title: string; body: string; kcal: string; alt: string; chips: Chip[] };
+  bandLine: string;
+  bandAlt: string;
+  featuresTitle: string;
+  features: Feature[];
   ringsCaption: string;
   macros: Macro[];
   closing: string;
@@ -46,6 +55,28 @@ const COPY: Record<'en' | 'cs', Copy> = {
         title: 'Watch the trend',
         body: 'Weeks of averages beside your weight — the measurement that actually answers the question.',
       },
+    ],
+    proof: {
+      title: 'A plate, then the numbers',
+      body: 'Photograph what is in front of you. A vision model works out what is on the plate and roughly what it holds.',
+      kcal: '480 kcal',
+      alt: 'Overhead photograph of a salad with a fried egg, a rice cake and a coffee',
+      chips: [
+        { value: '24 g', label: 'Protein', color: 'var(--k-protein)' },
+        { value: '38 g', label: 'Carbs', color: 'var(--k-carbs)' },
+        { value: '26 g', label: 'Fat', color: 'var(--k-fat)' },
+      ],
+    },
+    bandLine: 'Breakfast, lunch, dinner. One photo each.',
+    bandAlt: 'A table covered with plates of brunch food',
+    featuresTitle: 'What Kalky does',
+    features: [
+      { name: 'Photo analysis', body: 'Point the camera at a meal and get an estimate of calories and macronutrients.', color: 'var(--k-violet)' },
+      { name: 'Barcode scanning', body: 'Packaged food is looked up in the product database, with Open Food Facts as a fallback.', color: 'var(--k-sky)' },
+      { name: 'Product search', body: 'Type a name and pick from the database when the camera is not to hand.', color: 'var(--k-pink)' },
+      { name: 'Your own foods', body: 'Save what you eat regularly and add it again in a single tap.', color: 'var(--k-protein)' },
+      { name: 'Daily targets', body: 'Calories and macros worked out from your profile, activity and goal.', color: 'var(--k-carbs)' },
+      { name: 'Trends and streaks', body: 'Averages over a period, weight over time, and the days you logged in a row.', color: 'var(--k-fat)' },
     ],
     ringsCaption: 'One ordinary Sunday, the way the app recorded it.',
     macros: [
@@ -80,6 +111,28 @@ const COPY: Record<'en' | 'cs', Copy> = {
         title: 'Sleduj trend',
         body: 'Týdny průměrů vedle tvé váhy — a právě váha na tu otázku odpovídá.',
       },
+    ],
+    proof: {
+      title: 'Z talíře rovnou čísla',
+      body: 'Vyfoť, co máš před sebou. Model odhadne, co na talíři je a kolik toho v sobě zhruba má.',
+      kcal: '480 kcal',
+      alt: 'Fotka salátu se sázeným vejcem, rýžovým chlebíčkem a kávou shora',
+      chips: [
+        { value: '24 g', label: 'Bílkoviny', color: 'var(--k-protein)' },
+        { value: '38 g', label: 'Sacharidy', color: 'var(--k-carbs)' },
+        { value: '26 g', label: 'Tuky', color: 'var(--k-fat)' },
+      ],
+    },
+    bandLine: 'Snídaně, oběd, večeře. Pokaždé jedna fotka.',
+    bandAlt: 'Stůl plný talířů s brunchem',
+    featuresTitle: 'Co Kalky umí',
+    features: [
+      { name: 'Analýza z fotky', body: 'Namiř foťák na jídlo a dostaneš odhad kalorií a makroživin.', color: 'var(--k-violet)' },
+      { name: 'Čárové kódy', body: 'Balené potraviny se dohledají v databázi, záložně přes Open Food Facts.', color: 'var(--k-sky)' },
+      { name: 'Vyhledávání', body: 'Napiš název a vyber z databáze, když zrovna nemáš foťák po ruce.', color: 'var(--k-pink)' },
+      { name: 'Vlastní jídla', body: 'Ulož si, co jíš pravidelně, a přidávej to na jedno klepnutí.', color: 'var(--k-protein)' },
+      { name: 'Denní cíle', body: 'Kalorie a makra spočítané z tvého profilu, aktivity a cíle.', color: 'var(--k-carbs)' },
+      { name: 'Trendy a série', body: 'Průměry za období, vývoj váhy a počet dní v řadě.', color: 'var(--k-fat)' },
     ],
     ringsCaption: 'Jedna obyčejná neděle, jak si ji appka zapsala.',
     macros: [
@@ -132,9 +185,9 @@ export default async function HomePage({ params }: PageProps<'/[lang]'>) {
           </Reveal>
 
           <Reveal delay={160}>
-            <div className="mx-auto mt-16 w-[210px] sm:w-[250px]">
+            <Parallax strength={26} className="mx-auto mt-16 w-[210px] sm:w-[250px]">
               <Phone src={heroShot} alt={t.wordmark} priority />
-            </div>
+            </Parallax>
           </Reveal>
 
           <Reveal delay={320}>
@@ -143,8 +196,28 @@ export default async function HomePage({ params }: PageProps<'/[lang]'>) {
         </div>
       </section>
 
+      {/* Photograph becomes nutrition ---------------------------------- */}
+      <section className="px-6 py-24 sm:py-32">
+        <PhotoProof
+          photo="/img/food/plate.jpg"
+          alt={t.proof.alt}
+          kcal={t.proof.kcal}
+          chips={t.proof.chips}
+          title={t.proof.title}
+          body={t.proof.body}
+        />
+      </section>
+
       {/* Scroll sequence ----------------------------------------------- */}
       <Showcase beats={t.beats} />
+
+      {/* Full-bleed band ------------------------------------------------ */}
+      <Band photo="/img/food/table.jpg" alt={t.bandAlt} line={t.bandLine} />
+
+      {/* Features -------------------------------------------------------- */}
+      <section className="px-6 py-24 sm:py-32">
+        <Features title={t.featuresTitle} features={t.features} />
+      </section>
 
       {/* Signature: the day, drawn ------------------------------------- */}
       <section className="relative overflow-hidden px-6 py-32">
