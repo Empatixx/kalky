@@ -42,8 +42,8 @@ jobs:
       - name: Build
         run: pnpm build
         env:
-          # Project pages are served from https://<user>.github.io/kalai
-          NEXT_PUBLIC_BASE_PATH: /kalai
+          # Project pages are served from https://<user>.github.io/kalky
+          NEXT_PUBLIC_BASE_PATH: /kalky
 
       - name: Upload Pages artifact
         if: github.event_name == 'push'

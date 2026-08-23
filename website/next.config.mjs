@@ -2,7 +2,7 @@ import { createMDX } from 'fumadocs-mdx/next';
 
 const withMDX = createMDX();
 
-// Deployed to GitHub Pages under https://empatixx.github.io/kalai
+// Deployed to GitHub Pages under https://empatixx.github.io/kalky
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
 
 /** @type {import('next').NextConfig} */

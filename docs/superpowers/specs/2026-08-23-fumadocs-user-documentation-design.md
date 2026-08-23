@@ -43,7 +43,7 @@ its own documentation notes the middleware is optional. So:
 
 ```js
 output: 'export'
-basePath: '/kalai'          // project pages live under Empatixx.github.io/kalai
+basePath: '/kalky'          // project pages live under Empatixx.github.io/kalky
 trailingSlash: true
 images: { unoptimized: true }
 ```
