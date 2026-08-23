@@ -80,3 +80,25 @@ html > body[data-scroll-locked] {
     transition: none;
   }
 }
+
+/* Frosted navigation bar. */
+/* Longhands only: the CSS minifier collapses the shorthand + prefixed pair
+   and drops the standard property. */
+#nd-nav {
+  backdrop-filter: blur(24px) saturate(1.5);
+  background-color: rgba(250, 250, 252, 0.82);
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-bottom-color: rgba(11, 10, 15, 0.08);
+  transition: background-color 0.3s ease;
+}
+
+:root.dark #nd-nav {
+  background-color: rgba(8, 7, 12, 0.72);
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Anchored sections must clear the fixed bar when jumped to. */
+.k-landing [id] {
+  scroll-margin-top: 5.5rem;
+}

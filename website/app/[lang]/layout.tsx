@@ -1,5 +1,5 @@
 import '../global.css';
-import { Inter, Schibsted_Grotesk } from 'next/font/google';
+import { Inter, DM_Sans } from 'next/font/google';
 import { Provider } from '@/components/provider';
 import { i18n } from '@/lib/i18n';
 
@@ -8,7 +8,7 @@ const inter = Inter({
 });
 
 // Display face for the landing page; the docs keep Inter.
-const display = Schibsted_Grotesk({
+const display = DM_Sans({
   subsets: ['latin', 'latin-ext'],
   variable: '--font-display',
 });

@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import { Phone } from './phone';
+import { Dots } from './dots';
 
 export type Beat = {
   src: string;
@@ -94,21 +95,7 @@ export function Showcase({ beats }: { beats: Beat[] }) {
               </div>
             ))}
 
-            {/* Progress rail — sits with the content so it never strands on exit. */}
-            <div className="mt-10 flex gap-2">
-              {beats.map((beat, i) => (
-                <span
-                  key={beat.src}
-                  className="h-[3px] w-8 rounded-full transition-colors duration-500"
-                  style={{
-                    background:
-                      i <= active
-                        ? 'var(--k-violet)'
-                        : 'color-mix(in srgb, var(--k-muted) 25%, transparent)',
-                  }}
-                />
-              ))}
-            </div>
+            <Dots count={beats.length} active={active} className="mt-10" />
           </div>
         </div>
       </div>

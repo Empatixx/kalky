@@ -8,6 +8,8 @@ import { PhotoProof, type Chip } from '@/components/landing/photo-proof';
 import { Features, type Feature } from '@/components/landing/features';
 import { Band } from '@/components/landing/band';
 import { Parallax } from '@/components/landing/parallax';
+import { MealCards, type Meal } from '@/components/landing/meal-cards';
+import { ScrollSpy } from '@/components/landing/scroll-spy';
 
 export function generateStaticParams() {
   return i18n.languages.map((lang) => ({ lang }));
@@ -19,6 +21,10 @@ type Copy = {
   sub: string;
   scroll: string;
   beats: Beat[];
+  mealsEyebrow: string;
+  mealsTitle: string;
+  meals: Meal[];
+  sections: { id: string; label: string }[];
   proof: { title: string; body: string; kcal: string; alt: string; chips: Chip[] };
   bandLine: string;
   bandAlt: string;
@@ -55,6 +61,21 @@ const COPY: Record<'en' | 'cs', Copy> = {
         title: 'Watch the trend',
         body: 'Weeks of averages beside your weight — the measurement that actually answers the question.',
       },
+    ],
+    mealsEyebrow: 'Every meal, counted',
+    mealsTitle: 'Three meals, already added up',
+    meals: [
+      { name: 'Avocado toast', kcal: 310, protein: 8, carbs: 28, fat: 18 },
+      { name: 'Poke bowl', kcal: 490, protein: 30, carbs: 52, fat: 16 },
+      { name: 'Turkey sandwich', kcal: 450, protein: 32, carbs: 38, fat: 16 },
+    ],
+    sections: [
+      { id: 'hero', label: 'Start' },
+      { id: 'meals', label: 'Meals' },
+      { id: 'proof', label: 'From a photo' },
+      { id: 'tour', label: 'Tour' },
+      { id: 'features', label: 'Features' },
+      { id: 'day', label: 'A day' },
     ],
     proof: {
       title: 'A plate, then the numbers',
@@ -112,6 +133,21 @@ const COPY: Record<'en' | 'cs', Copy> = {
         body: 'Týdny průměrů vedle tvé váhy — a právě váha na tu otázku odpovídá.',
       },
     ],
+    mealsEyebrow: 'Každé jídlo sečtené',
+    mealsTitle: 'Tři jídla, už spočítaná',
+    meals: [
+      { name: 'Avokádový toast', kcal: 310, protein: 8, carbs: 28, fat: 18 },
+      { name: 'Poke bowl', kcal: 490, protein: 30, carbs: 52, fat: 16 },
+      { name: 'Krůtí sendvič', kcal: 450, protein: 32, carbs: 38, fat: 16 },
+    ],
+    sections: [
+      { id: 'hero', label: 'Začátek' },
+      { id: 'meals', label: 'Jídla' },
+      { id: 'proof', label: 'Z fotky' },
+      { id: 'tour', label: 'Průchod' },
+      { id: 'features', label: 'Funkce' },
+      { id: 'day', label: 'Den' },
+    ],
     proof: {
       title: 'Z talíře rovnou čísla',
       body: 'Vyfoť, co máš před sebou. Model odhadne, co na talíři je a kolik toho v sobě zhruba má.',
@@ -153,7 +189,9 @@ export default async function HomePage({ params }: PageProps<'/[lang]'>) {
   return (
     <main className="k-landing">
       {/* Hero ---------------------------------------------------------- */}
-      <section className="relative overflow-hidden px-6 pt-24 pb-32 sm:pt-32">
+      <ScrollSpy sections={t.sections} />
+
+      <section id="hero" className="relative overflow-hidden px-6 pt-24 pb-32 sm:pt-32">
         <div
           className="k-bloom"
           style={{
@@ -196,8 +234,13 @@ export default async function HomePage({ params }: PageProps<'/[lang]'>) {
         </div>
       </section>
 
+      {/* Three meals, counted ------------------------------------------ */}
+      <section id="meals" className="px-6 pb-24 sm:pb-32">
+        <MealCards meals={t.meals} eyebrow={t.mealsEyebrow} title={t.mealsTitle} />
+      </section>
+
       {/* Photograph becomes nutrition ---------------------------------- */}
-      <section className="px-6 py-24 sm:py-32">
+      <section id="proof" className="px-6 py-24 sm:py-32">
         <PhotoProof
           photo="/img/food/plate.jpg"
           alt={t.proof.alt}
@@ -209,18 +252,20 @@ export default async function HomePage({ params }: PageProps<'/[lang]'>) {
       </section>
 
       {/* Scroll sequence ----------------------------------------------- */}
-      <Showcase beats={t.beats} />
+      <div id="tour">
+        <Showcase beats={t.beats} />
+      </div>
 
       {/* Full-bleed band ------------------------------------------------ */}
       <Band photo="/img/food/table.jpg" alt={t.bandAlt} line={t.bandLine} />
 
       {/* Features -------------------------------------------------------- */}
-      <section className="px-6 py-24 sm:py-32">
+      <section id="features" className="px-6 py-24 sm:py-32">
         <Features title={t.featuresTitle} features={t.features} />
       </section>
 
       {/* Signature: the day, drawn ------------------------------------- */}
-      <section className="relative overflow-hidden px-6 py-32">
+      <section id="day" className="relative overflow-hidden px-6 py-32">
         <div
           className="k-bloom"
           style={{
