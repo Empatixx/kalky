@@ -1,0 +1,11 @@
+{
+  "pages": [
+    "index",
+    "getting-started",
+    "logging-food",
+    "daily-overview",
+    "analytics",
+    "settings",
+    "privacy"
+  ]
+}

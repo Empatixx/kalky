@@ -1,0 +1,40 @@
+---
+title: Privacy
+description: What Kalky stores, what leaves your device, and what you can remove.
+---
+
+This page describes how the app behaves. The privacy policy inside the app is
+the authoritative document.
+
+## On your device
+
+Your food diary lives in a database on the device, and photos of meals are kept
+in the app's own storage. Your preferences — language, units, appearance,
+notification settings — are stored locally too.
+
+## What leaves the device
+
+**Meal photos** are sent to the Kalky backend for analysis, which passes them to
+a vision model. This is the whole mechanism by which photographing a plate
+produces a nutrition estimate: the picture has to leave the device for it to
+work.
+
+**Barcodes and search terms** are sent to the backend to look up products, and
+may reach Open Food Facts when a product is not in the Kalky database.
+
+**Your identity** comes from signing in with Google or Apple through Firebase
+Authentication. Requests to the backend carry a token that identifies your
+account.
+
+## What you control
+
+Delete any diary entry, individually or several at once, and it goes along with
+its photo. Meal reminders stay off until you turn them on. Signing out
+disconnects the app from your account.
+
+## Self-hosted builds
+
+Kalky is open source, and the public backend has been decommissioned. If you
+build it yourself, you run your own backend and connect your own Firebase
+project and OpenAI key — so photos and lookups go to infrastructure you control,
+and this page describes your deployment, not anyone else's.

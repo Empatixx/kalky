@@ -1,0 +1,57 @@
+---
+title: Logging food
+description: Four ways to get a meal into the diary — photo, barcode, search, and manual entry.
+---
+
+Tap the button at the bottom of the home screen to add food. There are four
+routes in, and they suit different situations.
+
+## Photograph a meal
+
+The camera opens in photo mode. Frame the plate and take the picture. The image
+goes to the backend, which asks a vision model what the food is and what it is
+likely to contain, and the result lands in your diary as an entry with
+calories, protein, carbohydrates and fat.
+
+The estimate is a guess from a picture. A plate photographed from an angle that
+hides half the rice will report less rice. Treat the number as a reasonable
+starting point and correct it — see [Daily overview](/en/docs/daily-overview) for
+editing an entry.
+
+<Callout type="warn">
+  Photo analysis, product search and barcode lookup all talk to the Kalky
+  backend. The public instance has been shut down, so a build of this
+  open-source project needs its own backend — the repository README explains how
+  to run one.
+</Callout>
+
+## Scan a barcode
+
+Switch the camera to code mode and point it at the barcode on the packaging.
+The product is looked up in the Kalky product database, and if it is not there,
+in Open Food Facts. Once found, enter how many grams you ate and it is added.
+
+If nothing matches the code, the app tells you the product was not found. Add
+it by hand instead.
+
+## Search for a food
+<Screenshot
+  src="/img/en/add-food.png"
+  alt="Add food screen with recently used items"
+  caption="Recently used foods are one tap away."
+/>
+
+
+Type a name and search the product database. Results are capped at twenty, so a
+narrower query beats a broad one. The **My foods** tab holds foods you saved
+yourself, and **Recently used** lists what you have logged lately, which is
+usually the fastest way to re-add a regular meal.
+
+## Add it manually
+
+Enter the name and the nutrition per 100 g, then the portion size you ate. Use
+this when the food is homemade, when the barcode lookup fails, or when you know
+the numbers and want them exact.
+
+Anything already in your diary can be kept for later with **Save as food**,
+which puts it under My foods.

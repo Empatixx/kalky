@@ -1,0 +1,38 @@
+---
+title: Soukromí
+description: Co Kalky ukládá, co opouští zařízení a co můžeš odstranit.
+---
+
+Tahle stránka popisuje, jak se aplikace chová. Závazným dokumentem jsou zásady
+ochrany osobních údajů uvnitř aplikace.
+
+## Ve tvém zařízení
+
+Deník jídla leží v databázi na zařízení a fotky jídel se ukládají do vlastního
+úložiště aplikace. Předvolby — jazyk, jednotky, vzhled, nastavení upozornění —
+jsou uložené taky lokálně.
+
+## Co opouští zařízení
+
+**Fotky jídla** se posílají na backend Kalky k analýze, který je předá modelu.
+Přesně na tom stojí celý princip, jak z vyfoceného talíře vzniknou výživové
+hodnoty: aby to fungovalo, musí snímek zařízení opustit.
+
+**Čárové kódy a hledané výrazy** míří na backend kvůli dohledání produktu a
+můžou se dostat i do Open Food Facts, když produkt v databázi Kalky není.
+
+**Tvoje identita** pochází z přihlášení přes Google nebo Apple pomocí Firebase
+Authentication. Požadavky na backend nesou token, který identifikuje tvůj účet.
+
+## Co máš pod kontrolou
+
+Smaž kterýkoliv záznam z deníku, jednotlivě i po více najednou, a zmizí i s
+fotkou. Připomínky jídla zůstanou vypnuté, dokud si je nezapneš. Odhlášením
+odpojíš aplikaci od svého účtu.
+
+## Vlastní sestavení
+
+Kalky je open source a veřejný backend byl vypnut. Když si aplikaci sestavíš
+sám, provozuješ vlastní backend a připojuješ vlastní Firebase projekt a vlastní
+klíč k OpenAI — fotky i dohledávání tedy míří na infrastrukturu, kterou ovládáš,
+a tahle stránka popisuje tvoje nasazení, ne cizí.

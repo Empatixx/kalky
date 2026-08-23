@@ -1,0 +1,56 @@
+---
+title: Zapisování jídla
+description: Čtyři cesty, jak dostat jídlo do deníku — foto, čárový kód, vyhledávání a ruční zadání.
+---
+
+Klepni na tlačítko dole na domovské obrazovce a přidej jídlo. Vedou tam čtyři
+cesty a každá se hodí na jinou situaci.
+
+## Vyfoť jídlo
+
+Foťák se otevře v režimu fotky. Zarovnej talíř a vyfoť ho. Snímek putuje na
+backend, který se modelu zeptá, co na fotce je a co to nejspíš obsahuje, a
+výsledek se objeví v deníku jako záznam s kaloriemi, bílkovinami, sacharidy a
+tuky.
+
+Je to odhad z obrázku. Talíř vyfocený z úhlu, který schová půlku rýže, taky
+vykáže míň rýže. Ber to jako rozumný výchozí bod a oprav si to — postup najdeš
+v [Denním přehledu](/cs/docs/daily-overview).
+
+<Callout type="warn">
+  Analýza fotek, vyhledávání i načítání čárových kódů komunikují s backendem
+  Kalky. Veřejná instance byla vypnuta, takže sestavení tohoto open-source
+  projektu potřebuje vlastní backend — jak ho spustit, popisuje README
+  repozitáře.
+</Callout>
+
+## Načti čárový kód
+
+Přepni foťák do režimu kódu a namiř ho na čárový kód na obalu. Produkt se
+dohledá v databázi potravin Kalky, a když tam není, v Open Food Facts. Po
+nalezení zadáš, kolik gramů jsi snědl, a jídlo se přidá.
+
+Když kódu nic neodpovídá, aplikace ohlásí, že produkt nebyl nalezen. V tom
+případě ho zadej ručně.
+
+## Vyhledej potravinu
+<Screenshot
+  src="/img/cs/add-food.png"
+  alt="Obrazovka přidání jídla s naposledy použitými položkami"
+  caption="Naposledy použitá jídla máš na jedno klepnutí."
+/>
+
+
+Napiš název a prohledej databázi produktů. Výsledků se vrací nejvýš dvacet,
+takže užší dotaz funguje líp než široký. Záložka **Moje jídla** drží potraviny,
+které sis uložil sám, a **Naposledy použité** ukazuje, co sis zapsal nedávno —
+což je obvykle nejrychlejší způsob, jak znovu přidat pravidelné jídlo.
+
+## Zadej ručně
+
+Vyplň název a výživové hodnoty na 100 g a pak velikost porce, kterou jsi snědl.
+Hodí se to na domácí jídlo, když selže načtení kódu, nebo když hodnoty znáš a
+chceš je mít přesně.
+
+Cokoliv už máš v deníku, si můžeš schovat na příště přes **Uložit jako jídlo**,
+což to zařadí mezi Moje jídla.

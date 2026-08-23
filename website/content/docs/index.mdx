@@ -1,0 +1,53 @@
+---
+title: What is Kalky
+description: A food and nutrition tracker for Android and iOS that reads your meals from a photo.
+---
+
+Kalky keeps a diary of what you eat. The point of it is that you should not have
+to type much: photograph a plate and it estimates the nutrition, or scan a
+barcode and the packaged product is looked up for you. What you get back is a
+running total of calories and macronutrients for the day, and a picture of how
+that changes over weeks.
+
+The app is in Czech by default and can be switched to English. It runs on
+Android and iOS from a single shared codebase.
+
+## What it does
+<Screenshot
+  src="/img/en/home.png"
+  alt="Kalky home screen showing daily calories and macros"
+  caption="The home screen: the day so far against your target."
+/>
+
+
+**Reads a meal from a photo.** Point the camera at your plate. The image is sent
+to a vision model, which comes back with an estimate of calories, protein,
+carbohydrates and fat, plus a guess at what the food actually was. You can
+correct any of it afterwards.
+
+**Looks up packaged food.** Scan the barcode and the product is fetched from the
+product database, falling back to Open Food Facts when it is not there.
+
+**Remembers what you eat often.** Foods you have logged before are one tap away
+under recently used, and you can save anything as your own custom food.
+
+**Adds the day up.** The home screen shows what you have eaten today, how it
+compares to your calorie target, and how many days in a row you have logged
+something.
+
+**Shows the trend.** Averages for intake and each macronutrient over a period
+you choose, along with your weight over time.
+
+## What it is not
+
+Kalky does not give medical or dietary advice. The nutrition it reports for a
+photographed meal is an estimate produced by a model looking at a picture — it
+is useful for spotting patterns over weeks, not for gram-accurate accounting.
+Barcode-scanned products come from a database and are as accurate as the entry
+behind them.
+
+## Where to go next
+
+Start with [Getting started](/en/docs/getting-started) to set up your profile and
+daily targets, then [Logging food](/en/docs/logging-food) for the four ways to get
+a meal into the diary.

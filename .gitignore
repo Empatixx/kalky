@@ -35,3 +35,8 @@ EMAIL.md
 # Python scraper artifacts
 scraper/**/__pycache__/
 *.pyc
+
+# Docs site (Next.js)
+website/node_modules/
+website/.next/
+website/out/
