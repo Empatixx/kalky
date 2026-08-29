@@ -1,5 +1,7 @@
 import AVFoundation
+import PhotosUI
 import UIKit
+import Vision
 
 enum CameraMode {
     case photo
@@ -17,17 +19,30 @@ class KalkyCameraViewController: UIViewController {
     private let metadataOutput = AVCaptureMetadataOutput()
     private var previewLayer: AVCaptureVideoPreviewLayer!
     private var currentMode: CameraMode = .photo
+    private var usingLibraryFallback = false
 
     private let captureButton = UIButton(type: .system)
     private let backButton = UIButton(type: .system)
     private let modeToggle = UISegmentedControl(items: ["Foto", "Sken"])
     private let barcodeLabel = UILabel()
 
+    private var cameraAvailable: Bool {
+        #if targetEnvironment(simulator)
+        return false
+        #else
+        return AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back) != nil
+        #endif
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .black
-        setupCamera()
-        setupUI()
+        if cameraAvailable {
+            setupCamera()
+            setupUI()
+        } else {
+            usingLibraryFallback = true
+        }
     }
 
     override func viewDidLayoutSubviews() {
@@ -37,13 +52,22 @@ class KalkyCameraViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        guard !usingLibraryFallback else { return }
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             self?.captureSession.startRunning()
         }
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        if usingLibraryFallback && presentedViewController == nil {
+            presentLibraryPicker()
+        }
+    }
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        guard !usingLibraryFallback else { return }
         captureSession.stopRunning()
     }
 
@@ -144,15 +168,72 @@ class KalkyCameraViewController: UIViewController {
     }
 
     @objc private func backTapped() {
-        dismiss(animated: true) { [weak self] in
-            self?.onDismiss?()
-        }
+        onDismiss?()
     }
 
     @objc private func captureTapped() {
         guard currentMode == .photo else { return }
+        guard photoOutput.connection(with: .video) != nil else {
+            onDismiss?()
+            return
+        }
         let settings = AVCapturePhotoSettings()
         photoOutput.capturePhoto(with: settings, delegate: self)
+    }
+
+    private func presentLibraryPicker() {
+        var config = PHPickerConfiguration()
+        config.filter = .images
+        config.selectionLimit = 1
+        let picker = PHPickerViewController(configuration: config)
+        picker.delegate = self
+        picker.modalPresentationStyle = .fullScreen
+        present(picker, animated: true)
+    }
+
+    private func finishWithImage(_ image: UIImage) {
+        switch currentMode {
+        case .photo:
+            if let data = jpegData(from: image) {
+                onPhotoCaptured?(data)
+            } else {
+                onDismiss?()
+            }
+        case .barcode:
+            detectBarcode(in: image)
+        }
+    }
+
+    private func jpegData(from image: UIImage, maxDimension: CGFloat = 1280, quality: CGFloat = 0.8) -> Data? {
+        let largest = max(image.size.width, image.size.height)
+        guard largest > 0 else { return nil }
+        let scale = largest > maxDimension ? maxDimension / largest : 1
+        let target = CGSize(width: image.size.width * scale, height: image.size.height * scale)
+        let renderer = UIGraphicsImageRenderer(size: target)
+        let resized = renderer.image { _ in image.draw(in: CGRect(origin: .zero, size: target)) }
+        return resized.jpegData(compressionQuality: quality)
+    }
+
+    private func detectBarcode(in image: UIImage) {
+        guard let cgImage = image.cgImage else {
+            onDismiss?()
+            return
+        }
+        let request = VNDetectBarcodesRequest { [weak self] request, _ in
+            let value = (request.results as? [VNBarcodeObservation])?.first?.payloadStringValue
+            DispatchQueue.main.async {
+                if let value = value {
+                    self?.onBarcodeDetected?(value)
+                } else {
+                    self?.onDismiss?()
+                }
+            }
+        }
+        request.symbologies = [.ean13, .ean8, .upce]
+        let handler = VNImageRequestHandler(cgImage: cgImage)
+        DispatchQueue.global(qos: .userInitiated).async {
+            try? handler.perform([request])
+        }
     }
 }
 
@@ -163,12 +244,12 @@ extension KalkyCameraViewController: AVCapturePhotoCaptureDelegate {
         guard error == nil,
               let imageData = photo.fileDataRepresentation(),
               let uiImage = UIImage(data: imageData),
-              let jpegData = uiImage.jpegData(compressionQuality: 0.85) else {
+              let data = jpegData(from: uiImage) else {
+            onDismiss?()
             return
         }
 
-        onPhotoCaptured?(jpegData)
-        dismiss(animated: true)
+        onPhotoCaptured?(data)
     }
 }
 
@@ -189,6 +270,29 @@ extension KalkyCameraViewController: AVCaptureMetadataOutputObjectsDelegate {
         barcodeLabel.text = barcodeValue
 
         onBarcodeDetected?(barcodeValue)
-        dismiss(animated: true)
+    }
+}
+
+extension KalkyCameraViewController: PHPickerViewControllerDelegate {
+    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        guard let provider = results.first?.itemProvider,
+              provider.canLoadObject(ofClass: UIImage.self) else {
+            picker.dismiss(animated: true) { [weak self] in
+                self?.onDismiss?()
+            }
+            return
+        }
+        provider.loadObject(ofClass: UIImage.self) { [weak self] object, _ in
+            let image = object as? UIImage
+            DispatchQueue.main.async {
+                picker.dismiss(animated: true) {
+                    if let image = image {
+                        self?.finishWithImage(image)
+                    } else {
+                        self?.onDismiss?()
+                    }
+                }
+            }
+        }
     }
 }

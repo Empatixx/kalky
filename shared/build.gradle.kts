@@ -64,7 +64,7 @@ kotlin {
     ).forEach {
         it.binaries.framework {
             baseName = "shared"
-            isStatic = true
+            isStatic = !project.hasProperty("dynamicFramework")
         }
     }
 

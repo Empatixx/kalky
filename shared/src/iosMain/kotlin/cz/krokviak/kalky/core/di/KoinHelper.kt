@@ -11,6 +11,8 @@ import cz.krokviak.kalky.scenes.auth.StubAuthTokenProvider
 import cz.krokviak.kalky.scenes.auth.StubAuthViewModel
 import cz.krokviak.kalky.core.common.IosImageStorage
 import cz.krokviak.kalky.core.common.ImageStorage
+import cz.krokviak.kalky.core.common.LiveActivityController
+import cz.krokviak.kalky.core.common.NoOpLiveActivityController
 import cz.krokviak.kalky.scenes.customfood.CustomFoodSearchViewModel
 import cz.krokviak.kalky.scenes.customfood.ManualFoodEntryViewModel
 import cz.krokviak.kalky.core.db.DriverFactory
@@ -27,6 +29,7 @@ fun initKoinIos(
     authTokenProvider: AuthTokenProvider? = null,
     authStateProvider: AuthStateProvider? = null,
     appCheckTokenProvider: AppCheckTokenProvider? = null,
+    liveActivityController: LiveActivityController? = null,
     backendBaseUrl: String? = null
 ) {
     startKoin {
@@ -40,6 +43,7 @@ fun initKoinIos(
                 single<AuthTokenProvider> { authTokenProvider ?: StubAuthTokenProvider() }
                 single<AuthStateProvider> { authStateProvider ?: StubAuthStateProvider() }
                 single<AppCheckTokenProvider> { appCheckTokenProvider ?: StubAppCheckTokenProvider() }
+                single<LiveActivityController> { liveActivityController ?: NoOpLiveActivityController() }
 
                 if (backendBaseUrl != null) {
                     single(org.koin.core.qualifier.named("backendBaseUrl")) { backendBaseUrl }
@@ -55,6 +59,7 @@ fun initKoinIos(
                         deleteFoodItems = get(),
                         databaseSeeder = get(),
                         clock = get(),
+                        liveActivityController = get(),
                         seedMockData = false,
                     )
                 }
@@ -75,7 +80,7 @@ fun initKoinIos(
                 viewModel { CustomFoodSearchViewModel(get(), get(), get(), get(), get()) }
                 single { ManualFoodEntryViewModel(get(), get(), get(), get()) }
                 viewModel { cz.krokviak.kalky.scenes.barcode.BarcodeScannerViewModel(get()) }
-                viewModel<AuthViewModelInterface> { StubAuthViewModel() }
+                single<AuthViewModelInterface> { StubAuthViewModel() }
             }
         )
     }

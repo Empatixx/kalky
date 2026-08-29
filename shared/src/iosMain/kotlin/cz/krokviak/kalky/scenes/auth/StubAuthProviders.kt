@@ -8,9 +8,9 @@ class StubAuthTokenProvider : AuthTokenProvider {
     override fun isSignedIn(): Boolean = false
 }
 
-class StubAuthStateProvider : AuthStateProvider {
+class StubAuthStateProvider(authenticated: Boolean = false) : AuthStateProvider {
     override val currentUser: StateFlow<AuthUser?> = MutableStateFlow(null)
-    override val isAuthenticated: StateFlow<Boolean> = MutableStateFlow(false)
+    override val isAuthenticated: StateFlow<Boolean> = MutableStateFlow(authenticated)
 }
 
 class StubAppCheckTokenProvider : AppCheckTokenProvider {
@@ -21,8 +21,16 @@ class StubAuthViewModel : AuthViewModelInterface {
     private val _uiState = MutableStateFlow(AuthUiState())
     override val uiState: StateFlow<AuthUiState> = _uiState
     override val authUser: StateFlow<AuthUser?> = MutableStateFlow(null)
-    override fun clearError() {}
-    override fun signOut() {}
-    override fun onAuthSuccess() {}
-    override fun onAuthError(message: String) {}
+    override fun clearError() {
+        _uiState.value = _uiState.value.copy(error = null)
+    }
+    override fun signOut() {
+        _uiState.value = AuthUiState()
+    }
+    override fun onAuthSuccess() {
+        _uiState.value = AuthUiState(isSignedIn = true)
+    }
+    override fun onAuthError(message: String) {
+        _uiState.value = AuthUiState(error = message)
+    }
 }

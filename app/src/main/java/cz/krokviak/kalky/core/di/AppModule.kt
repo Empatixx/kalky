@@ -12,6 +12,8 @@ import cz.krokviak.kalky.scenes.barcode.BarcodeScannerViewModel
 import cz.krokviak.kalky.core.camera.CameraViewModel
 import cz.krokviak.kalky.core.common.AndroidImageStorage
 import cz.krokviak.kalky.core.common.ImageStorage
+import cz.krokviak.kalky.core.common.LiveActivityController
+import cz.krokviak.kalky.core.common.NoOpLiveActivityController
 import cz.krokviak.kalky.scenes.customfood.CustomFoodSearchViewModel
 import cz.krokviak.kalky.scenes.customfood.ManualFoodEntryViewModel
 import cz.krokviak.kalky.core.db.DriverFactory
@@ -37,8 +39,9 @@ val appModule = module {
     single<AuthTokenProvider> { get<FirebaseAuthTokenProvider>() }
     single<AuthStateProvider> { get<FirebaseAuthTokenProvider>() }
     single<AppCheckTokenProvider> { FirebaseAppCheckTokenProvider() }
+    single<LiveActivityController> { NoOpLiveActivityController() }
 
-    viewModel { MainViewModel(get(), get(), get(), get(), get(), get(), get(), get(), seedMockData = BuildConfig.DEBUG) }
+    viewModel { MainViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), seedMockData = BuildConfig.DEBUG) }
     viewModel { FoodDetailViewModel(get(), get(), get(), get(), get(), get()) }
     viewModel { NutrientEditViewModel(get(), get()) }
     viewModel { AnalyticsViewModel(get(), get()) }

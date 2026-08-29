@@ -47,10 +47,10 @@ struct ComposeView: UIViewControllerRepresentable {
                 Task {
                     do {
                         try await GoogleSignInHelper.signIn(presenting: rootVC)
-                        let authVM: AuthViewModelInterface = KoinHelper.resolve()
+                        let authVM = IosKoinResolversKt.resolveAuthViewModel()
                         authVM.onAuthSuccess()
                     } catch {
-                        let authVM: AuthViewModelInterface = KoinHelper.resolve()
+                        let authVM = IosKoinResolversKt.resolveAuthViewModel()
                         authVM.onAuthError(message: error.localizedDescription)
                     }
                 }
@@ -60,16 +60,16 @@ struct ComposeView: UIViewControllerRepresentable {
                     do {
                         let helper = AppleSignInHelper()
                         try await helper.signIn()
-                        let authVM: AuthViewModelInterface = KoinHelper.resolve()
+                        let authVM = IosKoinResolversKt.resolveAuthViewModel()
                         authVM.onAuthSuccess()
                     } catch {
-                        let authVM: AuthViewModelInterface = KoinHelper.resolve()
+                        let authVM = IosKoinResolversKt.resolveAuthViewModel()
                         authVM.onAuthError(message: error.localizedDescription)
                     }
                 }
             },
             onCheckNotificationPermission: {
-                return NotificationManager.shared.isAuthorized
+                return KotlinBoolean(value: NotificationManager.shared.isAuthorized)
             }
         )
     }
@@ -96,6 +96,8 @@ struct ContentView: View {
                     handlePhotoCaptured(jpegData)
                 } onBarcodeDetected: { barcode in
                     handleBarcodeDetected(barcode)
+                } onDismiss: {
+                    showCamera = false
                 }
             }
     }
@@ -104,14 +106,14 @@ struct ContentView: View {
         showCamera = false
 
         let kotlinBytes = DataToByteArray.convert(data)
-        let mainViewModel: MainViewModel = KoinHelper.resolve()
+        let mainViewModel = IosKoinResolversKt.resolveMainViewModel()
         mainViewModel.addFoodItemFromBytes(imageBytes: kotlinBytes)
     }
 
     private func handleBarcodeDetected(_ barcode: String) {
         showCamera = false
 
-        let barcodeVM: BarcodeScannerViewModel = KoinHelper.resolve()
+        let barcodeVM = IosKoinResolversKt.resolveBarcodeScannerViewModel()
         barcodeVM.onBarcodeDetected(barcode: barcode)
     }
 }
@@ -120,11 +122,13 @@ struct CameraViewWrapper: UIViewControllerRepresentable {
     let mode: CameraMode
     let onPhotoCaptured: (Data) -> Void
     let onBarcodeDetected: (String) -> Void
+    let onDismiss: () -> Void
 
     func makeUIViewController(context: Context) -> KalkyCameraViewController {
         let vc = KalkyCameraViewController()
         vc.onPhotoCaptured = onPhotoCaptured
         vc.onBarcodeDetected = onBarcodeDetected
+        vc.onDismiss = onDismiss
         vc.modalPresentationStyle = .fullScreen
         return vc
     }
@@ -132,25 +136,8 @@ struct CameraViewWrapper: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: KalkyCameraViewController, context: Context) {}
 }
 
-enum KoinHelper {
-    static func resolve<T: AnyObject>() -> T {
-        let koin = KoinPlatformKt.getKoin()
-        guard let instance = koin.get(objCClass: T.self) as? T else {
-            fatalError("Koin: Could not resolve \(T.self)")
-        }
-        return instance
-    }
-}
-
 enum DataToByteArray {
     static func convert(_ data: Data) -> KotlinByteArray {
-        let bytes = KotlinByteArray(size: Int32(data.count))
-        data.withUnsafeBytes { buffer in
-            guard let baseAddress = buffer.baseAddress else { return }
-            for i in 0..<data.count {
-                bytes.set(index: Int32(i), value: baseAddress.load(fromByteOffset: i, as: Int8.self))
-            }
-        }
-        return bytes
+        return NSDataConverterKt.nsDataToByteArray(data: data)
     }
 }

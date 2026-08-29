@@ -1,6 +1,7 @@
 package cz.krokviak.kalky.scenes.home
 
 import cz.krokviak.kalky.core.common.FoodPhotoAnalyzer
+import cz.krokviak.kalky.core.common.LiveActivityController
 import cz.krokviak.kalky.core.common.domain.AddFoodItemUseCase
 import cz.krokviak.kalky.core.common.entities.FoodItemEntity
 import cz.krokviak.kalky.core.common.error.UiError
@@ -16,21 +17,30 @@ internal class PhotoCaptureController(
     private val foodPhotoAnalyzer: FoodPhotoAnalyzer,
     private val addFoodItem: AddFoodItemUseCase,
     private val clock: Clock,
+    private val liveActivityController: LiveActivityController,
     private val onAnalysisFailed: (UiError) -> Unit,
 ) {
 
     fun addFromBytes(imageBytes: ByteArray) {
+        var analysisId: Long? = null
         foodPhotoAnalyzer.analyze(
             scope = scope,
             imageBytes = imageBytes,
             onPlaceholderInserted = { placeholder ->
+                analysisId = placeholder.id
+                liveActivityController.startFoodAnalysis(placeholder.id)
                 state.update { it.copy(loadingItems = it.loadingItems.add(placeholder.id)) }
             },
-            onAnalysisComplete = {  },
+            onAnalysisComplete = { item ->
+                liveActivityController.completeFoodAnalysis(item.id, item.name, item.calories)
+            },
             onFinalCommitted = { finalItem ->
                 state.update { it.copy(loadingItems = it.loadingItems.remove(finalItem.id)) }
             },
-            onAnalysisFailed = { onAnalysisFailed(UiError.PhotoAnalysis) }
+            onAnalysisFailed = {
+                analysisId?.let { liveActivityController.failFoodAnalysis(it) }
+                onAnalysisFailed(UiError.PhotoAnalysis)
+            }
         )
     }
 

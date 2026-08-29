@@ -19,6 +19,6 @@ enum IosRemoteConfigManager {
 
     static func getBackendBaseUrl() -> String {
         let value = RemoteConfig.remoteConfig()["backend_base_url"].stringValue
-        return (value?.isEmpty == false) ? value! : defaultBackendUrl
+        return value.isEmpty ? defaultBackendUrl : value
     }
 }

@@ -33,10 +33,14 @@ iosApp/iosApp/GoogleService-Info.plist
 EMAIL.md
 
 # Python scraper artifacts
-scraper/**/__pycache__/
+scrapers/**/__pycache__/
 *.pyc
 
 # Docs site (Next.js)
 website/node_modules/
 website/.next/
 website/out/
+
+# XcodeGen-generated iOS artifacts (source of truth is project.yml)
+*.xcodeproj/
+iosApp/Kalky.entitlements
