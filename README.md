@@ -1,10 +1,25 @@
+<div align="center">
+
 # Kalky
+
+**AI-powered food & nutrition tracking, in Czech.**
+
+[![Android CI](https://github.com/Empatixx/kalky/actions/workflows/android.yml/badge.svg)](https://github.com/Empatixx/kalky/actions/workflows/android.yml)
+[![iOS CI](https://github.com/Empatixx/kalky/actions/workflows/ios.yml/badge.svg)](https://github.com/Empatixx/kalky/actions/workflows/ios.yml)
+[![Backend CI](https://github.com/Empatixx/kalky/actions/workflows/backend.yml/badge.svg)](https://github.com/Empatixx/kalky/actions/workflows/backend.yml)
+[![Docs](https://img.shields.io/badge/docs-empatixx.github.io%2Fkalky-4285F4)](https://empatixx.github.io/kalky/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-black)](LICENSE)
+
+<img src="website/public/img/en/home.png" width="220" alt="Home screen — daily macros"><img src="website/public/img/en/detail.png" width="220" alt="AI-analyzed meal"><img src="website/public/img/en/analytics.png" width="220" alt="Analytics and trends">
+
+</div>
 
 A food and nutrition tracking app for Android and iOS, built with Kotlin Multiplatform and
 Compose Multiplatform. Log meals by photo (AI nutrition analysis), by barcode, or by search,
 and track calories and macros over time.
 
-The UI language is Czech.
+The UI language is Czech. Full docs, including the guide these screenshots are pulled from,
+live at **[empatixx.github.io/kalky](https://empatixx.github.io/kalky/)**.
 
 ## How it works
 
@@ -31,6 +46,14 @@ Platform-specific work is reached through interfaces declared in `commonMain`
 platform. Firebase, CameraX, and AVFoundation never appear in `commonMain`.
 
 ## Stack
+
+![Kotlin](https://img.shields.io/badge/Kotlin-2.2-7F52FF?logo=kotlin&logoColor=white)
+![Compose Multiplatform](https://img.shields.io/badge/Compose_Multiplatform-1.8-4285F4?logo=jetpackcompose&logoColor=white)
+![Koin](https://img.shields.io/badge/DI-Koin-1B1B1B)
+![SQLDelight](https://img.shields.io/badge/DB-SQLDelight-0095D5)
+![Ktor](https://img.shields.io/badge/Networking-Ktor_3.2-087CFA?logo=ktor&logoColor=white)
+![Firebase Auth](https://img.shields.io/badge/Auth-Firebase-FFCA28?logo=firebase&logoColor=black)
+![Bun](https://img.shields.io/badge/Backend-Bun_%2B_Prisma-000000?logo=bun&logoColor=white)
 
 Kotlin 2.2 · Compose Multiplatform 1.8 · Koin · SQLDelight · Ktor 3.2 · kotlinx-serialization ·
 kotlinx-datetime · multiplatform-settings · Firebase Auth · Material3
