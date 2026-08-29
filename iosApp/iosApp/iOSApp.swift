@@ -21,6 +21,7 @@ struct iOSApp: App {
             authTokenProvider: IosAuthTokenProvider(),
             authStateProvider: IosAuthStateProvider(),
             appCheckTokenProvider: IosAppCheckTokenProvider(),
+            liveActivityController: IosLiveActivityController(),
             backendBaseUrl: IosRemoteConfigManager.getBackendBaseUrl()
         )
     }
@@ -29,8 +30,17 @@ struct iOSApp: App {
         WindowGroup {
             ContentView()
                 .onOpenURL { url in
-                    GIDSignIn.sharedInstance.handle(url)
+                    handleURL(url)
                 }
         }
+    }
+
+    private func handleURL(_ url: URL) {
+        guard url.scheme == "kalky" else {
+            GIDSignIn.sharedInstance.handle(url)
+            return
+        }
+        guard url.host == "food", let id = Int64(url.lastPathComponent) else { return }
+        IosKoinResolversKt.openFoodDetailDeepLink(id: id)
     }
 }

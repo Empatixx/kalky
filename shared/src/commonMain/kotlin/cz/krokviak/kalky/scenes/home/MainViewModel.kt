@@ -3,6 +3,7 @@ package cz.krokviak.kalky.scenes.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cz.krokviak.kalky.core.common.FoodPhotoAnalyzer
+import cz.krokviak.kalky.core.common.LiveActivityController
 import cz.krokviak.kalky.core.common.domain.AddFoodItemUseCase
 import cz.krokviak.kalky.core.common.domain.DeleteFoodItemsUseCase
 import cz.krokviak.kalky.core.common.domain.GetLatestNutrientSettingsUseCase
@@ -33,6 +34,7 @@ class MainViewModel(
     private val deleteFoodItems: DeleteFoodItemsUseCase,
     private val databaseSeeder: DatabaseSeeder,
     clock: Clock,
+    liveActivityController: LiveActivityController,
     private val seedMockData: Boolean = false,
 ) : ViewModel() {
 
@@ -45,6 +47,7 @@ class MainViewModel(
         foodPhotoAnalyzer = foodPhotoAnalyzer,
         addFoodItem = addFoodItem,
         clock = clock,
+        liveActivityController = liveActivityController,
         onAnalysisFailed = { error -> _uiState.update { it.copy(error = error) } },
     )
 

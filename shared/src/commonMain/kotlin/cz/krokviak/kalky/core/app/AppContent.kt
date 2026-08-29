@@ -12,6 +12,7 @@ import cz.krokviak.kalky.scenes.auth.AuthStateProvider
 import cz.krokviak.kalky.core.common.AppPreferences
 import cz.krokviak.kalky.core.common.domain.CompleteOnboardingUseCase
 import cz.krokviak.kalky.core.common.CustomFoodRoute
+import cz.krokviak.kalky.core.common.DeepLinkBus
 import cz.krokviak.kalky.core.common.DefaultRoute
 import cz.krokviak.kalky.core.common.FoodDetailRoute
 import cz.krokviak.kalky.core.common.LocalPlatformActions
@@ -36,6 +37,7 @@ fun AppContent() {
     val platformActions = LocalPlatformActions.current
     val appPreferences: AppPreferences = koinInject()
     val authStateProvider: AuthStateProvider = koinInject()
+    val deepLinkBus: DeepLinkBus = koinInject()
     val completeOnboarding: CompleteOnboardingUseCase = koinInject()
     val mainViewModel: MainViewModel = koinViewModel()
     val onboardingViewModel: OnboardingViewModel = koinViewModel()
@@ -48,6 +50,12 @@ fun AppContent() {
         !onboardingCompleted -> OnboardingRoute
         !isAuthenticated -> LoginRoute
         else -> DefaultRoute
+    }
+
+    LaunchedEffect(Unit) {
+        deepLinkBus.foodDetail.collect { id ->
+            navController.navigate(FoodDetailRoute(id))
+        }
     }
 
     ResponsiveProvider {

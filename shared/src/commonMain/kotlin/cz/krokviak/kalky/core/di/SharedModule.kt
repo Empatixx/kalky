@@ -1,6 +1,7 @@
 package cz.krokviak.kalky.core.di
 
 import cz.krokviak.kalky.core.common.AppPreferences
+import cz.krokviak.kalky.core.common.DeepLinkBus
 import cz.krokviak.kalky.core.common.FoodPhotoAnalyzer
 import cz.krokviak.kalky.core.common.StreakCalculator
 import cz.krokviak.kalky.core.common.domain.AddFoodItemUseCase
@@ -39,6 +40,8 @@ val sharedModule = module {
     single<Clock> { Clock.System }
 
     single { AppPreferences() }
+
+    single { DeepLinkBus() }
 
     single<HttpClient> { createHttpClient(getOrNull(), getOrNull()) }
     single {
