@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import cz.krokviak.kalky.core.theme.AppTheme
 import cz.krokviak.kalky.core.ui.LocalDimensions
 import cz.krokviak.kalky.core.ui.components.KalkyCard
@@ -59,6 +60,7 @@ fun CalorieCard(
                 Text(
                     text = "${currentCalories} kcal",
                     fontSize = dims.fontHero,
+                    lineHeight = (dims.fontHero.value * 1.15f).sp,
                     fontWeight = FontWeight.ExtraBold,
                     color = AppTheme.colors.onBackground
                 )
