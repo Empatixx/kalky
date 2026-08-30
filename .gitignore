@@ -32,10 +32,6 @@ iosApp/iosApp/GoogleService-Info.plist
 .idea/.name
 EMAIL.md
 
-# Python scraper artifacts
-scrapers/**/__pycache__/
-*.pyc
-
 # Docs site (Next.js)
 website/node_modules/
 website/.next/

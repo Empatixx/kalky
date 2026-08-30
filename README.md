@@ -39,7 +39,6 @@ Nearly all the code is shared. The platform modules are deliberately thin.
 | `app/` | Android shell — `MainActivity`, CameraX capture, ML Kit barcode scanning, Firebase |
 | `iosApp/` | SwiftUI entry point, `ComposeUIViewController` wrapper, AVFoundation camera, widgets |
 | `backend/` | Bun + Prisma + SQLite server: image analysis, barcode lookup, product search |
-| `scrapers/` | Python scrapers that populate the product database |
 
 Platform-specific work is reached through interfaces declared in `commonMain`
 (`PlatformActions`, `AuthTokenProvider`, `ImageStorage`, `AppPreferences`) and implemented per
